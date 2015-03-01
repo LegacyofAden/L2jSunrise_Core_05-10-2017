@@ -38,6 +38,7 @@ import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.ItemLocation;
+import l2r.gameserver.enums.PartyDistributionType;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.handler.IItemHandler;
 import l2r.gameserver.handler.ItemHandler;
@@ -46,7 +47,6 @@ import l2r.gameserver.instancemanager.CursedWeaponsManager;
 import l2r.gameserver.instancemanager.FortSiegeManager;
 import l2r.gameserver.instancemanager.ItemsOnGroundManager;
 import l2r.gameserver.model.L2Object;
-import l2r.gameserver.model.L2Party;
 import l2r.gameserver.model.L2PetData;
 import l2r.gameserver.model.L2PetLevelData;
 import l2r.gameserver.model.L2World;
@@ -535,7 +535,7 @@ public class L2PetInstance extends L2Summon
 				return;
 			}
 			
-			if (((isInParty() && (getParty().getLootDistribution() == L2Party.ITEM_LOOTER)) || !isInParty()) && !_inventory.validateCapacity(target))
+			if (((isInParty() && (getParty().getDistributionType() == PartyDistributionType.FINDERS_KEEPERS)) || !isInParty()) && !_inventory.validateCapacity(target))
 			{
 				sendPacket(ActionFailed.STATIC_PACKET);
 				sendPacket(SystemMessageId.YOUR_PET_CANNOT_CARRY_ANY_MORE_ITEMS);
@@ -625,7 +625,7 @@ public class L2PetInstance extends L2Summon
 			}
 			
 			// If owner is in party and it isnt finders keepers, distribute the item instead of stealing it -.-
-			if (getOwner().isInParty() && (getOwner().getParty().getLootDistribution() != L2Party.ITEM_LOOTER))
+			if (getOwner().isInParty() && (getOwner().getParty().getDistributionType() != PartyDistributionType.FINDERS_KEEPERS))
 			{
 				getOwner().getParty().distributeItem(getOwner(), target);
 			}

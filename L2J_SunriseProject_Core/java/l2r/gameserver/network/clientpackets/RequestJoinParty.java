@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
+import l2r.gameserver.enums.PartyDistributionType;
 import l2r.gameserver.model.BlockList;
 import l2r.gameserver.model.L2Party;
 import l2r.gameserver.model.L2World;
@@ -38,13 +39,13 @@ public final class RequestJoinParty extends L2GameClientPacket
 	private static final String _C__42_REQUESTJOINPARTY = "[C] 42 RequestJoinParty";
 	
 	private String _name;
-	private int _itemDistribution;
+	private int _partyDistributionTypeId;
 	
 	@Override
 	protected void readImpl()
 	{
 		_name = readS();
-		_itemDistribution = readD();
+		_partyDistributionTypeId = readD();
 	}
 	
 	@Override
@@ -190,7 +191,7 @@ public final class RequestJoinParty extends L2GameClientPacket
 		{
 			requestor.onTransactionRequest(target);
 			// in case a leader change has happened, use party's mode
-			target.sendPacket(new AskJoinParty(requestor.getName(), party.getLootDistribution()));
+			target.sendPacket(new AskJoinParty(requestor.getName(), party.getDistributionType()));
 			party.setPendingInvitation(true);
 			
 			if (Config.DEBUG)
@@ -218,13 +219,18 @@ public final class RequestJoinParty extends L2GameClientPacket
 	 */
 	private void createNewParty(L2PcInstance target, L2PcInstance requestor)
 	{
+		PartyDistributionType partyDistributionType = PartyDistributionType.findById(_partyDistributionTypeId);
+		if (partyDistributionType == null)
+		{
+			return;
+		}
+		
 		if (!target.isProcessingRequest())
 		{
-			requestor.setParty(new L2Party(requestor, _itemDistribution));
-			
+			target.sendPacket(new AskJoinParty(requestor.getName(), partyDistributionType));
+			target.setActiveRequester(requestor);
 			requestor.onTransactionRequest(target);
-			target.sendPacket(new AskJoinParty(requestor.getName(), _itemDistribution));
-			requestor.getParty().setPendingInvitation(true);
+			requestor.setPartyDistributionType(partyDistributionType);
 			
 			if (Config.DEBUG)
 			{

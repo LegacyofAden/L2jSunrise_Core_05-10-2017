@@ -84,6 +84,7 @@ import l2r.gameserver.enums.IllegalActionPunishmentType;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.MessageType;
 import l2r.gameserver.enums.MountType;
+import l2r.gameserver.enums.PartyDistributionType;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.enums.PcRace;
 import l2r.gameserver.enums.PrivateStoreType;
@@ -735,6 +736,7 @@ public final class L2PcInstance extends L2Playable
 	private boolean _exchangeRefusal = false; // Exchange refusal
 	
 	private L2Party _party;
+	PartyDistributionType _partyDistributionType;
 	
 	// this is needed to find the inviting player for Party response
 	// there can only be one active party request at once
@@ -4708,7 +4710,7 @@ public final class L2PcInstance extends L2Playable
 				return;
 			}
 			
-			if (((isInParty() && (getParty().getLootDistribution() == L2Party.ITEM_LOOTER)) || !isInParty()) && !_inventory.validateCapacity(target))
+			if (((isInParty() && (getParty().getDistributionType() == PartyDistributionType.FINDERS_KEEPERS)) || !isInParty()) && !_inventory.validateCapacity(target))
 			{
 				sendPacket(ActionFailed.STATIC_PACKET);
 				sendPacket(SystemMessageId.SLOTS_FULL);
@@ -7103,6 +7105,16 @@ public final class L2PcInstance extends L2Playable
 		return _party;
 	}
 	
+	public void setPartyDistributionType(PartyDistributionType pdt)
+	{
+		_partyDistributionType = pdt;
+	}
+	
+	public PartyDistributionType getPartyDistributionType()
+	{
+		return _partyDistributionType;
+	}
+	
 	/**
 	 * Return True if the L2PcInstance is a GM.
 	 */
@@ -9454,7 +9466,7 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
-		// GodFather: If target player is flagged cannot obtain good magic unless is forceUse or is friend(Party, Clan, Ally etc)
+		// vGodFather: If target player is flagged cannot obtain good magic unless is forceUse or is friend(Party, Clan, Ally etc)
 		if (!skill.isOffensive() && !forceUse && (target.isPlayer() || target.isSummon()) && !isFriend(target.getActingPlayer()))
 		{
 			sendPacket(SystemMessageId.TARGET_IS_INCORRECT);

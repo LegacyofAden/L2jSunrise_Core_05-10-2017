@@ -89,7 +89,7 @@ public class PcStat extends PlayableStat
 			return false;
 		}
 		
-		// GodFather Fix
+		// vGodFather Fix
 		boolean hadKarma;
 		if (activeChar.getKarma() > 0)
 		{
@@ -111,7 +111,7 @@ public class PcStat extends PlayableStat
 				msg.addInt(activeChar.getKarma());
 				activeChar.sendPacket(msg);
 				
-				// GodFather Fix
+				// vGodFather Fix
 				if (activeChar.getKarma() <= 0)
 				{
 					if (hadKarma)

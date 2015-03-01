@@ -6863,7 +6863,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 									player.updatePvPStatus();
 								}
 							}
-							// GodFather: Fix Casting non offensive skill on pet with pvp flag set or with karma
+							// vGodFather: Fix Casting non offensive skill on pet with pvp flag set or with karma
 							else if (target.isSummon())
 							{
 								// Casting non offensive skill on pet with pvp flag set or with karma

@@ -18,9 +18,12 @@
  */
 package l2r.gameserver.model;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import javolution.util.FastList;
@@ -30,6 +33,7 @@ import l2r.gameserver.SevenSignsFestival;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.MessageType;
+import l2r.gameserver.enums.PartyDistributionType;
 import l2r.gameserver.instancemanager.DuelManager;
 import l2r.gameserver.instancemanager.PcCafePointsManager;
 import l2r.gameserver.model.actor.L2Attackable;
@@ -71,18 +75,16 @@ import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 public class L2Party extends AbstractPlayerGroup
 {
 	private static final Logger _log = LoggerFactory.getLogger(L2Party.class);
+	
 	// @formatter:off
 	private static final double[] BONUS_EXP_SP =
 	{
 		1.0, 1.10, 1.20, 1.30, 1.40, 1.50, 2.0, 2.10, 2.20
 	};
-	// TODO: JIV - unhardcode to some SysString enum (sysstring-e.dat)
-	private static final int[] LOOT_SYSSTRINGS =
-	{
-		487, 488, 798, 799, 800
-	};
 	// @formatter:on
-	private static final int PARTY_POSITION_BROADCAST_DELAY = 12000;
+	
+	private static final Duration PARTY_POSITION_BROADCAST_INTERVAL = Duration.ofSeconds(12);
+	private static final Duration PARTY_DISTRIBUTION_TYPE_REQUEST_TIMEOUT = Duration.ofSeconds(15);
 	
 	public static final byte ITEM_LOOTER = 0;
 	public static final byte ITEM_RANDOM = 1;
@@ -94,14 +96,13 @@ public class L2Party extends AbstractPlayerGroup
 	private boolean _pendingInvitation = false;
 	private long _pendingInviteTimeout;
 	private int _partyLvl = 0;
-	private int _itemDistribution = 0;
+	private volatile PartyDistributionType _distributionType = PartyDistributionType.FINDERS_KEEPERS;
+	private volatile PartyDistributionType _changeRequestDistributionType;
+	private volatile Future<?> _changeDistributionTypeRequestTask = null;
+	private volatile Set<Integer> _changeDistributionTypeAnswers = null;
 	private int _itemLastLoot = 0;
 	private L2CommandChannel _commandChannel = null;
 	private DimensionalRift _dr;
-	private byte _requestChangeLoot = -1;
-	private List<Integer> _changeLootAnswers = null;
-	protected long _requestChangeLootTimer = 0;
-	private Future<?> _checkTask = null;
 	private Future<?> _positionBroadcastTask = null;
 	protected PartyMemberPosition _positionPacket;
 	private boolean _disbanding = false;
@@ -109,14 +110,23 @@ public class L2Party extends AbstractPlayerGroup
 	/**
 	 * Construct a new L2Party object with a single member - the leader.
 	 * @param leader the leader of this party
-	 * @param itemDistribution the item distribution rule of this party
+	 * @param partyDistributionType the item distribution rule of this party
 	 */
-	public L2Party(L2PcInstance leader, int itemDistribution)
+	public L2Party(L2PcInstance leader, PartyDistributionType partyDistributionType)
 	{
 		_members = new FastList<L2PcInstance>().shared();
 		_members.add(leader);
 		_partyLvl = leader.getLevel();
-		_itemDistribution = itemDistribution;
+		_distributionType = partyDistributionType;
+	}
+	
+	// vGodFather: used only for event engine
+	public L2Party(L2PcInstance leader)
+	{
+		_members = new FastList<L2PcInstance>().shared();
+		_members.add(leader);
+		_partyLvl = leader.getLevel();
+		_distributionType = PartyDistributionType.RANDOM;
 	}
 	
 	/**
@@ -216,33 +226,29 @@ public class L2Party extends AbstractPlayerGroup
 	{
 		L2PcInstance looter = player;
 		
-		switch (_itemDistribution)
+		switch (_distributionType)
 		{
-			case ITEM_RANDOM:
+			case RANDOM:
 				if (!spoil)
 				{
 					looter = getCheckedRandomMember(ItemId, target);
 				}
 				break;
-			case ITEM_RANDOM_SPOIL:
+			case RANDOM_INCLUDING_SPOIL:
 				looter = getCheckedRandomMember(ItemId, target);
 				break;
-			case ITEM_ORDER:
+			case BY_TURN:
 				if (!spoil)
 				{
 					looter = getCheckedNextLooter(ItemId, target);
 				}
 				break;
-			case ITEM_ORDER_SPOIL:
+			case BY_TURN_INCLUDING_SPOIL:
 				looter = getCheckedNextLooter(ItemId, target);
 				break;
 		}
 		
-		if (looter == null)
-		{
-			looter = player;
-		}
-		return looter;
+		return looter != null ? looter : player;
 	}
 	
 	/**
@@ -289,7 +295,7 @@ public class L2Party extends AbstractPlayerGroup
 			return;
 		}
 		
-		if (_requestChangeLoot != -1)
+		if (_changeRequestDistributionType != null)
 		{
 			finishLootRequest(false); // cancel on invite
 		}
@@ -361,10 +367,21 @@ public class L2Party extends AbstractPlayerGroup
 		
 		if (_positionBroadcastTask == null)
 		{
-			_positionBroadcastTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new PositionBroadcast(), PARTY_POSITION_BROADCAST_DELAY / 2, PARTY_POSITION_BROADCAST_DELAY);
+			_positionBroadcastTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(() ->
+			{
+				if (_positionPacket == null)
+				{
+					_positionPacket = new PartyMemberPosition(this);
+				}
+				else
+				{
+					_positionPacket.reuse(this);
+				}
+				broadcastPacket(_positionPacket);
+			}, PARTY_POSITION_BROADCAST_INTERVAL.toMillis() / 2, PARTY_POSITION_BROADCAST_INTERVAL.toMillis());
 		}
 		
-		// L2JMod Loot mod.
+		// vGodFather: Distribution mod
 		if ((getLeader().hasEvenlyDistributedLoot() || CustomServerConfigs.EVENLY_DISTRIBUTED_ITEMS_FORCED) && CustomServerConfigs.EVENLY_DISTRIBUTED_ITEMS)
 		{
 			player.sendMessage("This party has evenly distribution for party loot.");
@@ -503,10 +520,10 @@ public class L2Party extends AbstractPlayerGroup
 						DuelManager.getInstance().onRemoveFromParty(getLeader());
 					}
 				}
-				if (_checkTask != null)
+				if (_changeDistributionTypeRequestTask != null)
 				{
-					_checkTask.cancel(true);
-					_checkTask = null;
+					_changeDistributionTypeRequestTask.cancel(true);
+					_changeDistributionTypeRequestTask = null;
 				}
 				if (_positionBroadcastTask != null)
 				{
@@ -1017,9 +1034,9 @@ public class L2Party extends AbstractPlayerGroup
 		return _partyLvl;
 	}
 	
-	public int getLootDistribution()
+	public PartyDistributionType getDistributionType()
 	{
-		return _itemDistribution;
+		return _distributionType;
 	}
 	
 	public boolean isInCommandChannel()
@@ -1068,47 +1085,43 @@ public class L2Party extends AbstractPlayerGroup
 		}
 	}
 	
-	public void requestLootChange(byte type)
+	public synchronized void requestLootChange(PartyDistributionType partyDistributionType)
 	{
-		if (_requestChangeLoot != -1)
+		if (_changeRequestDistributionType != null)
 		{
-			if (System.currentTimeMillis() > _requestChangeLootTimer)
-			{
-				finishLootRequest(false); // timeout 45sec, guess
-			}
-			else
-			{
-				return;
-			}
+			return;
 		}
-		_requestChangeLoot = type;
-		int additionalTime = L2PcInstance.REQUEST_TIMEOUT * 3000;
-		_requestChangeLootTimer = System.currentTimeMillis() + additionalTime;
-		_changeLootAnswers = FastList.newInstance();
-		_checkTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new ChangeLootCheck(), additionalTime + 1000, 5000);
-		broadcastToPartyMembers(getLeader(), new ExAskModifyPartyLooting(getLeader().getName(), type));
-		SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.REQUESTING_APPROVAL_CHANGE_PARTY_LOOT_S1);
-		sm.addSystemString(LOOT_SYSSTRINGS[type]);
+		_changeRequestDistributionType = partyDistributionType;
+		_changeDistributionTypeAnswers = new HashSet<>();
+		_changeDistributionTypeRequestTask = ThreadPoolManager.getInstance().scheduleGeneral(() -> finishLootRequest(false), PARTY_DISTRIBUTION_TYPE_REQUEST_TIMEOUT.toMillis());
+		
+		broadcastToPartyMembers(getLeader(), new ExAskModifyPartyLooting(getLeader().getName(), partyDistributionType));
+		
+		final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.REQUESTING_APPROVAL_CHANGE_PARTY_LOOT_S1);
+		sm.addSystemString(partyDistributionType.getSysStringId());
 		getLeader().sendPacket(sm);
 	}
 	
 	public synchronized void answerLootChangeRequest(L2PcInstance member, boolean answer)
 	{
-		if (_requestChangeLoot == -1)
+		if (_changeRequestDistributionType == null)
 		{
 			return;
 		}
-		if (_changeLootAnswers.contains(member.getObjectId()))
+		
+		if (_changeDistributionTypeAnswers.contains(member.getObjectId()))
 		{
 			return;
 		}
+		
 		if (!answer)
 		{
 			finishLootRequest(false);
 			return;
 		}
-		_changeLootAnswers.add(member.getObjectId());
-		if (_changeLootAnswers.size() >= (getMemberCount() - 1))
+		
+		_changeDistributionTypeAnswers.add(member.getObjectId());
+		if (_changeDistributionTypeAnswers.size() >= (getMemberCount() - 1))
 		{
 			finishLootRequest(true);
 		}
@@ -1116,43 +1129,30 @@ public class L2Party extends AbstractPlayerGroup
 	
 	protected synchronized void finishLootRequest(boolean success)
 	{
-		if (_requestChangeLoot == -1)
+		if (_changeRequestDistributionType == null)
 		{
 			return;
 		}
-		if (_checkTask != null)
+		if (_changeDistributionTypeRequestTask != null)
 		{
-			_checkTask.cancel(false);
-			_checkTask = null;
+			_changeDistributionTypeRequestTask.cancel(false);
+			_changeDistributionTypeRequestTask = null;
 		}
 		if (success)
 		{
-			broadcastPacket(new ExSetPartyLooting(1, _requestChangeLoot));
-			_itemDistribution = _requestChangeLoot;
+			broadcastPacket(new ExSetPartyLooting(1, _changeRequestDistributionType));
+			_distributionType = _changeRequestDistributionType;
 			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.PARTY_LOOT_CHANGED_S1);
-			sm.addSystemString(LOOT_SYSSTRINGS[_requestChangeLoot]);
+			sm.addSystemString(_changeRequestDistributionType.getSysStringId());
 			broadcastPacket(sm);
 		}
 		else
 		{
-			broadcastPacket(new ExSetPartyLooting(0, (byte) 0));
+			broadcastPacket(new ExSetPartyLooting(0, _distributionType));
 			broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.PARTY_LOOT_CHANGE_CANCELLED));
 		}
-		_requestChangeLoot = -1;
-		FastList.recycle((FastList<?>) _changeLootAnswers);
-		_requestChangeLootTimer = 0;
-	}
-	
-	protected class ChangeLootCheck implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			if (System.currentTimeMillis() > _requestChangeLootTimer)
-			{
-				finishLootRequest(false);
-			}
-		}
+		_changeRequestDistributionType = null;
+		_changeDistributionTypeAnswers = null;
 	}
 	
 	protected class PositionBroadcast implements Runnable
