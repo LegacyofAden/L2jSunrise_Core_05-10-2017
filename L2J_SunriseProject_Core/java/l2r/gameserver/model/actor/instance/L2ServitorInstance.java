@@ -262,6 +262,12 @@ public class L2ServitorInstance extends L2Summon
 		
 	}
 	
+	@Override
+	public void doPickupItem(L2Object object)
+	{
+		
+	}
+	
 	/**
 	 * Servitors' skills automatically change their level based on the servitor's level.<br>
 	 * Until level 70, the servitor gets 1 lv of skill per 10 levels.<br>

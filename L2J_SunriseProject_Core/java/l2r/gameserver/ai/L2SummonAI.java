@@ -29,7 +29,6 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Character.AIAccessor;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.util.Rnd;
@@ -45,9 +44,9 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 	private volatile boolean _startAvoid = false;
 	private Future<?> _avoidTask = null;
 	
-	public L2SummonAI(AIAccessor accessor)
+	public L2SummonAI(L2Summon creature)
 	{
-		super(accessor);
+		super(creature);
 	}
 	
 	@Override
@@ -100,7 +99,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 			return;
 		}
 		clientStopMoving(null);
-		_accessor.doAttack(getAttackTarget());
+		_actor.doAttack(getAttackTarget());
 	}
 	
 	private void thinkCast()
@@ -120,7 +119,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 		summon.setFollowStatus(false);
 		setIntention(AI_INTENTION_IDLE);
 		_startFollow = val;
-		_accessor.doCast(_skill);
+		_actor.doCast(_skill);
 	}
 	
 	private void thinkPickUp()
@@ -134,7 +133,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 			return;
 		}
 		setIntention(AI_INTENTION_IDLE);
-		((L2Summon.AIAccessor) _accessor).doPickupItem(getTarget());
+		((L2Summon) _actor).doPickupItem(getTarget());
 	}
 	
 	private void thinkInteract()

@@ -101,11 +101,11 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	
 	/**
 	 * Constructor of L2AttackableAI.
-	 * @param accessor The AI accessor of the L2Character
+	 * @param creature the creature
 	 */
-	public L2AttackableAI(L2Character.AIAccessor accessor)
+	public L2AttackableAI(L2Attackable creature)
 	{
-		super(accessor);
+		super(creature);
 		_skillrender = NpcTable.getInstance().getTemplate(getActiveChar().getTemplate().getId());
 		_attackTimeout = Integer.MAX_VALUE;
 		_globalAggro = -10; // 10 seconds timeout of ATTACK after respawn
@@ -377,7 +377,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				
 				// Cancel the AI
-				_accessor.detachAI();
+				_actor.detachAI();
 				
 				return;
 			}
@@ -430,7 +430,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		}
 		clientStopMoving(null);
 		setIntention(AI_INTENTION_ACTIVE);
-		_accessor.doCast(_skill);
+		_actor.doCast(_skill);
 	}
 	
 	/**
@@ -1346,7 +1346,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 		}
 		
-		_accessor.doAttack(getAttackTarget());
+		_actor.doAttack(getAttackTarget());
 	}
 	
 	private boolean cast(L2Skill sk)

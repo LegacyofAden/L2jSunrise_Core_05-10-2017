@@ -21,7 +21,6 @@ package l2r.gameserver.ai;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Character.AIAccessor;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
@@ -34,11 +33,11 @@ import l2r.gameserver.network.SystemMessageId;
 public abstract class L2PlayableAI extends L2CharacterAI
 {
 	/**
-	 * @param accessor
+	 * @param creature the creature
 	 */
-	public L2PlayableAI(AIAccessor accessor)
+	public L2PlayableAI(L2Playable creature)
 	{
-		super(accessor);
+		super(creature);
 	}
 	
 	@Override

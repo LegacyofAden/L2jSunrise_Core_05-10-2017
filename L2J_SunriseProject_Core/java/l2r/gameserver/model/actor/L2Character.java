@@ -802,7 +802,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * </ul>
 	 * @param target The L2Character targeted
 	 */
-	protected void doAttack(L2Character target)
+	public void doAttack(L2Character target)
 	{
 		if ((target == null) || isAttackingDisabled())
 		{
@@ -2629,6 +2629,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 	}
 	
+	public void detachAI()
+	{
+		if (isWalker())
+		{
+			return;
+		}
+		setAI(null);
+	}
+	
 	protected void calculateRewards(L2Character killer)
 	{
 	}
@@ -2722,7 +2731,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	protected L2CharacterAI initAI()
 	{
-		return new L2CharacterAI(new AIAccessor());
+		return new L2CharacterAI(this);
 	}
 	
 	public void setAI(L2CharacterAI newAI)
@@ -3897,93 +3906,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return _effects.getFirstPassiveEffect(type);
 	}
 	
-	// TODO: NEED TO ORGANIZE AND MOVE TO PROPER PLACE
-	/** This class permit to the L2Character AI to obtain informations and uses L2Character method */
-	public class AIAccessor
-	{
-		/**
-		 * @return the L2Character managed by this Accessor AI.
-		 */
-		public L2Character getActor()
-		{
-			return L2Character.this;
-		}
-		
-		/**
-		 * Accessor to L2Character moveToLocation() method with an interaction area.
-		 * @param x
-		 * @param y
-		 * @param z
-		 * @param offset
-		 */
-		public void moveTo(int x, int y, int z, int offset)
-		{
-			moveToLocation(x, y, z, offset);
-		}
-		
-		/**
-		 * Accessor to L2Character moveToLocation() method without interaction area.
-		 * @param x
-		 * @param y
-		 * @param z
-		 */
-		public void moveTo(int x, int y, int z)
-		{
-			moveToLocation(x, y, z, 0);
-		}
-		
-		/**
-		 * Accessor to L2Character stopMove() method.
-		 * @param pos
-		 */
-		public void stopMove(Location pos)
-		{
-			L2Character.this.stopMove(pos);
-		}
-		
-		/**
-		 * Accessor to L2Character doAttack() method.
-		 * @param target
-		 */
-		public void doAttack(L2Character target)
-		{
-			L2Character.this.doAttack(target);
-		}
-		
-		/**
-		 * Accessor to L2Character doCast() method.
-		 * @param skill
-		 */
-		public void doCast(L2Skill skill)
-		{
-			L2Character.this.doCast(skill);
-		}
-		
-		/**
-		 * Create a NotifyAITask.
-		 * @param evt
-		 * @return
-		 */
-		public NotifyAITask newNotifyTask(CtrlEvent evt)
-		{
-			return new NotifyAITask(getActor(), evt);
-		}
-		
-		/**
-		 * Cancel the AI.
-		 */
-		public void detachAI()
-		{
-			// Skip character, if it is controlled by Walking Manager
-			if (isWalker())
-			{
-				return;
-			}
-			
-			setAI(null);
-		}
-	}
-	
 	/**
 	 * This class group all movement data.<br>
 	 * <B><U> Data</U> :</B>
@@ -4851,7 +4773,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return _target;
 	}
 	
-	// called from AIAccessor only
 	/**
 	 * Calculate movement data for a move to location action and add the L2Character to movingObjects of GameTimeController (only called by AI Accessor).<br>
 	 * <B><U>Concept</U>:</B><br>

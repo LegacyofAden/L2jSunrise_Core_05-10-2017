@@ -19,27 +19,27 @@
 package l2r.gameserver.ai;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Character.AIAccessor;
+import l2r.gameserver.model.actor.instance.L2DefenderInstance;
 
 /**
  * @author BiggBoss
  */
 public final class L2SpecialSiegeGuardAI extends L2SiegeGuardAI
 {
-	private final ArrayList<Integer> _allied;
+	private final List<Integer> _allied = new ArrayList<>();
 	
 	/**
-	 * @param accessor
+	 * @param creature
 	 */
-	public L2SpecialSiegeGuardAI(AIAccessor accessor)
+	public L2SpecialSiegeGuardAI(L2DefenderInstance creature)
 	{
-		super(accessor);
-		_allied = new ArrayList<>();
+		super(creature);
 	}
 	
-	public ArrayList<Integer> getAlly()
+	public List<Integer> getAlly()
 	{
 		return _allied;
 	}

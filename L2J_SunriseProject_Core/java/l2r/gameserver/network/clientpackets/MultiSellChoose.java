@@ -18,6 +18,8 @@
  */
 package l2r.gameserver.network.clientpackets;
 
+import static l2r.gameserver.model.actor.L2Npc.INTERACTION_DISTANCE;
+
 import java.util.ArrayList;
 
 import javolution.util.FastList;
@@ -117,11 +119,20 @@ public class MultiSellChoose extends L2GameClientPacket
 			return;
 		}
 		
-		L2Npc target = player.getLastFolkNPC();
-		if (!player.isGM() && (((target == null) || !list.checkNpcObjectId(target.getObjectId()) || !target.canInteract(player)) && !player.isAioMultisell()))
+		final L2Npc npc = player.getLastFolkNPC();
+		if (!player.isGM() && (((npc == null) || !list.checkNpcObjectId(npc.getObjectId()) || !npc.canInteract(player)) && !player.isAioMultisell()))
 		{
 			player.setMultiSell(null);
 			return;
+		}
+		
+		if (npc != null)
+		{
+			if (!player.isInsideRadius(npc, INTERACTION_DISTANCE, true, false) || (player.getInstanceId() != npc.getInstanceId()))
+			{
+				player.setMultiSell(null);
+				return;
+			}
 		}
 		
 		for (Entry entry : list.getEntries())
@@ -462,9 +473,9 @@ public class MultiSellChoose extends L2GameClientPacket
 				// finally, give the tax to the castle...
 				if (entry.getTaxAmount() > 0)
 				{
-					if (target != null)
+					if (npc != null)
 					{
-						target.getCastle().addToTreasury(entry.getTaxAmount() * _amount);
+						npc.getCastle().addToTreasury(entry.getTaxAmount() * _amount);
 					}
 				}
 				

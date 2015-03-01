@@ -503,12 +503,10 @@ public abstract class L2Vehicle extends L2Character
 		return false;
 	}
 	
-	public class AIAccessor extends L2Character.AIAccessor
+	@Override
+	public void detachAI()
 	{
-		@Override
-		public void detachAI()
-		{
-		}
+		
 	}
 	
 	@Override

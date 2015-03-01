@@ -32,7 +32,6 @@ import l2r.gameserver.model.MobGroup;
 import l2r.gameserver.model.MobGroupTable;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Character.AIAccessor;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2ControllableMobInstance;
@@ -63,6 +62,12 @@ public class L2ControllableMobAI extends L2AttackableAI
 	
 	private L2Character _forcedTarget;
 	private MobGroup _targetGroup;
+	
+	public L2ControllableMobAI(L2ControllableMobInstance creature)
+	{
+		super(creature);
+		setAlternateAI(AI_IDLE);
+	}
 	
 	protected void thinkFollow()
 	{
@@ -154,7 +159,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 			{
 				if (Util.checkIfInRange(sk.getCastRange(), _actor, getAttackTarget(), true) && !_actor.isSkillDisabled(sk) && (_actor.getCurrentMp() > _actor.getStat().getMpConsume(sk)))
 				{
-					_accessor.doCast(sk);
+					_actor.doCast(sk);
 					return;
 				}
 				
@@ -204,7 +209,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 				
 				if (((castRange * castRange) >= dist2) && !_actor.isSkillDisabled(sk) && (_actor.getCurrentMp() > _actor.getStat().getMpConsume(sk)))
 				{
-					_accessor.doCast(sk);
+					_actor.doCast(sk);
 					return;
 				}
 				
@@ -218,7 +223,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 			
 			return;
 		}
-		_accessor.doAttack(target);
+		_actor.doAttack(target);
 	}
 	
 	protected void thinkForceAttack()
@@ -244,7 +249,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 				
 				if (((castRange * castRange) >= dist2) && !_actor.isSkillDisabled(sk) && (_actor.getCurrentMp() > _actor.getStat().getMpConsume(sk)))
 				{
-					_accessor.doCast(sk);
+					_actor.doCast(sk);
 					return;
 				}
 				
@@ -259,7 +264,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 			return;
 		}
 		
-		_accessor.doAttack(getForcedTarget());
+		_actor.doAttack(getForcedTarget());
 	}
 	
 	protected void thinkAttack()
@@ -319,7 +324,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 					
 					if (((castRange * castRange) >= dist2) && !_actor.isSkillDisabled(sk) && (_actor.getCurrentMp() > _actor.getStat().getMpConsume(sk)))
 					{
-						_accessor.doCast(sk);
+						_actor.doCast(sk);
 						return;
 					}
 					
@@ -361,13 +366,13 @@ public class L2ControllableMobAI extends L2AttackableAI
 					
 					if (((castRange * castRange) >= dist2) && !_actor.isSkillDisabled(sk) && (_actor.getCurrentMp() < _actor.getStat().getMpConsume(sk)))
 					{
-						_accessor.doCast(sk);
+						_actor.doCast(sk);
 						return;
 					}
 				}
 			}
 			
-			_accessor.doAttack(getAttackTarget());
+			_actor.doAttack(getAttackTarget());
 		}
 	}
 	
@@ -494,12 +499,6 @@ public class L2ControllableMobAI extends L2AttackableAI
 	private L2ControllableMobInstance findNextGroupTarget()
 	{
 		return getGroupTarget().getRandomMob();
-	}
-	
-	public L2ControllableMobAI(AIAccessor accessor)
-	{
-		super(accessor);
-		setAlternateAI(AI_IDLE);
 	}
 	
 	public int getAlternateAI()

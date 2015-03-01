@@ -74,11 +74,11 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 	
 	/**
 	 * Constructor of L2AttackableAI.
-	 * @param accessor The AI accessor of the L2Character
+	 * @param creature the creature
 	 */
-	public L2FortSiegeGuardAI(L2Character.AIAccessor accessor)
+	public L2FortSiegeGuardAI(L2DefenderInstance creature)
 	{
-		super(accessor);
+		super(creature);
 		_selfAnalysis.init();
 		_attackTimeout = Integer.MAX_VALUE;
 		_globalAggro = -10; // 10 seconds timeout of ATTACK after respawn
@@ -230,7 +230,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 				}
 				
 				// Cancel the AI
-				_accessor.detachAI();
+				_actor.detachAI();
 				
 				return;
 			}
@@ -475,7 +475,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 							L2Object OldTarget = _actor.getTarget();
 							_actor.setTarget(cha);
 							clientStopMoving(null);
-							_accessor.doCast(sk);
+							_actor.doCast(sk);
 							_actor.setTarget(OldTarget);
 							return;
 						}
@@ -534,7 +534,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 						L2Object OldTarget = _actor.getTarget();
 						_actor.setTarget(npc);
 						clientStopMoving(null);
-						_accessor.doCast(sk);
+						_actor.doCast(sk);
 						_actor.setTarget(OldTarget);
 						return;
 					}
@@ -632,7 +632,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 					}
 					
 					clientStopMoving(null);
-					_accessor.doCast(sk);
+					_actor.doCast(sk);
 					_actor.setTarget(OldTarget);
 					return;
 				}
@@ -777,14 +777,14 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 						}
 						
 						clientStopMoving(null);
-						_accessor.doCast(sk);
+						_actor.doCast(sk);
 						_actor.setTarget(OldTarget);
 						return;
 					}
 				}
 			}
 			// Finally, do the physical attack itself
-			_accessor.doAttack(attackTarget);
+			_actor.doAttack(attackTarget);
 		}
 	}
 	
@@ -968,7 +968,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 			_aiTask.cancel(false);
 			_aiTask = null;
 		}
-		_accessor.detachAI();
+		_actor.detachAI();
 		super.stopAITask();
 	}
 }

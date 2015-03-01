@@ -19,6 +19,7 @@
 package l2r.gameserver.ai;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
@@ -35,8 +36,8 @@ public class NextAction
 		public void doWork();
 	}
 	
-	private ArrayList<CtrlEvent> _events;
-	private ArrayList<CtrlIntention> _intentions;
+	private List<CtrlEvent> _events;
+	private List<CtrlIntention> _intentions;
 	private NextActionCallback _callback;
 	
 	/**
@@ -45,7 +46,7 @@ public class NextAction
 	 * @param intentions
 	 * @param callback
 	 */
-	public NextAction(ArrayList<CtrlEvent> events, ArrayList<CtrlIntention> intentions, NextActionCallback callback)
+	public NextAction(List<CtrlEvent> events, List<CtrlIntention> intentions, NextActionCallback callback)
 	{
 		_events = events;
 		_intentions = intentions;
@@ -96,7 +97,7 @@ public class NextAction
 	/**
 	 * @return the _event
 	 */
-	public ArrayList<CtrlEvent> getEvents()
+	public List<CtrlEvent> getEvents()
 	{
 		// If null return empty list.
 		if (_events == null)
@@ -161,7 +162,7 @@ public class NextAction
 	/**
 	 * @return the _intentions
 	 */
-	public ArrayList<CtrlIntention> getIntentions()
+	public List<CtrlIntention> getIntentions()
 	{
 		// If null return empty list.
 		if (_intentions == null)

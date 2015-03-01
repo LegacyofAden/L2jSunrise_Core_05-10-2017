@@ -29,7 +29,6 @@ import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Character.AIAccessor;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2StaticObjectInstance;
 import l2r.gameserver.model.skills.L2Skill;
@@ -39,11 +38,11 @@ public class L2PlayerAI extends L2PlayableAI
 {
 	private boolean _thinking; // to prevent recursive thinking
 	
-	IntentionCommand _nextIntention = null;
+	private IntentionCommand _nextIntention = null;
 	
-	public L2PlayerAI(AIAccessor accessor)
+	public L2PlayerAI(L2PcInstance creature)
 	{
-		super(accessor);
+		super(creature);
 	}
 	
 	void saveNextIntention(CtrlIntention intention, Object arg0, Object arg1)
@@ -240,7 +239,7 @@ public class L2PlayerAI extends L2PlayableAI
 			return;
 		}
 		
-		_accessor.doAttack(target);
+		_actor.doAttack(target);
 	}
 	
 	private void thinkCast()
@@ -284,13 +283,13 @@ public class L2PlayerAI extends L2PlayableAI
 			// Replace the current target by the cast target
 			_actor.setTarget(getCastTarget());
 			// Launch the Cast of the skill
-			_accessor.doCast(_skill);
+			_actor.doCast(_skill);
 			// Restore the initial target
 			_actor.setTarget(oldTarget);
 		}
 		else
 		{
-			_accessor.doCast(_skill);
+			_actor.doCast(_skill);
 		}
 	}
 	
@@ -310,7 +309,7 @@ public class L2PlayerAI extends L2PlayableAI
 			return;
 		}
 		setIntention(AI_INTENTION_IDLE);
-		((L2PcInstance.AIAccessor) _accessor).doPickupItem(target);
+		_actor.getActingPlayer().doPickupItem(target);
 	}
 	
 	private void thinkInteract()
@@ -330,7 +329,7 @@ public class L2PlayerAI extends L2PlayableAI
 		}
 		if (!(target instanceof L2StaticObjectInstance))
 		{
-			((L2PcInstance.AIAccessor) _accessor).doInteract((L2Character) target);
+			_actor.getActingPlayer().doInteract((L2Character) target);
 		}
 		setIntention(AI_INTENTION_IDLE);
 	}

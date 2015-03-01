@@ -161,7 +161,7 @@ public class L2Attackable extends L2Npc
 	@Override
 	protected L2CharacterAI initAI()
 	{
-		return new L2AttackableAI(new AIAccessor());
+		return new L2AttackableAI(this);
 	}
 	
 	public final Map<L2Character, AggroInfo> getAggroList()

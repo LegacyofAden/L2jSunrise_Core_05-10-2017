@@ -21,6 +21,7 @@ package l2r.gameserver.model.actor;
 import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.instancemanager.InstanceManager;
+import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.knownlist.PlayableKnownList;
 import l2r.gameserver.model.actor.stat.PlayableStat;
@@ -343,6 +344,8 @@ public abstract class L2Playable extends L2Character
 	{
 		return transferDmgTo;
 	}
+	
+	public abstract void doPickupItem(L2Object object);
 	
 	public abstract int getKarma();
 	
