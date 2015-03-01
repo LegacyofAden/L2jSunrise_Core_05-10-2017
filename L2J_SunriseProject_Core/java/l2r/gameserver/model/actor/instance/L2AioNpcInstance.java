@@ -873,39 +873,21 @@ public final class L2AioNpcInstance extends L2Npc
 			player.sendMessage("Clan level set to 11");
 			player.getClan().addReputationScore(500000, true);
 			player.getClan().addNewSkill(SkillData.getInstance().getInfo(391, 1));
+			
+			//@formatter:off
 			int[] squad =
 			{
-				611,
-				612,
-				613,
-				614,
-				615,
-				616
+				611, 612, 613, 614, 615, 616
 			};
+			
 			int[] normal =
 			{
-				370,
-				371,
-				372,
-				373,
-				374,
-				375,
-				376,
-				377,
-				378,
-				379,
-				380,
-				381,
-				382,
-				383,
-				384,
-				385,
-				386,
-				387,
-				388,
-				389,
-				390
+				370, 371, 372, 373, 374, 375, 376,
+				377, 378, 379, 380, 381, 382, 383,
+				384, 385, 386, 387, 388, 389, 390
 			};
+			//@formatter:on
+			
 			for (int ids : normal)
 			{
 				player.getClan().addNewSkill(SkillData.getInstance().getInfo(ids, 3));
@@ -917,7 +899,6 @@ public final class L2AioNpcInstance extends L2Npc
 			
 			player.sendMessage("You have successfully perform this action");
 		}
-		
 		// Change player name
 		else if (command.startsWith("changename"))
 		{
@@ -975,7 +956,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Player name box cannot be empty.");
 			}
 		}
-		
 		// Change clan name
 		else if (command.startsWith("changeclanname"))
 		{
@@ -1036,7 +1016,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Clan name box cannot be empty.");
 			}
 		}
-		
 		// Method to add specific augment to a weapon
 		else if (command.startsWith("addaugment"))
 		{
@@ -1045,50 +1024,45 @@ public final class L2AioNpcInstance extends L2Npc
 			
 			String[] stats = command.split(" "); // str, int, men, con
 			
-			if (stats[1].equals("STR+1"))
+			switch (stats[1])
 			{
-				value = 16341;
-			}
-			else if (stats[1].equals("INT+1"))
-			{
-				value = 16343;
-			}
-			else if (stats[1].equals("MEN+1"))
-			{
-				value = 16344;
-			}
-			else if (stats[1].equals("CON+1"))
-			{
-				value = 16342;
+				case "STR+1":
+					value = 16341;
+					break;
+				case "INT+1":
+					value = 16343;
+					break;
+				case "MEN+1":
+					value = 16344;
+					break;
+				case "CON+1":
+					value = 16342;
+					break;
 			}
 			
-			if (stats[2].equals("Heal_Empower"))
+			switch (stats[2])
 			{
-				pskill = 16279;
-			}
-			else if (stats[2].equals("Wild_Magic"))
-			{
-				pskill = 16336;
-			}
-			else if (stats[2].equals("Empower"))
-			{
-				pskill = 16281;
-			}
-			else if (stats[2].equals("Magic_Barrier"))
-			{
-				pskill = 16282;
-			}
-			else if (stats[2].equals("Might"))
-			{
-				pskill = 16283;
-			}
-			else if (stats[2].equals("Shield"))
-			{
-				pskill = 16284;
-			}
-			else if (stats[2].equals("Duel_Might"))
-			{
-				pskill = 16285;
+				case "Heal_Empower":
+					pskill = 16279;
+					break;
+				case "Wild_Magic":
+					pskill = 16336;
+					break;
+				case "Empower":
+					pskill = 16281;
+					break;
+				case "Magic_Barrier":
+					pskill = 16282;
+					break;
+				case "Might":
+					pskill = 16283;
+					break;
+				case "Shield":
+					pskill = 16284;
+					break;
+				case "Duel_Might":
+					pskill = 16285;
+					break;
 			}
 			
 			pskill = pskill + 8358;
@@ -1142,7 +1116,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.broadcastPacket(new ExBrExtraUserInfo(player));
 			}
 		}
-		
 		// Teleport
 		else if (command.startsWith("teleportTo"))
 		{
@@ -1176,7 +1149,6 @@ public final class L2AioNpcInstance extends L2Npc
 				SecurityActions.startSecurity(player, SecurityType.AIO_NPC);
 			}
 		}
-		
 		// Leaderboard commands
 		else if (command.startsWith("rankarenainfo"))
 		{
@@ -1191,7 +1163,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("This service is currently disabled.");
 			}
 		}
-		
 		else if (command.startsWith("rankfishermaninfo"))
 		{
 			if (LeaderboardsConfigs.RANK_FISHERMAN_ENABLED)
@@ -1205,7 +1176,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("This service is currently disabled.");
 			}
 		}
-		
 		else if (command.startsWith("rankcraftinfo"))
 		{
 			if (LeaderboardsConfigs.RANK_CRAFT_ENABLED)
@@ -1219,7 +1189,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("This service is currently disabled.");
 			}
 		}
-		
 		else if (command.startsWith("ranktvtinfo"))
 		{
 			if (LeaderboardsConfigs.RANK_TVT_ENABLED)
@@ -1233,7 +1202,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("This service is currently disabled.");
 			}
 		}
-		
 		// Change gender options
 		else if (command.startsWith("changeGender"))
 		{
@@ -1263,7 +1231,6 @@ public final class L2AioNpcInstance extends L2Npc
 			TransformFinalizer ef = new TransformFinalizer(player);
 			player.setSkillCast(ThreadPoolManager.getInstance().scheduleGeneral(ef, 200));
 		}
-		
 		// GM Shop
 		else if (command.startsWith("showMultiSellWindow"))
 		{
@@ -1278,7 +1245,6 @@ public final class L2AioNpcInstance extends L2Npc
 				SecurityActions.startSecurity(player, SecurityType.AIO_NPC);
 			}
 		}
-		
 		// Donate generate captcha code
 		else if (command.startsWith("donateFormMain"))
 		{
@@ -1295,7 +1261,6 @@ public final class L2AioNpcInstance extends L2Npc
 			GenerateLogos.getInstance().getFinalString().replace(0, 5, "");
 			return;
 		}
-		
 		// Donate captcha code
 		else if (command.startsWith("confirmDonateCode"))
 		{
@@ -1329,7 +1294,6 @@ public final class L2AioNpcInstance extends L2Npc
 				_log.warn(String.valueOf(e));
 			}
 		}
-		
 		// Donate form
 		else if (command.startsWith("sendDonateForm"))
 		{
@@ -1346,7 +1310,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Top Lists: Disabled.");
 			}
 		}
-		
 		// Top PvP info
 		else if (command.startsWith("TopPvp"))
 		{
@@ -1359,7 +1322,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Top Lists: Disabled.");
 			}
 		}
-		
 		// Top pk info
 		else if (command.startsWith("TopPk"))
 		{
@@ -1372,7 +1334,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Top Lists: Disabled.");
 			}
 		}
-		
 		// Top clan info
 		else if (command.startsWith("TopClan"))
 		{
@@ -1385,7 +1346,6 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Top Lists: Disabled.");
 			}
 		}
-		
 		// Grand boss info
 		else if (command.startsWith("rbinfo"))
 		{
