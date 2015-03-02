@@ -1688,6 +1688,7 @@ public final class L2PcInstance extends L2Playable
 	 * Get the siege state of the L2PcInstance.
 	 * @return 1 = attacker, 2 = defender, 0 = not involved
 	 */
+	@Override
 	public byte getSiegeState()
 	{
 		return _siegeState;
@@ -1711,6 +1712,7 @@ public final class L2PcInstance extends L2Playable
 		return true;
 	}
 	
+	@Override
 	public int getSiegeSide()
 	{
 		return _siegeSide;
@@ -10118,6 +10120,7 @@ public final class L2PcInstance extends L2Playable
 		_pledgeType = typeId;
 	}
 	
+	@Override
 	public int getPledgeType()
 	{
 		return _pledgeType;
@@ -10459,11 +10462,13 @@ public final class L2PcInstance extends L2Playable
 		return _inOlympiadMode;
 	}
 	
+	@Override
 	public boolean isInDuel()
 	{
 		return _isInDuel;
 	}
 	
+	@Override
 	public int getDuelId()
 	{
 		return _duelId;
@@ -10622,6 +10627,7 @@ public final class L2PcInstance extends L2Playable
 		return _lvlJoinedAcademy;
 	}
 	
+	@Override
 	public boolean isAcademyMember()
 	{
 		return _lvlJoinedAcademy > 0;
@@ -14354,6 +14360,105 @@ public final class L2PcInstance extends L2Playable
 	public boolean isPartyBanned()
 	{
 		return PunishmentManager.getInstance().hasPunishment(getObjectId(), PunishmentAffect.CHARACTER, PunishmentType.PARTY_BAN);
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player got war with the target, {@code false} otherwise.
+	 */
+	public boolean isAtWarWith(L2Character target)
+	{
+		if (target == null)
+		{
+			return false;
+		}
+		if ((_clan != null) && !isAcademyMember())
+		{
+			if ((target.getActingPlayer().getClan() != null) && !target.isAcademyMember())
+			{
+				return _clan.isAtWarWith(target.getActingPlayer().getClan());
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player in same party with the target, {@code false} otherwise.
+	 */
+	public boolean isInPartyWith(L2Character target)
+	{
+		if (!isInParty() || !target.isInParty())
+		{
+			return false;
+		}
+		return getParty().getLeaderObjectId() == target.getParty().getLeaderObjectId();
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player in same command channel with the target, {@code false} otherwise.
+	 */
+	public boolean isInCommandChannelWith(L2Character target)
+	{
+		if (!isInParty() || !target.isInParty())
+		{
+			return false;
+		}
+		
+		if (!getParty().isInCommandChannel() || !target.getParty().isInCommandChannel())
+		{
+			return false;
+		}
+		return getParty().getCommandChannel().getLeaderObjectId() == target.getParty().getCommandChannel().getLeaderObjectId();
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player in same clan with the target, {@code false} otherwise.
+	 */
+	public boolean isInClanWith(L2Character target)
+	{
+		if ((getClanId() == 0) || (target.getClanId() == 0))
+		{
+			return false;
+		}
+		return getClanId() == target.getClanId();
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player in same ally with the target, {@code false} otherwise.
+	 */
+	public boolean isInAllyWith(L2Character target)
+	{
+		if ((getAllyId() == 0) || (target.getAllyId() == 0))
+		{
+			return false;
+		}
+		return getAllyId() == target.getAllyId();
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player at duel with the target, {@code false} otherwise.
+	 */
+	public boolean isInDuelWith(L2Character target)
+	{
+		if (!isInDuel() || !target.isInDuel())
+		{
+			return false;
+		}
+		return getDuelId() == target.getDuelId();
+	}
+	
+	/**
+	 * @param target the target
+	 * @return {@code true} if this player is on same siege side with the target, {@code false} otherwise.
+	 */
+	public boolean isOnSameSiegeSideWith(L2Character target)
+	{
+		return (getSiegeState() > 0) && isInsideZone(ZoneIdType.SIEGE) && (getSiegeState() == target.getSiegeState()) && (getSiegeSide() == target.getSiegeSide());
 	}
 	
 	/**
