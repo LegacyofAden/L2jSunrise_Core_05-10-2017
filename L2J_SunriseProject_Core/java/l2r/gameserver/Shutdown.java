@@ -289,7 +289,7 @@ public class Shutdown extends Thread
 				
 			}
 			
-			if (BackupManagerConfigs.DATABASE_BACKUP_MAKE_BACKUP_ON_STARTUP)
+			if (BackupManagerConfigs.DATABASE_BACKUP_MAKE_BACKUP_ON_SHUTDOWN)
 			{
 				DatabaseBackupManager.makeBackup();
 			}
