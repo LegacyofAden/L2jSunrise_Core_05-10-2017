@@ -417,6 +417,7 @@ public abstract class AbstractOlympiadGame
 			return;
 		}
 		
+		player.setIsPendingRevive(false);
 		player.setInstanceId(0);
 		if (Config.ENABLE_OLY_ANTIFEED)
 		{

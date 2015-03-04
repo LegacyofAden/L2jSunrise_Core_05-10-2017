@@ -2555,10 +2555,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			stopAllEffectsExceptThoseThatLastThroughDeath();
 		}
 		
-		if (isPlayer() && (getActingPlayer().getAgathionId() != 0))
-		{
-			getActingPlayer().setAgathionId(0);
-		}
 		calculateRewards(killer);
 		
 		// Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform

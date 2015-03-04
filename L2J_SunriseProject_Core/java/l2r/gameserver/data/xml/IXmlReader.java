@@ -36,7 +36,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 /**
- * Abstract class for XML parsers.
+ * Interface for XML parsers.
  * @author Zoey76
  */
 public interface IXmlReader
@@ -643,7 +643,7 @@ public interface IXmlReader
 	 * Simple XML error handler.
 	 * @author Zoey76
 	 */
-	class XMLErrorHandler implements ErrorHandler
+	static class XMLErrorHandler implements ErrorHandler
 	{
 		@Override
 		public void warning(SAXParseException e) throws SAXParseException
