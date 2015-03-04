@@ -289,9 +289,12 @@ public class Shutdown extends Thread
 				
 			}
 			
-			if (BackupManagerConfigs.DATABASE_BACKUP_MAKE_BACKUP_ON_SHUTDOWN)
+			if (BackupManagerConfigs.ENABLE_DATABASE_BACKUP_MANAGER)
 			{
-				DatabaseBackupManager.makeBackup();
+				if (BackupManagerConfigs.DATABASE_BACKUP_MAKE_BACKUP_ON_SHUTDOWN && !BackupManagerConfigs.DATABASE_BACKUP_SCHEDULER)
+				{
+					DatabaseBackupManager.makeBackup();
+				}
 			}
 			
 			// server will quit, when this function ends.
