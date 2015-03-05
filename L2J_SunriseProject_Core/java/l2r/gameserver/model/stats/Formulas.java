@@ -1025,7 +1025,7 @@ public final class Formulas
 				{
 					damage = damage * FormulasConfigs.ALT_PETS_PHYSICAL_DAMAGE_MULTI;
 				}
-				else if (attacker.isNpc())
+				else if (attacker.isNpc() || attacker.isMonster())
 				{
 					damage = damage * FormulasConfigs.ALT_NPC_PHYSICAL_DAMAGE_MULTI;
 				}
@@ -1160,7 +1160,7 @@ public final class Formulas
 		{
 			damage = damage * FormulasConfigs.ALT_PETS_MAGICAL_DAMAGE_MULTI;
 		}
-		else if (attacker.isNpc())
+		else if (attacker.isNpc() || attacker.isMonster())
 		{
 			damage = damage * FormulasConfigs.ALT_NPC_MAGICAL_DAMAGE_MULTI;
 		}
