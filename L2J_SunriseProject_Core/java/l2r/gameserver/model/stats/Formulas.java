@@ -657,13 +657,7 @@ public final class Formulas
 		}
 		
 		// Reunion balancer
-		// Blow skill cannot be null so we balance only skill
-		L2Weapon weapon = attacker.getActiveWeaponItem();
-		if (target.isPlayer() && (weapon != null))
-		{
-			// Calculates damage on target if is player
-			damage = BalanceHandler.getInstance().calcSkillDamage(target.getActingPlayer(), weapon.getItemType(), damage);
-		}
+		damage = BalanceHandler.getInstance().calc(attacker, target, skill, damage, false);
 		// Reunion balancer - End
 		
 		return Math.max(damage, 1);
@@ -755,6 +749,10 @@ public final class Formulas
 			set.set("damage", (int) damage);
 			Debug.sendSkillDebug(attacker, target, skill, set);
 		}
+		
+		// Reunion balancer
+		damage = BalanceHandler.getInstance().calc(attacker, target, skill, damage, false);
+		// Reunion balancer - End
 		
 		return Math.max(damage, 1);
 	}
@@ -1005,32 +1003,7 @@ public final class Formulas
 		}
 		
 		// Reunion balancer
-		if (target.isPlayer())
-		{
-			// Balance skill if not null
-			if ((skill != null) && (weapon != null))
-			{
-				// Calculates damage on target if is player
-				damage = BalanceHandler.getInstance().calcSkillDamage(target.getActingPlayer(), weapon.getItemType(), damage);
-			}
-			// Balance normal hit
-			else
-			{
-				// Normal hit balancer
-				if (attacker.isPlayer() && (weapon != null))
-				{
-					damage = BalanceHandler.getInstance().calcNormalHitDamage(target.getActingPlayer(), weapon.getItemType(), damage);
-				}
-				else if (attacker.isSummon())
-				{
-					damage = damage * FormulasConfigs.ALT_PETS_PHYSICAL_DAMAGE_MULTI;
-				}
-				else if (attacker.isMonster())
-				{
-					damage = damage * FormulasConfigs.ALT_NPC_PHYSICAL_DAMAGE_MULTI;
-				}
-			}
-		}
+		damage = BalanceHandler.getInstance().calc(attacker, target, skill, damage, false);
 		// Reunion balancer - End
 		
 		return damage;
@@ -1147,23 +1120,7 @@ public final class Formulas
 		}
 		
 		// Reunion balancer
-		// We dont care about mage normal hits all are skills so we modify only them
-		// as single multiplier
-		if (attacker.isPlayer())
-		{
-			if (attacker.getActingPlayer().getClassId().isMage())
-			{
-				damage = damage * FormulasConfigs.ALT_MAGES_MAGICAL_DAMAGE_MULTI;
-			}
-		}
-		else if (attacker.isSummon())
-		{
-			damage = damage * FormulasConfigs.ALT_PETS_MAGICAL_DAMAGE_MULTI;
-		}
-		else if (attacker.isMonster())
-		{
-			damage = damage * FormulasConfigs.ALT_NPC_MAGICAL_DAMAGE_MULTI;
-		}
+		damage = BalanceHandler.getInstance().calc(attacker, target, skill, damage, true);
 		// Reunion balancer - End
 		
 		return damage;
