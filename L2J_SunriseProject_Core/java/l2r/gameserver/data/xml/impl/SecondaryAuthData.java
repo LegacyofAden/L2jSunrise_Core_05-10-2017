@@ -34,6 +34,7 @@ public class SecondaryAuthData implements IXmlReader
 {
 	private final Set<String> _forbiddenPasswords = new HashSet<>();
 	private boolean _enabled = false;
+	private boolean _extraValidationCheck = true;
 	private int _maxAttempts = 5;
 	private int _banTime = 480;
 	private String _recoveryLink = "";
@@ -65,6 +66,10 @@ public class SecondaryAuthData implements IXmlReader
 						if ("enabled".equalsIgnoreCase(list_node.getNodeName()))
 						{
 							_enabled = Boolean.parseBoolean(list_node.getTextContent());
+						}
+						else if ("extraValidationCheck".equalsIgnoreCase(list_node.getNodeName()))
+						{
+							_extraValidationCheck = Boolean.parseBoolean(list_node.getTextContent());
 						}
 						else if ("maxAttempts".equalsIgnoreCase(list_node.getNodeName()))
 						{
@@ -101,6 +106,11 @@ public class SecondaryAuthData implements IXmlReader
 	public boolean isEnabled()
 	{
 		return _enabled;
+	}
+	
+	public boolean isExtraValidationCheck()
+	{
+		return _extraValidationCheck;
 	}
 	
 	public int getMaxAttempts()

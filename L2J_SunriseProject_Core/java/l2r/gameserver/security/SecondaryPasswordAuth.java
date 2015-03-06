@@ -281,37 +281,40 @@ public class SecondaryPasswordAuth
 			return false;
 		}
 		
-		for (int i = 0; i < (password.length() - 1); i++)
+		if (SecondaryAuthData.getInstance().isExtraValidationCheck())
 		{
-			char curCh = password.charAt(i);
-			char nxtCh = password.charAt(i + 1);
+			for (int i = 0; i < (password.length() - 1); i++)
+			{
+				char curCh = password.charAt(i);
+				char nxtCh = password.charAt(i + 1);
+				
+				if ((curCh + 1) == nxtCh)
+				{
+					return false;
+				}
+				else if ((curCh - 1) == nxtCh)
+				{
+					return false;
+				}
+				else if (curCh == nxtCh)
+				{
+					return false;
+				}
+			}
 			
-			if ((curCh + 1) == nxtCh)
+			for (int i = 0; i < (password.length() - 2); i++)
 			{
-				return false;
-			}
-			else if ((curCh - 1) == nxtCh)
-			{
-				return false;
-			}
-			else if (curCh == nxtCh)
-			{
-				return false;
-			}
-		}
-		
-		for (int i = 0; i < (password.length() - 2); i++)
-		{
-			String toChk = password.substring(i + 1);
-			StringBuffer chkEr = new StringBuffer(password.substring(i, i + 2));
-			
-			if (toChk.contains(chkEr))
-			{
-				return false;
-			}
-			else if (toChk.contains(chkEr.reverse()))
-			{
-				return false;
+				String toChk = password.substring(i + 1);
+				StringBuffer chkEr = new StringBuffer(password.substring(i, i + 2));
+				
+				if (toChk.contains(chkEr))
+				{
+					return false;
+				}
+				else if (toChk.contains(chkEr.reverse()))
+				{
+					return false;
+				}
 			}
 		}
 		_wrongAttempts = 0;
