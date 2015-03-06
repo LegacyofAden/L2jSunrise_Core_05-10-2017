@@ -1005,10 +1005,10 @@ public final class Formulas
 		}
 		
 		// Reunion balancer
-		if (target.isPlayer() && (weapon != null))
+		if (target.isPlayer())
 		{
 			// Balance skill if not null
-			if (skill != null)
+			if ((skill != null) && (weapon != null))
 			{
 				// Calculates damage on target if is player
 				damage = BalanceHandler.getInstance().calcSkillDamage(target.getActingPlayer(), weapon.getItemType(), damage);
@@ -1017,7 +1017,7 @@ public final class Formulas
 			else
 			{
 				// Normal hit balancer
-				if (attacker.isPlayer())
+				if (attacker.isPlayer() && (weapon != null))
 				{
 					damage = BalanceHandler.getInstance().calcNormalHitDamage(target.getActingPlayer(), weapon.getItemType(), damage);
 				}
@@ -1025,7 +1025,7 @@ public final class Formulas
 				{
 					damage = damage * FormulasConfigs.ALT_PETS_PHYSICAL_DAMAGE_MULTI;
 				}
-				else if (attacker.isNpc() || attacker.isMonster())
+				else if (attacker.isMonster())
 				{
 					damage = damage * FormulasConfigs.ALT_NPC_PHYSICAL_DAMAGE_MULTI;
 				}
@@ -1160,7 +1160,7 @@ public final class Formulas
 		{
 			damage = damage * FormulasConfigs.ALT_PETS_MAGICAL_DAMAGE_MULTI;
 		}
-		else if (attacker.isNpc() || attacker.isMonster())
+		else if (attacker.isMonster())
 		{
 			damage = damage * FormulasConfigs.ALT_NPC_MAGICAL_DAMAGE_MULTI;
 		}

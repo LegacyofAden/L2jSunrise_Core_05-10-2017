@@ -114,7 +114,7 @@ public class L2Attackable extends L2Npc
 	private volatile boolean _mustGiveExpSp;
 	private volatile boolean _doItemDrop;
 	
-	protected int _onKillDelay = 5000;
+	protected int _onKillDelay = 1000;
 	
 	/**
 	 * Constructor of L2Attackable (use L2Character and L2NpcInstance constructor).<br>
