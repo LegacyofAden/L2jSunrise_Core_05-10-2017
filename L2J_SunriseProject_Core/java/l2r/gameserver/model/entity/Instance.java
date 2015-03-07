@@ -20,6 +20,7 @@ package l2r.gameserver.model.entity;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,15 +28,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import l2r.Config;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.ThreadPoolManager;
+import l2r.gameserver.data.sql.NpcTable;
 import l2r.gameserver.data.xml.impl.DoorData;
+import l2r.gameserver.enums.InstanceReenterType;
+import l2r.gameserver.enums.InstanceRemoveBuffType;
 import l2r.gameserver.enums.TeleportWhereType;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.InstanceManager;
@@ -50,14 +55,15 @@ import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2DoorInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.templates.L2DoorTemplate;
+import l2r.gameserver.model.actor.templates.L2NpcTemplate;
+import l2r.gameserver.model.holders.InstanceReenterTimeHolder;
 import l2r.gameserver.model.instancezone.InstanceWorld;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.CreatureSay;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.util.Broadcast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -68,7 +74,7 @@ import org.w3c.dom.Node;
  */
 public final class Instance
 {
-	private static final Logger _log = LoggerFactory.getLogger(Instance.class);
+	private static final Logger _log = Logger.getLogger(Instance.class.getName());
 	
 	private final int _id;
 	private String _name;
@@ -89,8 +95,12 @@ public final class Instance
 	private boolean _showTimer = false;
 	private boolean _isTimerIncrease = true;
 	private String _timerText = "";
-	
-	private boolean _disableMessages = false;
+	// Instance reset data
+	private InstanceReenterType _type = InstanceReenterType.NONE;
+	private final List<InstanceReenterTimeHolder> _resetData = new ArrayList<>();
+	// Instance remove buffs data
+	private InstanceRemoveBuffType _removeBuffType = InstanceRemoveBuffType.NONE;
+	private final List<Integer> _exceptionList = new ArrayList<>();
 	
 	protected ScheduledFuture<?> _checkTimeUpTask = null;
 	protected final Map<Integer, ScheduledFuture<?>> _ejectDeadTasks = new FastMap<>();
@@ -260,7 +270,7 @@ public final class Instance
 	{
 		if (_doors.containsKey(doorId))
 		{
-			_log.warn("Door ID " + doorId + " already exists in instance " + getId());
+			_log.warning("Door ID " + doorId + " already exists in instance " + getId());
 			return;
 		}
 		
@@ -279,23 +289,6 @@ public final class Instance
 	public List<L2Npc> getNpcs()
 	{
 		return _npcs;
-	}
-	
-	/**
-	 * @param npcId ID of NPC to return
-	 * @return first found L2Npc object in this instance with given template ID
-	 */
-	public L2Npc getNpc(int npcId)
-	{
-		for (L2Npc npc : getNpcs())
-		{
-			if (npc.getId() == npcId)
-			{
-				return npc;
-			}
-		}
-		
-		return null;
 	}
 	
 	public Collection<L2DoorInstance> getDoors()
@@ -429,7 +422,7 @@ public final class Instance
 		}
 		else
 		{
-			_log.warn(getName() + " instance: cannot spawn NPC's, wrong group name: " + groupName);
+			_log.warning(getName() + " instance: cannot spawn NPC's, wrong group name: " + groupName);
 		}
 		
 		return ret;
@@ -457,16 +450,18 @@ public final class Instance
 		}
 		catch (IOException e)
 		{
-			_log.warn("Instance: can not find " + xml.getAbsolutePath() + " ! " + e.getMessage(), e);
+			_log.log(Level.WARNING, "Instance: can not find " + xml.getAbsolutePath() + " ! " + e.getMessage(), e);
 		}
 		catch (Exception e)
 		{
-			_log.warn("Instance: error while loading " + xml.getAbsolutePath() + " ! " + e.getMessage(), e);
+			_log.log(Level.WARNING, "Instance: error while loading " + xml.getAbsolutePath() + " ! " + e.getMessage(), e);
 		}
 	}
 	
 	private void parseInstance(Node n) throws Exception
 	{
+		L2Spawn spawnDat;
+		L2NpcTemplate npcTemplate;
 		_name = n.getAttributes().getNamedItem("name").getNodeValue();
 		Node a = n.getAttributes().getNamedItem("ejectTime");
 		if (a != null)
@@ -601,42 +596,49 @@ public final class Instance
 								{
 									allowRandomWalk = Boolean.valueOf(d.getAttributes().getNamedItem("allowRandomWalk").getNodeValue());
 								}
-								
-								final L2Spawn spawnDat = new L2Spawn(npcId);
-								spawnDat.setX(x);
-								spawnDat.setY(y);
-								spawnDat.setZ(z);
-								spawnDat.setAmount(1);
-								spawnDat.setHeading(heading);
-								spawnDat.setRespawnDelay(respawn, respawnRandom);
-								if (respawn == 0)
+								npcTemplate = NpcTable.getInstance().getTemplate(npcId);
+								if (npcTemplate != null)
 								{
-									spawnDat.stopRespawn();
-								}
-								else
-								{
-									spawnDat.startRespawn();
-								}
-								spawnDat.setInstanceId(getId());
-								if (allowRandomWalk == null)
-								{
-									spawnDat.setIsNoRndWalk(!_allowRandomWalk);
-								}
-								else
-								{
-									spawnDat.setIsNoRndWalk(!allowRandomWalk);
-								}
-								if (spawnGroup.equals("general"))
-								{
-									L2Npc spawned = spawnDat.doSpawn();
-									if ((delay >= 0) && (spawned instanceof L2Attackable))
+									spawnDat = new L2Spawn(npcTemplate);
+									spawnDat.setX(x);
+									spawnDat.setY(y);
+									spawnDat.setZ(z);
+									spawnDat.setAmount(1);
+									spawnDat.setHeading(heading);
+									spawnDat.setRespawnDelay(respawn, respawnRandom);
+									if (respawn == 0)
 									{
-										((L2Attackable) spawned).setOnKillDelay(delay);
+										spawnDat.stopRespawn();
+									}
+									else
+									{
+										spawnDat.startRespawn();
+									}
+									spawnDat.setInstanceId(getId());
+									if (allowRandomWalk == null)
+									{
+										spawnDat.setIsNoRndWalk(!_allowRandomWalk);
+									}
+									else
+									{
+										spawnDat.setIsNoRndWalk(!allowRandomWalk);
+									}
+									if (spawnGroup.equals("general"))
+									{
+										L2Npc spawned = spawnDat.doSpawn();
+										if ((delay >= 0) && (spawned instanceof L2Attackable))
+										{
+											((L2Attackable) spawned).setOnKillDelay(delay);
+										}
+									}
+									else
+									{
+										manualSpawn.add(spawnDat);
 									}
 								}
 								else
 								{
-									manualSpawn.add(spawnDat);
+									_log.warning("Instance: Data missing in NPC table for ID: " + npcId + " in Instance " + getId());
 								}
 							}
 						}
@@ -658,8 +660,80 @@ public final class Instance
 				}
 				catch (Exception e)
 				{
-					_log.warn("Error parsing instance xml: " + e.getMessage(), e);
+					_log.log(Level.WARNING, "Error parsing instance xml: " + e.getMessage(), e);
 					_spawnLoc = null;
+				}
+			}
+			else if ("reenter".equalsIgnoreCase(n.getNodeName()))
+			{
+				a = n.getAttributes().getNamedItem("additionStyle");
+				if (a != null)
+				{
+					_type = InstanceReenterType.valueOf(a.getNodeValue());
+				}
+				
+				for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling())
+				{
+					long time = -1;
+					DayOfWeek day = null;
+					int hour = -1;
+					int minute = -1;
+					
+					if ("reset".equalsIgnoreCase(d.getNodeName()))
+					{
+						a = d.getAttributes().getNamedItem("time");
+						if (a != null)
+						{
+							time = Long.parseLong(a.getNodeValue());
+							
+							if (time > 0)
+							{
+								_resetData.add(new InstanceReenterTimeHolder(time));
+								break;
+							}
+						}
+						else if (time == -1)
+						{
+							a = d.getAttributes().getNamedItem("day");
+							if (a != null)
+							{
+								day = DayOfWeek.valueOf(a.getNodeValue().toUpperCase());
+							}
+							
+							a = d.getAttributes().getNamedItem("hour");
+							if (a != null)
+							{
+								hour = Integer.parseInt(a.getNodeValue());
+							}
+							
+							a = d.getAttributes().getNamedItem("minute");
+							if (a != null)
+							{
+								minute = Integer.parseInt(a.getNodeValue());
+							}
+							_resetData.add(new InstanceReenterTimeHolder(day, hour, minute));
+						}
+					}
+				}
+			}
+			else if ("removeBuffs".equalsIgnoreCase(n.getNodeName()))
+			{
+				a = n.getAttributes().getNamedItem("type");
+				if (a != null)
+				{
+					_removeBuffType = InstanceRemoveBuffType.valueOf(a.getNodeValue().toUpperCase());
+				}
+				
+				for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling())
+				{
+					if ("skill".equalsIgnoreCase(d.getNodeName()))
+					{
+						a = d.getAttributes().getNamedItem("id");
+						if (a != null)
+						{
+							_exceptionList.add(Integer.parseInt(a.getNodeValue()));
+						}
+					}
 				}
 			}
 		}
@@ -710,44 +784,32 @@ public final class Instance
 		{
 			timeLeft = remaining / 60000;
 			interval = 300000;
-			if (!_disableMessages)
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
-				sm.addString(Integer.toString(timeLeft));
-				Announcements.getInstance().announceToInstance(sm, getId());
-			}
+			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
+			sm.addString(Integer.toString(timeLeft));
+			Broadcast.toPlayersInInstance(sm, getId());
 			remaining = remaining - 300000;
 		}
 		else if (remaining > 60000)
 		{
 			timeLeft = remaining / 60000;
 			interval = 60000;
-			if (!_disableMessages)
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
-				sm.addString(Integer.toString(timeLeft));
-				Announcements.getInstance().announceToInstance(sm, getId());
-			}
+			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
+			sm.addString(Integer.toString(timeLeft));
+			Broadcast.toPlayersInInstance(sm, getId());
 			remaining = remaining - 60000;
 		}
 		else if (remaining > 30000)
 		{
 			timeLeft = remaining / 1000;
 			interval = 30000;
-			if (!_disableMessages)
-			{
-				cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
-			}
+			cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
 			remaining = remaining - 30000;
 		}
 		else
 		{
 			timeLeft = remaining / 1000;
 			interval = 10000;
-			if (!_disableMessages)
-			{
-				cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
-			}
+			cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
 			remaining = remaining - 10000;
 		}
 		if (cs != null)
@@ -780,17 +842,15 @@ public final class Instance
 		}
 	}
 	
-	public void disableMessages()
-	{
-		_disableMessages = true;
-	}
-	
 	public void cancelEjectDeadPlayer(L2PcInstance player)
 	{
-		final ScheduledFuture<?> task = _ejectDeadTasks.remove(player.getObjectId());
-		if (task != null)
+		if (_ejectDeadTasks.containsKey(player.getObjectId()))
 		{
-			task.cancel(true);
+			final ScheduledFuture<?> task = _ejectDeadTasks.remove(player.getObjectId());
+			if (task != null)
+			{
+				task.cancel(true);
+			}
 		}
 	}
 	
@@ -852,5 +912,35 @@ public final class Instance
 		{
 			InstanceManager.getInstance().destroyInstance(getId());
 		}
+	}
+	
+	public InstanceReenterType getReenterType()
+	{
+		return _type;
+	}
+	
+	public void setReenterType(InstanceReenterType type)
+	{
+		_type = type;
+	}
+	
+	public List<InstanceReenterTimeHolder> getReenterData()
+	{
+		return _resetData;
+	}
+	
+	public boolean isRemoveBuffEnabled()
+	{
+		return getRemoveBuffType() != InstanceRemoveBuffType.NONE;
+	}
+	
+	public InstanceRemoveBuffType getRemoveBuffType()
+	{
+		return _removeBuffType;
+	}
+	
+	public List<Integer> getBuffExceptionList()
+	{
+		return _exceptionList;
 	}
 }

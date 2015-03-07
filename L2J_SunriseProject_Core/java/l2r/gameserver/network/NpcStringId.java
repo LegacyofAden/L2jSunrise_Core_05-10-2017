@@ -3400,13 +3400,13 @@ public final class NpcStringId
 	 * ID: 19607<br>
 	 * Message: Dear Shillien's offsprings! You are not capable of confronting us!
 	 */
-	public static final NpcStringId DEAR_SHILLIENS_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US;
+	public static final NpcStringId DEAR_SHILLIEN_S_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US;
 	
 	/**
 	 * ID: 19608<br>
 	 * Message: I'll show you the real power of Einhasad!
 	 */
-	public static final NpcStringId ILL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD;
+	public static final NpcStringId I_LL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD;
 	
 	/**
 	 * ID: 19609<br>
@@ -3424,7 +3424,7 @@ public final class NpcStringId
 	 * ID: 19611<br>
 	 * Message: My power's weakening.. Hurry and turn on the sealing device!!!
 	 */
-	public static final NpcStringId MY_POWERS_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE;
+	public static final NpcStringId MY_POWER_S_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE;
 	
 	/**
 	 * ID: 19612<br>
@@ -3436,7 +3436,7 @@ public final class NpcStringId
 	 * ID: 19613<br>
 	 * Message: Lilith's attack is getting stronger! Go ahead and turn it on!
 	 */
-	public static final NpcStringId LILITHS_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON;
+	public static final NpcStringId LILITH_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON;
 	
 	/**
 	 * ID: 19614<br>
@@ -3448,7 +3448,7 @@ public final class NpcStringId
 	 * ID: 19615<br>
 	 * Message: You, such a fool! The victory over this war belongs to Shilien!!!
 	 */
-	public static final NpcStringId YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILIEN;
+	public static final NpcStringId YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILEN;
 	
 	/**
 	 * ID: 19616<br>
@@ -3460,7 +3460,7 @@ public final class NpcStringId
 	 * ID: 19617<br>
 	 * Message: Anakim! In the name of Great Shilien, I will cut your throat!
 	 */
-	public static final NpcStringId ANAKIM_IN_THE_NAME_OF_GREAT_SHILIEN_I_WILL_CUT_YOUR_THROAT;
+	public static final NpcStringId ANAKIM_IN_THE_NAME_OF_GREAT_SHILEN_I_WILL_CUT_YOUR_THROAT;
 	
 	/**
 	 * ID: 19618<br>
@@ -7204,7 +7204,7 @@ public final class NpcStringId
 	 * ID: 1000152<br>
 	 * Message: I'll make you feel suffering like a flame that is never extinguished!
 	 */
-	public static final NpcStringId ILL_MAKE_YOU_FEEL_SUFFERING_LIKE_A_FLAME_THAT_IS_NEVER_EXTINGUISHED;
+	public static final NpcStringId I_LL_MAKE_YOU_FEEL_SUFFERING_LIKE_A_FLAME_THAT_IS_NEVER_EXTINGUISHED;
 	
 	/**
 	 * ID: 1000153<br>
@@ -13510,13 +13510,13 @@ public final class NpcStringId
 	 * ID: 1800042<br>
 	 * Message: Ah - I'm hungry!
 	 */
-	public static final NpcStringId AH_IM_HUNGRY;
+	public static final NpcStringId AH_I_M_HUNGRY;
 	
 	/**
 	 * ID: 1800043<br>
 	 * Message: I'm the real one!
 	 */
-	public static final NpcStringId IM_THE_REAL_ONE;
+	public static final NpcStringId I_M_THE_REAL_ONE;
 	
 	/**
 	 * ID: 1800044<br>
@@ -13534,13 +13534,13 @@ public final class NpcStringId
 	 * ID: 1800046<br>
 	 * Message: Not that dude, I'm the real one!
 	 */
-	public static final NpcStringId NOT_THAT_DUDE_IM_THE_REAL_ONE;
+	public static final NpcStringId NOT_THAT_DUDE_I_M_THE_REAL_ONE;
 	
 	/**
 	 * ID: 1800047<br>
 	 * Message: Don't be fooled! Don't be fooled! I'm the real one!!
 	 */
-	public static final NpcStringId DONT_BE_FOOLED_DONT_BE_FOOLED_IM_THE_REAL_ONE;
+	public static final NpcStringId DON_T_BE_FOOLED_DON_T_BE_FOOLED_I_M_THE_REAL_ONE;
 	
 	/**
 	 * ID: 1800048<br>
@@ -13552,25 +13552,25 @@ public final class NpcStringId
 	 * ID: 1800049<br>
 	 * Message: You've been fooled!
 	 */
-	public static final NpcStringId YOUVE_BEEN_FOOLED;
+	public static final NpcStringId YOU_VE_BEEN_FOOLED;
 	
 	/**
 	 * ID: 1800050<br>
 	 * Message: Sorry, but...I'm the fake one.
 	 */
-	public static final NpcStringId SORRY_BUT_IM_THE_FAKE_ONE;
+	public static final NpcStringId SORRY_BUT_I_M_THE_FAKE_ONE;
 	
 	/**
 	 * ID: 1800051<br>
 	 * Message: I'm the real one! Phew!!
 	 */
-	public static final NpcStringId IM_THE_REAL_ONE_PHEW;
+	public static final NpcStringId I_M_THE_REAL_ONE_PHEW;
 	
 	/**
 	 * ID: 1800052<br>
 	 * Message: Can't you even find out?
 	 */
-	public static final NpcStringId CANT_YOU_EVEN_FIND_OUT;
+	public static final NpcStringId CAN_T_YOU_EVEN_FIND_OUT;
 	
 	/**
 	 * ID: 1800053<br>
@@ -13594,7 +13594,7 @@ public final class NpcStringId
 	 * ID: 1800056<br>
 	 * Message: You've done well!
 	 */
-	public static final NpcStringId YOUVE_DONE_WELL;
+	public static final NpcStringId YOU_VE_DONE_WELL;
 	
 	/**
 	 * ID: 1800057<br>
@@ -14428,7 +14428,7 @@ public final class NpcStringId
 	 * ID: 1800209<br>
 	 * Message: Ohh...oh...oh...
 	 */
-	public static final NpcStringId OHHOHOH;
+	public static final NpcStringId OHH_OH_OH;
 	
 	/**
 	 * ID: 1800210<br>
@@ -18430,7 +18430,7 @@ public final class NpcStringId
 	 * ID: 1800881<br>
 	 * Message: 20 minutes are added to the remaining time in the Instant Zone.
 	 */
-	public static final NpcStringId N21_MINUTES_ARE_ADDED_TO_THE_REMAINING_TIME_IN_THE_INSTANT_ZONE;
+	public static final NpcStringId MINUTES_ARE_ADDED_TO_THE_REMAINING_TIME_IN_THE_INSTANT_ZONE;
 	
 	/**
 	 * ID: 1800882<br>
@@ -22201,17 +22201,17 @@ public final class NpcStringId
 		WHO_DARES_SUMMON_THE_MERCHANT_OF_MAMMON = new NpcStringId(19604);
 		THE_ANCIENT_PROMISE_TO_THE_EMPEROR_HAS_BEEN_FULFILLED = new NpcStringId(19605);
 		FOR_THE_ETERNITY_OF_EINHASAD = new NpcStringId(19606);
-		DEAR_SHILLIENS_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US = new NpcStringId(19607);
-		ILL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD = new NpcStringId(19608);
+		DEAR_SHILLIEN_S_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US = new NpcStringId(19607);
+		I_LL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD = new NpcStringId(19608);
 		DEAR_MILITARY_FORCE_OF_LIGHT_GO_DESTROY_THE_OFFSPRINGS_OF_SHILLIEN = new NpcStringId(19609);
 		EVERYTHING_IS_OWING_TO_S1_THANK_YOU = new NpcStringId(19610);
-		MY_POWERS_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE = new NpcStringId(19611);
+		MY_POWER_S_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE = new NpcStringId(19611);
 		ALL_4_SEALING_DEVICES_MUST_BE_TURNED_ON = new NpcStringId(19612);
-		LILITHS_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON = new NpcStringId(19613);
+		LILITH_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON = new NpcStringId(19613);
 		DEAR_S1_GIVE_ME_MORE_STRENGTH = new NpcStringId(19614);
-		YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILIEN = new NpcStringId(19615);
+		YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILEN = new NpcStringId(19615);
 		HOW_DARE_YOU_TRY_TO_CONTEND_AGAINST_ME_IN_STRENGTH_RIDICULOUS = new NpcStringId(19616);
-		ANAKIM_IN_THE_NAME_OF_GREAT_SHILIEN_I_WILL_CUT_YOUR_THROAT = new NpcStringId(19617);
+		ANAKIM_IN_THE_NAME_OF_GREAT_SHILEN_I_WILL_CUT_YOUR_THROAT = new NpcStringId(19617);
 		YOU_CANNOT_BE_THE_MATCH_OF_LILITH_I_LL_TEACH_YOU_A_LESSON = new NpcStringId(19618);
 		I_MUST_GO_BACK_TO_SHILIEN_JUST_LIKE_THIS_OUTRAGEOUS = new NpcStringId(19619);
 		DEATH_TO_THE_ENEMIES_OF_THE_LORDS_OF_DAWN = new NpcStringId(19804);
@@ -22835,7 +22835,7 @@ public final class NpcStringId
 		WHATS_JUST_HAPPENED_THE_INVINCIBLE_MALEX_JUST_LOST_TO_THE_LIKES_OF_YOU = new NpcStringId(1000149);
 		ITS_SOMETHING_REPEATED_IN_A_VAIN_LIFE = new NpcStringId(1000150);
 		SHAKE_IN_FEAR_ALL_YOU_WHO_VALUE_YOUR_LIVES = new NpcStringId(1000151);
-		ILL_MAKE_YOU_FEEL_SUFFERING_LIKE_A_FLAME_THAT_IS_NEVER_EXTINGUISHED = new NpcStringId(1000152);
+		I_LL_MAKE_YOU_FEEL_SUFFERING_LIKE_A_FLAME_THAT_IS_NEVER_EXTINGUISHED = new NpcStringId(1000152);
 		BACK_TO_THE_DIRT = new NpcStringId(1000153);
 		HAIL_VARIKA = new NpcStringId(1000154);
 		NOBODY_CAN_STOP_US = new NpcStringId(1000155);
@@ -23886,21 +23886,21 @@ public final class NpcStringId
 		YUMMY_THIS_IS_SO_TASTY = new NpcStringId(1800039);
 		SNIFF_SNIFF_GIVE_ME_MORE_CRYSTAL_FRAGMENTS = new NpcStringId(1800040);
 		HOW_INSENSITIVE_ITS_NOT_NICE_TO_GIVE_ME_JUST_A_PIECE_CANT_YOU_GIVE_ME_MORE = new NpcStringId(1800041);
-		AH_IM_HUNGRY = new NpcStringId(1800042);
-		IM_THE_REAL_ONE = new NpcStringId(1800043);
+		AH_I_M_HUNGRY = new NpcStringId(1800042);
+		I_M_THE_REAL_ONE = new NpcStringId(1800043);
 		PICK_ME = new NpcStringId(1800044);
 		TRUST_ME = new NpcStringId(1800045);
-		NOT_THAT_DUDE_IM_THE_REAL_ONE = new NpcStringId(1800046);
-		DONT_BE_FOOLED_DONT_BE_FOOLED_IM_THE_REAL_ONE = new NpcStringId(1800047);
+		NOT_THAT_DUDE_I_M_THE_REAL_ONE = new NpcStringId(1800046);
+		DON_T_BE_FOOLED_DON_T_BE_FOOLED_I_M_THE_REAL_ONE = new NpcStringId(1800047);
 		JUST_ACT_LIKE_THE_REAL_ONE_OOPS = new NpcStringId(1800048);
-		YOUVE_BEEN_FOOLED = new NpcStringId(1800049);
-		SORRY_BUT_IM_THE_FAKE_ONE = new NpcStringId(1800050);
-		IM_THE_REAL_ONE_PHEW = new NpcStringId(1800051);
-		CANT_YOU_EVEN_FIND_OUT = new NpcStringId(1800052);
+		YOU_VE_BEEN_FOOLED = new NpcStringId(1800049);
+		SORRY_BUT_I_M_THE_FAKE_ONE = new NpcStringId(1800050);
+		I_M_THE_REAL_ONE_PHEW = new NpcStringId(1800051);
+		CAN_T_YOU_EVEN_FIND_OUT = new NpcStringId(1800052);
 		FIND_ME = new NpcStringId(1800053);
 		HUH_HOW_DID_YOU_KNOW_IT_WAS_ME = new NpcStringId(1800054);
 		EXCELLENT_CHOICE_TEEHEE = new NpcStringId(1800055);
-		YOUVE_DONE_WELL = new NpcStringId(1800056);
+		YOU_VE_DONE_WELL = new NpcStringId(1800056);
 		OH_VERY_SENSIBLE = new NpcStringId(1800057);
 		BEHOLD_THE_MIGHTY_POWER_OF_BAYLOR_FOOLISH_MORTAL = new NpcStringId(1800058);
 		NO_ONE_IS_GOING_TO_SURVIVE = new NpcStringId(1800059);
@@ -24039,7 +24039,7 @@ public final class NpcStringId
 		THERE_ARE_3_MINUTES_REMAINING_TO_REGISTER_FOR_KRATEIS_CUBE_MATCH = new NpcStringId(1800204);
 		THERE_ARE_1_MINUTES_REMAINING_TO_REGISTER_FOR_KRATEIS_CUBE_MATCH = new NpcStringId(1800205);
 		THE_MATCH_WILL_BEGIN_SHORTLY = new NpcStringId(1800207);
-		OHHOHOH = new NpcStringId(1800209);
+		OHH_OH_OH = new NpcStringId(1800209);
 		FIRE = new NpcStringId(1800210);
 		WATER = new NpcStringId(1800211);
 		WIND = new NpcStringId(1800212);
@@ -24707,7 +24707,7 @@ public final class NpcStringId
 		LIFE_STONE_FROM_THE_BEGINNING_ACQUIRED = new NpcStringId(1800878);
 		WHEN_INVENTORY_WEIGHT_NUMBER_ARE_MORE_THAN_80_THE_LIFE_STONE_FROM_THE_BEGINNING_CANNOT_BE_ACQUIRED = new NpcStringId(1800879);
 		YOU_ARE_UNDER_MY_THUMB = new NpcStringId(1800880);
-		N21_MINUTES_ARE_ADDED_TO_THE_REMAINING_TIME_IN_THE_INSTANT_ZONE = new NpcStringId(1800881);
+		MINUTES_ARE_ADDED_TO_THE_REMAINING_TIME_IN_THE_INSTANT_ZONE = new NpcStringId(1800881);
 		HURRY_HURRY = new NpcStringId(1800882);
 		I_AM_NOT_THAT_TYPE_OF_PERSON_WHO_STAYS_IN_ONE_PLACE_FOR_A_LONG_TIME = new NpcStringId(1800883);
 		ITS_HARD_FOR_ME_TO_KEEP_STANDING_LIKE_THIS = new NpcStringId(1800884);
