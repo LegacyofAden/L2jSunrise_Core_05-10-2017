@@ -102,6 +102,8 @@ public final class Instance
 	private InstanceRemoveBuffType _removeBuffType = InstanceRemoveBuffType.NONE;
 	private final List<Integer> _exceptionList = new ArrayList<>();
 	
+	private boolean _disableMessages = false;
+	
 	protected ScheduledFuture<?> _checkTimeUpTask = null;
 	protected final Map<Integer, ScheduledFuture<?>> _ejectDeadTasks = new FastMap<>();
 	
@@ -784,32 +786,44 @@ public final class Instance
 		{
 			timeLeft = remaining / 60000;
 			interval = 300000;
-			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
-			sm.addString(Integer.toString(timeLeft));
-			Broadcast.toPlayersInInstance(sm, getId());
+			if (!_disableMessages)
+			{
+				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
+				sm.addString(Integer.toString(timeLeft));
+				Broadcast.toPlayersInInstance(sm, getId());
+			}
 			remaining = remaining - 300000;
 		}
 		else if (remaining > 60000)
 		{
 			timeLeft = remaining / 60000;
 			interval = 60000;
-			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
-			sm.addString(Integer.toString(timeLeft));
-			Broadcast.toPlayersInInstance(sm, getId());
+			if (!_disableMessages)
+			{
+				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DUNGEON_EXPIRES_IN_S1_MINUTES);
+				sm.addString(Integer.toString(timeLeft));
+				Broadcast.toPlayersInInstance(sm, getId());
+			}
 			remaining = remaining - 60000;
 		}
 		else if (remaining > 30000)
 		{
 			timeLeft = remaining / 1000;
 			interval = 30000;
-			cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
+			if (!_disableMessages)
+			{
+				cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
+			}
 			remaining = remaining - 30000;
 		}
 		else
 		{
 			timeLeft = remaining / 1000;
 			interval = 10000;
-			cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
+			if (!_disableMessages)
+			{
+				cs = new CreatureSay(0, Say2.ALLIANCE, "Notice", timeLeft + " seconds left.");
+			}
 			remaining = remaining - 10000;
 		}
 		if (cs != null)
@@ -942,5 +956,10 @@ public final class Instance
 	public List<Integer> getBuffExceptionList()
 	{
 		return _exceptionList;
+	}
+	
+	public void disableMessages()
+	{
+		_disableMessages = true;
 	}
 }
