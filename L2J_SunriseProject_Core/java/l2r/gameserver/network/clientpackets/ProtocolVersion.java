@@ -99,7 +99,7 @@ public final class ProtocolVersion extends L2GameClientPacket
 		getClient().setRevision(_version);
 		if (Protection.isProtectionOn())
 		{
-			if (_hwidHdd.equals("NoGuard") && _hwidHdd.equals("NoGuard") && _hwidHdd.equals("NoGuard"))
+			if (_hwidHdd.equals("NoGuard") && _hwidMac.equals("NoGuard") && _hwidCPU.equals("NoGuard"))
 			{
 				_log.info("HWID Status: NoPatch!!!");
 				getClient().close(new KeyPacket(getClient().enableCrypt(), 0));
