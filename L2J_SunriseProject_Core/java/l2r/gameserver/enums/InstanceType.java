@@ -108,7 +108,6 @@ public enum InstanceType
 	// Custom
 	L2ClassMasterInstance(L2NpcInstance),
 	L2BufferInstance(L2Npc),
-	L2ClanRepFameInstance(L2Npc),
 	L2AioNpcInstance(L2Npc),
 	L2ServicesManagerInstance(L2NpcInstance),
 	L2DonateManagerInstance(L2Npc),
