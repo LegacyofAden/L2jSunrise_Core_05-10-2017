@@ -128,6 +128,9 @@ public final class Config
 	public static final String CONFIGURATION_FILE = "./config/network/Server.ini";
 	public static final String TELNET_FILE = "./config/network/Telnet.ini";
 	
+	// sunrise
+	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
+	
 	// --------------------------------------------------
 	// L2J Variable Definitions
 	// --------------------------------------------------
@@ -687,7 +690,7 @@ public final class Config
 	public static int EJECT_DEAD_PLAYER_TIME;
 	
 	// --------------------------------------------------
-	// L2JMods Settings
+	// Champion mobs Settings
 	// --------------------------------------------------
 	public static boolean L2JMOD_CHAMPION_ENABLE;
 	public static boolean L2JMOD_CHAMPION_PASSIVE;
@@ -697,6 +700,8 @@ public final class Config
 	public static int L2JMOD_CHAMP_MAX_LVL;
 	public static int L2JMOD_CHAMPION_HP;
 	public static int L2JMOD_CHAMPION_REWARDS;
+	public static int L2JMOD_CHAMPION_REWARDS_EXP;
+	public static int L2JMOD_CHAMPION_REWARDS_SP;
 	public static float L2JMOD_CHAMPION_ADENAS_REWARDS;
 	public static float L2JMOD_CHAMPION_HP_REGEN;
 	public static float L2JMOD_CHAMPION_ATK;
@@ -707,6 +712,10 @@ public final class Config
 	public static int L2JMOD_CHAMPION_REWARD_QTY;
 	public static boolean L2JMOD_CHAMPION_ENABLE_VITALITY;
 	public static boolean L2JMOD_CHAMPION_ENABLE_IN_INSTANCES;
+	
+	// --------------------------------------------------
+	// L2JMods Settings
+	// --------------------------------------------------
 	public static boolean L2JMOD_ALLOW_WEDDING;
 	public static int L2JMOD_WEDDING_PRICE;
 	public static boolean L2JMOD_WEDDING_PUNISH_INFIDELITY;
@@ -2274,27 +2283,32 @@ public final class Config
 				RATE_DROP_ITEMS_ID.put(Inventory.ADENA_ID, RATE_DROP_ITEMS); // for Adena rate if not defined
 			}
 			
+			// Load Champions L2Properties file (if exists)
+			final PropertiesParser champions = new PropertiesParser(CHAMPION_MOBS_CONFIG);
+			
+			L2JMOD_CHAMPION_ENABLE = champions.getBoolean("ChampionEnable", false);
+			L2JMOD_CHAMPION_PASSIVE = champions.getBoolean("ChampionPassive", false);
+			L2JMOD_CHAMPION_FREQUENCY = champions.getInt("ChampionFrequency", 0);
+			L2JMOD_CHAMP_TITLE = champions.getString("ChampionTitle", "Champion");
+			L2JMOD_CHAMP_MIN_LVL = champions.getInt("ChampionMinLevel", 20);
+			L2JMOD_CHAMP_MAX_LVL = champions.getInt("ChampionMaxLevel", 60);
+			L2JMOD_CHAMPION_HP = champions.getInt("ChampionHp", 7);
+			L2JMOD_CHAMPION_HP_REGEN = champions.getFloat("ChampionHpRegen", 1);
+			L2JMOD_CHAMPION_REWARDS = champions.getInt("ChampionRewards", 8);
+			L2JMOD_CHAMPION_REWARDS_EXP = champions.getInt("ChampionRewardsExp", 8);
+			L2JMOD_CHAMPION_REWARDS_SP = champions.getInt("ChampionRewardsSp", 8);
+			L2JMOD_CHAMPION_ADENAS_REWARDS = champions.getFloat("ChampionAdenasRewards", 1);
+			L2JMOD_CHAMPION_ATK = champions.getFloat("ChampionAtk", 1);
+			L2JMOD_CHAMPION_SPD_ATK = champions.getFloat("ChampionSpdAtk", 1);
+			L2JMOD_CHAMPION_REWARD_LOWER_LVL_ITEM_CHANCE = champions.getInt("ChampionRewardLowerLvlItemChance", 0);
+			L2JMOD_CHAMPION_REWARD_HIGHER_LVL_ITEM_CHANCE = champions.getInt("ChampionRewardHigherLvlItemChance", 0);
+			L2JMOD_CHAMPION_REWARD_ID = champions.getInt("ChampionRewardItemID", 6393);
+			L2JMOD_CHAMPION_REWARD_QTY = champions.getInt("ChampionRewardItemQty", 1);
+			L2JMOD_CHAMPION_ENABLE_VITALITY = champions.getBoolean("ChampionEnableVitality", false);
+			L2JMOD_CHAMPION_ENABLE_IN_INSTANCES = champions.getBoolean("ChampionEnableInInstances", false);
+			
 			// Load L2JMod L2Properties file (if exists)
 			final PropertiesParser L2JModSettings = new PropertiesParser(L2JMOD_CONFIG_FILE);
-			
-			L2JMOD_CHAMPION_ENABLE = L2JModSettings.getBoolean("ChampionEnable", false);
-			L2JMOD_CHAMPION_PASSIVE = L2JModSettings.getBoolean("ChampionPassive", false);
-			L2JMOD_CHAMPION_FREQUENCY = L2JModSettings.getInt("ChampionFrequency", 0);
-			L2JMOD_CHAMP_TITLE = L2JModSettings.getString("ChampionTitle", "Champion");
-			L2JMOD_CHAMP_MIN_LVL = L2JModSettings.getInt("ChampionMinLevel", 20);
-			L2JMOD_CHAMP_MAX_LVL = L2JModSettings.getInt("ChampionMaxLevel", 60);
-			L2JMOD_CHAMPION_HP = L2JModSettings.getInt("ChampionHp", 7);
-			L2JMOD_CHAMPION_HP_REGEN = L2JModSettings.getFloat("ChampionHpRegen", 1);
-			L2JMOD_CHAMPION_REWARDS = L2JModSettings.getInt("ChampionRewards", 8);
-			L2JMOD_CHAMPION_ADENAS_REWARDS = L2JModSettings.getFloat("ChampionAdenasRewards", 1);
-			L2JMOD_CHAMPION_ATK = L2JModSettings.getFloat("ChampionAtk", 1);
-			L2JMOD_CHAMPION_SPD_ATK = L2JModSettings.getFloat("ChampionSpdAtk", 1);
-			L2JMOD_CHAMPION_REWARD_LOWER_LVL_ITEM_CHANCE = L2JModSettings.getInt("ChampionRewardLowerLvlItemChance", 0);
-			L2JMOD_CHAMPION_REWARD_HIGHER_LVL_ITEM_CHANCE = L2JModSettings.getInt("ChampionRewardHigherLvlItemChance", 0);
-			L2JMOD_CHAMPION_REWARD_ID = L2JModSettings.getInt("ChampionRewardItemID", 6393);
-			L2JMOD_CHAMPION_REWARD_QTY = L2JModSettings.getInt("ChampionRewardItemQty", 1);
-			L2JMOD_CHAMPION_ENABLE_VITALITY = L2JModSettings.getBoolean("ChampionEnableVitality", false);
-			L2JMOD_CHAMPION_ENABLE_IN_INSTANCES = L2JModSettings.getBoolean("ChampionEnableInInstances", false);
 			
 			L2JMOD_ALLOW_WEDDING = L2JModSettings.getBoolean("AllowWedding", false);
 			L2JMOD_WEDDING_PRICE = L2JModSettings.getInt("WeddingPrice", 250000000);
@@ -3568,51 +3582,6 @@ public final class Config
 				break;
 			case "commonrecipelimit":
 				COMMON_RECIPE_LIMIT = Integer.parseInt(pValue);
-				break;
-			case "championenable":
-				L2JMOD_CHAMPION_ENABLE = Boolean.parseBoolean(pValue);
-				break;
-			case "championfrequency":
-				L2JMOD_CHAMPION_FREQUENCY = Integer.parseInt(pValue);
-				break;
-			case "championminlevel":
-				L2JMOD_CHAMP_MIN_LVL = Integer.parseInt(pValue);
-				break;
-			case "championmaxlevel":
-				L2JMOD_CHAMP_MAX_LVL = Integer.parseInt(pValue);
-				break;
-			case "championhp":
-				L2JMOD_CHAMPION_HP = Integer.parseInt(pValue);
-				break;
-			case "championhpregen":
-				L2JMOD_CHAMPION_HP_REGEN = Float.parseFloat(pValue);
-				break;
-			case "championrewards":
-				L2JMOD_CHAMPION_REWARDS = Integer.parseInt(pValue);
-				break;
-			case "championadenasrewards":
-				L2JMOD_CHAMPION_ADENAS_REWARDS = Float.parseFloat(pValue);
-				break;
-			case "championatk":
-				L2JMOD_CHAMPION_ATK = Float.parseFloat(pValue);
-				break;
-			case "championspdatk":
-				L2JMOD_CHAMPION_SPD_ATK = Float.parseFloat(pValue);
-				break;
-			case "championrewardlowerlvlitemchance":
-				L2JMOD_CHAMPION_REWARD_LOWER_LVL_ITEM_CHANCE = Integer.parseInt(pValue);
-				break;
-			case "championrewardhigherlvlitemchance":
-				L2JMOD_CHAMPION_REWARD_HIGHER_LVL_ITEM_CHANCE = Integer.parseInt(pValue);
-				break;
-			case "championrewarditemid":
-				L2JMOD_CHAMPION_REWARD_ID = Integer.parseInt(pValue);
-				break;
-			case "championrewarditemqty":
-				L2JMOD_CHAMPION_REWARD_QTY = Integer.parseInt(pValue);
-				break;
-			case "championenableininstances":
-				L2JMOD_CHAMPION_ENABLE_IN_INSTANCES = Boolean.parseBoolean(pValue);
 				break;
 			case "allowwedding":
 				L2JMOD_ALLOW_WEDDING = Boolean.parseBoolean(pValue);
