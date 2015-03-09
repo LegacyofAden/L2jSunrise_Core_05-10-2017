@@ -28,27 +28,24 @@ import l2r.gameserver.model.punishment.PunishmentType;
 import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.CreatureSay;
 import l2r.gameserver.util.Util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import gr.sr.configsEngine.configs.impl.SecuritySystemConfigs;
 
-public class PcAdmin extends PcExtension
+public class PcAdmin
 {
+	protected static final Logger _log = LoggerFactory.getLogger(PcAdmin.class.getName());
+	
+	private L2PcInstance _activeChar = null;
 	private boolean _safeadmin = false;
 	private String _adminConfirmCmd = null;
 	private boolean _inCameraMode = false;
 	
 	public PcAdmin(L2PcInstance activeChar)
 	{
-		super(activeChar);
-	}
-	
-	public void setIsSafeAdmin(boolean b)
-	{
-		_safeadmin = b;
-	}
-	
-	public boolean isSafeAdmin()
-	{
-		return _safeadmin;
+		_activeChar = activeChar;
 	}
 	
 	public boolean canUseAdminCommand()
@@ -104,5 +101,20 @@ public class PcAdmin extends PcExtension
 	public boolean inCameraMode()
 	{
 		return _inCameraMode;
+	}
+	
+	public void setIsSafeAdmin(boolean b)
+	{
+		_safeadmin = b;
+	}
+	
+	public boolean isSafeAdmin()
+	{
+		return _safeadmin;
+	}
+	
+	private L2PcInstance getPlayer()
+	{
+		return _activeChar;
 	}
 }
