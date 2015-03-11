@@ -432,7 +432,7 @@ public class CharEffectList
 		int danceCount = 0;
 		for (L2Effect e : getBuffs())
 		{
-			if ((e != null) && e.getSkill().isDance() && e.getInUse())
+			if ((e != null) && e.getSkill().isDance() && e.getInUse() && !e.isInstant())
 			{
 				danceCount++;
 			}
