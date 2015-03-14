@@ -2013,25 +2013,30 @@ public final class Formulas
 		// return (Rnd.get(1000) < (rate * 10));
 	}
 	
-	public static double calcManaDam(L2Character attacker, L2Character target, L2Skill skill, boolean ss, boolean bss)
+	public static double calcManaDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean sps, boolean bss, boolean mcrit)
 	{
-		// Mana Burn = (SQR(M.Atk)*Power*(Target Max MP/97))/M.Def
+		// Formula: (SQR(M.Atk)*Power*(Target Max MP/97))/M.Def
 		double mAtk = attacker.getMAtk(target, skill);
 		double mDef = target.getMDef(attacker, skill);
 		final boolean isPvP = attacker.isPlayable() && target.isPlayable();
 		final boolean isPvE = attacker.isPlayable() && target.isAttackable();
 		double mp = target.getMaxMp();
-		if (bss)
+		
+		switch (shld)
 		{
-			mAtk *= 4;
+			case SHIELD_DEFENSE_SUCCEED:
+				mDef += target.getShldDef();
+				break;
+			case SHIELD_DEFENSE_PERFECT_BLOCK: // perfect block
+				return 1;
 		}
-		else if (ss)
-		{
-			mAtk *= 2;
-		}
+		
+		// Bonus Spiritshot
+		mAtk *= bss ? 4 : sps ? 2 : 1;
 		
 		double damage = (Math.sqrt(mAtk) * skill.getPower(attacker, target, isPvP, isPvE) * (mp / 97)) / mDef;
 		damage *= (1 + (calcSkillVulnerability(attacker, target, skill) / 100));
+		
 		if (target.isAttackable())
 		{
 			damage *= attacker.calcStat(Stats.PVE_MAGICAL_DMG, 1, null, null);
@@ -2049,6 +2054,32 @@ public final class Formulas
 			}
 		}
 		
+		// Failure calculation
+		if (Config.ALT_GAME_MAGICFAILURES && !calcMagicSuccess(attacker, target, skill))
+		{
+			if (attacker.isPlayer())
+			{
+				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DAMAGE_DECREASED_BECAUSE_C1_RESISTED_C2_MAGIC);
+				sm.addCharName(target);
+				sm.addCharName(attacker);
+				attacker.sendPacket(sm);
+				damage /= 2;
+			}
+			
+			if (target.isPlayer())
+			{
+				SystemMessage sm2 = SystemMessage.getSystemMessage(SystemMessageId.C1_WEAKLY_RESISTED_C2_MAGIC);
+				sm2.addCharName(target);
+				sm2.addCharName(attacker);
+				target.sendPacket(sm2);
+			}
+		}
+		
+		if (mcrit)
+		{
+			damage *= 3;
+			attacker.sendPacket(SystemMessageId.CRITICAL_HIT_MAGIC);
+		}
 		return damage;
 	}
 	
