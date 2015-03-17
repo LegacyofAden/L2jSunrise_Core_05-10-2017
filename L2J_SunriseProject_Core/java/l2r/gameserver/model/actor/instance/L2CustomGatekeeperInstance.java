@@ -153,48 +153,45 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 			player.sendPacket(html);
 		}
 		// Teleport
-		else if (command.startsWith("teleportTo"))
+		else if (command.startsWith("teleportToGlobal"))
 		{
-			if (player.isTransformed())
+			try
 			{
-				if ((player.getTransformationId() == 9) || (player.getTransformationId() == 8))
+				Integer[] c = new Integer[3];
+				boolean onlyForNobless = false;
+				c[0] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[0];
+				c[1] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[1];
+				c[2] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[2];
+				onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
+				int itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
+				int price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
+				if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
 				{
-					player.untransform();
+					return;
 				}
-			}
-			
-			int itemIdToGet = CustomNpcsConfigs.TELEPORT_ITEM_ID;
-			int price = CustomNpcsConfigs.TELEPORT_ITEM_AMOUNT;
-			if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
-			{
-				return;
-			}
-			
-			if (command.startsWith("teleportToGlobal"))
-			{
-				try
+				
+				if (onlyForNobless && !player.isNoble() && !player.isGM())
 				{
-					Integer[] c = new Integer[3];
-					boolean onlyForNobless = false;
-					c[0] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[0];
-					c[1] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[1];
-					c[2] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[2];
-					onlyForNobless = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[3] == 1;
-					
-					if (onlyForNobless && !player.isNoble() && !player.isGM())
+					player.sendMessage("Only noble chars can teleport there.");
+					return;
+				}
+				
+				if (player.isTransformed())
+				{
+					if ((player.getTransformationId() == 9) || (player.getTransformationId() == 8))
 					{
-						player.sendMessage("Only noble chars can teleport there.");
-						return;
+						player.untransform();
 					}
-					
-					player.destroyItemByItemId("Npc Teleport", itemIdToGet, price, player, true);
-					player.teleToLocation(c[0], c[1], c[2]);
 				}
-				catch (Exception e)
-				{
-					SecurityActions.startSecurity(player, SecurityType.CUSTON_GATEKEEPER);
-				}
+				
+				player.destroyItemByItemId("Npc Teleport", itemIdToGet, price, player, true);
+				player.teleToLocation(c[0], c[1], c[2]);
 			}
+			catch (Exception e)
+			{
+				SecurityActions.startSecurity(player, SecurityType.CUSTON_GATEKEEPER);
+			}
+			
 		}
 	}
 }
