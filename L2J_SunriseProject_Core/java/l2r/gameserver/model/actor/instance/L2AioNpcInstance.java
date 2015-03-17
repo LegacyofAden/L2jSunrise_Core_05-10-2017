@@ -33,9 +33,12 @@ import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.data.xml.impl.TransformData;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.GrandBossManager;
+import l2r.gameserver.instancemanager.SiegeManager;
+import l2r.gameserver.instancemanager.TownManager;
 import l2r.gameserver.model.ClanPrivilege;
 import l2r.gameserver.model.L2Augmentation;
 import l2r.gameserver.model.actor.FakePc;
@@ -1129,6 +1132,21 @@ public final class L2AioNpcInstance extends L2Npc
 				onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
 				itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
 				price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
+				
+				if (!AioItemsConfigs.ALLOW_TELEPORT_DURING_SIEGE)
+				{
+					if (SiegeManager.getInstance().getSiege(c[0], c[1], c[2]) != null)
+					{
+						player.sendPacket(SystemMessageId.NO_PORT_THAT_IS_IN_SIGE);
+						return;
+					}
+					else if (TownManager.townHasCastleInSiege(c[0], c[1]) && isInsideZone(ZoneIdType.TOWN))
+					{
+						player.sendPacket(SystemMessageId.NO_PORT_THAT_IS_IN_SIGE);
+						return;
+					}
+				}
+				
 				if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
 				{
 					return;

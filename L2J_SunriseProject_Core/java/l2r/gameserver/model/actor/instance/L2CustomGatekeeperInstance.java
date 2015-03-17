@@ -1,12 +1,16 @@
 package l2r.gameserver.model.actor.instance;
 
 import l2r.gameserver.enums.InstanceType;
+import l2r.gameserver.enums.ZoneIdType;
+import l2r.gameserver.instancemanager.SiegeManager;
+import l2r.gameserver.instancemanager.TownManager;
 import l2r.gameserver.instancemanager.ZoneManager;
 import l2r.gameserver.model.actor.FakePc;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.zone.L2ZoneType;
+import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import gr.sr.configsEngine.configs.impl.CustomNpcsConfigs;
@@ -165,6 +169,21 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 				onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
 				int itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
 				int price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
+				
+				if (!CustomNpcsConfigs.ALLOW_TELEPORT_DURING_SIEGE)
+				{
+					if (SiegeManager.getInstance().getSiege(c[0], c[1], c[2]) != null)
+					{
+						player.sendPacket(SystemMessageId.NO_PORT_THAT_IS_IN_SIGE);
+						return;
+					}
+					else if (TownManager.townHasCastleInSiege(c[0], c[1]) && isInsideZone(ZoneIdType.TOWN))
+					{
+						player.sendPacket(SystemMessageId.NO_PORT_THAT_IS_IN_SIGE);
+						return;
+					}
+				}
+				
 				if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
 				{
 					return;
