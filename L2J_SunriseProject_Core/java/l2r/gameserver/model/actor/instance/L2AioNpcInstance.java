@@ -1119,9 +1119,6 @@ public final class L2AioNpcInstance extends L2Npc
 		// Teleport
 		else if (command.startsWith("teleportTo"))
 		{
-			itemIdToGet = AioItemsConfigs.AIO_TPCOIN;
-			price = AioItemsConfigs.AIO_PRICE_PERTP;
-			
 			if (player.isTransformed())
 			{
 				if ((player.getTransformationId() == 9) || (player.getTransformationId() == 8))
@@ -1130,6 +1127,8 @@ public final class L2AioNpcInstance extends L2Npc
 				}
 			}
 			
+			itemIdToGet = AioItemsConfigs.AIO_TPCOIN;
+			price = AioItemsConfigs.AIO_PRICE_PERTP;
 			if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
 			{
 				return;
@@ -1138,9 +1137,18 @@ public final class L2AioNpcInstance extends L2Npc
 			try
 			{
 				Integer[] c = new Integer[3];
+				boolean onlyForNobless = false;
 				c[0] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[0];
 				c[1] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[1];
 				c[2] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[2];
+				onlyForNobless = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[3] == 1;
+				
+				if (onlyForNobless && !player.isNoble() && !player.isGM())
+				{
+					player.sendMessage("Only noble chars can teleport there.");
+					return;
+				}
+				
 				player.destroyItemByItemId("AIO Teleport", itemIdToGet, price, player, true);
 				player.teleToLocation(c[0], c[1], c[2]);
 			}
