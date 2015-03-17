@@ -1,7 +1,6 @@
 package l2r.gameserver.model.actor.instance;
 
 import l2r.gameserver.enums.InstanceType;
-import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.ZoneManager;
 import l2r.gameserver.model.actor.FakePc;
 import l2r.gameserver.model.actor.L2Character;
@@ -86,10 +85,10 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 			switch (CustomNpcsConfigs.ZONE_TYPE_FOR_PLAYERS_COUNT)
 			{
 				case "ChaoticZone":
-					html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(ZoneIdType.ZONE_CHAOTIC.ordinal())));
+					html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(15501)));
 					break;
 				case "FlagZone":
-					html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(ZoneIdType.FLAG.ordinal())));
+					html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(15502)));
 					break;
 				default:
 					break;
@@ -141,10 +140,10 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 				switch (CustomNpcsConfigs.ZONE_TYPE_FOR_PLAYERS_COUNT)
 				{
 					case "ChaoticZone":
-						html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(ZoneIdType.ZONE_CHAOTIC.ordinal())));
+						html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(15501)));
 						break;
 					case "FlagZone":
-						html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(ZoneIdType.FLAG.ordinal())));
+						html.replace("%players_count%", String.valueOf(getPlayersInZoneCount(15502)));
 						break;
 					default:
 						break;
@@ -179,9 +178,17 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 					if (player.destroyItemByItemId("Global Teleport", itemIdToGet, price, player, true))
 					{
 						Integer[] c = new Integer[3];
+						boolean onlyForNobless = false;
 						c[0] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[0];
 						c[1] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[1];
 						c[2] = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[2];
+						onlyForNobless = SunriseTable.getInstance().getCoords(Integer.parseInt(subCommand[1]))[3] == 1;
+						if (onlyForNobless && !player.isNoble())
+						{
+							player.sendMessage("Only noble chars can teleport there.");
+							return;
+						}
+						
 						player.teleToLocation(c[0], c[1], c[2]);
 					}
 				}
