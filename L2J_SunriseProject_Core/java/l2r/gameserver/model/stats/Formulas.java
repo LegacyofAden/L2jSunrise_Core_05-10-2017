@@ -2490,7 +2490,7 @@ public final class Formulas
 		return (skill.getDmgDirectlyToHP() && !activeChar.isBehindTarget() ? false : Rnd.get(1000) < (rate * 10));
 	}
 	
-	public static List<L2Effect> calcCancelStealEffects(L2Character activeChar, L2Character target, L2Skill skill, double power)
+	public static List<L2Effect> calcCancelStealEffects(L2Character activeChar, L2Character target, L2Skill skill, double power, boolean randomizeList)
 	{
 		// Resists.
 		int cancelMagicLvl = skill.getMagicLevel();
@@ -2565,6 +2565,11 @@ public final class Formulas
 				Collections.reverse(_buffList);
 				_effectList.addAll(_musicList);
 				_effectList.addAll(_buffList);
+				
+				if (randomizeList)
+				{
+					Collections.shuffle(_effectList);
+				}
 				
 				int negated = 0;
 				if (!_effectList.isEmpty())
