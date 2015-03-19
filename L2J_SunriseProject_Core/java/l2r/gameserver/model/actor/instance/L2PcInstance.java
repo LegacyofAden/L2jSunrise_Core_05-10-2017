@@ -4637,8 +4637,15 @@ public final class L2PcInstance extends L2Playable
 		if (isInParty() && !ItemData.getInstance().getTemplate(itemId).hasExImmediateEffect())
 		{
 			getParty().distributeItem(this, itemId, itemCount, false, target);
+			return;
 		}
-		else if (itemId == Inventory.ADENA_ID)
+		
+		if (isPremium())
+		{
+			itemCount *= calcPremiumDropMultipliers(itemId);
+		}
+		
+		if (itemId == Inventory.ADENA_ID)
 		{
 			addAdena("Loot", itemCount, target, true);
 		}
@@ -15805,65 +15812,29 @@ public final class L2PcInstance extends L2Playable
 				return isPremium() ? PremiumServiceConfigs.PREMIUM_RATE_SP : 1;
 			case SPOIL:
 			case DROP_ITEM:
-				// check for premium owner in party, if enabled by config
-				boolean hasPremium = false;
-				
-				// TODO Implement later
-				/**
-				 * if (PremiumServiceConfigs.PREMIUM_PARTY_DROPSPOIL && !isPremium() && isInParty()) { for (L2PcInstance pl : getParty().getMembers()) { if (pl.isPremium() && Util.checkIfInRange(Config.ALT_PARTY_RANGE, this, pl, true)) { hasPremium = true; break; } } } else
-				 */
-				hasPremium = isPremium();
-				
 				switch (rateType)
 				{
 					case SPOIL:
-						if (hasPremium)
-						{
-							if (PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overriden rate in premium list first
-							{
-								return PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.get(itemId);
-							}
-							else if (Config.RATE_DROP_ITEMS_ID.containsKey(itemId)) // then check for overriden rate in general list
-							{
-								return Config.RATE_DROP_ITEMS_ID.get(itemId);
-							}
-							else
-							// return common premium rate, if it isn't overriden anywhere
-							{
-								return PremiumServiceConfigs.PREMIUM_RATE_DROP_SPOIL;
-							}
-						}
 						return Config.RATE_DROP_ITEMS_ID.containsKey(itemId) ? Config.RATE_DROP_ITEMS_ID.get(itemId) : Config.RATE_DROP_SPOIL;
 					case DROP_ITEM:
-						if (hasPremium)
-						{
-							if (PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overriden rate in premium list first
-							{
-								return PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.get(itemId);
-							}
-							else if (Config.RATE_DROP_ITEMS_ID.containsKey(itemId)) // then check for overriden rate in general list
-							{
-								return Config.RATE_DROP_ITEMS_ID.get(itemId);
-							}
-							else
-							// return premium rate, either for raid, or normal mob, if it isn't overriden anywhere
-							{
-								return isRaid ? PremiumServiceConfigs.PREMIUM_RATE_DROP_ITEMS_BY_RAID : PremiumServiceConfigs.PREMIUM_RATE_DROP_ITEMS;
-							}
-						}
-						else if (Config.RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overriden rate in general list first
+						if (Config.RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overriden rate in general list first
 						{
 							return Config.RATE_DROP_ITEMS_ID.get(itemId);
 						}
-						else
-						// return general rate, either for raid, or normal mob, if it isn't overriden anywhere
-						{
-							return isRaid ? Config.RATE_DROP_ITEMS_BY_RAID : Config.RATE_DROP_ITEMS;
-						}
+						return isRaid ? Config.RATE_DROP_ITEMS_BY_RAID : Config.RATE_DROP_ITEMS;
 				}
 		}
 		
 		return 0;
+	}
+	
+	public float calcPremiumDropMultipliers(int itemId)
+	{
+		if (PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overriden rate in premium list first
+		{
+			return PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.get(itemId);
+		}
+		return PremiumServiceConfigs.PREMIUM_RATE_DROP_ITEMS;
 	}
 	
 	/**
@@ -15926,5 +15897,32 @@ public final class L2PcInstance extends L2Playable
 			_pcAdmin = new PcAdmin(this);
 		}
 		return _pcAdmin;
+	}
+	
+	// ============================================== //
+	// Premium Engine By L][Sunrise Team //
+	// ============================================== //
+	private boolean _premiumService = false;
+	
+	public void setPremiumService(boolean premiumService)
+	{
+		_premiumService = premiumService;
+	}
+	
+	public boolean isPremium()
+	{
+		return _premiumService;
+	}
+	
+	private boolean _protected = false;
+	
+	public void setProtectedPlayer(boolean prot)
+	{
+		_protected = prot;
+	}
+	
+	public boolean isProtected()
+	{
+		return _protected;
 	}
 }

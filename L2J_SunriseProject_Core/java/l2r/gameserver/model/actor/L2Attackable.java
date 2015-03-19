@@ -620,9 +620,10 @@ public class L2Attackable extends L2Npc
 						// Calculate the level difference between Party and L2Attackable
 						final int levelDiff = partyLvl - getLevel();
 						
-						final int[] expSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, attacker.isPremium());
-						long exp_premium = expSp[0];
-						int sp_premium = expSp[1];
+						final int[] expSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, false);
+						final int[] premiumCheckExpSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, true);
+						long exp_premium = premiumCheckExpSp[0];
+						int sp_premium = premiumCheckExpSp[1];
 						long exp = expSp[0];
 						int sp = expSp[1];
 						

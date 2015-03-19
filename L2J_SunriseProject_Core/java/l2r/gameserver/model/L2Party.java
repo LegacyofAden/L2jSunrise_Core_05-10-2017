@@ -689,8 +689,15 @@ public class L2Party extends AbstractPlayerGroup
 		}
 		
 		L2PcInstance looter = getActualLooter(player, itemId, spoil, target);
-		
-		looter.addItem(spoil ? "Sweeper Party" : "Party", itemId, itemCount, target, true);
+		if (looter.isPremium())
+		{
+			itemCount *= looter.calcPremiumDropMultipliers(itemId);
+			looter.addItem(spoil ? "Sweeper Party" : "Party", itemId, itemCount, target, true);
+		}
+		else
+		{
+			looter.addItem(spoil ? "Sweeper Party" : "Party", itemId, itemCount, target, true);
+		}
 		
 		// Send messages to other party members about reward
 		if (itemCount > 1)
@@ -753,7 +760,16 @@ public class L2Party extends AbstractPlayerGroup
 		final long count = adena / ToReward.size();
 		for (L2PcInstance member : ToReward)
 		{
-			member.addAdena("Party", count, player, true);
+			if (member.isPremium())
+			{
+				long tempCount = count;
+				tempCount *= member.calcPremiumDropMultipliers(57);
+				member.addAdena("Party", tempCount, player, true);
+			}
+			else
+			{
+				member.addAdena("Party", count, player, true);
+			}
 		}
 	}
 	
@@ -786,7 +802,7 @@ public class L2Party extends AbstractPlayerGroup
 		
 		// Now we can actually distribute the rewards.
 		// Total item splitted by the number of party members that are in range and must be rewarded.
-		final long count = itemCount / toReward.size();
+		long count = itemCount / toReward.size();
 		final int rest = (int) (itemCount % toReward.size());
 		
 		// If the item count isn't exact the remain item amount is given randomly to a party member.
@@ -800,7 +816,16 @@ public class L2Party extends AbstractPlayerGroup
 		
 		for (L2PcInstance member : toReward)
 		{
-			member.addItem("Party", itemId, count, player, true);
+			if (member.isPremium())
+			{
+				long tempCount = count;
+				tempCount *= member.calcPremiumDropMultipliers(itemId);
+				member.addItem("Party", itemId, tempCount, player, true);
+			}
+			else
+			{
+				member.addItem("Party", itemId, count, player, true);
+			}
 		}
 	}
 	
@@ -860,7 +885,6 @@ public class L2Party extends AbstractPlayerGroup
 				
 				if (member.isPremium())
 				{
-					
 					addexp = Math.round(member.calcStat(Stats.EXPSP_RATE, xpReward_pr * preCalculation, null, null));
 					addsp = (int) member.calcStat(Stats.EXPSP_RATE, spReward_pr * preCalculation, null, null);
 				}

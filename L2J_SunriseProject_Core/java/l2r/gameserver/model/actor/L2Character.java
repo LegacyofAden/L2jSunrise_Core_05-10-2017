@@ -184,7 +184,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	
 	private volatile Set<L2Character> _attackByList;
 	private volatile boolean _isCastingNow = false;
-	private boolean _protected = false;
 	private volatile boolean _isCastingSimultaneouslyNow = false;
 	private L2Skill _lastSkillCast;
 	private L2Skill _lastSimultaneousSkillCast;
@@ -7928,30 +7927,5 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public int getMinShopDistancePlayer()
 	{
 		return 0;
-	}
-	
-	public void setProtectedPlayer(boolean prot)
-	{
-		_protected = prot;
-	}
-	
-	public boolean isProtected()
-	{
-		return _protected;
-	}
-	
-	// ============================================== //
-	// Premium Engine By L][Sunrise Team //
-	// ============================================== //
-	private boolean _premiumService = false;
-	
-	public void setPremiumService(boolean premiumService)
-	{
-		_premiumService = premiumService;
-	}
-	
-	public boolean isPremium()
-	{
-		return _premiumService;
 	}
 }
