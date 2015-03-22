@@ -2586,6 +2586,14 @@ public final class Formulas
 			}
 		}
 		
+		if (canceled.isEmpty() && activeChar.isPlayer())
+		{
+			final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_RESISTED_YOUR_S2);
+			sm.addCharName(target);
+			sm.addSkillName(skill);
+			activeChar.sendPacket(sm);
+		}
+		
 		return canceled;
 	}
 	
