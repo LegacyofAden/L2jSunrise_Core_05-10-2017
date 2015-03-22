@@ -15746,6 +15746,19 @@ public final class L2PcInstance extends L2Playable
 		_antifeedProtection = antiFeedProtection;
 	}
 	
+	// For Flag zone
+	private boolean _antiFeed = false;
+	
+	public boolean hasAntiFeed()
+	{
+		return _antiFeed;
+	}
+	
+	public void setAntiFeed(boolean soloAntiFeed)
+	{
+		_antiFeed = soloAntiFeed;
+	}
+	
 	public void registerShortCut(L2ShortCut shortcut, boolean storeToDb)
 	{
 		_shortCuts.registerShortCut(shortcut, storeToDb);

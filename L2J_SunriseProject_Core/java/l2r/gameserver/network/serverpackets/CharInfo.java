@@ -221,14 +221,21 @@ public class CharInfo extends L2GameServerPacket
 			if (antifeed)
 			{
 				writeS("Unknown"); // visible name
-				
 				writeD(_activeChar.getAntifeedTemplate().getRace().ordinal()); // race
 				writeD(_activeChar.getAntifeedSex() ? 0 : 1); // sex
 				writeD(_activeChar.getAntifeedTemplate().getClassId().getId()); // class
 			}
 			else
 			{
-				writeS(_activeChar.getAppearance().getVisibleName());
+				if (_activeChar.hasAntiFeed())
+				{
+					writeS("Unknown"); // visible name
+				}
+				else
+				{
+					writeS(_activeChar.getAppearance().getVisibleName());
+				}
+				
 				writeD(_activeChar.getRace().ordinal());
 				writeD(_activeChar.getAppearance().getSex() ? 1 : 0);
 				
@@ -349,7 +356,7 @@ public class CharInfo extends L2GameServerPacket
 				writeD(_activeChar.getAppearance().getFace());
 			}
 			
-			if (antifeed)
+			if (antifeed || _activeChar.hasAntiFeed())
 			{
 				writeS("");
 			}
@@ -358,19 +365,19 @@ public class CharInfo extends L2GameServerPacket
 				writeS(gmSeeInvis ? "Invisible" : _activeChar.getAppearance().getVisibleTitle());
 			}
 			
-			if (!_activeChar.isCursedWeaponEquipped() && !antifeed)
+			if (_activeChar.isCursedWeaponEquipped() || antifeed || _activeChar.hasAntiFeed())
+			{
+				writeD(0x00);
+				writeD(0x00);
+				writeD(0x00);
+				writeD(0x00);
+			}
+			else
 			{
 				writeD(_activeChar.getClanId());
 				writeD(_activeChar.getClanCrestId());
 				writeD(_activeChar.getAllyId());
 				writeD(_activeChar.getAllyCrestId());
-			}
-			else
-			{
-				writeD(0x00);
-				writeD(0x00);
-				writeD(0x00);
-				writeD(0x00);
 			}
 			
 			writeC(_activeChar.isSitting() ? 0 : 1); // standing = 1 sitting = 0
@@ -396,7 +403,7 @@ public class CharInfo extends L2GameServerPacket
 			
 			writeC(_activeChar.isInsideZone(ZoneIdType.WATER) ? 1 : _activeChar.isFlyingMounted() ? 2 : 0);
 			
-			if (antifeed)
+			if (antifeed || _activeChar.hasAntiFeed())
 			{
 				writeH(0);
 			}
@@ -418,7 +425,7 @@ public class CharInfo extends L2GameServerPacket
 			
 			writeC(_activeChar.getTeam().getId());
 			
-			if (antifeed)
+			if (antifeed || _activeChar.hasAntiFeed())
 			{
 				writeD(0);
 				writeC(1); // Symbol on char menu ctrl+I
@@ -436,7 +443,7 @@ public class CharInfo extends L2GameServerPacket
 			writeD(_activeChar.getFishy());
 			writeD(_activeChar.getFishz());
 			
-			if (antifeed)
+			if (antifeed || _activeChar.hasAntiFeed())
 			{
 				writeD(0xFFFFFF);
 			}
@@ -450,7 +457,7 @@ public class CharInfo extends L2GameServerPacket
 			writeD(_activeChar.getPledgeClass());
 			writeD(_activeChar.getPledgeType());
 			
-			if (antifeed)
+			if (antifeed || _activeChar.hasAntiFeed())
 			{
 				writeD(0xFFFF77);
 			}
