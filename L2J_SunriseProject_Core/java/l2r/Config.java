@@ -1128,11 +1128,13 @@ public final class Config
 	// --------------------------------------------------
 	// Zaken
 	// --------------------------------------------------
-	public static int ZAKEN_MINLEVEL_DAYTIME;
-	public static int ZAKEN_MINLEVEL_DAYTIME83;
-	public static int ZAKEN_MINMEMBERS_DAYTIME;
+	public static int ZAKEN_MIN_LEVEL_DAYTIME_60;
+	public static int ZAKEN_MIN_MEMBERS_DAYTIME_60;
+	public static int ZAKEN_MAX_MEMBERS_DAYTIME_60;
+	public static int ZAKEN_MIN_LEVEL_DAYTIME_83;
+	public static int ZAKEN_MIN_MEMBERS_DAYTIME_83;
+	public static int ZAKEN_MAX_MEMBERS_DAYTIME_83;
 	public static int ZAKEN_MINMEMBERS_NIGHTTIME;
-	public static int ZAKEN_MAXMEMBERS_DAYTIME;
 	public static int ZAKEN_MAXMEMBERS_NIGHTTIME;
 	
 	// --------------------------------------------------
@@ -2731,11 +2733,14 @@ public final class Config
 			// Load ZAKEN_CONFIG L2Properties file (if exists)
 			final PropertiesParser zaken_load = new PropertiesParser(ZAKEN_CONFIG);
 			
-			ZAKEN_MINLEVEL_DAYTIME = zaken_load.getInt("ZakenMinLevelDaytime", 55);
-			ZAKEN_MINLEVEL_DAYTIME83 = zaken_load.getInt("ZakenMinLevelDaytime83", 78);
-			ZAKEN_MINMEMBERS_DAYTIME = zaken_load.getInt("ZakenMinMembersDaytime", 9);
+			ZAKEN_MIN_LEVEL_DAYTIME_60 = zaken_load.getInt("ZakenMinLevelDaytime60", 55);
+			ZAKEN_MIN_MEMBERS_DAYTIME_60 = zaken_load.getInt("ZakenMinMembersDaytime60", 9);
+			ZAKEN_MAX_MEMBERS_DAYTIME_60 = zaken_load.getInt("ZakenMaxMembersDaytime60", 27);
+			ZAKEN_MIN_LEVEL_DAYTIME_83 = zaken_load.getInt("ZakenMinLevelDaytime83", 78);
+			ZAKEN_MIN_MEMBERS_DAYTIME_83 = zaken_load.getInt("ZakenMinMembersDaytime83", 9);
+			ZAKEN_MAX_MEMBERS_DAYTIME_83 = zaken_load.getInt("ZakenMaxMembersDaytime83", 27);
+			
 			ZAKEN_MINMEMBERS_NIGHTTIME = zaken_load.getInt("ZakenMinMembersNighttime", 72);
-			ZAKEN_MAXMEMBERS_DAYTIME = zaken_load.getInt("ZakenMaxMembersDaytime", 27);
 			ZAKEN_MAXMEMBERS_NIGHTTIME = zaken_load.getInt("ZakenMaxMembersNighttime", 450);
 			
 			// Load DESTRUCTION_BOSSES_CONFIG L2Properties file (if exists)
