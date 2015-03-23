@@ -146,8 +146,6 @@ import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.StopMove;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.TeleportToLocation;
-import l2r.gameserver.pathfinding.AbstractNodeLoc;
-import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
 import l2r.gameserver.util.Util;
 import l2r.util.EmptyQueue;
@@ -3930,7 +3928,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		public boolean disregardingGeodata;
 		public int onGeodataPathIndex;
-		public List<AbstractNodeLoc> geoPath;
+		public List<Location> geoPath;
 		public int geoPathAccurateTx;
 		public int geoPathAccurateTy;
 		public int geoPathGtx;
@@ -4532,7 +4530,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		int zPrev = getZ(); // the z coordinate may be modified by coordinate synchronizations
 		
 		double dx, dy, dz;
-		if (Config.COORD_SYNCHRONIZE == 1)
+		if (Config.GEODATA)
 		// the only method that can modify x,y while moving (otherwise _move would/should be set null)
 		{
 			dx = m._xDestination - xPrev;
@@ -4548,8 +4546,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		final boolean isFloating = isFlying() || isInsideZone(ZoneIdType.WATER);
 		
 		// Z coordinate will follow geodata or client values
-		if ((Config.COORD_SYNCHRONIZE == 2) && !isFloating && !m.disregardingGeodata && ((GameTimeController.getInstance().getGameTicks() % 10) == 0 // once a second to reduce possible cpu load
-		) && GeoData.getInstance().hasGeo(xPrev, yPrev))
+		if ((Config.GEODATA) && !isFloating && !m.disregardingGeodata && ((GameTimeController.getInstance().getGameTicks() % 10) == 0))
 		{
 			int geoHeight = GeoData.getInstance().getSpawnHeight(xPrev, yPrev, zPrev);
 			dz = m._zDestination - geoHeight;
@@ -4909,7 +4906,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			
 			// Movement checks:
 			// when PATHFINDING > 0, for all characters except mobs returning home (could be changed later to teleport if pathfinding fails)
-			if (((Config.PATHFINDING > 0) && (!(isAttackable() && ((L2Attackable) this).isReturningToSpawnPoint()))) || (isPlayer() && !(isInVehicle && (distance > 1500))) || (isSummon() && !(getAI().getIntention() == AI_INTENTION_FOLLOW)) // assuming intention_follow only when following owner
+			if (((Config.GEODATA) && (!(isAttackable() && ((L2Attackable) this).isReturningToSpawnPoint()))) || (isPlayer() && !(isInVehicle && (distance > 1500))) || (isSummon() && !(getAI().getIntention() == AI_INTENTION_FOLLOW)) // assuming intention_follow only when following owner
 				|| isAfraid() || (this instanceof L2RiftInvaderInstance))
 			{
 				if (isOnGeodataPath())
@@ -4947,7 +4944,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					}
 					return;
 				}
-				Location destiny = GeoData.getInstance().moveCheck(curX, curY, curZ, x, y, z, getInstanceId());
+				Location destiny = GeoData.getInstance().moveCheck(curX, curY, curZ, x, y, z, false);
 				// location different if destination wasn't reached (or just z coord is different)
 				x = destiny.getX();
 				y = destiny.getY();
@@ -4960,13 +4957,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			// Pathfinding checks. Only when geodata setting is 2, the LoS check gives shorter result
 			// than the original movement was and the LoS gives a shorter distance than 2000
 			// This way of detecting need for pathfinding could be changed.
-			if ((Config.PATHFINDING > 0) && ((originalDistance - distance) > 30) && (distance < 2000) && !isAfraid())
+			if ((Config.GEODATA) && ((originalDistance - distance) > 30) && (distance < 2000) && !isAfraid())
 			{
 				// Path calculation
 				// Overrides previous movement check
 				if ((isPlayable() && !isInVehicle) || isMinion() || isInCombat())
 				{
-					m.geoPath = PathFinding.getInstance().findPath(curX, curY, curZ, originalX, originalY, originalZ, getInstanceId(), isPlayable());
+					m.geoPath = GeoData.getInstance().pathFind(curX, curY, curZ, new Location(originalX, originalY, originalZ));
 					if ((m.geoPath == null) || (m.geoPath.size() < 2)) // No path found
 					{
 						// * Even though there's no path found (remember geonodes aren't perfect),
@@ -5028,7 +5025,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				}
 			}
 			// If no distance to go through, the movement is canceled
-			if ((distance < 1) && ((Config.PATHFINDING > 0) || isPlayable() || (this instanceof L2RiftInvaderInstance) || isAfraid()))
+			if ((distance < 1) && ((Config.GEODATA) || isPlayable() || (this instanceof L2RiftInvaderInstance) || isAfraid()))
 			{
 				if (isSummon())
 				{

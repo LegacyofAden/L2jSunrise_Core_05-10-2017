@@ -911,7 +911,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					if (!npc.isInsideRadius(newX, newY, 0, collision, false, false))
 					{
 						int newZ = npc.getZ() + 30;
-						if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), newX, newY, newZ, npc.getInstanceId()))
+						if (GeoData.getInstance().canMoveToCoord(npc.getX(), npc.getY(), npc.getZ(), newX, newY, newZ, true))
 						{
 							moveTo(newX, newY, newZ);
 						}
@@ -951,7 +951,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						posY = posY - 300;
 					}
 					
-					if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), posX, posY, posZ, npc.getInstanceId()))
+					if (GeoData.getInstance().canMoveToCoord(npc.getX(), npc.getY(), npc.getZ(), posX, posY, posZ, true))
 					{
 						setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new Location(posX, posY, posZ, 0));
 					}

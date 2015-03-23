@@ -28,8 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -37,9 +35,12 @@ import l2r.gameserver.model.interfaces.IRestorable;
 import l2r.gameserver.network.serverpackets.SendMacroList;
 import l2r.util.StringUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MacroList implements IRestorable
 {
-	private static final Logger _log = Logger.getLogger(MacroList.class.getName());
+	private static final Logger _log = LoggerFactory.getLogger(MacroList.class);
 	
 	private final L2PcInstance _owner;
 	private int _revision;
@@ -159,7 +160,7 @@ public class MacroList implements IRestorable
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "could not store macro:", e);
+			_log.warn("could not store macro:", e);
 		}
 	}
 	
@@ -174,7 +175,7 @@ public class MacroList implements IRestorable
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "could not delete macro:", e);
+			_log.warn("could not delete macro:", e);
 		}
 	}
 	
@@ -220,7 +221,7 @@ public class MacroList implements IRestorable
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "could not store shortcuts:", e);
+			_log.warn("could not store shortcuts:", e);
 			return false;
 		}
 		return true;

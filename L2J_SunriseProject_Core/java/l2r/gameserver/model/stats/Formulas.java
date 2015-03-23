@@ -21,7 +21,6 @@ package l2r.gameserver.model.stats;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import l2r.Config;
 import l2r.gameserver.SevenSigns;
@@ -85,6 +84,10 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import gr.sr.balanceEngine.BalanceHandler;
 import gr.sr.configsEngine.configs.impl.FormulasConfigs;
 
@@ -93,7 +96,7 @@ import gr.sr.configsEngine.configs.impl.FormulasConfigs;
  */
 public final class Formulas
 {
-	private static final Logger _log = Logger.getLogger(Formulas.class.getName());
+	private static final Logger _log = LoggerFactory.getLogger(Formulas.class);
 	
 	/** Regen Task period. */
 	private static final int HP_REGENERATE_PERIOD = 3000; // 3 secs
