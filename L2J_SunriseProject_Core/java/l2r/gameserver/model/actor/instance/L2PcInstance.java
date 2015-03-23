@@ -9665,6 +9665,11 @@ public final class L2PcInstance extends L2Playable
 					return true;
 				}
 				
+				if (isInsideZone(ZoneIdType.FLAG) && targetPlayer.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
+				{
+					return true;
+				}
+				
 				final L2Clan aClan = getClan();
 				final L2Clan tClan = targetPlayer.getClan();
 				
