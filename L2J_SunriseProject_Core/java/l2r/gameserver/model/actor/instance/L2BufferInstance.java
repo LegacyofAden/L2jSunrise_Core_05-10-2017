@@ -25,7 +25,7 @@ public class L2BufferInstance extends L2Npc
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		html.setFile(player.getHtmlPrefix(), "data/html/NpcBuffer/" + getTemplate().getId() + ".htm");
+		html.setFile(player.getHtmlPrefix(), "data/html/sunrise/NpcBuffer/" + getTemplate().getId() + ".htm");
 		html.replace("%objectId%", String.valueOf(getObjectId()));
 		player.sendPacket(html);
 	}
@@ -66,7 +66,7 @@ public class L2BufferInstance extends L2Npc
 				return;
 			}
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-			html.setFile(player.getHtmlPrefix(), "data/html/NpcBuffer/" + subCommand[1]);
+			html.setFile(player.getHtmlPrefix(), "data/html/sunrise/NpcBuffer/" + subCommand[1]);
 			html.replace("%objectId%", String.valueOf(getObjectId()));
 			player.sendPacket(html);
 		}

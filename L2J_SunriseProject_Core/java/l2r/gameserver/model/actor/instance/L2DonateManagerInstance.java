@@ -58,7 +58,7 @@ public class L2DonateManagerInstance extends L2Npc
 	public void sendPacket(L2PcInstance player, String html)
 	{
 		NpcHtmlMessage msg = new NpcHtmlMessage(getObjectId());
-		msg.setFile(player.getHtmlPrefix(), "/data/html/DonateManager/" + html);
+		msg.setFile(player.getHtmlPrefix(), "/data/html/sunrise/DonateManager/" + html);
 		msg.replace("%objectId%", String.valueOf(getObjectId()));
 		player.sendPacket(msg);
 	}
@@ -69,7 +69,7 @@ public class L2DonateManagerInstance extends L2Npc
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		html.setFile(player.getHtmlPrefix(), "data/html/DonateManager/main.htm");
+		html.setFile(player.getHtmlPrefix(), "data/html/sunrise/DonateManager/main.htm");
 		html.replace("%objectId%", String.valueOf(getObjectId()));
 		player.sendPacket(html);
 	}
@@ -99,7 +99,7 @@ public class L2DonateManagerInstance extends L2Npc
 				return;
 			}
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-			html.setFile(player.getHtmlPrefix(), "data/html/DonateManager/" + subCommand[1]);
+			html.setFile(player.getHtmlPrefix(), "data/html/sunrise/DonateManager/" + subCommand[1]);
 			html.replace("%objectId%", String.valueOf(getObjectId()));
 			player.sendPacket(html);
 		}

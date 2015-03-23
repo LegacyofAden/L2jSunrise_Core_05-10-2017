@@ -149,7 +149,7 @@ public final class L2AioNpcInstance extends L2Npc
 	public void sendPacket(L2PcInstance player, String html)
 	{
 		NpcHtmlMessage msg = new NpcHtmlMessage(getObjectId());
-		msg.setFile(player.getHtmlPrefix(), "/data/html/AioNpc/" + html);
+		msg.setFile(player.getHtmlPrefix(), "/data/html/sunrise/AioNpc/" + html);
 		msg.replace("%objectId%", String.valueOf(getObjectId()));
 		player.sendPacket(msg);
 	}
@@ -160,7 +160,7 @@ public final class L2AioNpcInstance extends L2Npc
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/main.htm");
+		html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/main.htm");
 		html.replace("%objectId%", String.valueOf(getObjectId()));
 		player.sendPacket(html);
 	}
@@ -169,15 +169,15 @@ public final class L2AioNpcInstance extends L2Npc
 	{
 		if (Config.ALT_GAME_SUBCLASS_EVERYWHERE || (pRace != PcRace.Kamael))
 		{
-			return "data/html/AioNpc/subclass/SubClass.htm";
+			return "data/html/sunrise/AioNpc/subclass/SubClass.htm";
 		}
 		
-		return "data/html/AioNpc/subclass/SubClass_NoOther.htm";
+		return "data/html/sunrise/AioNpc/subclass/SubClass_NoOther.htm";
 	}
 	
 	protected static String getSubClassFail()
 	{
-		return "data/html/AioNpc/subclass/SubClass_Fail.htm";
+		return "data/html/sunrise/AioNpc/subclass/SubClass_Fail.htm";
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public final class L2AioNpcInstance extends L2Npc
 				return;
 			}
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-			html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/" + subCommand[1]);
+			html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/" + subCommand[1]);
 			html.replace("%objectId%", String.valueOf(getObjectId()));
 			player.sendPacket(html);
 		}
@@ -222,7 +222,7 @@ public final class L2AioNpcInstance extends L2Npc
 			if (Config.L2JMOD_ENABLE_WAREHOUSESORTING_PRIVATE)
 			{
 				NpcHtmlMessage msg = new NpcHtmlMessage(getObjectId());
-				msg.setFile(player.getHtmlPrefix(), "data/html/AioNpc/warehouse/WhSortedP.htm");
+				msg.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/warehouse/WhSortedP.htm");
 				msg.replace("%objectId%", String.valueOf(getObjectId()));
 				player.sendPacket(msg);
 			}
@@ -458,14 +458,14 @@ public final class L2AioNpcInstance extends L2Npc
 			// Subclasses may not be changed while a transformated state.
 			if (player.getTransformation() != null)
 			{
-				html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_NoTransformed.htm");
+				html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_NoTransformed.htm");
 				player.sendPacket(html);
 				return;
 			}
 			// Subclasses may not be changed while a summon is active.
 			if (player.getSummon() != null)
 			{
-				html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_NoSummon.htm");
+				html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_NoSummon.htm");
 				player.sendPacket(html);
 				return;
 			}
@@ -526,7 +526,7 @@ public final class L2AioNpcInstance extends L2Npc
 					subsAvailable = Conditions.getAvailableSubClasses(player);
 					if ((subsAvailable != null) && !subsAvailable.isEmpty())
 					{
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_Add.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Add.htm");
 						final StringBuilder content1 = StringUtil.startAppend(200);
 						for (PlayerClass subClass : subsAvailable)
 						{
@@ -538,12 +538,12 @@ public final class L2AioNpcInstance extends L2Npc
 					{
 						if ((player.getRace() == PcRace.Elf) || (player.getRace() == PcRace.DarkElf))
 						{
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_Fail_Elves.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Fail_Elves.htm");
 							player.sendPacket(html);
 						}
 						else if (player.getRace() == PcRace.Kamael)
 						{
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_Fail_Kamael.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Fail_Kamael.htm");
 							player.sendPacket(html);
 						}
 						else
@@ -557,7 +557,7 @@ public final class L2AioNpcInstance extends L2Npc
 				case 2: // Change Class - Initial
 					if (player.getSubClasses().isEmpty())
 					{
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ChangeNo.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ChangeNo.htm");
 					}
 					else
 					{
@@ -578,26 +578,26 @@ public final class L2AioNpcInstance extends L2Npc
 						
 						if (content2.length() > 0)
 						{
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_Change.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Change.htm");
 							html.replace("%list%", content2.toString());
 						}
 						else
 						{
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ChangeNotFound.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ChangeNotFound.htm");
 						}
 					}
 					break;
 				case 3: // Change/Cancel Subclass - Initial
 					if ((player.getSubClasses() == null) || player.getSubClasses().isEmpty())
 					{
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyEmpty.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyEmpty.htm");
 						break;
 					}
 					
 					// custom value
 					if ((player.getTotalSubClasses() > 3) || (Config.MAX_SUBCLASS > 3))
 					{
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyCustom.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyCustom.htm");
 						final StringBuilder content3 = StringUtil.startAppend(200);
 						int classIndex = 1;
 						
@@ -612,7 +612,7 @@ public final class L2AioNpcInstance extends L2Npc
 					else
 					{
 						// retail html contain only 3 subclasses
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_Modify.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Modify.htm");
 						if (player.getSubClasses().containsKey(1))
 						{
 							html.replace("%sub1%", ClassListData.getInstance().getClass(player.getSubClasses().get(1).getClassId()).getClientCode());
@@ -698,7 +698,7 @@ public final class L2AioNpcInstance extends L2Npc
 						
 						player.setActiveClass(player.getTotalSubClasses());
 						
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_AddOk.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_AddOk.htm");
 						
 						player.sendPacket(SystemMessageId.ADD_NEW_SUBCLASS); // Subclass added.
 					}
@@ -719,7 +719,7 @@ public final class L2AioNpcInstance extends L2Npc
 					
 					if (player.getClassIndex() == paramOne)
 					{
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_Current.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Current.htm");
 						break;
 					}
 					
@@ -772,16 +772,16 @@ public final class L2AioNpcInstance extends L2Npc
 					switch (paramOne)
 					{
 						case 1:
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyChoice1.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyChoice1.htm");
 							break;
 						case 2:
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyChoice2.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyChoice2.htm");
 							break;
 						case 3:
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyChoice3.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyChoice3.htm");
 							break;
 						default:
-							html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyChoice.htm");
+							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyChoice.htm");
 					}
 					html.replace("%list%", content6.toString());
 					break;
@@ -808,7 +808,7 @@ public final class L2AioNpcInstance extends L2Npc
 						player.stopCubics();
 						player.setActiveClass(paramOne);
 						
-						html.setFile(player.getHtmlPrefix(), "data/html/AioNpc/subclass/SubClass_ModifyOk.htm");
+						html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_ModifyOk.htm");
 						html.replace("%name%", ClassListData.getInstance().getClass(paramTwo).getClientCode());
 						
 						player.sendPacket(SystemMessageId.ADD_NEW_SUBCLASS); // Subclass added.

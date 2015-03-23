@@ -83,7 +83,7 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 		}
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		html.setFile(player.getHtmlPrefix(), "data/html/teleporter/custom/main.htm");
+		html.setFile(player.getHtmlPrefix(), "data/html/sunrise/teleporter/main.htm");
 		if (CustomNpcsConfigs.ENABLE_PLAYERS_COUNT)
 		{
 			switch (CustomNpcsConfigs.ZONE_TYPE_FOR_PLAYERS_COUNT)
@@ -138,7 +138,7 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 				return;
 			}
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-			html.setFile(player.getHtmlPrefix(), "data/html/teleporter/custom/" + subCommand[1]);
+			html.setFile(player.getHtmlPrefix(), "data/html/sunrise/teleporter/" + subCommand[1]);
 			if (CustomNpcsConfigs.ENABLE_PLAYERS_COUNT)
 			{
 				switch (CustomNpcsConfigs.ZONE_TYPE_FOR_PLAYERS_COUNT)
