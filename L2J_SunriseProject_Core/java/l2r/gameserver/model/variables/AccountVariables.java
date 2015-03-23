@@ -23,17 +23,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import l2r.L2DatabaseFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author UnAfraid
  */
 public class AccountVariables extends AbstractVariables
 {
-	private static final Logger _log = Logger.getLogger(AccountVariables.class.getName());
+	private static final Logger _log = LoggerFactory.getLogger(AccountVariables.class);
 	
 	// SQL Queries.
 	private static final String SELECT_QUERY = "SELECT * FROM account_gsdata WHERE account_name = ?";
@@ -66,7 +67,7 @@ public class AccountVariables extends AbstractVariables
 		}
 		catch (SQLException e)
 		{
-			_log.log(Level.WARNING, getClass().getSimpleName() + ": Couldn't restore variables for: " + _accountName, e);
+			_log.warn(getClass().getSimpleName() + ": Couldn't restore variables for: " + _accountName, e);
 			return false;
 		}
 		finally
@@ -109,7 +110,7 @@ public class AccountVariables extends AbstractVariables
 		}
 		catch (SQLException e)
 		{
-			_log.log(Level.WARNING, getClass().getSimpleName() + ": Couldn't update variables for: " + _accountName, e);
+			_log.warn(getClass().getSimpleName() + ": Couldn't update variables for: " + _accountName, e);
 			return false;
 		}
 		finally

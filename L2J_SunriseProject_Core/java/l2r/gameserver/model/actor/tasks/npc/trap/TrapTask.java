@@ -18,11 +18,12 @@
  */
 package l2r.gameserver.model.actor.tasks.npc.trap;
 
-import java.util.logging.Logger;
-
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2TrapInstance;
 import l2r.gameserver.network.serverpackets.SocialAction;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Trap task.
@@ -30,7 +31,7 @@ import l2r.gameserver.network.serverpackets.SocialAction;
  */
 public class TrapTask implements Runnable
 {
-	private static final Logger _log = Logger.getLogger(TrapTask.class.getName());
+	private static final Logger _log = LoggerFactory.getLogger(TrapTask.class);
 	private static final int TICK = 1000; // 1s
 	private final L2TrapInstance _trap;
 	
@@ -85,7 +86,7 @@ public class TrapTask implements Runnable
 		}
 		catch (Exception e)
 		{
-			_log.severe(TrapTask.class.getSimpleName() + ": " + e.getMessage());
+			_log.error(TrapTask.class.getSimpleName() + ": " + e.getMessage());
 			_trap.unSummon();
 		}
 	}
