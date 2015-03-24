@@ -90,7 +90,7 @@ public class GeoData
 			return true;
 		}
 		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.getInstanceId()))
+		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.getInstanceId()) && !target.isDoor())
 		{
 			return false;
 		}
@@ -110,7 +110,7 @@ public class GeoData
 			return true;
 		}
 		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.getInstanceId()))
+		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.getInstanceId()) && !target.isDoor())
 		{
 			return false;
 		}
