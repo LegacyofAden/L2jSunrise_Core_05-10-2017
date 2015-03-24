@@ -1585,7 +1585,7 @@ public final class L2ItemInstance extends L2Object
 			
 			if (_dropper != null)
 			{
-				Location dropDest = GeoData.getInstance().moveCheck(_dropper, new Location(_x, _y, _z), true);
+				Location dropDest = GeoData.getInstance().moveCheck(_dropper.getX(), _dropper.getY(), _dropper.getZ(), _x, _y, _z, _dropper.getInstanceId());
 				_x = dropDest.getX();
 				_y = dropDest.getY();
 				_z = dropDest.getZ();

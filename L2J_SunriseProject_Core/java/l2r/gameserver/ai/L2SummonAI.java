@@ -235,7 +235,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 				
 				final int targetX = ownerX + (int) (AVOID_RADIUS * Math.cos(angle));
 				final int targetY = ownerY + (int) (AVOID_RADIUS * Math.sin(angle));
-				if (GeoData.getInstance().canMoveToCoord(_actor.getX(), _actor.getY(), _actor.getZ(), targetX, targetY, _actor.getZ(), true))
+				if (GeoData.getInstance().canMove(_actor.getX(), _actor.getY(), _actor.getZ(), targetX, targetY, _actor.getZ(), _actor.getInstanceId()))
 				{
 					moveTo(targetX, targetY, _actor.getZ());
 				}

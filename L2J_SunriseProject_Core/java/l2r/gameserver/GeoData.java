@@ -1,451 +1,676 @@
+/*
+ * Copyright (C) 2004-2015 L2J Server
+ *
+ * This file is part of L2J Server.
+ *
+ * L2J Server is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * L2J Server is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package l2r.gameserver;
 
-import java.util.Vector;
+import java.io.FileInputStream;
+import java.lang.reflect.Constructor;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.Location;
-import l2r.gameserver.model.actor.L2Character;
-import l2r.geoserver.geodata.GeoEngine;
-import l2r.geoserver.geodata.PathFindBuffers;
-import l2r.geoserver.model.GeoCollision;
-import l2r.geoserver.model.MoveTrick;
-import l2r.util.Rnd;
+import l2r.gameserver.model.interfaces.ILocational;
+import l2r.gameserver.util.GeoUtils;
+import l2r.gameserver.util.LinePointIterator;
+import l2r.gameserver.util.LinePointIterator3D;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.l2jserver.gameserver.geoengine.Direction;
+import com.l2jserver.gameserver.geoengine.NullDriver;
+import com.l2jserver.gameserver.geoengine.abstraction.IGeoDriver;
 
-public class GeoData
+/**
+ * @author -Nemesiss-, FBIagent
+ */
+public class GeoData implements IGeoDriver
 {
-	private static final Logger _log = LoggerFactory.getLogger(GeoData.class);
+	private static final Logger LOGGER = Logger.getLogger(GeoData.class.getName());
+	private static final int ELEVATED_SEE_OVER_DISTANCE = 2;
+	private static final int MAX_SEE_OVER_HEIGHT = 48;
 	
-	protected static GeoData instance;
-	public static final int seeUp = 16;
-	protected GeoEngine geoEngine;
+	private final IGeoDriver _driver;
 	
-	public static GeoData getInstance()
+	protected GeoData()
 	{
-		if (instance == null)
+		if (Config.PATHFINDING > 0)
 		{
+			IGeoDriver driver = null;
 			try
 			{
-				new GeoData();
+				Class<?> cls = Class.forName(Config.GEODATA_DRIVER);
+				if (!IGeoDriver.class.isAssignableFrom(cls))
+				{
+					throw new ClassCastException("Geodata driver class needs to implement IGeoDriver!");
+				}
+				Constructor<?> ctor = cls.getConstructor(Properties.class);
+				Properties props = new Properties();
+				try (FileInputStream fis = new FileInputStream(Paths.get("config", "GeoDriver.properties").toString()))
+				{
+					props.load(fis);
+				}
+				driver = (IGeoDriver) ctor.newInstance(props);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				e.printStackTrace();
-				_log.error(GeoData.class.getSimpleName() + ": Can't init geoclient.");
-				System.exit(0);
+				LOGGER.log(Level.SEVERE, "Failed to load geodata driver!", ex);
+				System.exit(1);
 			}
-		}
-		return instance;
-	}
-	
-	public GeoData()
-	{
-		instance = this;
-		
-		if (Config.GEODATA)
-		{
-			initLocal();
+			// we do it this way so it's predictable for the compiler
+			_driver = driver;
 		}
 		else
 		{
-			initFake();
+			_driver = new NullDriver(null);
 		}
 	}
 	
-	public void initFake()
+	@Override
+	public int getGeoX(int worldX)
 	{
-		_log.info(GeoData.class.getSimpleName() + ": GeoEngine is Disabled.");
+		return _driver.getGeoX(worldX);
 	}
 	
-	public void initLocal()
+	@Override
+	public int getGeoY(int worldY)
 	{
-		PathFindBuffers.initBuffers("8x100;8x128;8x192;4x256;2x320;2x384;1x500");
-		GeoEngine.loadGeo();
-		geoEngine = new GeoEngine();
-		_log.info(GeoData.class.getSimpleName() + ": GeoEngine Successfully Started.");
+		return _driver.getGeoY(worldY);
 	}
 	
-	public Vector<Location> pathFind(int x, int y, int z, Location pos)
+	@Override
+	public int getWorldX(int geoX)
 	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.pathFind(x, y, z, pos.getX(), pos.getY(), pos.getZ());
-		}
-		return new Vector<>();
+		return _driver.getWorldX(geoX);
 	}
 	
-	public boolean canSeeTarget(L2Character actor, L2Character target)
+	@Override
+	public int getWorldY(int geoY)
 	{
-		if ((actor == null) || (target == null))
-		{
-			return true;
-		}
-		
-		if (actor == target)
-		{
-			return true;
-		}
-		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.getInstanceId()) && !target.isDoor())
-		{
-			return false;
-		}
-		
-		return canSeeTarget(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.isFlying(), actor.getTemplate().getCollisionHeight(), target.getTemplate().getCollisionHeight());
+		return _driver.getWorldY(geoY);
 	}
 	
-	public boolean canSeeTarget(L2Character actor, L2Object target)
+	@Override
+	public boolean hasGeoPos(int geoX, int geoY)
 	{
-		if ((actor == null) || (target == null))
-		{
-			return true;
-		}
-		
-		if ((target instanceof L2Character) && (actor == target))
-		{
-			return true;
-		}
-		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.getInstanceId()) && !target.isDoor())
-		{
-			return false;
-		}
-		
-		return canSeeTarget(actor.getX(), actor.getY(), actor.getZ(), target.getX(), target.getY(), target.getZ(), actor.isFlying(), actor.getTemplate().getCollisionHeight(), 16);
+		return _driver.hasGeoPos(geoX, geoY);
 	}
 	
-	public boolean canSeeTarget(L2Character actor, Location pos)
+	@Override
+	public int getNearestZ(int geoX, int geoY, int worldZ)
 	{
-		if ((actor == null) || (pos == null))
-		{
-			return true;
-		}
-		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), pos.getX(), pos.getY(), pos.getZ(), actor.getInstanceId()))
-		{
-			return false;
-		}
-		return canSeeTarget(actor.getX(), actor.getY(), actor.getZ(), pos.getX(), pos.getY(), pos.getZ(), actor.isFlying(), actor.getTemplate().getCollisionHeight(), 16);
+		return _driver.getNearestZ(geoX, geoY, worldZ);
 	}
 	
-	public boolean canSeeTarget(L2Character actor, int tx, int ty, int tz, boolean inAir)
+	@Override
+	public int getNextLowerZ(int geoX, int geoY, int worldZ)
 	{
-		if (actor == null)
-		{
-			return true;
-		}
-		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), tx, ty, tz, actor.getInstanceId()))
-		{
-			return false;
-		}
-		return canSeeTarget(actor.getX(), actor.getY(), actor.getZ(), tx, ty, tz, inAir, actor.getTemplate().getCollisionHeight(), 16);
+		return _driver.getNextLowerZ(geoX, geoY, worldZ);
 	}
 	
-	public boolean canSeeTarget(int x, int y, int z, int tx, int ty, int tz)
+	@Override
+	public int getNextHigherZ(int geoX, int geoY, int worldZ)
 	{
-		return (Math.abs(z - tz) < 1000);
+		return _driver.getNextHigherZ(geoX, geoY, worldZ);
 	}
 	
-	public Location moveCheckInAir(L2Character actor, Location toPos)
+	@Override
+	public boolean canEnterNeighbors(int geoX, int geoY, int worldZ, Direction first, Direction... more)
 	{
-		if (actor == null)
-		{
-			return null;
-		}
-		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), actor.getInstanceId()))
-		{
-			return null;
-		}
-		return moveCheckInAir(actor.getX(), actor.getY(), actor.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), 0);
+		return _driver.canEnterNeighbors(geoX, geoY, worldZ, first, more);
 	}
 	
-	public Location moveInWaterCheck(L2Character actor, Location toPos)
+	@Override
+	public boolean canEnterAllNeighbors(int geoX, int geoY, int worldZ)
 	{
-		if (actor == null)
-		{
-			return null;
-		}
-		
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), actor.getInstanceId()))
-		{
-			return null;
-		}
-		return moveInWaterCheck(actor.getX(), actor.getY(), actor.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), 0, 0);
+		return _driver.canEnterAllNeighbors(geoX, geoY, worldZ);
 	}
 	
-	private boolean canSeeTarget(int x, int y, int z, int tx, int ty, int tz, boolean inAir, int colHeightActor, int colHeightTarget)
+	// ///////////////////
+	// L2J METHODS
+	public boolean isNullDriver()
 	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.canSeeTarget(x, y, z, tx, ty, tz, inAir, colHeightActor, colHeightTarget);
-		}
-		return true;
+		return _driver instanceof NullDriver;
 	}
 	
+	/**
+	 * Gets the height.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @return the height
+	 */
 	public int getHeight(int x, int y, int z)
 	{
-		if (Config.GEODATA)
+		return getNearestZ(getGeoX(x), getGeoY(y), z);
+	}
+	
+	/**
+	 * Gets the spawn height.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the the z coordinate
+	 * @return the spawn height
+	 */
+	public int getSpawnHeight(int x, int y, int z)
+	{
+		final int height = getHeight(x, y, z);
+		if ((height > (z + 100)) || (height < (z - 100)))
 		{
-			return geoEngine.getHeight(x, y, z);
+			return z;
 		}
-		return z;
+		return height;
 	}
 	
-	public int getHeight(Location loc)
+	/**
+	 * Gets the spawn height.
+	 * @param location the location
+	 * @return the spawn height
+	 */
+	public int getSpawnHeight(Location location)
 	{
-		return getHeight(loc.getX(), loc.getY(), loc.getZ());
+		return getSpawnHeight(location.getX(), location.getY(), location.getZ());
 	}
 	
-	public Location moveCheckWithoutDoors(Location fromPos, Location toPos, boolean returnPrev)
+	/**
+	 * Can see target. Doors as target always return true. Checks doors between.
+	 * @param cha the character
+	 * @param target the target
+	 * @return {@code true} if the character can see the target (LOS), {@code false} otherwise
+	 */
+	public boolean canSeeTarget(L2Object cha, L2Object target)
 	{
-		return moveCheck(fromPos.getX(), fromPos.getY(), fromPos.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), returnPrev);
-	}
-	
-	public Location moveCheck(L2Character actor, Location toPos, boolean returnPrev)
-	{
-		if ((actor == null) || DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), actor.getInstanceId()))
+		if (target.isDoor())
 		{
-			return null;
+			// can always see doors :o
+			return true;
 		}
-		return moveCheck(actor.getX(), actor.getY(), actor.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), returnPrev);
+		
+		return canSeeTarget(cha.getX(), cha.getY(), cha.getZ(), cha.getInstanceId(), target.getX(), target.getY(), target.getZ(), target.getInstanceId());
 	}
 	
-	public Location moveCheck(int x, int y, int z, int tx, int ty, int tz, boolean returnPrev)
+	/**
+	 * Can see target. Checks doors between.
+	 * @param cha the character
+	 * @param worldPosition the world position
+	 * @return {@code true} if the character can see the target at the given world position, {@code false} otherwise
+	 */
+	public boolean canSeeTarget(L2Object cha, ILocational worldPosition)
 	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.moveCheck(x, y, z, tx, ty, tz, returnPrev);
-		}
-		return new Location(tx, ty, tz);
+		return canSeeTarget(cha.getX(), cha.getY(), cha.getZ(), cha.getInstanceId(), worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
 	}
 	
-	public boolean canMoveToCoord(L2Character actor, Location pos, boolean returnPrev)
+	/**
+	 * Can see target. Checks doors between.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param instanceId
+	 * @param tx the target's x coordinate
+	 * @param ty the target's y coordinate
+	 * @param tz the target's z coordinate
+	 * @param tInstanceId the target's instanceId
+	 * @return
+	 */
+	public boolean canSeeTarget(int x, int y, int z, int instanceId, int tx, int ty, int tz, int tInstanceId)
 	{
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), pos.getX(), pos.getY(), pos.getZ(), actor.getInstanceId()))
+		if ((instanceId != tInstanceId))
 		{
 			return false;
 		}
-		return canMoveToCoord(actor.getX(), actor.getY(), actor.getZ(), pos.getX(), pos.getY(), pos.getZ(), returnPrev);
+		return canSeeTarget(x, y, z, instanceId, tx, ty, tz);
 	}
 	
-	public boolean canMoveToCoord(L2Character actor, int tx, int ty, int tz, boolean returnPrev)
+	/**
+	 * Can see target. Checks doors between.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param instanceId
+	 * @param tx the target's x coordinate
+	 * @param ty the target's y coordinate
+	 * @param tz the target's z coordinate
+	 * @return {@code true} if there is line of sight between the given coordinate sets, {@code false} otherwise
+	 */
+	public boolean canSeeTarget(int x, int y, int z, int instanceId, int tx, int ty, int tz)
 	{
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), tx, ty, tz, actor.getInstanceId()))
+		if (DoorData.getInstance().checkIfDoorsBetween(x, y, z, tx, ty, tz, instanceId, true))
 		{
 			return false;
 		}
-		return canMoveToCoord(actor.getX(), actor.getY(), actor.getZ(), tx, ty, tz, returnPrev);
+		return canSeeTarget(x, y, z, tx, ty, tz);
 	}
 	
-	public boolean canMoveToCoord(int x, int y, int z, int tx, int ty, int tz, boolean returnPrev)
+	private int getLosGeoZ(int prevX, int prevY, int prevGeoZ, int curX, int curY, Direction dir)
 	{
-		if (Config.GEODATA)
+		boolean can = true;
+		
+		switch (dir)
 		{
-			return geoEngine.canMoveToCoord(x, y, z, tx, ty, tz, returnPrev);
+			case NORTH_EAST:
+				can = canEnterNeighbors(prevX, prevY - 1, prevGeoZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevGeoZ, Direction.NORTH);
+				break;
+			case NORTH_WEST:
+				can = canEnterNeighbors(prevX, prevY - 1, prevGeoZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevGeoZ, Direction.NORTH);
+				break;
+			case SOUTH_EAST:
+				can = canEnterNeighbors(prevX, prevY + 1, prevGeoZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevGeoZ, Direction.SOUTH);
+				break;
+			case SOUTH_WEST:
+				can = canEnterNeighbors(prevX, prevY + 1, prevGeoZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevGeoZ, Direction.SOUTH);
+				break;
+		
 		}
-		return true;
-	}
-	
-	public MoveTrick[] canMoveAdvanced(L2Character actor, Location pos, boolean returnPrev)
-	{
-		if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), pos.getX(), pos.getY(), pos.getZ(), actor.getInstanceId()))
+		if (can && canEnterNeighbors(prevX, prevY, prevGeoZ, dir))
 		{
-			return null;
+			return getNearestZ(curX, curY, prevGeoZ);
 		}
 		
-		return canMoveAdvanced(actor.getX(), actor.getY(), actor.getZ(), pos.getX(), pos.getY(), pos.getZ(), returnPrev);
+		return getNextHigherZ(curX, curY, prevGeoZ);
 	}
 	
-	private MoveTrick[] canMoveAdvanced(int x, int y, int z, int tx, int ty, int tz, boolean returnPrev)
+	/**
+	 * Can see target. Does not check doors between.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param tx the target's x coordinate
+	 * @param ty the target's y coordinate
+	 * @param tz the target's z coordinate
+	 * @return {@code true} if there is line of sight between the given coordinate sets, {@code false} otherwise
+	 */
+	public boolean canSeeTarget(int x, int y, int z, int tx, int ty, int tz)
 	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.canMoveAdvanced(x, y, z, tx, ty, tz, returnPrev);
-		}
-		int dx1 = x - tx;
-		int dy1 = y - ty;
-		int dist = (int) Math.sqrt((dx1 * dx1) + (dy1 * dy1));
-		MoveTrick[] result =
-		{
-			new MoveTrick(dist, tz)
-		};
-		return result;
-	}
-	
-	public Location moveCheckForAI(L2Object cha, L2Object target)
-	{
-		return moveCheckForAI(new Location(cha.getX(), cha.getY(), cha.getZ()), new Location(target.getX(), target.getY(), target.getZ()));
-	}
-	
-	public Location moveCheckForAI(Location loc1, Location loc2)
-	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.moveCheckForAI(loc1, loc2);
-		}
-		return loc2;
-	}
-	
-	public short getNSWE(int x, int y, int z)
-	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.getNSWE(x, y, z);
-		}
-		return 15;
-	}
-	
-	public MoveTrick[] canMoveToCoordWithCollision(int x, int y, int z, int tx, int ty, int tz, boolean returnPrev)
-	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.canMoveToTargetWithCollision(x, y, z, tx, ty, tz, returnPrev, false);
-		}
-		int dx1 = x - tx;
-		int dy1 = y - ty;
-		int dist = (int) Math.sqrt((dx1 * dx1) + (dy1 * dy1));
-		MoveTrick[] result =
-		{
-			new MoveTrick(dist, tz)
-		};
-		return result;
-	}
-	
-	private Location moveInWaterCheck(int x, int y, int z, int tx, int ty, int tz, int colHeightActor, int colHeightTarget)
-	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.moveInWaterCheck(x, y, z, tx, ty, tz, colHeightActor, colHeightTarget);
-		}
-		return new Location(tx, ty, tz);
-	}
-	
-	public Location moveCheckInAir(int x, int y, int z, int tx, int ty, int tz, double collision)
-	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.moveCheckInAir(x, y, z, tx, ty, tz, collision);
-		}
-		return new Location(tx, ty, tz);
-	}
-	
-	public short getType(int x, int y)
-	{
-		if (Config.GEODATA)
-		{
-			return geoEngine.getType(x, y);
-		}
-		return 0;
-	}
-	
-	public static Location coordsRandomize(L2Character actor, int x, int y, int z, int heading, int radius_min, int radius_max, boolean GeoZCorrect)
-	{
-		if ((radius_max == 0) || (radius_max < radius_min))
-		{
-			return new Location(x, y, z, heading);
-		}
+		int geoX = getGeoX(x);
+		int geoY = getGeoY(y);
+		int tGeoX = getGeoX(tx);
+		int tGeoY = getGeoY(ty);
 		
-		if (actor.isFlying())
-		{
-			return new Location(x, y, z, heading);
-		}
+		z = getNearestZ(geoX, geoY, z);
+		tz = getNearestZ(tGeoX, tGeoY, tz);
 		
-		Location newLoc = null;
-		
-		for (int i = 0; i < 10; i++)
+		if ((geoX == tGeoX) && (geoY == tGeoY))
 		{
-			int radius = Rnd.get(radius_min, radius_max);
-			double angle = Rnd.nextDouble() * 2 * Math.PI;
-			
-			newLoc = new Location((int) (x + (radius * Math.cos(angle))), (int) (y + (radius * Math.sin(angle))), z, heading);
-			
-			if (GeoZCorrect)
+			if (hasGeoPos(tGeoX, tGeoY))
 			{
-				newLoc.setZ(getInstance().getSpawnHeight(newLoc.getX(), newLoc.getY(), newLoc.getZ()));
+				return z == tz;
 			}
 			
-			if (DoorData.getInstance().checkIfDoorsBetween(actor.getX(), actor.getY(), actor.getZ(), x, y, z, actor.getInstanceId()))
+			return true;
+		}
+		
+		if (tz > z)
+		{
+			int tmp = tx;
+			tx = x;
+			x = tmp;
+			
+			tmp = ty;
+			ty = y;
+			y = tmp;
+			
+			tmp = tz;
+			tz = z;
+			z = tmp;
+			
+			tmp = tGeoX;
+			tGeoX = geoX;
+			geoX = tmp;
+			
+			tmp = tGeoY;
+			tGeoY = geoY;
+			geoY = tmp;
+		}
+		
+		LinePointIterator3D pointIter = new LinePointIterator3D(geoX, geoY, z, tGeoX, tGeoY, tz);
+		// first point is guaranteed to be available, skip it, we can always see our own position
+		pointIter.next();
+		int prevX = pointIter.x();
+		int prevY = pointIter.y();
+		int prevZ = pointIter.z();
+		int prevGeoZ = prevZ;
+		int ptIndex = 0;
+		
+		while (pointIter.next())
+		{
+			int curX = pointIter.x();
+			int curY = pointIter.y();
+			
+			if ((curX == prevX) && (curY == prevY))
 			{
 				continue;
 			}
 			
-			if (getInstance().canMoveToCoord(x, y, z, newLoc.getX(), newLoc.getY(), newLoc.getZ(), true))
+			int beeCurZ = pointIter.z();
+			int curGeoZ = prevGeoZ;
+			
+			// the current position has geodata
+			if (hasGeoPos(curX, curY))
 			{
-				break;
+				int beeCurGeoZ = getNearestZ(curX, curY, beeCurZ);
+				Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
+				curGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, curX, curY, dir);
+				int maxHeight;
+				if (ptIndex < ELEVATED_SEE_OVER_DISTANCE)
+				{
+					maxHeight = z + MAX_SEE_OVER_HEIGHT;
+				}
+				else
+				{
+					maxHeight = beeCurZ + MAX_SEE_OVER_HEIGHT;
+				}
+				
+				boolean canSeeThrough = false;
+				if ((curGeoZ <= maxHeight) && (curGeoZ <= beeCurGeoZ))
+				{
+					switch (dir)
+					{
+						case NORTH_EAST:
+						{
+							int northGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY - 1, Direction.EAST);
+							int eastGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX + 1, prevY, Direction.NORTH);
+							canSeeThrough = (northGeoZ <= maxHeight) && (eastGeoZ <= maxHeight) && (northGeoZ <= getNearestZ(prevX, prevY - 1, beeCurZ)) && (eastGeoZ <= getNearestZ(prevX + 1, prevY, beeCurZ));
+							break;
+						}
+						case NORTH_WEST:
+						{
+							int northGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY - 1, Direction.WEST);
+							int westGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX - 1, prevY, Direction.NORTH);
+							canSeeThrough = (northGeoZ <= maxHeight) && (westGeoZ <= maxHeight) && (northGeoZ <= getNearestZ(prevX, prevY - 1, beeCurZ)) && (westGeoZ <= getNearestZ(prevX - 1, prevY, beeCurZ));
+							break;
+						}
+						case SOUTH_EAST:
+						{
+							int southGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY + 1, Direction.EAST);
+							int eastGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX + 1, prevY, Direction.SOUTH);
+							canSeeThrough = (southGeoZ <= maxHeight) && (eastGeoZ <= maxHeight) && (southGeoZ <= getNearestZ(prevX, prevY + 1, beeCurZ)) && (eastGeoZ <= getNearestZ(prevX + 1, prevY, beeCurZ));
+							break;
+						}
+						case SOUTH_WEST:
+						{
+							int southGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY + 1, Direction.WEST);
+							int westGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX - 1, prevY, Direction.SOUTH);
+							canSeeThrough = (southGeoZ <= maxHeight) && (westGeoZ <= maxHeight) && (southGeoZ <= getNearestZ(prevX, prevY + 1, beeCurZ)) && (westGeoZ <= getNearestZ(prevX - 1, prevY, beeCurZ));
+							break;
+						}
+						default:
+						{
+							canSeeThrough = true;
+							break;
+						}
+					}
+				}
+				
+				if (!canSeeThrough)
+				{
+					return false;
+				}
 			}
-		}
-		return newLoc;
-	}
-	
-	public static Location coordsRandomize(int x, int y, int z, int heading, int radius_min, int radius_max, boolean GeoZCorrect)
-	{
-		if ((radius_max == 0) || (radius_max < radius_min))
-		{
-			return new Location(x, y, z, heading);
+			
+			prevX = curX;
+			prevY = curY;
+			prevGeoZ = curGeoZ;
+			++ptIndex;
 		}
 		
-		Location newLoc = null;
+		return true;
+	}
+	
+	/**
+	 * Move check.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param tx the target's x coordinate
+	 * @param ty the target's y coordinate
+	 * @param tz the target's z coordinate
+	 * @param instanceId the instance id
+	 * @return the last Location (x,y,z) where player can walk - just before wall
+	 */
+	public Location moveCheck(int x, int y, int z, int tx, int ty, int tz, int instanceId)
+	{
+		int geoX = getGeoX(x);
+		int geoY = getGeoY(y);
+		z = getNearestZ(geoX, geoY, z);
+		int tGeoX = getGeoX(tx);
+		int tGeoY = getGeoY(ty);
+		tz = getNearestZ(tGeoX, tGeoY, tz);
 		
-		for (int i = 0; i < 10; i++)
+		if (DoorData.getInstance().checkIfDoorsBetween(x, y, z, tx, ty, tz, instanceId, false))
 		{
-			int radius = Rnd.get(radius_min, radius_max);
-			double angle = Rnd.nextDouble() * 2 * Math.PI;
+			return new Location(x, y, getHeight(x, y, z));
+		}
+		
+		LinePointIterator pointIter = new LinePointIterator(geoX, geoY, tGeoX, tGeoY);
+		// first point is guaranteed to be available
+		pointIter.next();
+		int prevX = pointIter.x();
+		int prevY = pointIter.y();
+		int prevZ = z;
+		
+		while (pointIter.next())
+		{
+			int curX = pointIter.x();
+			int curY = pointIter.y();
+			int curZ = getNearestZ(curX, curY, prevZ);
 			
-			newLoc = new Location((int) (x + (radius * Math.cos(angle))), (int) (y + (radius * Math.sin(angle))), z, heading);
-			
-			if (GeoZCorrect)
+			if (hasGeoPos(prevX, prevY))
 			{
-				newLoc.setZ(getInstance().getSpawnHeight(newLoc.getX(), newLoc.getY(), newLoc.getZ()));
+				Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
+				boolean canEnter = false;
+				if (canEnterNeighbors(prevX, prevY, prevZ, dir))
+				{
+					// check diagonal movement
+					switch (dir)
+					{
+						case NORTH_EAST:
+							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.NORTH);
+							break;
+						case NORTH_WEST:
+							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.NORTH);
+							break;
+						case SOUTH_EAST:
+							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.SOUTH);
+							break;
+						case SOUTH_WEST:
+							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.SOUTH);
+							break;
+						default:
+							canEnter = true;
+							break;
+					}
+				}
+				
+				if (!canEnter)
+				{
+					// can't move, return previous location
+					return new Location(getWorldX(prevX), getWorldY(prevY), prevZ);
+				}
 			}
 			
-			if (getInstance().canMoveToCoord(x, y, z, newLoc.getX(), newLoc.getY(), newLoc.getZ(), true))
+			prevX = curX;
+			prevY = curY;
+			prevZ = curZ;
+		}
+		
+		if (hasGeoPos(prevX, prevY) && (prevZ != tz))
+		{
+			// different floors, return start location
+			return new Location(x, y, z);
+		}
+		
+		return new Location(tx, ty, tz);
+	}
+	
+	/**
+	 * Checks if its possible to move from one location to another.
+	 * @param fromX the X coordinate to start checking from
+	 * @param fromY the Y coordinate to start checking from
+	 * @param fromZ the Z coordinate to start checking from
+	 * @param toX the X coordinate to end checking at
+	 * @param toY the Y coordinate to end checking at
+	 * @param toZ the Z coordinate to end checking at
+	 * @param instanceId the instance ID
+	 * @return {@code true} if the character at start coordinates can move to end coordinates, {@code false} otherwise
+	 */
+	public boolean canMove(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, int instanceId)
+	{
+		int geoX = getGeoX(fromX);
+		int geoY = getGeoY(fromY);
+		fromZ = getNearestZ(geoX, geoY, fromZ);
+		int tGeoX = getGeoX(toX);
+		int tGeoY = getGeoY(toY);
+		toZ = getNearestZ(tGeoX, tGeoY, toZ);
+		
+		if (DoorData.getInstance().checkIfDoorsBetween(fromX, fromY, fromZ, toX, toY, toZ, instanceId, false))
+		{
+			return false;
+		}
+		
+		LinePointIterator pointIter = new LinePointIterator(geoX, geoY, tGeoX, tGeoY);
+		// first point is guaranteed to be available
+		pointIter.next();
+		int prevX = pointIter.x();
+		int prevY = pointIter.y();
+		int prevZ = fromZ;
+		
+		while (pointIter.next())
+		{
+			int curX = pointIter.x();
+			int curY = pointIter.y();
+			int curZ = getNearestZ(curX, curY, prevZ);
+			
+			if (hasGeoPos(prevX, prevY))
 			{
-				break;
+				Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
+				boolean canEnter = false;
+				if (canEnterNeighbors(prevX, prevY, prevZ, dir))
+				{
+					// check diagonal movement
+					switch (dir)
+					{
+						case NORTH_EAST:
+							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.NORTH);
+							break;
+						case NORTH_WEST:
+							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.NORTH);
+							break;
+						case SOUTH_EAST:
+							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.SOUTH);
+							break;
+						case SOUTH_WEST:
+							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.SOUTH);
+							break;
+						default:
+							canEnter = true;
+							break;
+					}
+				}
+				
+				if (!canEnter)
+				{
+					return false;
+				}
 			}
+			
+			prevX = curX;
+			prevY = curY;
+			prevZ = curZ;
 		}
-		return newLoc;
-	}
-	
-	public int getSpawnHeight(L2Character cha)
-	{
-		return getSpawnHeight(cha.getX(), cha.getY(), cha.getZ());
-	}
-	
-	public int getSpawnHeight(Location loc)
-	{
-		return getSpawnHeight(loc.getX(), loc.getY(), loc.getZ());
-	}
-	
-	public int getSpawnHeight(int x, int y, int zmin)
-	{
-		if (Config.GEODATA)
+		
+		if (hasGeoPos(prevX, prevY) && (prevZ != toZ))
 		{
-			return geoEngine.getSpawnHeight(x, y, zmin);
+			// different floors
+			return false;
 		}
-		return zmin;
+		
+		return true;
 	}
 	
-	@SuppressWarnings("unused")
-	public void applyGeoCollision(GeoCollision collision)
+	public int traceTerrainZ(int x, int y, int z, int tx, int ty)
 	{
-		if (Config.GEODATA && (1 == 0))
+		int geoX = getGeoX(x);
+		int geoY = getGeoY(y);
+		z = getNearestZ(geoX, geoY, z);
+		int tGeoX = getGeoX(tx);
+		int tGeoY = getGeoY(ty);
+		
+		LinePointIterator pointIter = new LinePointIterator(geoX, geoY, tGeoX, tGeoY);
+		// first point is guaranteed to be available
+		pointIter.next();
+		int prevZ = z;
+		
+		while (pointIter.next())
 		{
-			geoEngine.applyGeoCollision(collision);
+			int curX = pointIter.x();
+			int curY = pointIter.y();
+			int curZ = getNearestZ(curX, curY, prevZ);
+			
+			prevZ = curZ;
 		}
+		
+		return prevZ;
 	}
 	
-	@SuppressWarnings("unused")
-	public void removeGeoCollision(GeoCollision collision)
+	/**
+	 * Checks if its possible to move from one location to another.
+	 * @param from the {@code ILocational} to start checking from
+	 * @param toX the X coordinate to end checking at
+	 * @param toY the Y coordinate to end checking at
+	 * @param toZ the Z coordinate to end checking at
+	 * @return {@code true} if the character at start coordinates can move to end coordinates, {@code false} otherwise
+	 */
+	public boolean canMove(ILocational from, int toX, int toY, int toZ)
 	{
-		if (Config.GEODATA && (1 == 0))
-		{
-			geoEngine.removeGeoCollision(collision);
-		}
+		return canMove(from.getX(), from.getY(), from.getZ(), toX, toY, toZ, from.getInstanceId());
+	}
+	
+	/**
+	 * Checks if its possible to move from one location to another.
+	 * @param from the {@code ILocational} to start checking from
+	 * @param to the {@code ILocational} to end checking at
+	 * @return {@code true} if the character at start coordinates can move to end coordinates, {@code false} otherwise
+	 */
+	public boolean canMove(ILocational from, ILocational to)
+	{
+		return canMove(from, to.getX(), to.getY(), to.getZ());
+	}
+	
+	/**
+	 * Checks the specified position for available geodata.
+	 * @param x the X coordinate
+	 * @param y the Y coordinate
+	 * @return {@code true} if there is geodata for the given coordinates, {@code false} otherwise
+	 */
+	public boolean hasGeo(int x, int y)
+	{
+		return hasGeoPos(getGeoX(x), getGeoY(y));
+	}
+	
+	public static GeoData getInstance()
+	{
+		return SingletonHolder._instance;
+	}
+	
+	private static class SingletonHolder
+	{
+		protected final static GeoData _instance = new GeoData();
 	}
 }

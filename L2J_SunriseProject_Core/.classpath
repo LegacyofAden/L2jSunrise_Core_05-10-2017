@@ -17,6 +17,7 @@
 	<classpathentry kind="lib" path="dist/libs/protection.jar"/>
 	<classpathentry kind="lib" path="dist/libs/event-interface.jar"/>
 	<classpathentry kind="lib" path="dist/libs/event-core.jar"/>
-	<classpathentry kind="lib" path="dist/libs/geoengine.jar"/>
+	<classpathentry kind="lib" path="dist/libs/L2J_GeoAbstraction.jar"/>
+	<classpathentry kind="lib" path="dist/libs/L2J_GeoDriver.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
