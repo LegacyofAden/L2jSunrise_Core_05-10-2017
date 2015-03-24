@@ -9410,7 +9410,7 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
-		if (skill.getSkillType() == L2SkillType.INSTANT_JUMP)
+		if (skill.hasEffectType(L2EffectType.TELEPORT_TO_TARGET))
 		{
 			// You cannot jump while rooted right ;)
 			if (isMovementDisabled())
@@ -9436,7 +9436,6 @@ public final class L2PcInstance extends L2Playable
 				
 				return false;
 			}
-			
 		}
 		// Check if the skill is defensive
 		if (!skill.isOffensive() && target.isMonster() && !forceUse)

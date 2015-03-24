@@ -79,7 +79,6 @@ public enum L2SkillType
 	SPIRITSHOT,
 	DELUXE_KEY_UNLOCK,
 	SOW,
-	INSTANT_JUMP,
 	DUMMY,
 	// Creation
 	CREATE_ITEM(L2SkillCreateItem.class),

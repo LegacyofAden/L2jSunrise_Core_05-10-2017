@@ -7925,4 +7925,43 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	{
 		return 0;
 	}
+	
+	public Location getFlyLocation(L2Character target, L2Skill skill)
+	{
+		int heading = 0;
+		if (target == null)
+		{
+			target = this;
+		}
+		if (target == this)
+		{
+			heading = getHeading();
+		}
+		else
+		{
+			heading = target.getHeading();
+		}
+		int sign = 1;
+		if (skill.isFlyToBack())
+		{
+			sign = -1;
+		}
+		Location toLoc = null;
+		double angle = Util.convertHeadingToDegree(heading);
+		double radian = Math.toRadians(angle) - 1.5839;
+		if (target != this)
+		{
+			toLoc = new Location(target.getX() + (int) (Math.sin(radian) * (40 * (-sign))), target.getY() + (int) (Math.cos(radian) * (40 * sign)), target.getZ(), heading);
+		}
+		else
+		{
+			toLoc = new Location(target.getX() + (int) (Math.sin(radian) * (skill.getFlyRadius() * (-sign))), target.getY() + (int) (Math.cos(radian) * (skill.getFlyRadius() * sign)), target.getZ(), heading);
+		}
+		if (isFlying())
+		{
+			return toLoc;
+		}
+		toLoc.setZ(GeoData.getInstance().getHeight(toLoc));
+		return GeoData.getInstance().moveCheck(this, toLoc, true);
+	}
 }

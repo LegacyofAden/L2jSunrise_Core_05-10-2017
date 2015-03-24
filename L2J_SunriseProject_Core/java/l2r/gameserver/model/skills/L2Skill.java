@@ -232,6 +232,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	// Flying support
 	private final FlyType _flyType;
 	private final int _flyRadius;
+	private final boolean _flyToBack;
 	private final float _flyCourse;
 	
 	private final boolean _isDebuff;
@@ -487,6 +488,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		
 		_flyType = set.getEnum("flyType", FlyType.class, null);
 		_flyRadius = set.getInt("flyRadius", 0);
+		_flyToBack = set.getBoolean("flyToBack", false);
 		_flyCourse = set.getFloat("flyCourse", 0);
 		_canBeReflected = set.getBoolean("canBeReflected", true);
 		
@@ -1124,6 +1126,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public final FlyType getFlyType()
 	{
 		return _flyType;
+	}
+	
+	public boolean isFlyToBack()
+	{
+		return _flyToBack;
 	}
 	
 	public final int getFlyRadius()
