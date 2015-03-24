@@ -36,6 +36,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -48,6 +50,7 @@ import java.util.stream.IntStream;
 
 import l2r.gameserver.engines.DocumentParser;
 import l2r.gameserver.enums.IllegalActionPunishmentType;
+import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.util.FloodProtectorConfig;
 import l2r.gameserver.util.Util;
@@ -1016,7 +1019,6 @@ public final class Config
 	// Geodata Settings
 	// --------------------------------------------------
 	public static int PATHFINDING;
-	public static String GEODATA_DRIVER;
 	public static File PATHNODE_DIR;
 	public static String PATHFIND_BUFFERS;
 	public static float LOW_WEIGHT;
@@ -1028,9 +1030,9 @@ public final class Config
 	public static boolean DEBUG_PATH;
 	public static boolean FORCE_GEODATA;
 	public static int COORD_SYNCHRONIZE;
-	// public static Path GEODATA_PATH;
-	// public static boolean TRY_LOAD_UNSPECIFIED_REGIONS;
-	// public static Map<String, Boolean> GEODATA_REGIONS;
+	public static Path GEODATA_PATH;
+	public static boolean TRY_LOAD_UNSPECIFIED_REGIONS;
+	public static Map<String, Boolean> GEODATA_REGIONS;
 	public static boolean ENABLE_FALLING_DAMAGE;
 	
 	public static enum IdFactoryType
@@ -2552,8 +2554,6 @@ public final class Config
 			// Load General L2Properties file (if exists)
 			final PropertiesParser Geodata = new PropertiesParser(GEODATA_CONFIG_FILE);
 			
-			GEODATA_DRIVER = Geodata.getString("GeoDataDriver", "l2r.gameserver.geoengine.NullDriver");
-			
 			try
 			{
 				PATHNODE_DIR = new File(Geodata.getString("PathnodeDirectory", "data/pathnode").replaceAll("\\\\", "/")).getCanonicalFile();
@@ -2573,28 +2573,24 @@ public final class Config
 			DIAGONAL_WEIGHT = Geodata.getFloat("DiagonalWeight", 0.707f);
 			MAX_POSTFILTER_PASSES = Geodata.getInt("MaxPostfilterPasses", 3);
 			DEBUG_PATH = Geodata.getBoolean("DebugPath", false);
-			FORCE_GEODATA = Geodata.getBoolean("ForceGeodata", true);
+			FORCE_GEODATA = Geodata.getBoolean("ForceGeoData", true);
 			COORD_SYNCHRONIZE = Geodata.getInt("CoordSynchronize", -1);
-			//@formatter:off
-            /**
-            GEODATA_PATH = Paths.get(Geodata.getString("GeoDataPath", "./data/geodata"));
-            TRY_LOAD_UNSPECIFIED_REGIONS = Geodata.getBoolean("TryLoadUnspecifiedRegions", true);
-            GEODATA_REGIONS = new HashMap<>();
-            for (int regionX = L2World.TILE_X_MIN; regionX <= L2World.TILE_X_MAX; regionX++)
-            {
-                for (int regionY = L2World.TILE_Y_MIN; regionY <= L2World.TILE_Y_MAX; regionY++)
-                {
-                    String key = regionX + "_" + regionY;
-                    if (Geodata.containskey(regionX + "_" + regionY))
-                    {
-                        GEODATA_REGIONS.put(key, Geodata.getBoolean(key, false));
-                    }
-                }
-            }
-            */
-            //@formatter:on
-			
 			ENABLE_FALLING_DAMAGE = Geodata.getBoolean("EnableFallingDamage", true);
+			
+			GEODATA_PATH = Paths.get(Geodata.getString("GeoDataPath", "./data/geodata"));
+			TRY_LOAD_UNSPECIFIED_REGIONS = Geodata.getBoolean("TryLoadUnspecifiedRegions", true);
+			GEODATA_REGIONS = new HashMap<>();
+			for (int regionX = L2World.TILE_X_MIN; regionX <= L2World.TILE_X_MAX; regionX++)
+			{
+				for (int regionY = L2World.TILE_Y_MIN; regionY <= L2World.TILE_Y_MAX; regionY++)
+				{
+					String key = regionX + "_" + regionY;
+					if (Geodata.containskey(regionX + "_" + regionY))
+					{
+						GEODATA_REGIONS.put(key, Geodata.getBoolean(key, false));
+					}
+				}
+			}
 			
 			final File hexIdFile = new File(HEXID_FILE);
 			if (hexIdFile.exists())

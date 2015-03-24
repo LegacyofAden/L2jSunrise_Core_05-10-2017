@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2004-2015 L2J Server
- *
+ * 
  * This file is part of L2J Server.
- *
+ * 
  * L2J Server is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * L2J Server is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,10 +21,10 @@ package l2r.gameserver.pathfinding.cellnodes;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.pathfinding.AbstractNodeLoc;
 
-import com.l2jserver.gameserver.geoengine.Direction;
+import com.l2jserver.geodriver.Cell;
 
 /**
- * @author -Nemesiss-, FBIagent
+ * @author -Nemesiss-, HorridoJoho
  */
 public class NodeLoc extends AbstractNodeLoc
 {
@@ -45,10 +45,10 @@ public class NodeLoc extends AbstractNodeLoc
 	{
 		_x = x;
 		_y = y;
-		_goNorth = GeoData.getInstance().canEnterNeighbors(x, y, z, Direction.NORTH);
-		_goEast = GeoData.getInstance().canEnterNeighbors(x, y, z, Direction.EAST);
-		_goSouth = GeoData.getInstance().canEnterNeighbors(x, y, z, Direction.SOUTH);
-		_goWest = GeoData.getInstance().canEnterNeighbors(x, y, z, Direction.WEST);
+		_goNorth = GeoData.getInstance().checkNearestNswe(x, y, z, Cell.NSWE_NORTH);
+		_goEast = GeoData.getInstance().checkNearestNswe(x, y, z, Cell.NSWE_EAST);
+		_goSouth = GeoData.getInstance().checkNearestNswe(x, y, z, Cell.NSWE_SOUTH);
+		_goWest = GeoData.getInstance().checkNearestNswe(x, y, z, Cell.NSWE_WEST);
 		_geoHeight = GeoData.getInstance().getNearestZ(x, y, z);
 	}
 	
@@ -121,28 +121,27 @@ public class NodeLoc extends AbstractNodeLoc
 	@Override
 	public int hashCode()
 	{
-		
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + _x;
 		result = (prime * result) + _y;
 		
-		byte nswe = 0;
+		int nswe = 0;
 		if (canGoNorth())
 		{
-			nswe |= 1;
+			nswe |= Cell.NSWE_NORTH;
 		}
 		if (canGoEast())
 		{
-			nswe |= 1 << 1;
+			nswe |= Cell.NSWE_EAST;
 		}
 		if (canGoSouth())
 		{
-			nswe |= 1 << 2;
+			nswe |= Cell.NSWE_SOUTH;
 		}
 		if (canGoEast())
 		{
-			nswe |= 1 << 3;
+			nswe |= Cell.NSWE_EAST;
 		}
 		
 		result = (prime * result) + (((_geoHeight & 0xFFFF) << 1) | nswe);

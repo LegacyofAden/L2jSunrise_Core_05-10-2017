@@ -39,7 +39,7 @@ public class EffectTemplate
 {
 	static Logger _log = LoggerFactory.getLogger(EffectTemplate.class);
 	
-	private final Class<?> _func;
+	private final Class<?> _handler;
 	
 	private final Constructor<?> _constructor;
 	public final Condition attachCond;
@@ -83,8 +83,8 @@ public class EffectTemplate
 		chanceCondition = chanceCond;
 		_parameters = params;
 		
-		_func = EffectHandler.getInstance().getHandler(func);
-		if (_func == null)
+		_handler = EffectHandler.getInstance().getHandler(func);
+		if (_handler == null)
 		{
 			_log.warn("EffectTemplate: Requested Unexistent effect: " + func);
 			throw new RuntimeException();
@@ -92,7 +92,7 @@ public class EffectTemplate
 		
 		try
 		{
-			_constructor = _func.getConstructor(Env.class, EffectTemplate.class);
+			_constructor = _handler.getConstructor(Env.class, EffectTemplate.class);
 		}
 		catch (NoSuchMethodException e)
 		{
@@ -128,7 +128,7 @@ public class EffectTemplate
 		}
 		catch (InvocationTargetException e)
 		{
-			_log.warn("Error creating new instance of Class " + _func + " Exception was: " + e.getTargetException().getMessage(), e.getTargetException());
+			_log.warn("Error creating new instance of Class " + _handler + " Exception was: " + e.getTargetException().getMessage(), e.getTargetException());
 			return null;
 		}
 		
@@ -142,41 +142,29 @@ public class EffectTemplate
 	 */
 	public L2Effect getStolenEffect(Env env, L2Effect stolen)
 	{
-		Class<?> func = EffectHandler.getInstance().getHandler(funcName);
-		if (func == null)
-		{
-			throw new RuntimeException();
-		}
-		
 		Constructor<?> stolenCons;
 		try
 		{
-			stolenCons = func.getConstructor(Env.class, L2Effect.class);
+			stolenCons = _handler.getConstructor(Env.class, L2Effect.class);
 		}
 		catch (NoSuchMethodException e)
 		{
 			throw new RuntimeException(e);
 		}
+		
 		try
 		{
-			L2Effect effect = (L2Effect) stolenCons.newInstance(env, stolen);
-			// if (_applayCond != null)
-			// effect.setCondition(_applayCond);
+			final L2Effect effect = (L2Effect) stolenCons.newInstance(env, stolen);
 			return effect;
 		}
-		catch (IllegalAccessException e)
+		catch (IllegalAccessException | InstantiationException e)
 		{
-			_log.warn(String.valueOf(e));
-			return null;
-		}
-		catch (InstantiationException e)
-		{
-			_log.warn(String.valueOf(e));
+			_log.warn("", e);
 			return null;
 		}
 		catch (InvocationTargetException e)
 		{
-			_log.warn("Error creating new instance of Class " + func + " Exception was: " + e.getTargetException().getMessage(), e.getTargetException());
+			_log.warn("Error creating new instance of Class " + _handler + " Exception was: " + e.getTargetException().getMessage(), e.getTargetException());
 			return null;
 		}
 	}
