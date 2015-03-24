@@ -1015,9 +1015,6 @@ public final class Config
 	// --------------------------------------------------
 	// Geodata Settings
 	// --------------------------------------------------
-	// --------------------------------------------------
-	// Geodata Settings
-	// --------------------------------------------------
 	public static int PATHFINDING;
 	public static File PATHNODE_DIR;
 	public static String PATHFIND_BUFFERS;
