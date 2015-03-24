@@ -49,7 +49,7 @@ public class GenerateHtmls
 	public static void sendPacket(L2PcInstance player, String html)
 	{
 		NpcHtmlMessage msg = new NpcHtmlMessage(5);
-		msg.setFile(player.getHtmlPrefix(), "/data/html/AioItemNpcs/" + html);
+		msg.setFile(player.getHtmlPrefix(), "/data/html/sunrise/AioItemNpcs/" + html);
 		player.sendPacket(msg);
 	}
 	
