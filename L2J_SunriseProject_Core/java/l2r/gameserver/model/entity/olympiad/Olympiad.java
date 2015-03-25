@@ -577,22 +577,34 @@ public class Olympiad extends ListenersContainer
 	{
 		Announcements.getInstance().announceToAll(SystemMessage.getSystemMessage(SystemMessageId.OLYMPIAD_PERIOD_S1_HAS_STARTED).addInt(_currentCycle));
 		Calendar currentTime = Calendar.getInstance();
+		Calendar nextChange = Calendar.getInstance();
+		
+		currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
+		currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
+		currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
 		
 		switch (Config.OLYMPIAD_PERIOD)
 		{
 			case "MONTH": // retail
-				currentTime.add(Calendar.MONTH, 1);
-				currentTime.set(Calendar.DAY_OF_MONTH, 1);
-				break;
-			case "WEEKS":
-				currentTime.set(Calendar.DAY_OF_WEEK, 1);
-				currentTime.add(Calendar.WEEK_OF_YEAR, 2);
+				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.add(Calendar.DAY_OF_MONTH, -1); // last day is for validation
+				
+				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
 				break;
 			case "WEEK":
-				currentTime.set(Calendar.DAY_OF_WEEK, 1);
-				currentTime.add(Calendar.WEEK_OF_YEAR, 1);
+				currentTime.add(Calendar.WEEK_OF_MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.add(Calendar.DAY_OF_MONTH, -1); // last day is for validation
+				
+				if (Config.ALT_OLY_PERIOD_MULTIPLIER > 1)
+				{
+					_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
+				}
+				else
+				{
+					_nextWeeklyChange = nextChange.getTimeInMillis() + (WEEKLY_PERIOD / 2);
+				}
 				break;
-			case "REUNION":
+			case "SUNRISE":
 				int nearest = 0;
 				Calendar[] cals = new Calendar[Config.ALT_OLY_END_DATE.length];
 				for (int i = 0; i < cals.length; i++)
@@ -609,21 +621,19 @@ public class Olympiad extends ListenersContainer
 						nearest = i;
 					}
 				}
+				
+				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
 				break;
 			default:
-				currentTime.add(Calendar.MONTH, 1);
-				currentTime.set(Calendar.DAY_OF_MONTH, 1);
+				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.add(Calendar.DAY_OF_MONTH, -1); // last day is for validation
+				
+				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
 				_log.warn("Wrong configuration in Olympiad pediod. Check again your Olympiad settings. Auto set to retail values.");
 				break;
 		}
 		
-		currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
-		currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
-		currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
 		_olympiadEnd = currentTime.getTimeInMillis();
-		
-		Calendar nextChange = Calendar.getInstance();
-		_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
 		scheduleWeeklyChange();
 	}
 	
