@@ -46,7 +46,7 @@ public class GeoData
 	private static final String FILE_NAME_FORMAT = "%d_%d.l2j";
 	private static final int ELEVATED_SEE_OVER_DISTANCE = 2;
 	private static final int MAX_SEE_OVER_HEIGHT = 48;
-	private static final int SPAWN_Z_DELTA_LIMIT = 100;
+	// private static final int SPAWN_Z_DELTA_LIMIT = 100;
 	
 	private final GeoDriver _driver = new GeoDriver();
 	
@@ -193,16 +193,12 @@ public class GeoData
 	 */
 	public int getSpawnHeight(int x, int y, int z)
 	{
-		final int geoX = getGeoX(x);
-		final int geoY = getGeoY(y);
-		
-		if (!hasGeoPos(geoX, geoY))
+		final int height = getHeight(x, y, z);
+		if ((height > (z + 100)) || (height < (z - 100)))
 		{
 			return z;
 		}
-		
-		int nextLowerZ = getNextLowerZ(geoX, geoY, z + 100);
-		return Math.abs(nextLowerZ - z) <= SPAWN_Z_DELTA_LIMIT ? nextLowerZ : z;
+		return height;
 	}
 	
 	/**
