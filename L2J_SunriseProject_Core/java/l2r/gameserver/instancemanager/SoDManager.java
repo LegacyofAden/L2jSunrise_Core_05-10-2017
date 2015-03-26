@@ -28,9 +28,9 @@ import l2r.gameserver.model.quest.Quest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class GraciaSeedsManager
+public final class SoDManager
 {
-	private static final Logger _log = LoggerFactory.getLogger(GraciaSeedsManager.class);
+	private static final Logger _log = LoggerFactory.getLogger(SoDManager.class);
 	
 	public static String ENERGY_SEEDS = "EnergySeeds";
 	
@@ -43,7 +43,7 @@ public final class GraciaSeedsManager
 	private int _SoDState = 1;
 	private final Calendar _SoDLastStateChangeDate;
 	
-	protected GraciaSeedsManager()
+	protected SoDManager()
 	{
 		_log.info("Seed of Destruction Manager: Loaded. Current stage is: " + getSoDState());
 		_SoDLastStateChangeDate = Calendar.getInstance();
@@ -208,13 +208,13 @@ public final class GraciaSeedsManager
 	 * Gets the single instance of {@code GraciaSeedsManager}.
 	 * @return single instance of {@code GraciaSeedsManager}
 	 */
-	public static final GraciaSeedsManager getInstance()
+	public static final SoDManager getInstance()
 	{
 		return SingletonHolder._instance;
 	}
 	
 	private static class SingletonHolder
 	{
-		protected static final GraciaSeedsManager _instance = new GraciaSeedsManager();
+		protected static final SoDManager _instance = new SoDManager();
 	}
 }

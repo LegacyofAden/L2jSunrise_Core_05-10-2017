@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+
 /**
  * @author UnAfraid
  */
@@ -30,7 +32,11 @@ public class BonusExpManager
 	
 	public BonusExpManager()
 	{
-		load();
+		if (CustomServerConfigs.ENABLE_RUNE_BONUS)
+		{
+			load();
+			_log.info("Bonus Exp System: Enabled.");
+		}
 	}
 	
 	public static final BonusExpManager getInstance()

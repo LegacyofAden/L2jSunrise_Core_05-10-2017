@@ -36,32 +36,29 @@ public class AdminCommandHandler implements IHandler<IAdminCommandHandler, Strin
 	@Override
 	public void registerHandler(IAdminCommandHandler handler)
 	{
-		String[] ids = handler.getAdminCommandList();
-		for (String id : ids)
+		for (String element : handler.getAdminCommandList())
 		{
-			_datatable.put(id, handler);
+			_datatable.put(element.toLowerCase(), handler);
 		}
 	}
 	
 	@Override
 	public synchronized void removeHandler(IAdminCommandHandler handler)
 	{
-		String[] ids = handler.getAdminCommandList();
-		for (String id : ids)
+		for (String element : handler.getAdminCommandList())
 		{
-			_datatable.remove(id);
+			_datatable.remove(element.toLowerCase());
 		}
 	}
 	
 	@Override
 	public IAdminCommandHandler getHandler(String adminCommand)
 	{
-		String command = adminCommand;
 		if (adminCommand.contains(" "))
 		{
-			command = adminCommand.substring(0, adminCommand.indexOf(" "));
+			adminCommand = adminCommand.substring(0, adminCommand.indexOf(" "));
 		}
-		return _datatable.get(command);
+		return _datatable.get(adminCommand);
 	}
 	
 	@Override

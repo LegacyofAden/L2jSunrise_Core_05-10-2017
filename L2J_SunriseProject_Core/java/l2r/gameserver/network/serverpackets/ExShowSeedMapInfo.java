@@ -18,7 +18,7 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import l2r.gameserver.instancemanager.GraciaSeedsManager;
+import l2r.gameserver.instancemanager.SoDManager;
 import l2r.gameserver.instancemanager.SoIManager;
 import l2r.gameserver.model.Location;
 
@@ -50,10 +50,10 @@ public class ExShowSeedMapInfo extends L2GameServerPacket
 			writeD(loc.getZ());
 			switch (loc.getHeading())
 			{
-				case 1:
-					writeD(2770 + GraciaSeedsManager.getInstance().getSoDState());
+				case 1: // Seed of Destruction
+					writeD(2770 + SoDManager.getInstance().getSoDState());
 					break;
-				case 2:
+				case 2: // Seed of Immortality
 					writeD(SoIManager.getCurrentStage() + 2765);
 					break;
 			}

@@ -101,7 +101,6 @@ import l2r.gameserver.instancemanager.FortManager;
 import l2r.gameserver.instancemanager.FortSiegeManager;
 import l2r.gameserver.instancemanager.FourSepulchersManager;
 import l2r.gameserver.instancemanager.GlobalVariablesManager;
-import l2r.gameserver.instancemanager.GraciaSeedsManager;
 import l2r.gameserver.instancemanager.GrandBossManager;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.instancemanager.ItemAuctionManager;
@@ -115,6 +114,7 @@ import l2r.gameserver.instancemanager.QuestManager;
 import l2r.gameserver.instancemanager.RaidBossPointsManager;
 import l2r.gameserver.instancemanager.RaidBossSpawnManager;
 import l2r.gameserver.instancemanager.SiegeManager;
+import l2r.gameserver.instancemanager.SoDManager;
 import l2r.gameserver.instancemanager.SoIManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.instancemanager.WalkingManager;
@@ -232,7 +232,6 @@ public class GameServer
 		
 		printSection("Items");
 		ItemData.getInstance();
-		ProductItemData.getInstance();
 		EnchantItemGroupsData.getInstance();
 		EnchantItemData.getInstance();
 		EnchantItemOptionsData.getInstance();
@@ -247,6 +246,7 @@ public class GameServer
 		FishingMonstersData.getInstance();
 		FishingRodsData.getInstance();
 		HennaData.getInstance();
+		ProductItemData.getInstance();
 		
 		printSection("Characters");
 		ClassListData.getInstance();
@@ -289,7 +289,7 @@ public class GameServer
 		}
 		else
 		{
-			_log.info("Olympiad is disable by config.");
+			_log.info("Olympiad is disabled by config.");
 		}
 		
 		printSection("Seven Signs");
@@ -310,21 +310,18 @@ public class GameServer
 		TransformData.getInstance();
 		BotReportTable.getInstance();
 		
-		printSection("Sunrise Events");
-		SunriseEvents.start();
-		
 		printSection("Scripts");
 		QuestManager.getInstance();
 		BoatManager.getInstance();
 		AirShipManager.getInstance();
 		
 		printSection("Gracia Seeds");
-		GraciaSeedsManager.getInstance();
+		SoDManager.getInstance();
 		SoIManager.getInstance();
 		
 		try
 		{
-			_log.info(getClass().getSimpleName() + ": Loading server scripts:");
+			printSection("Datapack Scripts");
 			if (!Config.ALT_DEV_NO_HANDLERS || !Config.ALT_DEV_NO_QUESTS)
 			{
 				L2ScriptEngineManager.getInstance().executeScriptList(new File(Config.DATAPACK_ROOT, "data/scripts.ini"));
@@ -335,6 +332,7 @@ public class GameServer
 			_log.error(getClass().getSimpleName() + ": Failed loading scripts.ini, scripts are not going to be loaded!");
 		}
 		
+		printSection("Spawns");
 		SpawnTable.getInstance().load();
 		DayNightSpawnManager.getInstance().trim().notifyChangeMode();
 		FourSepulchersManager.getInstance().init();
@@ -349,12 +347,22 @@ public class GameServer
 		FortSiegeManager.getInstance();
 		SiegeScheduleData.getInstance();
 		
+		printSection("Others");
 		MerchantPriceConfigData.getInstance().updateReferences();
 		TerritoryWarManager.getInstance();
 		CastleManorManager.getInstance();
 		MercTicketManager.getInstance();
 		
-		QuestManager.getInstance().report();
+		MonsterRace.getInstance();
+		
+		SevenSigns.getInstance().spawnSevenSignsNPC();
+		SevenSignsFestival.getInstance();
+		AutoSpawnHandler.getInstance();
+		
+		FaenorScriptEngine.getInstance();
+		TaskManager.getInstance();
+		AntiFeedManager.getInstance().registerEvent(AntiFeedManager.GAME_ID);
+		PunishmentManager.getInstance();
 		
 		if (Config.SAVE_DROPPED_ITEM)
 		{
@@ -366,47 +374,25 @@ public class GameServer
 			ItemsAutoDestroy.getInstance();
 		}
 		
-		MonsterRace.getInstance();
-		
-		SevenSigns.getInstance().spawnSevenSignsNPC();
-		SevenSignsFestival.getInstance();
-		AutoSpawnHandler.getInstance();
-		
-		FaenorScriptEngine.getInstance();
-		// Init of a cursed weapon manager
-		
-		_log.info("AutoSpawnHandler: Loaded " + AutoSpawnHandler.getInstance().size() + " handlers in total.");
-		
 		if (Config.L2JMOD_ALLOW_WEDDING)
 		{
 			CoupleManager.getInstance();
 		}
-		
-		TaskManager.getInstance();
-		
-		AntiFeedManager.getInstance().registerEvent(AntiFeedManager.GAME_ID);
 		
 		if (Config.ALLOW_MAIL)
 		{
 			MailManager.getInstance();
 		}
 		
-		PunishmentManager.getInstance();
-		
 		// Sunrise systems section
+		printSection("Event Engine");
+		SunriseEvents.start();
+		
 		printSection("Sunrise Systems");
 		PcCafePointsManager.getInstance();
 		SunriseServerMods.getInstance().checkSunriseMods();
 		// System.out.println("Loading static images....");
 		// CustomServerMods.getInstance().loadStaticImages();
-		
-		// Antibot systems
-		printSection("Antibot Engine");
-		SunriseServerMods.getInstance().checkAntibotMod();
-		
-		// Leader board load data
-		printSection("Leaderboards");
-		SunriseServerMods.getInstance().checkLeaderboardsMod();
 		
 		Runtime.getRuntime().addShutdownHook(Shutdown.getInstance());
 		

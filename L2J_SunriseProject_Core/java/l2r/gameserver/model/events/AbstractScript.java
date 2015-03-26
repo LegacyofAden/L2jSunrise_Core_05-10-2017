@@ -19,6 +19,7 @@
 package l2r.gameserver.model.events;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -331,6 +332,10 @@ public abstract class AbstractScript implements INamable
 		{
 			L2ScriptEngineManager.getInstance().executeScript(getScriptFile());
 			return true;
+		}
+		catch (FileNotFoundException e)
+		{
+			return false;
 		}
 		catch (ScriptException e)
 		{

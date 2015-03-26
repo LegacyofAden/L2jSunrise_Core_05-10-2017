@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -581,7 +582,7 @@ public final class L2PcInstance extends L2Playable
 	private boolean _enchantAnimation = false;
 	private boolean _onEnterLoadSS = false;
 	
-	public FastMap<String, FastList<Integer>> _profileBuffs = new FastMap<String, FastList<Integer>>().shared();
+	public Map<String, List<Integer>> _profileBuffs = new ConcurrentHashMap<>();
 	
 	/** Premium Items */
 	private final Map<Integer, L2PremiumItem> _premiumItems = new FastMap<>();

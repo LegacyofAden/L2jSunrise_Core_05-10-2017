@@ -21,6 +21,7 @@ package l2r.gameserver.scripting;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -43,8 +44,6 @@ import l2r.Config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.l2jserver.script.jython.JythonScriptEngine;
 
 /**
  * Caches script engines and provides functionality for executing and managing scripts.
@@ -287,6 +286,11 @@ public final class L2ScriptEngineManager
 							}
 						}
 					}
+					catch (FileNotFoundException e)
+					{
+						// should never happen
+						e.printStackTrace();
+					}
 					catch (ScriptException e)
 					{
 						reportScriptFileError(file, e);
@@ -300,7 +304,7 @@ public final class L2ScriptEngineManager
 		}
 	}
 	
-	public void executeScript(File file) throws ScriptException
+	public void executeScript(File file) throws FileNotFoundException, ScriptException
 	{
 		String name = file.getName();
 		int lastIndex = name.lastIndexOf('.');
@@ -322,7 +326,7 @@ public final class L2ScriptEngineManager
 		executeScript(engine, file);
 	}
 	
-	public void executeScript(String engineName, File file) throws ScriptException
+	public void executeScript(String engineName, File file) throws FileNotFoundException, ScriptException
 	{
 		ScriptEngine engine = getEngineByName(engineName);
 		if (engine == null)
@@ -332,8 +336,10 @@ public final class L2ScriptEngineManager
 		executeScript(engine, file);
 	}
 	
-	public void executeScript(ScriptEngine engine, File file) throws ScriptException
+	public void executeScript(ScriptEngine engine, File file) throws FileNotFoundException, ScriptException
 	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		
 		if (VERBOSE_LOADING)
 		{
 			_log.info("Loading Script: " + file.getAbsolutePath());
@@ -349,61 +355,21 @@ public final class L2ScriptEngineManager
 			}
 		}
 		
-		final String relativeName = file.getAbsolutePath().substring(SCRIPT_FOLDER.getAbsolutePath().length() + 1).replace('\\', '/');
-		try (FileInputStream fis = new FileInputStream(file);
-			InputStreamReader isr = new InputStreamReader(fis);
-			BufferedReader reader = new BufferedReader(isr))
+		ScriptContext context = new SimpleScriptContext();
+		context.setAttribute("mainClass", getClassForFile(file).replace('/', '.').replace('\\', '.'), ScriptContext.ENGINE_SCOPE);
+		context.setAttribute(ScriptEngine.FILENAME, file.getName(), ScriptContext.ENGINE_SCOPE);
+		context.setAttribute("classpath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
+		context.setAttribute("sourcepath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
+		setCurrentLoadingScript(file);
+		try
 		{
-			if ((engine instanceof Compilable) && ATTEMPT_COMPILATION)
-			{
-				ScriptContext context = new SimpleScriptContext();
-				context.setAttribute("mainClass", getClassForFile(file).replace('/', '.').replace('\\', '.'), ScriptContext.ENGINE_SCOPE);
-				context.setAttribute(ScriptEngine.FILENAME, relativeName, ScriptContext.ENGINE_SCOPE);
-				context.setAttribute("classpath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
-				context.setAttribute("sourcepath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
-				context.setAttribute(JythonScriptEngine.JYTHON_ENGINE_INSTANCE, engine, ScriptContext.ENGINE_SCOPE);
-				
-				setCurrentLoadingScript(file);
-				ScriptContext ctx = engine.getContext();
-				try
-				{
-					engine.setContext(context);
-					Compilable eng = (Compilable) engine;
-					CompiledScript cs = eng.compile(reader);
-					cs.eval(context);
-				}
-				finally
-				{
-					engine.setContext(ctx);
-					setCurrentLoadingScript(null);
-					context.removeAttribute(ScriptEngine.FILENAME, ScriptContext.ENGINE_SCOPE);
-					context.removeAttribute("mainClass", ScriptContext.ENGINE_SCOPE);
-				}
-			}
-			else
-			{
-				ScriptContext context = new SimpleScriptContext();
-				context.setAttribute("mainClass", getClassForFile(file).replace('/', '.').replace('\\', '.'), ScriptContext.ENGINE_SCOPE);
-				context.setAttribute(ScriptEngine.FILENAME, relativeName, ScriptContext.ENGINE_SCOPE);
-				context.setAttribute("classpath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
-				context.setAttribute("sourcepath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
-				setCurrentLoadingScript(file);
-				try
-				{
-					engine.eval(reader, context);
-				}
-				finally
-				{
-					setCurrentLoadingScript(null);
-					engine.getContext().removeAttribute(ScriptEngine.FILENAME, ScriptContext.ENGINE_SCOPE);
-					engine.getContext().removeAttribute("mainClass", ScriptContext.ENGINE_SCOPE);
-				}
-				
-			}
+			engine.eval(reader, context);
 		}
-		catch (IOException e)
+		finally
 		{
-			_log.warn("Error executing script!", e);
+			setCurrentLoadingScript(null);
+			engine.getContext().removeAttribute(ScriptEngine.FILENAME, ScriptContext.ENGINE_SCOPE);
+			engine.getContext().removeAttribute("mainClass", ScriptContext.ENGINE_SCOPE);
 		}
 	}
 	

@@ -18,7 +18,7 @@
  */
 package l2r.gameserver.instancemanager.tasks;
 
-import l2r.gameserver.instancemanager.GraciaSeedsManager;
+import l2r.gameserver.instancemanager.SoDManager;
 
 /**
  * Task which updates Seed of Destruction state.
@@ -29,7 +29,7 @@ public final class UpdateSoDStateTask implements Runnable
 	@Override
 	public void run()
 	{
-		final GraciaSeedsManager manager = GraciaSeedsManager.getInstance();
+		final SoDManager manager = SoDManager.getInstance();
 		manager.setSoDState(1, true);
 		manager.updateSodState();
 	}

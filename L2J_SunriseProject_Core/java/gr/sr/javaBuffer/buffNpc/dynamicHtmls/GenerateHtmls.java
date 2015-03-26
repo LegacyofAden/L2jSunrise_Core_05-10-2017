@@ -1,7 +1,8 @@
 package gr.sr.javaBuffer.buffNpc.dynamicHtmls;
 
+import java.util.List;
+
 import javolution.text.TextBuilder;
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import gr.sr.datatables.SunriseTable;
 import gr.sr.javaBuffer.BuffInstance;
@@ -27,7 +28,7 @@ public class GenerateHtmls
 	 */
 	public static void showSchemeToEdit(L2PcInstance player, String action, int objectId)
 	{
-		FastList<String> profileNames = PlayerMethods.getProfiles(player);
+		List<String> profileNames = PlayerMethods.getProfiles(player);
 		
 		TextBuilder tb = new TextBuilder();
 		tb.append(_headHtml);
@@ -54,7 +55,7 @@ public class GenerateHtmls
 	 */
 	public static void showBuffsToAdd(L2PcInstance player, String profile, BufferMenuCategories category, String bypass, int objectId)
 	{
-		FastList<Integer> ownedBuffs = PlayerMethods.getProfileBuffs(profile, player);
+		List<Integer> ownedBuffs = PlayerMethods.getProfileBuffs(profile, player);
 		int i = 0;
 		
 		TextBuilder tb = new TextBuilder();
@@ -151,7 +152,7 @@ public class GenerateHtmls
 	// Shows the available buffs to add to a profile;
 	public static void showBuffsToDelete(L2PcInstance player, String profile, String bypass, int objectId)
 	{
-		FastList<Integer> ownedBuffs = PlayerMethods.getProfileBuffs(profile, player);
+		List<Integer> ownedBuffs = PlayerMethods.getProfileBuffs(profile, player);
 		// int i = 0;
 		
 		if (ownedBuffs == null)
