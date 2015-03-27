@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -15801,9 +15802,10 @@ public final class L2PcInstance extends L2Playable
 		isInCraftMode(false);
 	}
 	
-	private final FastList<L2Effect> removedBuffs = new FastList<>();
+	public ScheduledFuture<?> _returnRemovedBuffsTask;
+	private final List<L2Effect> removedBuffs = new CopyOnWriteArrayList<>();
 	
-	public FastList<L2Effect> getRemovedBuffs()
+	public List<L2Effect> getRemovedBuffs()
 	{
 		return removedBuffs;
 	}
