@@ -642,7 +642,7 @@ public final class L2PcInstance extends L2Playable
 	private int _questNpcObject = 0;
 	
 	/** The table containing all Quests began by the L2PcInstance */
-	private final Map<String, QuestState> _quests = new FastMap<>();
+	private final Map<String, QuestState> _quests = new ConcurrentHashMap<>();
 	
 	/** The list containing all shortCuts of this L2PcInstance */
 	private final ShortCuts _shortCuts = new ShortCuts(this);
