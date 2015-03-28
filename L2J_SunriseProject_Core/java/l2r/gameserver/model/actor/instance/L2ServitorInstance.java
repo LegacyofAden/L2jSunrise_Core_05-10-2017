@@ -21,10 +21,7 @@ package l2r.gameserver.model.actor.instance;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 import javolution.util.FastList;
@@ -32,7 +29,6 @@ import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.SummonEffectsTable;
-import l2r.gameserver.data.SummonEffectsTable.SummonEffect;
 import l2r.gameserver.data.sql.CharSummonTable;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.enums.InstanceType;
@@ -40,11 +36,9 @@ import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
-import l2r.gameserver.model.effects.EffectTemplate;
 import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.l2skills.L2SkillSummon;
-import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.network.serverpackets.SetSummonRemainTime;
 
 import org.slf4j.Logger;
@@ -312,22 +306,7 @@ public class L2ServitorInstance extends L2Summon
 	public final void stopSkillEffects(int skillId)
 	{
 		super.stopSkillEffects(skillId);
-		final Map<Integer, List<SummonEffect>> servitorEffects = SummonEffectsTable.getInstance().getServitorEffects(getOwner());
-		if (servitorEffects != null)
-		{
-			final List<SummonEffect> effects = servitorEffects.get(getReferenceSkill());
-			if ((effects != null) && !effects.isEmpty())
-			{
-				for (SummonEffect effect : effects)
-				{
-					final L2Skill skill = effect.getSkill();
-					if ((skill != null) && (skill.getId() == skillId))
-					{
-						effects.remove(effect);
-					}
-				}
-			}
-		}
+		SummonEffectsTable.getInstance().removeServitorEffects(getOwner(), getReferenceSkill(), skillId);
 	}
 	
 	@Override
@@ -358,10 +337,7 @@ public class L2ServitorInstance extends L2Summon
 		}
 		
 		// Clear list for overwrite
-		if (SummonEffectsTable.getInstance().getServitorEffectsOwner().getOrDefault(getOwner().getObjectId(), Collections.emptyMap()).containsKey(getOwner().getClassIndex()))
-		{
-			SummonEffectsTable.getInstance().getServitorEffects(getOwner()).getOrDefault(getReferenceSkill(), Collections.emptyList()).clear();
-		}
+		SummonEffectsTable.getInstance().clearServitorEffects(getOwner(), getReferenceSkill());
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement(DELETE_SKILL_SAVE))
@@ -426,21 +402,7 @@ public class L2ServitorInstance extends L2Summon
 						ps2.setInt(8, ++buff_index);
 						ps2.execute();
 						
-						// XXX: Rework me!
-						if (!SummonEffectsTable.getInstance().getServitorEffectsOwner().containsKey(getOwner().getObjectId()))
-						{
-							SummonEffectsTable.getInstance().getServitorEffectsOwner().put(getOwner().getObjectId(), new HashMap<Integer, Map<Integer, List<SummonEffect>>>());
-						}
-						if (!SummonEffectsTable.getInstance().getServitorEffectsOwner().get(getOwner().getObjectId()).containsKey(getOwner().getClassIndex()))
-						{
-							SummonEffectsTable.getInstance().getServitorEffectsOwner().get(getOwner().getObjectId()).put(getOwner().getClassIndex(), new HashMap<Integer, List<SummonEffect>>());
-						}
-						if (!SummonEffectsTable.getInstance().getServitorEffects(getOwner()).containsKey(getReferenceSkill()))
-						{
-							SummonEffectsTable.getInstance().getServitorEffects(getOwner()).put(getReferenceSkill(), new FastList<SummonEffect>());
-						}
-						
-						SummonEffectsTable.getInstance().getServitorEffects(getOwner()).get(getReferenceSkill()).add(SummonEffectsTable.getInstance().new SummonEffect(skill, effect.getCount(), effect.getTime()));
+						SummonEffectsTable.getInstance().addServitorEffect(getOwner(), getReferenceSkill(), skill, effect.getCount(), effect.getTime());
 					}
 				}
 			}
@@ -461,7 +423,7 @@ public class L2ServitorInstance extends L2Summon
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			if (!SummonEffectsTable.getInstance().getServitorEffectsOwner().containsKey(getOwner().getObjectId()) || !SummonEffectsTable.getInstance().getServitorEffectsOwner().get(getOwner().getObjectId()).containsKey(getOwner().getClassIndex()) || !SummonEffectsTable.getInstance().getServitorEffects(getOwner()).containsKey(getReferenceSkill()))
+			if (!SummonEffectsTable.getInstance().containsSkill(getOwner(), getReferenceSkill()))
 			{
 				try (PreparedStatement statement = con.prepareStatement(RESTORE_SKILL_SAVE))
 				{
@@ -483,20 +445,7 @@ public class L2ServitorInstance extends L2Summon
 							
 							if (skill.hasEffects())
 							{
-								if (!SummonEffectsTable.getInstance().getServitorEffectsOwner().containsKey(getOwner().getObjectId()))
-								{
-									SummonEffectsTable.getInstance().getServitorEffectsOwner().put(getOwner().getObjectId(), new HashMap<Integer, Map<Integer, List<SummonEffect>>>());
-								}
-								if (!SummonEffectsTable.getInstance().getServitorEffectsOwner().get(getOwner().getObjectId()).containsKey(getOwner().getClassIndex()))
-								{
-									SummonEffectsTable.getInstance().getServitorEffectsOwner().get(getOwner().getObjectId()).put(getOwner().getClassIndex(), new HashMap<Integer, List<SummonEffect>>());
-								}
-								if (!SummonEffectsTable.getInstance().getServitorEffects(getOwner()).containsKey(getReferenceSkill()))
-								{
-									SummonEffectsTable.getInstance().getServitorEffects(getOwner()).put(getReferenceSkill(), new FastList<SummonEffect>());
-								}
-								
-								SummonEffectsTable.getInstance().getServitorEffects(getOwner()).get(getReferenceSkill()).add(SummonEffectsTable.getInstance().new SummonEffect(skill, effectCount, effectCurTime));
+								SummonEffectsTable.getInstance().addServitorEffect(getOwner(), getReferenceSkill(), skill, effectCount, effectCurTime);
 							}
 						}
 					}
@@ -517,32 +466,7 @@ public class L2ServitorInstance extends L2Summon
 		}
 		finally
 		{
-			if (!SummonEffectsTable.getInstance().getServitorEffectsOwner().containsKey(getOwner().getObjectId()) || !SummonEffectsTable.getInstance().getServitorEffectsOwner().get(getOwner().getObjectId()).containsKey(getOwner().getClassIndex()) || !SummonEffectsTable.getInstance().getServitorEffects(getOwner()).containsKey(getReferenceSkill()))
-			{
-				return;
-			}
-			
-			for (SummonEffect se : SummonEffectsTable.getInstance().getServitorEffects(getOwner()).get(getReferenceSkill()))
-			{
-				if ((se != null) && se.getSkill().hasEffects())
-				{
-					Env env = new Env();
-					env.setCharacter(this);
-					env.setTarget(this);
-					env.setSkill(se.getSkill());
-					L2Effect ef;
-					for (EffectTemplate et : se.getSkill().getEffectTemplates())
-					{
-						ef = et.getEffect(env);
-						if (ef != null)
-						{
-							ef.setCount(se.getEffectCount());
-							ef.setFirstTime(se.getEffectCurTime());
-							ef.scheduleEffect();
-						}
-					}
-				}
-			}
+			SummonEffectsTable.getInstance().applyServitorEffects(this, getOwner(), getReferenceSkill());
 		}
 	}
 	
