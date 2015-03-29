@@ -19,6 +19,9 @@
 package l2r.gameserver.data.xml.impl;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import l2r.Config;
+import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.primeshop.L2ProductItem;
@@ -55,27 +59,26 @@ public class ProductItemData
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ProductItemData.class);
 	
 	private final Map<Integer, L2ProductItem> _itemsList = new TreeMap<>();
-	private final ConcurrentHashMap<Integer, List<L2ProductItem>> recentList;
+	private final ConcurrentHashMap<Integer, List<L2ProductItem>> recentList = new ConcurrentHashMap<>();
 	
-	private static ProductItemData _instance = new ProductItemData();
+	// Character ItemMall points
+	private static final String INSERT_POINTS = "INSERT INTO character_item_mall_points (account_name, game_points) VALUES (?, ?)";
+	private static final String UPDATE_POINTS = "UPDATE character_item_mall_points SET game_points=? WHERE account_name=?";
+	private static final String RESTORE_POINTS = "SELECT game_points FROM character_item_mall_points WHERE account_name=?";
 	
-	public static ProductItemData getInstance()
+	protected ProductItemData()
 	{
-		if (_instance == null)
-		{
-			_instance = new ProductItemData();
-		}
-		return _instance;
+		load();
 	}
 	
 	public void reload()
 	{
-		_instance = new ProductItemData();
+		load();
 	}
 	
-	protected ProductItemData()
+	private void load()
 	{
-		recentList = new ConcurrentHashMap<>();
+		recentList.clear();
 		try
 		{
 			DocumentBuilderFactory factory1 = DocumentBuilderFactory.newInstance();
@@ -213,9 +216,9 @@ public class ProductItemData
 			return;
 		}
 		
-		for (L2ProductItemComponent $comp : product.getComponents())
+		for (L2ProductItemComponent comp : product.getComponents())
 		{
-			player.getInventory().addItem("Buy Product" + _productId, $comp.getId(), $comp.getCount() * _count, player, null);
+			player.addItem("Buy Product" + _productId, comp.getId(), comp.getCount() * _count, player, true);
 		}
 		
 		if (Config.GAME_POINT_ITEM_ID == -1)
@@ -224,7 +227,7 @@ public class ProductItemData
 		}
 		else
 		{
-			player.getInventory().destroyItemByItemId("Buy Product" + _productId, Config.GAME_POINT_ITEM_ID, totalPoints, player, null);
+			player.destroyItemByItemId("Buy Product" + _productId, Config.GAME_POINT_ITEM_ID, totalPoints, player, true);
 		}
 		
 		if (recentList.get(player.getObjectId()) == null)
@@ -244,6 +247,84 @@ public class ProductItemData
 		
 		player.sendPacket(new ExBrGamePoint(player));
 		player.sendPacket(new ExBrBuyProduct(ExBrBuyProduct.RESULT_OK));
+		
+		// Save transaction info at SQL table character_item_mall_transactions
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement("INSERT INTO character_item_mall_transactions (charId, productId, quantity) values (?,?,?)"))
+		{
+			statement.setLong(1, player.getObjectId());
+			statement.setInt(2, product.getProductId());
+			statement.setLong(3, _count);
+			statement.executeUpdate();
+		}
+		catch (Exception e)
+		{
+			LOGGER.error("Could not save Item Mall transaction: " + e.getMessage(), e);
+		}
+	}
+	
+	public void restoreItemMallPoints(L2PcInstance player)
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(RESTORE_POINTS))
+		{
+			statement.setString(1, player._accountName);
+			try (ResultSet rset = statement.executeQuery())
+			{
+				if (rset.next())
+				{
+					player.setGamePoints((long) rset.getDouble("game_points"));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOGGER.error("Failed restoring character " + player.getName() + " game points.", e);
+		}
+	}
+	
+	public void storeItemMallPoints(L2PcInstance player)
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(UPDATE_POINTS))
+		{
+			statement.setDouble(1, player.getGamePoints());
+			statement.setString(2, player._accountName);
+			
+			statement.execute();
+		}
+		catch (Exception e)
+		{
+			LOGGER.error("Could not store char game points: " + player.getName() + " - " + e.getMessage(), e);
+		}
+	}
+	
+	public void createItemMallPoints(L2PcInstance player)
+	{
+		if (needInsertItemMallPoints(player))
+		{
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+				PreparedStatement statement = con.prepareStatement(INSERT_POINTS))
+			{
+				statement.setString(1, player._accountName);
+				statement.setDouble(2, 0);
+				statement.executeUpdate();
+			}
+			catch (Exception e)
+			{
+				LOGGER.error("Could not insert char game points: " + e.getMessage(), e);
+			}
+		}
+	}
+	
+	private boolean needInsertItemMallPoints(L2PcInstance player)
+	{
+		if (player.getGamePoints() < 0)
+		{
+			player.setGamePoints(0);
+			return true;
+		}
+		return false;
 	}
 	
 	private static int getProductTabId(boolean isEvent, boolean isBest, boolean isNew)
@@ -301,5 +382,15 @@ public class ProductItemData
 	public List<L2ProductItem> getRecentListByOID(int objId)
 	{
 		return recentList.get(objId) == null ? new ArrayList<>() : recentList.get(objId);
+	}
+	
+	public static ProductItemData getInstance()
+	{
+		return SingletonHolder._instance;
+	}
+	
+	private static class SingletonHolder
+	{
+		protected static final ProductItemData _instance = new ProductItemData();
 	}
 }

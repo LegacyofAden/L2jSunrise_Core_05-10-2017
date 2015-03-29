@@ -30,19 +30,19 @@ public class ExBrProductList extends L2GameServerPacket
 				continue;
 			}
 			
-			writeD(template.getProductId());
-			writeH(template.getCategory());
-			writeD(template.getPoints());
-			writeD(template.getTabId());
-			writeD((int) (template.getStartTimeSale() / 1000));
-			writeD((int) (template.getEndTimeSale() / 1000));
-			writeC(127);
-			writeC(template.getStartHour());
-			writeC(template.getStartMin());
-			writeC(template.getEndHour());
-			writeC(template.getEndMin());
-			writeD(0);
-			writeD(-1);
+			writeD(template.getProductId()); // product id
+			writeH(template.getCategory()); // category 1 - enchant 2 - supplies 3 - decoration 4 - package 5 - other
+			writeD(template.getPoints()); // points
+			writeD(template.getTabId()); // show tab 2-th group - 1 shows a window about an item
+			writeD((int) (template.getStartTimeSale() / 1000)); // start sale unix date in seconds
+			writeD((int) (template.getEndTimeSale() / 1000)); // end sale unix date in seconds
+			writeC(127); // day week (127 = not daily goods)
+			writeC(template.getStartHour()); // start hour
+			writeC(template.getStartMin()); // start min
+			writeC(template.getEndHour()); // end hour
+			writeC(template.getEndMin()); // end min
+			writeD(0); // stock
+			writeD(-1); // max stock
 		}
 	}
 }

@@ -78,6 +78,7 @@ import l2r.gameserver.data.xml.impl.HennaData;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.data.xml.impl.PetData;
 import l2r.gameserver.data.xml.impl.PlayerTemplateData;
+import l2r.gameserver.data.xml.impl.ProductItemData;
 import l2r.gameserver.data.xml.impl.RecipeData;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.data.xml.impl.SkillTreesData;
@@ -372,7 +373,7 @@ public final class L2PcInstance extends L2Playable
 	
 	// Character Character SQL String Definitions:
 	private static final String INSERT_CHARACTER = "INSERT INTO characters (account_name,charId,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,fame,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,title_color,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,newbie,nobless,power_grade,createDate) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,exp_activation=?,prefix_category=?,enchant_animation=?,hide_private_stores=?,load_soulshots=?,soulshot_animation=?,bad_buff_protection=?,enchant_bot=?,enchant_chance=?,tries=?,hopzonedone=?,topzonedone=?,achievementmobkilled=?,game_points=? WHERE charId=?";
+	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,exp_activation=?,prefix_category=?,enchant_animation=?,hide_private_stores=?,load_soulshots=?,soulshot_animation=?,bad_buff_protection=?,enchant_bot=?,enchant_chance=?,tries=?,hopzonedone=?,topzonedone=?,achievementmobkilled=? WHERE charId=?";
 	private static final String RESTORE_CHARACTER = "SELECT * FROM characters WHERE charId=?";
 	
 	// Character Teleport Bookmark:
@@ -474,8 +475,6 @@ public final class L2PcInstance extends L2Playable
 	
 	/** Vitality recovery task */
 	private ScheduledFuture<?> _vitalityTask;
-	
-	private long _gamePoints;
 	
 	private volatile ScheduledFuture<?> _teleportWatchdog;
 	
@@ -954,6 +953,8 @@ public final class L2PcInstance extends L2Playable
 		player.setNewbie(1);
 		// Give 20 recommendations
 		player.setRecomLeft(20);
+		// Item Mall
+		ProductItemData.getInstance().createItemMallPoints(player);
 		// Add the player in the characters table of the database
 		return player.createDb() ? player : null;
 	}
@@ -7530,9 +7531,6 @@ public final class L2PcInstance extends L2Playable
 					// character creation Time
 					player.getCreateDate().setTime(rset.getDate("createDate"));
 					
-					// GamePoint
-					player.setGamePoints(rset.getLong("game_points"));
-					
 					// Language
 					player.setLang(rset.getString("language"));
 					
@@ -7759,6 +7757,11 @@ public final class L2PcInstance extends L2Playable
 		
 		// Restore items in pet inventory.
 		restorePetInventoryItems();
+		
+		// Restore ItemMall Points
+		ProductItemData.getInstance().restoreItemMallPoints(this);
+		// Create Item Mall Points If Null
+		ProductItemData.getInstance().createItemMallPoints(this);
 	}
 	
 	/**
@@ -7911,6 +7914,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			aVars.storeMe();
 		}
+		ProductItemData.getInstance().storeItemMallPoints(this);
 	}
 	
 	@Override
@@ -8002,8 +8006,7 @@ public final class L2PcInstance extends L2Playable
 			statement.setInt(61, isHopZoneDone() ? 1 : 0);
 			statement.setInt(62, isTopZoneDone() ? 1 : 0);
 			statement.setInt(63, isKilledSpecificMob() ? 1 : 0);
-			statement.setLong(64, getGamePoints());
-			statement.setInt(65, getObjectId());
+			statement.setInt(64, getObjectId());
 			
 			statement.execute();
 			statement.close();
@@ -15252,6 +15255,11 @@ public final class L2PcInstance extends L2Playable
 		super.removeOverridedCond(excs);
 		getVariables().set(COND_OVERRIDE_KEY, Long.toString(_exceptions));
 	}
+	
+	// ============================================== //
+	// Prime Shop Engine By L][Sunrise Team //
+	// ============================================== //
+	private long _gamePoints = -1;
 	
 	public long getGamePoints()
 	{
