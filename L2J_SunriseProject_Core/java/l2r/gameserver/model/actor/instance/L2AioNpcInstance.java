@@ -1125,11 +1125,10 @@ public final class L2AioNpcInstance extends L2Npc
 			try
 			{
 				Integer[] c = new Integer[3];
-				boolean onlyForNobless = false;
 				c[0] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[0];
 				c[1] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[1];
 				c[2] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[2];
-				onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
+				boolean onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
 				itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
 				price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
 				
