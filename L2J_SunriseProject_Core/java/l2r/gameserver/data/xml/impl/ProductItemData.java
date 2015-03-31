@@ -319,6 +319,8 @@ public class ProductItemData
 	
 	private boolean needInsertItemMallPoints(L2PcInstance player)
 	{
+		restoreItemMallPoints(player);
+		
 		if (player.getGamePoints() < 0)
 		{
 			player.setGamePoints(0);

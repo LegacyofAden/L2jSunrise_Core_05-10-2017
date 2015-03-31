@@ -7760,8 +7760,6 @@ public final class L2PcInstance extends L2Playable
 		
 		// Restore ItemMall Points
 		ProductItemData.getInstance().restoreItemMallPoints(this);
-		// Create Item Mall Points If Null
-		ProductItemData.getInstance().createItemMallPoints(this);
 	}
 	
 	/**
