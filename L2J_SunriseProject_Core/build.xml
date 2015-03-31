@@ -49,6 +49,7 @@
 	</target>
 
 	<target name="init" depends="checkRequirements" description="Create the output directories.">
+		<delete dir="${build.bin}" quiet="true" />
 		<mkdir dir="${build.bin}" />
 	</target>
 
