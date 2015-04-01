@@ -15925,6 +15925,30 @@ public final class L2PcInstance extends L2Playable
 		return _pcAdmin;
 	}
 	
+	// Delay Engine By L][Sunrise Team
+	private long _lastAttackPacket = 0;
+	private long _lastMovePacket = 0;
+	
+	public long getLastAttackPacket()
+	{
+		return _lastAttackPacket;
+	}
+	
+	public void setLastAttackPacket()
+	{
+		_lastAttackPacket = System.currentTimeMillis();
+	}
+	
+	public long getLastMovePacket()
+	{
+		return _lastMovePacket;
+	}
+	
+	public void setLastMovePacket()
+	{
+		_lastMovePacket = System.currentTimeMillis();
+	}
+	
 	// ============================================== //
 	// Premium Engine By L][Sunrise Team //
 	// ============================================== //

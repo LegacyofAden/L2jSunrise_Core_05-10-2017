@@ -18,6 +18,7 @@
  */
 package l2r.gameserver.network.clientpackets;
 
+import l2r.Config;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
@@ -63,6 +64,14 @@ public final class Attack extends L2GameClientPacket
 		{
 			return;
 		}
+		
+		if ((System.currentTimeMillis() - activeChar.getLastAttackPacket()) < Config.ATTACK_PACKET_DELAY)
+		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
+		activeChar.setLastAttackPacket();
 		
 		// Avoid Attacks in Boat.
 		if (activeChar.isPlayable() && activeChar.isInBoat())

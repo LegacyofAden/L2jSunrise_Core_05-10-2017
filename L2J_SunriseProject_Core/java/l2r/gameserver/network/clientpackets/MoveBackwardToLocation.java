@@ -80,6 +80,15 @@ public class MoveBackwardToLocation extends L2GameClientPacket
 			return;
 		}
 		
+		if ((System.currentTimeMillis() - activeChar.getLastMovePacket()) < Config.MOVE_PACKET_DELAY)
+		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
+		activeChar.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+		activeChar.setLastMovePacket();
+		
 		if ((Config.PLAYER_MOVEMENT_BLOCK_TIME > 0) && !activeChar.isGM() && (activeChar.getNotMoveUntil() > System.currentTimeMillis()))
 		{
 			activeChar.sendPacket(SystemMessageId.CANNOT_MOVE_WHILE_SPEAKING_TO_AN_NPC);

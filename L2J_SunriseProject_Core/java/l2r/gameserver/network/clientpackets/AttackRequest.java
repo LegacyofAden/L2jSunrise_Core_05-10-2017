@@ -18,6 +18,7 @@
  */
 package l2r.gameserver.network.clientpackets;
 
+import l2r.Config;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
@@ -64,6 +65,14 @@ public final class AttackRequest extends L2GameClientPacket
 		{
 			return;
 		}
+		
+		if ((System.currentTimeMillis() - activeChar.getLastAttackPacket()) < Config.ATTACK_PACKET_DELAY)
+		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
+		activeChar.setLastAttackPacket();
 		
 		L2Effect ef = null;
 		if (((ef = activeChar.getFirstEffect(L2EffectType.ACTION_BLOCK)) != null) && !ef.checkCondition(-1))

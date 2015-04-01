@@ -940,6 +940,8 @@ public final class Config
 	// --------------------------------------------------
 	// Client Packets Settings
 	// --------------------------------------------------
+	public static int MOVE_PACKET_DELAY;
+	public static int ATTACK_PACKET_DELAY;
 	public static int CLIENT_PACKET_QUEUE_SIZE;
 	public static int CLIENT_PACKET_QUEUE_MAX_BURST_SIZE;
 	public static int CLIENT_PACKET_QUEUE_MAX_PACKETS_PER_SECOND;
@@ -1826,6 +1828,8 @@ public final class Config
 			// Load ClientPackets L2Properties file (if exists)
 			final PropertiesParser clientPacketsSettings = new PropertiesParser(CLIENT_PACKETS_FILE);
 			
+			MOVE_PACKET_DELAY = clientPacketsSettings.getInt("MovePacketDelay", 100);
+			ATTACK_PACKET_DELAY = clientPacketsSettings.getInt("AttackPacketDelay", 500);
 			CLIENT_PACKET_QUEUE_SIZE = clientPacketsSettings.getInt("ClientPacketQueueSize", 0);
 			if (CLIENT_PACKET_QUEUE_SIZE == 0)
 			{
