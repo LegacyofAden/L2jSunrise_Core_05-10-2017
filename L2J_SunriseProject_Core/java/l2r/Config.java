@@ -1019,6 +1019,7 @@ public final class Config
 	// Geodata Settings
 	// --------------------------------------------------
 	public static int PATHFINDING;
+	public static String GEODATA_DRIVER;
 	public static File PATHNODE_DIR;
 	public static String PATHFIND_BUFFERS;
 	public static float LOW_WEIGHT;
@@ -2556,6 +2557,8 @@ public final class Config
 			
 			// Load General L2Properties file (if exists)
 			final PropertiesParser Geodata = new PropertiesParser(GEODATA_CONFIG_FILE);
+			
+			GEODATA_DRIVER = Geodata.getString("GeoDataDriver", "l2r.gameserver.geoengine.NullDriver");
 			
 			try
 			{

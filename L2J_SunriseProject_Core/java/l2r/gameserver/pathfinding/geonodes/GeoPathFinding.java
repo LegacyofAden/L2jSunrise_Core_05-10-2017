@@ -31,12 +31,9 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import l2r.Config;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.model.L2World;
@@ -47,12 +44,15 @@ import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.pathfinding.utils.FastNodeList;
 import l2r.gameserver.util.Util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author -Nemesiss-
  */
 public class GeoPathFinding extends PathFinding
 {
-	private static Logger _log = Logger.getLogger(GeoPathFinding.class.getName());
+	private static Logger _log = LoggerFactory.getLogger(GeoPathFinding.class);
 	private static Map<Short, ByteBuffer> _pathNodes = new FastMap<>();
 	private static Map<Short, IntBuffer> _pathNodesIndex = new FastMap<>();
 	
@@ -349,7 +349,7 @@ public class GeoPathFinding extends PathFinding
 		idx += (layer * 10) + 1;// byte + layer*10byte
 		if (nodes < layer)
 		{
-			_log.warning("SmthWrong!");
+			_log.warn("SmthWrong!");
 		}
 		short node_z = pn.getShort(idx);
 		idx += 2;
@@ -403,7 +403,7 @@ public class GeoPathFinding extends PathFinding
 						|| !Util.isDigit(parts[0])
 						|| !Util.isDigit(parts[1]))
 					{
-						_log.warning("Invalid pathnode entry: '" + line + "', must be in format 'XX_YY', where X and Y - integers");
+						_log.warn("Invalid pathnode entry: '" + line + "', must be in format 'XX_YY', where X and Y - integers");
 						return;
 					}
 					
@@ -415,7 +415,7 @@ public class GeoPathFinding extends PathFinding
 		}
 		catch (IOException e)
 		{
-			_log.log(Level.WARNING, "", e);
+			_log.warn("", e);
 			throw new Error("Failed to read pn_index file.");
 		}
 	}
@@ -424,7 +424,7 @@ public class GeoPathFinding extends PathFinding
 	{
 		if ((rx < L2World.TILE_X_MIN) || (rx > L2World.TILE_X_MAX) || (ry < L2World.TILE_Y_MIN) || (ry > L2World.TILE_Y_MAX))
 		{
-			_log.warning("Failed to Load PathNode File: invalid region " + rx + "," + ry + Config.EOL);
+			_log.warn("Failed to Load PathNode File: invalid region " + rx + "," + ry + Config.EOL);
 			return;
 		}
 		short regionoffset = getRegionOffset(rx, ry);
@@ -462,7 +462,7 @@ public class GeoPathFinding extends PathFinding
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "Failed to Load PathNode File: " + file.getAbsolutePath() + " : " + e.getMessage(), e);
+			_log.warn("Failed to Load PathNode File: " + file.getAbsolutePath() + " : " + e.getMessage(), e);
 		}
 	}
 	

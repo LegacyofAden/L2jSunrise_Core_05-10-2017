@@ -18,8 +18,6 @@
  */
 package l2r.gameserver.network.clientpackets;
 
-import java.nio.BufferUnderflowException;
-
 import l2r.Config;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.model.Location;
@@ -57,11 +55,11 @@ public class MoveBackwardToLocation extends L2GameClientPacket
 		_originX = readD();
 		_originY = readD();
 		_originZ = readD();
-		try
+		if (_buf.hasRemaining())
 		{
-			_moveMovement = readD(); // is 0 if cursor keys are used 1 if mouse is used
+			_moveMovement = readD();
 		}
-		catch (BufferUnderflowException e)
+		else
 		{
 			if (Config.L2WALKER_PROTECTION)
 			{
