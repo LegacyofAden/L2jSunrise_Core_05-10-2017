@@ -73,21 +73,9 @@ public class PcStat extends PlayableStat
 		super(activeChar);
 	}
 	
-	@Override
-	public boolean addExp(long value)
+	public void decreaseKarma(long value)
 	{
 		L2PcInstance activeChar = getActiveChar();
-		
-		// Allowed to gain exp?
-		if (!getActiveChar().getAccessLevel().canGainExp())
-		{
-			return false;
-		}
-		
-		if (!super.addExp(value))
-		{
-			return false;
-		}
 		
 		// vGodFather Fix
 		boolean hadKarma;
@@ -122,6 +110,25 @@ public class PcStat extends PlayableStat
 				}
 			}
 		}
+	}
+	
+	@Override
+	public boolean addExp(long value)
+	{
+		L2PcInstance activeChar = getActiveChar();
+		
+		// Allowed to gain exp?
+		if (!getActiveChar().getAccessLevel().canGainExp())
+		{
+			return false;
+		}
+		
+		if (!super.addExp(value))
+		{
+			return false;
+		}
+		
+		decreaseKarma(value);
 		
 		// EXP status update currently not used in retail
 		activeChar.sendPacket(new UserInfo(activeChar));

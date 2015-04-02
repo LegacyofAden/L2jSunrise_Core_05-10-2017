@@ -5629,17 +5629,22 @@ public final class L2PcInstance extends L2Playable
 						}
 					}
 					
-					if (Config.ALT_GAME_DELEVEL)
+					// If player is Lucky shouldn't get penalized.
+					if (!isLucky() && !getNevitSystem().isAdventBlessingActive())
 					{
-						// If player is Lucky shouldn't get penalized.
-						if (!isLucky() && !getNevitSystem().isAdventBlessingActive())
+						// Reduce the Experience of the L2PcInstance in function of the calculated Death Penalty
+						// NOTE: deathPenalty +- Exp will update karma
+						// Penalty is lower if the player is at war with the pk (war has to be declared)
+						
+						final boolean siegeNpc = (killer instanceof L2DefenderInstance) || (killer instanceof L2FortCommanderInstance);
+						final boolean atWar = (pk != null) && (getClan() != null) && (getClan().isAtWarWith(pk.getClanId()));
+						if (Config.ALT_GAME_DELEVEL)
 						{
-							// Reduce the Experience of the L2PcInstance in function of the calculated Death Penalty
-							// NOTE: deathPenalty +- Exp will update karma
-							// Penalty is lower if the player is at war with the pk (war has to be declared)
-							final boolean siegeNpc = (killer instanceof L2DefenderInstance) || (killer instanceof L2FortCommanderInstance);
-							final boolean atWar = (pk != null) && (getClan() != null) && (getClan().isAtWarWith(pk.getClanId()));
 							deathPenalty(atWar, (pk != null), siegeNpc);
+						}
+						else
+						{
+							deathPenalty(atWar, (pk != null), siegeNpc, false);
 						}
 					}
 				}
@@ -6041,6 +6046,19 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void deathPenalty(boolean atwar, boolean killed_by_pc, boolean killed_by_siege_npc)
 	{
+		deathPenalty(atwar, killed_by_pc, killed_by_siege_npc, true);
+	}
+	
+	/**
+	 * Reduce the Experience (and level if necessary) of the L2PcInstance in function of the calculated Death Penalty. <B><U> Actions</U> :</B> <li>Calculate the Experience loss</li> <li>Set the value of _expBeforeDeath</li> <li>Set the new Experience value of the L2PcInstance and Decrease its level
+	 * if necessary</li> <li>Send a Server->Client StatusUpdate packet with its new Experience</li>
+	 * @param atwar
+	 * @param killed_by_pc
+	 * @param killed_by_siege_npc
+	 * @param decreaseExp
+	 */
+	public void deathPenalty(boolean atwar, boolean killed_by_pc, boolean killed_by_siege_npc, boolean decreaseExp)
+	{
 		// TODO Need Correct Penalty
 		// Get the level of the L2PcInstance
 		final int lvl = getLevel();
@@ -6101,6 +6119,7 @@ public final class L2PcInstance extends L2Playable
 		
 		// Calculate the Experience loss
 		long lostExp = 0;
+		long retailLostExp = 0;
 		if (lvl < ExperienceData.getInstance().getMaxLevel())
 		{
 			lostExp = Math.round(((getStat().getExpForLevel(lvl + 1) - getStat().getExpForLevel(lvl)) * percentLost) / 100);
@@ -6110,6 +6129,7 @@ public final class L2PcInstance extends L2Playable
 			lostExp = Math.round(((getStat().getExpForLevel(ExperienceData.getInstance().getMaxLevel()) - getStat().getExpForLevel(ExperienceData.getInstance().getMaxLevel() - 1)) * percentLost) / 100);
 		}
 		
+		retailLostExp = lostExp;
 		if (SunriseEvents.isInEvent(this) || !getExpOn())
 		{
 			lostExp = 0;
@@ -6129,11 +6149,13 @@ public final class L2PcInstance extends L2Playable
 				if (isInSiege() && (killed_by_pc || killed_by_siege_npc))
 				{
 					lostExp = 0;
+					retailLostExp = 0;
 				}
 			}
 			else if (killed_by_pc)
 			{
 				lostExp = 0;
+				retailLostExp = 0;
 			}
 		}
 		
@@ -6143,7 +6165,14 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Set the new Experience value of the L2PcInstance
-		getStat().addExp(-lostExp);
+		if (decreaseExp)
+		{
+			getStat().addExp(-lostExp);
+		}
+		else
+		{
+			getStat().decreaseKarma(-retailLostExp);
+		}
 	}
 	
 	public boolean isPartyWaiting()
