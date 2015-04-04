@@ -26,6 +26,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.CharInfo;
 import l2r.gameserver.network.serverpackets.CreatureSay;
+import l2r.gameserver.network.serverpackets.ExShowScreenMessage;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.RelationChanged;
 
@@ -104,7 +105,6 @@ public final class Broadcast
 				_log.warn(e.getMessage(), e);
 			}
 		}
-		
 	}
 	
 	/**
@@ -193,20 +193,14 @@ public final class Broadcast
 		}
 	}
 	
-	public static void announceToOnlinePlayers(String text, boolean isCritical)
+	public static void toAllOnlinePlayers(String text)
 	{
-		CreatureSay cs;
-		
-		if (isCritical)
-		{
-			cs = new CreatureSay(0, Say2.CRITICAL_ANNOUNCE, "", text);
-		}
-		else
-		{
-			cs = new CreatureSay(0, Say2.ANNOUNCEMENT, "", text);
-		}
-		
-		toAllOnlinePlayers(cs);
+		toAllOnlinePlayers(text, false);
+	}
+	
+	public static void toAllOnlinePlayers(String text, boolean isCritical)
+	{
+		toAllOnlinePlayers(new CreatureSay(0, isCritical ? Say2.CRITICAL_ANNOUNCE : Say2.ANNOUNCEMENT, "", text));
 	}
 	
 	public static void toPlayersInInstance(L2GameServerPacket packet, int instanceId)
@@ -218,5 +212,10 @@ public final class Broadcast
 				player.sendPacket(packet);
 			}
 		}
+	}
+	
+	public static void toAllOnlinePlayersOnScreen(String text)
+	{
+		toAllOnlinePlayers(new ExShowScreenMessage(text, 10000));
 	}
 }

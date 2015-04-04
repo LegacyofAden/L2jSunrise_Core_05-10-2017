@@ -319,19 +319,6 @@ public class GameServer
 		SoDManager.getInstance();
 		SoIManager.getInstance();
 		
-		try
-		{
-			printSection("Datapack Scripts");
-			if (!Config.ALT_DEV_NO_HANDLERS || !Config.ALT_DEV_NO_QUESTS)
-			{
-				L2ScriptEngineManager.getInstance().executeScriptList(new File(Config.DATAPACK_ROOT, "data/scripts.ini"));
-			}
-		}
-		catch (IOException ioe)
-		{
-			_log.error(getClass().getSimpleName() + ": Failed loading scripts.ini, scripts are not going to be loaded!");
-		}
-		
 		printSection("Spawns");
 		SpawnTable.getInstance().load();
 		DayNightSpawnManager.getInstance().trim().notifyChangeMode();
@@ -346,6 +333,19 @@ public class GameServer
 		FortManager.getInstance().activateInstances();
 		FortSiegeManager.getInstance();
 		SiegeScheduleData.getInstance();
+		
+		try
+		{
+			printSection("Datapack Scripts");
+			if (!Config.ALT_DEV_NO_HANDLERS || !Config.ALT_DEV_NO_QUESTS)
+			{
+				L2ScriptEngineManager.getInstance().executeScriptList(new File(Config.DATAPACK_ROOT, "data/scripts.ini"));
+			}
+		}
+		catch (IOException ioe)
+		{
+			_log.error(getClass().getSimpleName() + ": Failed loading scripts.ini, scripts are not going to be loaded!");
+		}
 		
 		printSection("Others");
 		MerchantPriceConfigData.getInstance().updateReferences();

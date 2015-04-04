@@ -229,7 +229,7 @@ public final class Announcements
 	
 	public void announceToAll(String text, boolean isCritical)
 	{
-		Broadcast.announceToOnlinePlayers(text, isCritical);
+		Broadcast.toAllOnlinePlayers(text, isCritical);
 	}
 	
 	public void announceToAll(SystemMessage sm)

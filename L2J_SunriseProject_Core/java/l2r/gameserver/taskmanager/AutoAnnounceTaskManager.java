@@ -200,7 +200,7 @@ public class AutoAnnounceTaskManager
 	
 	public void announce(String text, boolean isCritical)
 	{
-		Broadcast.announceToOnlinePlayers(text, isCritical);
+		Broadcast.toAllOnlinePlayers(text, isCritical);
 		if (Config.LOG_AUTO_ANNOUNCEMENTS)
 		{
 			_log.info((isCritical ? "Critical AutoAnnounce" : "AutoAnnounce") + ": " + text);
