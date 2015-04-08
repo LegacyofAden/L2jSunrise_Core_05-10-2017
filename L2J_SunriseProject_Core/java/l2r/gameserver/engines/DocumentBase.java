@@ -124,6 +124,7 @@ import l2r.gameserver.model.effects.EffectTemplate;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.type.ArmorType;
 import l2r.gameserver.model.items.type.WeaponType;
+import l2r.gameserver.model.skills.EffectScope;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.funcs.FuncTemplate;
 import l2r.gameserver.model.skills.funcs.Lambda;
@@ -311,6 +312,11 @@ public abstract class DocumentBase
 	}
 	
 	protected void attachEffect(Node n, Object template, Condition attachCond)
+	{
+		attachEffect(n, template, attachCond, null);
+	}
+	
+	protected void attachEffect(Node n, Object template, Condition attachCond, EffectScope effectScope)
 	{
 		NamedNodeMap attrs = n.getAttributes();
 		String name = getValue(attrs.getNamedItem("name").getNodeValue().intern(), template);

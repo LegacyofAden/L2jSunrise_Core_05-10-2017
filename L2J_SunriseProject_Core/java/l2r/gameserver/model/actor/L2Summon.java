@@ -68,6 +68,7 @@ import l2r.gameserver.network.serverpackets.PetStatusUpdate;
 import l2r.gameserver.network.serverpackets.RelationChanged;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.TeleportToLocation;
+import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.taskmanager.DecayTaskManager;
 import l2r.gameserver.util.Util;
 
@@ -667,6 +668,12 @@ public abstract class L2Summon extends L2Playable
 		{
 			// Send a System Message to the caster
 			sendPacket(SystemMessageId.NOT_ENOUGH_HP);
+			return false;
+		}
+		
+		if ((this != target) && skill.isPhysical() && (PathFinding.getInstance().findPath(getX(), getY(), getZ(), target.getX(), target.getY(), target.getZ(), getInstanceId(), true) == null))
+		{
+			sendPacket(SystemMessageId.CANT_SEE_TARGET);
 			return false;
 		}
 		

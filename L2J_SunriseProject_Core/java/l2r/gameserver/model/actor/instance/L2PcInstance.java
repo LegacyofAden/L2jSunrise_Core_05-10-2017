@@ -9736,22 +9736,30 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
-		if ((targetPlayer != null) && (targetPlayer != this) && !(isInDuel() && (targetPlayer.getDuelId() == getDuelId())) && !isInsideZone(ZoneIdType.PVP) && !targetPlayer.isInsideZone(ZoneIdType.PVP))
+		if (targetPlayer != null)
 		{
-			SkillUseHolder skilldat = getCurrentSkill();
-			SkillUseHolder skilldatpet = getCurrentPetSkill();
-			if (((skilldat != null) && !skilldat.isCtrlPressed() && skill.isOffensive() && !srcIsSummon) || ((skilldatpet != null) && !skilldatpet.isCtrlPressed() && skill.isOffensive() && srcIsSummon))
+			if (isInsideZone(ZoneIdType.FLAG) && targetPlayer.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
 			{
-				if ((getClan() != null) && (targetPlayer.getClan() != null))
+				return true;
+			}
+			
+			if ((targetPlayer != this) && !(isInDuel() && (targetPlayer.getDuelId() == getDuelId())) && !isInsideZone(ZoneIdType.PVP) && !targetPlayer.isInsideZone(ZoneIdType.PVP))
+			{
+				SkillUseHolder skilldat = getCurrentSkill();
+				SkillUseHolder skilldatpet = getCurrentPetSkill();
+				if (((skilldat != null) && !skilldat.isCtrlPressed() && skill.isOffensive() && !srcIsSummon) || ((skilldatpet != null) && !skilldatpet.isCtrlPressed() && skill.isOffensive() && srcIsSummon))
 				{
-					if (getClan().isAtWarWith(targetPlayer.getClan().getId()) && targetPlayer.getClan().isAtWarWith(getClan().getId()))
+					if ((getClan() != null) && (targetPlayer.getClan() != null))
 					{
-						return true;
+						if (getClan().isAtWarWith(targetPlayer.getClan().getId()) && targetPlayer.getClan().isAtWarWith(getClan().getId()))
+						{
+							return true;
+						}
 					}
-				}
-				if ((targetPlayer.getPvpFlag() == 0) && (targetPlayer.getKarma() == 0))
-				{
-					return false;
+					if ((targetPlayer.getPvpFlag() == 0) && (targetPlayer.getKarma() == 0))
+					{
+						return false;
+					}
 				}
 			}
 		}

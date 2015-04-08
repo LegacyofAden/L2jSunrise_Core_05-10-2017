@@ -31,6 +31,7 @@ import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.skills.L2Skill;
+import l2r.gameserver.pathfinding.PathFinding;
 import l2r.util.Rnd;
 
 public class L2SummonAI extends L2PlayableAI implements Runnable
@@ -47,6 +48,17 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 	public L2SummonAI(L2Summon creature)
 	{
 		super(creature);
+	}
+	
+	@Override
+	protected void onIntentionAttack(L2Character target)
+	{
+		if (PathFinding.getInstance().findPath(_actor.getX(), _actor.getY(), _actor.getZ(), target.getX(), target.getY(), target.getZ(), _actor.getInstanceId(), true) == null)
+		{
+			return;
+		}
+		
+		super.onIntentionAttack(target);
 	}
 	
 	@Override
