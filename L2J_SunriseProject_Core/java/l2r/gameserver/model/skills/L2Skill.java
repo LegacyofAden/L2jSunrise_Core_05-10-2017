@@ -67,6 +67,7 @@ import l2r.util.Rnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gr.sr.configsEngine.configs.impl.FlagZoneConfigs;
 import gr.sr.configsEngine.configs.impl.FormulasConfigs;
 import gr.sr.interf.SunriseEvents;
 
@@ -1334,6 +1335,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 				if (targetPlayer.inObserverMode())
 				{
 					return false;
+				}
+				
+				if (player.isInsideZone(ZoneIdType.FLAG) && targetPlayer.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
+				{
+					return GeoData.getInstance().canSeeTarget(caster, target);
 				}
 				
 				/**
