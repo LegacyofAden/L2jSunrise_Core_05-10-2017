@@ -70,6 +70,12 @@ public class ConditionPlayerCanTakeCastle extends Condition
 			env.getPlayer().sendPacket(SystemMessageId.DIST_TOO_FAR_CASTING_STOPPED);
 			canTakeCastle = false;
 		}
+		
+		if (canTakeCastle && (castle != null))
+		{
+			castle.getSiege().announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.OPPONENT_STARTED_ENGRAVING), false);
+		}
+		
 		return (_val == canTakeCastle);
 	}
 }

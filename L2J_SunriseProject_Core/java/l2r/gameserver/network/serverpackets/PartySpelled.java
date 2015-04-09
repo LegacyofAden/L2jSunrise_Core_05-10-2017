@@ -63,7 +63,6 @@ public class PartySpelled extends L2GameServerPacket
 			writeH(temp._dat);
 			writeD(temp._duration / 1000);
 		}
-		
 	}
 	
 	public void addPartySpelledEffect(int skillId, int dat, int duration)

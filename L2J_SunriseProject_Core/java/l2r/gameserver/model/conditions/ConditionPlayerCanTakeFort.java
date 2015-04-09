@@ -19,6 +19,7 @@
 package l2r.gameserver.model.conditions;
 
 import l2r.gameserver.instancemanager.FortManager;
+import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.entity.Fort;
 import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.network.SystemMessageId;
@@ -66,6 +67,16 @@ public class ConditionPlayerCanTakeFort extends Condition
 			env.getPlayer().sendPacket(SystemMessageId.DIST_TOO_FAR_CASTING_STOPPED);
 			canTakeFort = false;
 		}
+		
+		if (canTakeFort)
+		{
+			final L2Clan clan = env.getPlayer().getClan();
+			if ((fort != null) && (clan != null))
+			{
+				fort.getSiege().announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.S1_TRYING_RAISE_FLAG), clan.getName());
+			}
+		}
+		
 		return (_val == canTakeFort);
 	}
 }
