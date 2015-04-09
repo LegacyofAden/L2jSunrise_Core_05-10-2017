@@ -8993,6 +8993,11 @@ public final class L2PcInstance extends L2Playable
 				}
 			}
 			
+			if (isInsideZone(ZoneIdType.FLAG) && attackerPlayer.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
+			{
+				return true;
+			}
+			
 			// Check if the L2PcInstance is in an arena, but NOT siege zone. NOTE: This check comes before clan/ally checks, but after party checks.
 			// This is done because in arenas, clan/ally members can autoattack if they arent in party.
 			if ((isInsideZone(ZoneIdType.PVP) && attackerPlayer.isInsideZone(ZoneIdType.PVP)) && !(isInsideZone(ZoneIdType.SIEGE) && attackerPlayer.isInsideZone(ZoneIdType.SIEGE)))
@@ -14863,6 +14868,11 @@ public final class L2PcInstance extends L2Playable
 		}
 		else if (cha instanceof L2Playable)
 		{
+			if (cha.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
+			{
+				return true;
+			}
+			
 			if (cha.isInsideZone(ZoneIdType.PVP) && !cha.isInsideZone(ZoneIdType.SIEGE))
 			{
 				return true;
