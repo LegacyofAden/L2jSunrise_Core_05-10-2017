@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javolution.text.TextBuilder;
 import l2r.Config;
 import l2r.gameserver.data.sql.ClanTable;
 import l2r.gameserver.data.xml.impl.ClassListData;
@@ -1053,7 +1052,7 @@ public final class L2ServicesManagerInstance extends L2NpcInstance
 	
 	public void showAchievementMain(L2PcInstance player, int val)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><body>");
 		tb.append("<title>Services manager</title>");
 		tb.append("<center><br>");
@@ -1086,7 +1085,7 @@ public final class L2ServicesManagerInstance extends L2NpcInstance
 	
 	private void showMyAchievements(L2PcInstance player)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		
 		tb.append("<html><title>Services manager</title><body><br>");
 		tb.append("<center><img src=\"l2ui.SquareGray\" width=270 height=1><br1>");
@@ -1133,7 +1132,7 @@ public final class L2ServicesManagerInstance extends L2NpcInstance
 	{
 		Achievement a = AchievementsManager.getInstance().getAchievementList().get(achievementID);
 		
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		
 		tb.append("<html><title>Services manager</title><body><br>");
 		tb.append("<center><img src=\"l2ui.SquareGray\" width=270 height=1><br1>");
@@ -1170,7 +1169,7 @@ public final class L2ServicesManagerInstance extends L2NpcInstance
 	
 	private void showAchievementHelp(L2PcInstance player)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Services manager</title><body><center><br>");
 		tb.append("<center><img src=\"l2ui.SquareGray\" width=270 height=1><br1>");
 		tb.append("<table width=\"270\" cellpadding=\"5\" bgcolor=\"151515\">");
