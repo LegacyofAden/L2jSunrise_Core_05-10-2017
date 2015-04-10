@@ -435,6 +435,8 @@ public final class L2PcInstance extends L2Playable
 	private long _uptime;
 	private long _zoneRestartLimitTime = 0;
 	
+	private int _ping = -1;
+	
 	private final ReentrantLock _subclassLock = new ReentrantLock();
 	protected int _baseClass;
 	protected int _activeClass;
@@ -10516,6 +10518,16 @@ public final class L2PcInstance extends L2Playable
 	public boolean isInOlympiadMode()
 	{
 		return _inOlympiadMode;
+	}
+	
+	public int getPing()
+	{
+		return _ping;
+	}
+	
+	public void setPing(int ping)
+	{
+		_ping = ping;
 	}
 	
 	@Override

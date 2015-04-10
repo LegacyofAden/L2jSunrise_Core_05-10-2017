@@ -604,7 +604,7 @@ public final class L2GamePacketHandler implements IPacketHandler<L2GameClient>, 
 						msg = new MultiSellChoose();
 						break;
 					case 0xb1:
-						// NetPing
+						msg = new NetPing();
 						break;
 					case 0xb2:
 						// RequestRemainTime

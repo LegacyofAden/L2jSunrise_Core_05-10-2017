@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.CtrlIntention;
@@ -31,16 +30,15 @@ import l2r.gameserver.instancemanager.tasks.StartMovingTask;
 import l2r.gameserver.model.L2NpcWalkerNode;
 import l2r.gameserver.model.L2WalkRoute;
 import l2r.gameserver.model.Location;
+import l2r.gameserver.model.WalkInfo;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
 import l2r.gameserver.model.actor.tasks.npc.walker.ArrivedTask;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.npc.OnNpcMoveNodeArrived;
 import l2r.gameserver.model.holders.NpcRoutesHolder;
-import l2r.gameserver.model.holders.WalkInfoHolder;
 import l2r.gameserver.network.NpcStringId;
 import l2r.gameserver.network.clientpackets.Say2;
-import l2r.gameserver.network.serverpackets.CreatureSay;
 import l2r.gameserver.network.serverpackets.NpcSay;
 import l2r.gameserver.util.Broadcast;
 
@@ -65,7 +63,7 @@ public final class WalkingManager implements IXmlReader
 	public static final byte REPEAT_RANDOM = 3;
 	
 	private final Map<String, L2WalkRoute> _routes = new HashMap<>(); // all available routes
-	private final Map<Integer, WalkInfoHolder> _activeRoutes = new HashMap<>(); // each record represents NPC, moving by predefined route from _routes, and moving progress
+	private final Map<Integer, WalkInfo> _activeRoutes = new HashMap<>(); // each record represents NPC, moving by predefined route from _routes, and moving progress
 	private final Map<Integer, NpcRoutesHolder> _routesToAttach = new HashMap<>(); // each record represents NPC and all available routes for it
 	
 	protected WalkingManager()
@@ -211,7 +209,7 @@ public final class WalkingManager implements IXmlReader
 			return false;
 		}
 		
-		final WalkInfoHolder walk = monster != null ? _activeRoutes.get(monster.getObjectId()) : _activeRoutes.get(npc.getObjectId());
+		final WalkInfo walk = monster != null ? _activeRoutes.get(monster.getObjectId()) : _activeRoutes.get(npc.getObjectId());
 		if (walk.isStoppedByAttack() || walk.isSuspended())
 		{
 			return false;
@@ -256,7 +254,7 @@ public final class WalkingManager implements IXmlReader
 				// only if not already moved / not engaged in battle... should not happens if called on spawn
 				if ((npc.getAI().getIntention() == CtrlIntention.AI_INTENTION_ACTIVE) || (npc.getAI().getIntention() == CtrlIntention.AI_INTENTION_IDLE))
 				{
-					final WalkInfoHolder walk = new WalkInfoHolder(routeName);
+					final WalkInfo walk = new WalkInfo(routeName);
 					
 					if (npc.isDebug())
 					{
@@ -276,10 +274,7 @@ public final class WalkingManager implements IXmlReader
 					if (!npc.isInsideRadius(node, 3000, true, false))
 					{
 						final String message = "Route '" + routeName + "': NPC (id=" + npc.getId() + ", x=" + npc.getX() + ", y=" + npc.getY() + ", z=" + npc.getZ() + ") is too far from starting point (node x=" + node.getX() + ", y=" + node.getY() + ", z=" + node.getZ() + ", range=" + npc.calculateDistance(node, true, true) + "), walking will not start";
-						if (Config.DEBUG)
-						{
-							LOGGER.warn(getClass().getSimpleName() + ": " + message);
-						}
+						LOGGER.warn(getClass().getSimpleName() + ": " + message);
 						npc.sendDebugMessage(message);
 						return;
 					}
@@ -304,7 +299,7 @@ public final class WalkingManager implements IXmlReader
 			{
 				if (_activeRoutes.containsKey(npc.getObjectId()) && ((npc.getAI().getIntention() == CtrlIntention.AI_INTENTION_ACTIVE) || (npc.getAI().getIntention() == CtrlIntention.AI_INTENTION_IDLE)))
 				{
-					final WalkInfoHolder walk = _activeRoutes.get(npc.getObjectId());
+					final WalkInfo walk = _activeRoutes.get(npc.getObjectId());
 					if (walk == null)
 					{
 						return;
@@ -339,7 +334,7 @@ public final class WalkingManager implements IXmlReader
 	 */
 	public synchronized void cancelMoving(L2Npc npc)
 	{
-		final WalkInfoHolder walk = _activeRoutes.remove(npc.getObjectId());
+		final WalkInfo walk = _activeRoutes.remove(npc.getObjectId());
 		if (walk != null)
 		{
 			walk.getWalkCheckTask().cancel(true);
@@ -353,7 +348,7 @@ public final class WalkingManager implements IXmlReader
 	 */
 	public void resumeMoving(final L2Npc npc)
 	{
-		final WalkInfoHolder walk = _activeRoutes.get(npc.getObjectId());
+		final WalkInfo walk = _activeRoutes.get(npc.getObjectId());
 		if (walk != null)
 		{
 			walk.setSuspended(false);
@@ -389,7 +384,7 @@ public final class WalkingManager implements IXmlReader
 			return;
 		}
 		
-		final WalkInfoHolder walk = monster != null ? _activeRoutes.get(monster.getObjectId()) : _activeRoutes.get(npc.getObjectId());
+		final WalkInfo walk = monster != null ? _activeRoutes.get(monster.getObjectId()) : _activeRoutes.get(npc.getObjectId());
 		
 		walk.setSuspended(suspend);
 		walk.setStoppedByAttack(stoppedByAttack);
@@ -417,7 +412,7 @@ public final class WalkingManager implements IXmlReader
 			// Notify quest
 			EventDispatcher.getInstance().notifyEventAsync(new OnNpcMoveNodeArrived(npc), npc);
 			
-			final WalkInfoHolder walk = _activeRoutes.get(npc.getObjectId());
+			final WalkInfo walk = _activeRoutes.get(npc.getObjectId());
 			
 			// Opposite should not happen... but happens sometime
 			if ((walk.getCurrentNodeId() >= 0) && (walk.getCurrentNodeId() < walk.getRoute().getNodesCount()))
@@ -436,7 +431,7 @@ public final class WalkingManager implements IXmlReader
 					}
 					else if (!node.getChatText().isEmpty())
 					{
-						Broadcast.toKnownPlayers(npc, new CreatureSay(npc.getId(), Say2.NPC_ALL, npc.getName(), ": " + node.getChatText()));
+						Broadcast.toKnownPlayers(npc, new NpcSay(npc, Say2.NPC_ALL, node.getChatText()));
 					}
 					
 					if (npc.isDebug())

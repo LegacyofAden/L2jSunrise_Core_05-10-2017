@@ -16,13 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.model.holders;
+package l2r.gameserver.model;
 
 import java.util.concurrent.ScheduledFuture;
 
 import l2r.gameserver.instancemanager.WalkingManager;
-import l2r.gameserver.model.L2NpcWalkerNode;
-import l2r.gameserver.model.L2WalkRoute;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.npc.OnNpcMoveRouteFinished;
@@ -32,7 +30,7 @@ import l2r.util.Rnd;
  * Holds info about current walk progress
  * @author GKR, UnAfraid
  */
-public class WalkInfoHolder
+public class WalkInfo
 {
 	private final String _routeName;
 	
@@ -44,7 +42,7 @@ public class WalkInfoHolder
 	private boolean _forward = true; // Determines first --> last or first <-- last direction
 	private long _lastActionTime; // Debug field
 	
-	public WalkInfoHolder(String routeName)
+	public WalkInfo(String routeName)
 	{
 		_routeName = routeName;
 	}
@@ -99,7 +97,6 @@ public class WalkInfoHolder
 			{
 				// Notify quest
 				EventDispatcher.getInstance().notifyEventAsync(new OnNpcMoveRouteFinished(npc), npc);
-				
 				npc.sendDebugMessage("Route: " + getRoute().getName() + ", last node arrived");
 				
 				if (!getRoute().repeatWalk())

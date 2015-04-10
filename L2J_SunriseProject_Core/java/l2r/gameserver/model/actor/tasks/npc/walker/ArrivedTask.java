@@ -19,8 +19,8 @@
 package l2r.gameserver.model.actor.tasks.npc.walker;
 
 import l2r.gameserver.instancemanager.WalkingManager;
+import l2r.gameserver.model.WalkInfo;
 import l2r.gameserver.model.actor.L2Npc;
-import l2r.gameserver.model.holders.WalkInfoHolder;
 
 /**
  * Walker arrive task.
@@ -28,10 +28,10 @@ import l2r.gameserver.model.holders.WalkInfoHolder;
  */
 public class ArrivedTask implements Runnable
 {
-	private final WalkInfoHolder _walk;
+	private final WalkInfo _walk;
 	private final L2Npc _npc;
 	
-	public ArrivedTask(L2Npc npc, WalkInfoHolder walk)
+	public ArrivedTask(L2Npc npc, WalkInfo walk)
 	{
 		_npc = npc;
 		_walk = walk;
