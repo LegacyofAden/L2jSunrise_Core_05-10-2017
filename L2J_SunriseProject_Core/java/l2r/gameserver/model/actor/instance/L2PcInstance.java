@@ -634,7 +634,6 @@ public final class L2PcInstance extends L2Playable
 	
 	private boolean _noble = false;
 	private boolean _hero = false;
-	private boolean _isVoter = false;
 	
 	/** The L2FolkInstance corresponding to the last Folk which one the player talked. */
 	private L2Npc _lastFolkNpc = null;
@@ -10643,19 +10642,6 @@ public final class L2PcInstance extends L2Playable
 		}
 		return true;
 	}
-	
-	public boolean isVoter()
-	{
-		return _isVoter;
-	}
-	
-	public void setVoter(boolean count)
-	{
-		_isVoter = count;
-	}
-	
-	int yess = 0;
-	int noo = 0;
 	
 	public boolean isNoble()
 	{
