@@ -30,7 +30,7 @@ import l2r.gameserver.model.Location;
 import l2r.gameserver.model.interfaces.ILocational;
 import l2r.gameserver.util.GeoUtils;
 import l2r.gameserver.util.LinePointIterator;
-import l2r.gameserver.util.LinePointIterator3D;
+import l2r.gameserver.util.Util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,6 +259,7 @@ public class GeoData implements IGeoDriver
 		return canSeeTarget(x, y, z, tx, ty, tz);
 	}
 	
+	@SuppressWarnings("unused")
 	private int getLosGeoZ(int prevX, int prevY, int prevGeoZ, int curX, int curY, Direction dir)
 	{
 		boolean can = true;
@@ -317,6 +318,8 @@ public class GeoData implements IGeoDriver
 			return true;
 		}
 		
+		double fullDist = Util.calculateDistance(geoX, geoY, 0, tGeoX, tGeoY, 0, false, false);
+		
 		if (tz > z)
 		{
 			int tmp = tx;
@@ -340,13 +343,14 @@ public class GeoData implements IGeoDriver
 			geoY = tmp;
 		}
 		
-		LinePointIterator3D pointIter = new LinePointIterator3D(geoX, geoY, z, tGeoX, tGeoY, tz);
+		int fullZDiff = tz - z;
+		
+		LinePointIterator pointIter = new LinePointIterator(geoX, geoY, tGeoX, tGeoY);
 		// first point is guaranteed to be available, skip it, we can always see our own position
 		pointIter.next();
 		int prevX = pointIter.x();
 		int prevY = pointIter.y();
-		int prevZ = pointIter.z();
-		int prevGeoZ = prevZ;
+		int prevMoveNearestZ = z;
 		int ptIndex = 0;
 		
 		while (pointIter.next())
@@ -354,24 +358,27 @@ public class GeoData implements IGeoDriver
 			int curX = pointIter.x();
 			int curY = pointIter.y();
 			
-			if ((curX == prevX) && (curY == prevY))
-			{
-				continue;
-			}
-			
-			int beeCurZ = pointIter.z();
-			int curGeoZ = prevGeoZ;
-			
 			// the current position has geodata
 			if (hasGeoPos(curX, curY))
 			{
-				int beeCurGeoZ = getNearestZ(curX, curY, beeCurZ);
-				Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
-				curGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, curX, curY, dir);
+				double percentageDist = Util.calculateDistance(geoX, geoY, 0, curX, curY, 0, false, false) / fullDist;
+				int beeCurZ = (int) (z + (fullZDiff * percentageDist));
+				int beeCurNearestZ = getNearestZ(curX, curY, beeCurZ);
+				int moveCurNearestZ;
+				if (canEnterNeighbors(prevX, prevY, prevMoveNearestZ, GeoUtils.computeDirection(prevX, prevY, curX, curY)))
+				{
+					moveCurNearestZ = getNearestZ(curX, curY, prevMoveNearestZ);
+				}
+				else
+				{
+					moveCurNearestZ = beeCurNearestZ;
+				}
+				
 				int maxHeight;
-				if (ptIndex < ELEVATED_SEE_OVER_DISTANCE)
+				if ((ptIndex < ELEVATED_SEE_OVER_DISTANCE) && (fullDist >= ELEVATED_SEE_OVER_DISTANCE))
 				{
 					maxHeight = z + MAX_SEE_OVER_HEIGHT;
+					++ptIndex;
 				}
 				else
 				{
@@ -379,43 +386,28 @@ public class GeoData implements IGeoDriver
 				}
 				
 				boolean canSeeThrough = false;
-				if ((curGeoZ <= maxHeight) && (curGeoZ <= beeCurGeoZ))
+				if ((beeCurNearestZ <= maxHeight) && (moveCurNearestZ <= beeCurNearestZ))
 				{
+					Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
+					
+					// check diagonal step
 					switch (dir)
 					{
 						case NORTH_EAST:
-						{
-							int northGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY - 1, Direction.EAST);
-							int eastGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX + 1, prevY, Direction.NORTH);
-							canSeeThrough = (northGeoZ <= maxHeight) && (eastGeoZ <= maxHeight) && (northGeoZ <= getNearestZ(prevX, prevY - 1, beeCurZ)) && (eastGeoZ <= getNearestZ(prevX + 1, prevY, beeCurZ));
+							canSeeThrough = (getNearestZ(prevX, prevY - 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX + 1, prevY, beeCurZ) <= maxHeight);
 							break;
-						}
 						case NORTH_WEST:
-						{
-							int northGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY - 1, Direction.WEST);
-							int westGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX - 1, prevY, Direction.NORTH);
-							canSeeThrough = (northGeoZ <= maxHeight) && (westGeoZ <= maxHeight) && (northGeoZ <= getNearestZ(prevX, prevY - 1, beeCurZ)) && (westGeoZ <= getNearestZ(prevX - 1, prevY, beeCurZ));
+							canSeeThrough = (getNearestZ(prevX, prevY - 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX - 1, prevY, beeCurZ) <= maxHeight);
 							break;
-						}
 						case SOUTH_EAST:
-						{
-							int southGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY + 1, Direction.EAST);
-							int eastGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX + 1, prevY, Direction.SOUTH);
-							canSeeThrough = (southGeoZ <= maxHeight) && (eastGeoZ <= maxHeight) && (southGeoZ <= getNearestZ(prevX, prevY + 1, beeCurZ)) && (eastGeoZ <= getNearestZ(prevX + 1, prevY, beeCurZ));
+							canSeeThrough = (getNearestZ(prevX, prevY + 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX + 1, prevY, beeCurZ) <= maxHeight);
 							break;
-						}
 						case SOUTH_WEST:
-						{
-							int southGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY + 1, Direction.WEST);
-							int westGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX - 1, prevY, Direction.SOUTH);
-							canSeeThrough = (southGeoZ <= maxHeight) && (westGeoZ <= maxHeight) && (southGeoZ <= getNearestZ(prevX, prevY + 1, beeCurZ)) && (westGeoZ <= getNearestZ(prevX - 1, prevY, beeCurZ));
+							canSeeThrough = (getNearestZ(prevX, prevY + 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX - 1, prevY, beeCurZ) <= maxHeight);
 							break;
-						}
 						default:
-						{
 							canSeeThrough = true;
 							break;
-						}
 					}
 				}
 				
@@ -423,12 +415,12 @@ public class GeoData implements IGeoDriver
 				{
 					return false;
 				}
+				
+				prevMoveNearestZ = moveCurNearestZ;
 			}
 			
 			prevX = curX;
 			prevY = curY;
-			prevGeoZ = curGeoZ;
-			++ptIndex;
 		}
 		
 		return true;
