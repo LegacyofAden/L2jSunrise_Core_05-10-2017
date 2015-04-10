@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.communitybbs.Managers;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.ShowBoard;
 
@@ -84,7 +84,7 @@ public abstract class BaseBBSManager
 	 */
 	protected void send1002(L2PcInstance activeChar, String string, String string2, String string3)
 	{
-		List<String> _arg = new FastList<>();
+		List<String> _arg = new ArrayList<>();
 		_arg.add("0");
 		_arg.add("0");
 		_arg.add("0");

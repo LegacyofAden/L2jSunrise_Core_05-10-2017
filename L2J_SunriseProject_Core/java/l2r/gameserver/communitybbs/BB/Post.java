@@ -21,9 +21,9 @@ package l2r.gameserver.communitybbs.BB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.communitybbs.Managers.PostBBSManager;
 
@@ -48,7 +48,7 @@ public class Post
 		public String postTxt;
 	}
 	
-	private final List<CPost> _post;
+	private final List<CPost> _post = new ArrayList<>();
 	
 	/**
 	 * @param _PostOwner
@@ -60,8 +60,7 @@ public class Post
 	 */
 	public Post(String _PostOwner, int _PostOwnerID, long date, int tid, int _PostForumID, String txt)
 	{
-		_post = new FastList<>();
-		CPost cp = new CPost();
+		final CPost cp = new CPost();
 		cp.postId = 0;
 		cp.postOwner = _PostOwner;
 		cp.postOwnerId = _PostOwnerID;
@@ -72,6 +71,11 @@ public class Post
 		_post.add(cp);
 		insertindb(cp);
 		
+	}
+	
+	public Post(Topic t)
+	{
+		load(t);
 	}
 	
 	public void insertindb(CPost cp)
@@ -94,23 +98,9 @@ public class Post
 		}
 	}
 	
-	public Post(Topic t)
-	{
-		_post = new FastList<>();
-		load(t);
-	}
-	
 	public CPost getCPost(int id)
 	{
-		int i = 0;
-		for (CPost cp : _post)
-		{
-			if (i++ == id)
-			{
-				return cp;
-			}
-		}
-		return null;
+		return _post.get(id);
 	}
 	
 	public void deleteme(Topic t)
@@ -143,7 +133,7 @@ public class Post
 			{
 				while (rs.next())
 				{
-					CPost cp = new CPost();
+					final CPost cp = new CPost();
 					cp.postId = rs.getInt("post_id");
 					cp.postOwner = rs.getString("post_owner_name");
 					cp.postOwnerId = rs.getInt("post_ownerid");

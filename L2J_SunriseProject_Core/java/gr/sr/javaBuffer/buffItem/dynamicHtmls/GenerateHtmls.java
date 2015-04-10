@@ -2,7 +2,6 @@ package gr.sr.javaBuffer.buffItem.dynamicHtmls;
 
 import java.util.List;
 
-import javolution.text.TextBuilder;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import gr.sr.datatables.SunriseTable;
 import gr.sr.javaBuffer.BuffInstance;
@@ -29,7 +28,7 @@ public class GenerateHtmls
 	{
 		List<String> profileNames = PlayerMethods.getProfiles(player);
 		
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append(_headHtml);
 		tb.append("Choose the profile<br></center><font color=00FFFF>Scheme Profiles:</font><center><img src=\"L2UI.SquareGray\" width=280 height=1><table bgcolor=131210>");
 		for (String profile : profileNames)
@@ -56,7 +55,7 @@ public class GenerateHtmls
 		List<Integer> ownedBuffs = PlayerMethods.getProfileBuffs(profile, player);
 		int i = 0;
 		
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append(_headHtml);
 		tb.append("Choose the buffs to be added<br></center>");
 		switch (category)
@@ -103,7 +102,7 @@ public class GenerateHtmls
 			String description = buffInst.getDescription();
 			String name = buffInst.getName();
 			
-			// Check if the buff id exists in the owned buffs fastlist
+			// Check if the buff id exists in the owned buffs list
 			// Remember the l2pc has only the buffId contained
 			if ((ownedBuffs != null) && ownedBuffs.contains(id))
 			{
@@ -165,7 +164,7 @@ public class GenerateHtmls
 			return;
 		}
 		
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append(_headHtml);
 		tb.append("Choose the buffs to be deleted<br></center>");
 		tb.append("<font color=00FFFF>Scheme Buffer: Remove</font>");
@@ -179,7 +178,7 @@ public class GenerateHtmls
 			// String description = buffInst.getDescription();
 			String name = buffInst.getName();
 			
-			// Check if the buff id exists in the owned buffs fastlist
+			// Check if the buff id exists in the owned buffs list
 			// Remember the l2pc has only the buffId contained
 			if (!ownedBuffs.contains(id))
 			{

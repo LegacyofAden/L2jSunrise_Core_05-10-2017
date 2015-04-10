@@ -1,6 +1,5 @@
 package gr.sr.antibotEngine.dynamicHtmls;
 
-import javolution.text.TextBuilder;
 import l2r.Config;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -25,7 +24,7 @@ public class GenerateHtmls
 	
 	public static void captchaHtml(L2PcInstance activeChar, String botType)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		NpcHtmlMessage antibotReply = new NpcHtmlMessage(0);
 		
 		generateAntibotImages(activeChar);

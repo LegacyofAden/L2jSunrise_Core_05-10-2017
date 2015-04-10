@@ -3,15 +3,14 @@ package l2r.gameserver.communitybbs.SunriseBoards;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Map;
 
-import javolution.text.TextBuilder;
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 
 public class HeroeList
 {
-	private final TextBuilder _heroeList = new TextBuilder();
+	private final StringBuilder _heroeList = new StringBuilder();
 	
 	public HeroeList()
 	{
@@ -65,7 +64,7 @@ public class HeroeList
 	public final static String className(int classId)
 	{
 		Map<Integer, String> classList;
-		classList = new FastMap<>();
+		classList = new HashMap<>();
 		classList.put(0, "Fighter");
 		classList.put(1, "Warrior");
 		classList.put(2, "Gladiator");

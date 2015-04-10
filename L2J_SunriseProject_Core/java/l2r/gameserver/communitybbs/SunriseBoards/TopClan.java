@@ -4,12 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import javolution.text.TextBuilder;
 import l2r.L2DatabaseFactory;
 
 public class TopClan
 {
-	private final TextBuilder _topClan = new TextBuilder();
+	private final StringBuilder _topClan = new StringBuilder();
 	private int _counter = 1;
 	
 	public TopClan(String file)

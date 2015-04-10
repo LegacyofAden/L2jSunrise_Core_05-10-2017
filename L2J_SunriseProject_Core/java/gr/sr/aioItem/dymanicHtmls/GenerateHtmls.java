@@ -1,6 +1,5 @@
 package gr.sr.aioItem.dymanicHtmls;
 
-import javolution.text.TextBuilder;
 import l2r.Config;
 import l2r.gameserver.data.sql.NpcTable;
 import l2r.gameserver.instancemanager.GrandBossManager;
@@ -60,7 +59,7 @@ public class GenerateHtmls
 	public static final void showRbInfo(L2PcInstance player)
 	{
 		NpcHtmlMessage html = new NpcHtmlMessage(5);
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Rb Info</title><body>");
 		tb.append("<br><br>");
 		tb.append("<font color=00FFFF>Grand Boss Info</font>");
@@ -105,7 +104,7 @@ public class GenerateHtmls
 	 */
 	public static void showAchievementMain(L2PcInstance player, int val)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Achievements Manager</title><body><center><br>");
 		tb.append("Hello <font color=\"LEVEL\">" + player.getName() + "</font><br>Are you looking for challenge?");
 		tb.append("<br><img src=\"L2UI.SquareWhite\" width=\"280\" height=\"1\"><br><br>");
@@ -126,7 +125,7 @@ public class GenerateHtmls
 	 */
 	public static void showMyAchievements(L2PcInstance player)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Achievements Manager</title><body><br>");
 		
 		tb.append("<center><font color=\"LEVEL\">My achievements</font>:</center><br>");
@@ -169,7 +168,7 @@ public class GenerateHtmls
 	{
 		Achievement a = AchievementsManager.getInstance().getAchievementList().get(achievementID);
 		
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Achievements Manager</title><body><br>");
 		
 		tb.append("<center><table width=270 border=0 bgcolor=\"33FF33\">");
@@ -206,7 +205,7 @@ public class GenerateHtmls
 	 */
 	public static void showAchievementStats(L2PcInstance player)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Achievements Manager</title><body><center><br>");
 		tb.append("Check your <font color=\"LEVEL\">Achievements </font>statistics:");
 		tb.append("<br><img src=\"l2ui.squaregray\" width=\"270\" height=\"1\"><br>");
@@ -231,7 +230,7 @@ public class GenerateHtmls
 	 */
 	public static void showAchievementHelp(L2PcInstance player)
 	{
-		TextBuilder tb = new TextBuilder();
+		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Achievements Manager</title><body><center><br>");
 		tb.append("Achievements  <font color=\"LEVEL\">Help </font>page:");
 		tb.append("<br><img src=\"l2ui.squaregray\" width=\"270\" height=\"1\"><br>");
@@ -317,7 +316,7 @@ public class GenerateHtmls
 	public static void showTopFa(L2PcInstance player)
 	{
 		NpcHtmlMessage html = new NpcHtmlMessage(5);
-		TextBuilder sb = new TextBuilder();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top Fa</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
 		sb.append("<tr>");
@@ -352,7 +351,7 @@ public class GenerateHtmls
 	public static void showTopPvp(L2PcInstance player)
 	{
 		NpcHtmlMessage html = new NpcHtmlMessage(5);
-		TextBuilder sb = new TextBuilder();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top PvP</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
 		sb.append("<tr>");
@@ -388,7 +387,7 @@ public class GenerateHtmls
 	public static void showTopPk(L2PcInstance player)
 	{
 		NpcHtmlMessage html = new NpcHtmlMessage(5);
-		TextBuilder sb = new TextBuilder();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top Pk</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
 		sb.append("<tr>");
@@ -424,7 +423,7 @@ public class GenerateHtmls
 	public static void showTopClan(L2PcInstance player)
 	{
 		NpcHtmlMessage html = new NpcHtmlMessage(5);
-		TextBuilder sb = new TextBuilder();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top Clan</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
 		sb.append("<tr>");

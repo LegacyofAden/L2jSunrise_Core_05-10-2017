@@ -1,13 +1,12 @@
 package l2r.gameserver.communitybbs.SunriseBoards;
 
-import javolution.text.TextBuilder;
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 import gr.sr.dataHolder.PlayersTopData;
 import gr.sr.datatables.SunriseTable;
 
 public class TopOnlinePlayers
 {
-	private final TextBuilder _topOnline = new TextBuilder();
+	private final StringBuilder _topOnline = new StringBuilder();
 	private int _counter = 0;
 	
 	public TopOnlinePlayers(String file)

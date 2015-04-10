@@ -6,12 +6,11 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javolution.text.TextBuilder;
 import l2r.L2DatabaseFactory;
 
 public class CastleStatus
 {
-	private final TextBuilder _playerList = new TextBuilder();
+	private final StringBuilder _playerList = new StringBuilder();
 	
 	public CastleStatus()
 	{

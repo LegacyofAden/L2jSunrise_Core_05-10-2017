@@ -1,6 +1,5 @@
 package l2r.gameserver.communitybbs.SunriseBoards;
 
-import javolution.text.TextBuilder;
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 import gr.sr.dataHolder.PlayersTopData;
 import gr.sr.datatables.SunriseTable;
@@ -8,7 +7,7 @@ import gr.sr.datatables.SunriseTable;
 public class TopPvpPlayers
 {
 	private int _counter = 1;
-	private final TextBuilder _topPvp = new TextBuilder();
+	private final StringBuilder _topPvp = new StringBuilder();
 	
 	public TopPvpPlayers(String file)
 	{

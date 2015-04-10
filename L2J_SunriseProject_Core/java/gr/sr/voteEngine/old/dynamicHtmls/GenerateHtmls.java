@@ -1,6 +1,5 @@
 package gr.sr.voteEngine.old.dynamicHtmls;
 
-import javolution.text.TextBuilder;
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -36,7 +35,7 @@ public class GenerateHtmls
 	{
 		if (activeChar.isHopZoneDone() && activeChar.isTopZoneDone())
 		{
-			TextBuilder tb = new TextBuilder();
+			StringBuilder tb = new StringBuilder();
 			NpcHtmlMessage html = new NpcHtmlMessage(1);
 			
 			tb.append("<html><head><title>Vote Reward Panel</title></head><body>");
@@ -77,7 +76,7 @@ public class GenerateHtmls
 	{
 		if (!activeChar.isHopZoneDone() || !activeChar.isTopZoneDone())
 		{
-			TextBuilder tb = new TextBuilder();
+			StringBuilder tb = new StringBuilder();
 			NpcHtmlMessage html = new NpcHtmlMessage(1);
 			
 			tb.append("<html><head><title>Vote System Panel</title></head><body>");

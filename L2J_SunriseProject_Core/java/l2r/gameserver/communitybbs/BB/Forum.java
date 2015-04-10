@@ -21,11 +21,11 @@ package l2r.gameserver.communitybbs.BB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.communitybbs.Managers.ForumsBBSManager;
 import l2r.gameserver.communitybbs.Managers.TopicBBSManager;
@@ -48,8 +48,8 @@ public class Forum
 	public static final int OWNERONLY = 3;
 	
 	private static Logger _log = LoggerFactory.getLogger(Forum.class);
-	private final List<Forum> _children;
-	private final Map<Integer, Topic> _topic;
+	private final List<Forum> _children = new ArrayList<>();
+	private final Map<Integer, Topic> _topic = new ConcurrentHashMap<>();
 	private final int _forumId;
 	private String _forumName;
 	private int _forumType;
@@ -68,8 +68,6 @@ public class Forum
 	{
 		_forumId = Forumid;
 		_fParent = FParent;
-		_children = new FastList<>();
-		_topic = new FastMap<>();
 	}
 	
 	/**
@@ -88,8 +86,6 @@ public class Forum
 		_forumPerm = perm;
 		_fParent = parent;
 		_ownerID = OwnerID;
-		_children = new FastList<>();
-		_topic = new FastMap<>();
 		parent._children.add(this);
 		ForumsBBSManager.getInstance().addForum(this);
 		_loaded = true;
@@ -151,7 +147,7 @@ public class Forum
 			{
 				while (rs.next())
 				{
-					Forum f = new Forum(rs.getInt("forum_id"), this);
+					final Forum f = new Forum(rs.getInt("forum_id"), this);
 					_children.add(f);
 					ForumsBBSManager.getInstance().addForum(f);
 				}
@@ -208,14 +204,7 @@ public class Forum
 	public Forum getChildByName(String name)
 	{
 		vload();
-		for (Forum f : _children)
-		{
-			if (f.getName().equals(name))
-			{
-				return f;
-			}
-		}
-		return null;
+		return _children.stream().filter(f -> f.getName().equals(name)).findFirst().orElse(null);
 	}
 	
 	/**

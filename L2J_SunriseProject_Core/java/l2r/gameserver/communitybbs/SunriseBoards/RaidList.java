@@ -4,13 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import javolution.text.TextBuilder;
 import l2r.L2DatabaseFactory;
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 
 public class RaidList
 {
-	private final TextBuilder _raidList = new TextBuilder();
+	private final StringBuilder _raidList = new StringBuilder();
 	
 	public RaidList(String rfid)
 	{

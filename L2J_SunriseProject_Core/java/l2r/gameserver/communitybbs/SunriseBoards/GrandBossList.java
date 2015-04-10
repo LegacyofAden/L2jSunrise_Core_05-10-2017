@@ -4,12 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import javolution.text.TextBuilder;
 import l2r.L2DatabaseFactory;
 
 public class GrandBossList
 {
-	private final TextBuilder _GrandBossList = new TextBuilder();
+	private final StringBuilder _GrandBossList = new StringBuilder();
 	
 	public GrandBossList()
 	{

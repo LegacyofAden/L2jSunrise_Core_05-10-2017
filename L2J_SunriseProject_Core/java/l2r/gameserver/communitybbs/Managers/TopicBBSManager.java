@@ -20,12 +20,12 @@ package l2r.gameserver.communitybbs.Managers;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.gameserver.communitybbs.BB.Forum;
 import l2r.gameserver.communitybbs.BB.Post;
 import l2r.gameserver.communitybbs.BB.Topic;
@@ -36,13 +36,12 @@ import l2r.util.StringUtil;
 
 public class TopicBBSManager extends BaseBBSManager
 {
-	private final List<Topic> _table;
-	private final Map<Forum, Integer> _maxId;
+	private final List<Topic> _table = new CopyOnWriteArrayList<>();
+	private final Map<Forum, Integer> _maxId = new HashMap<>();
 	
 	protected TopicBBSManager()
 	{
-		_table = new FastList<>();
-		_maxId = new FastMap<Forum, Integer>().shared();
+		// Prevent external initialization.
 	}
 	
 	public void addTopic(Topic tt)

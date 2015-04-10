@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.gameserver.communitybbs.BB.Forum;
 import l2r.gameserver.communitybbs.BB.Post;
 import l2r.gameserver.communitybbs.BB.Topic;
@@ -34,7 +34,7 @@ import l2r.util.StringUtil;
 
 public class PostBBSManager extends BaseBBSManager
 {
-	private final Map<Topic, Post> _postByTopic = new FastMap<>();
+	private final Map<Topic, Post> _postByTopic = new ConcurrentHashMap<>();
 	
 	public Post getGPosttByTopic(Topic t)
 	{
@@ -117,17 +117,27 @@ public class PostBBSManager extends BaseBBSManager
 	 */
 	private void showEditPost(Topic topic, Forum forum, L2PcInstance activeChar, int idp)
 	{
-		Post p = getGPosttByTopic(topic);
-		if ((forum == null) || (topic == null) || (p == null))
+		if (topic == null)
 		{
-			ShowBoard sb = new ShowBoard("<html><body><br><br><center>Error, this forum, topic or post does not exit !</center><br><br></body></html>", "101");
+			ShowBoard sb = new ShowBoard("<html><body><br><br><center>Error: This topic does not exist!</center><br><br></body></html>", "101");
 			activeChar.sendPacket(sb);
 			activeChar.sendPacket(new ShowBoard(null, "102"));
 			activeChar.sendPacket(new ShowBoard(null, "103"));
 		}
 		else
 		{
-			showHtmlEditPost(topic, activeChar, forum, p);
+			final Post p = getGPosttByTopic(topic);
+			if ((forum == null) || (p == null))
+			{
+				ShowBoard sb = new ShowBoard("<html><body><br><br><center>Error: This topic does not exist!</center><br><br></body></html>", "101");
+				activeChar.sendPacket(sb);
+				activeChar.sendPacket(new ShowBoard(null, "102"));
+				activeChar.sendPacket(new ShowBoard(null, "103"));
+			}
+			else
+			{
+				showHtmlEditPost(topic, activeChar, forum, p);
+			}
 		}
 	}
 	
@@ -141,7 +151,7 @@ public class PostBBSManager extends BaseBBSManager
 	{
 		if ((forum == null) || (topic == null))
 		{
-			ShowBoard sb = new ShowBoard("<html><body><br><br><center>Error, this forum is not implemented yet</center><br><br></body></html>", "101");
+			ShowBoard sb = new ShowBoard("<html><body><br><br><center>Error: This forum is not implemented yet!</center><br><br></body></html>", "101");
 			activeChar.sendPacket(sb);
 			activeChar.sendPacket(new ShowBoard(null, "102"));
 			activeChar.sendPacket(new ShowBoard(null, "103"));
@@ -152,7 +162,7 @@ public class PostBBSManager extends BaseBBSManager
 		}
 		else
 		{
-			ShowBoard sb = new ShowBoard("<html><body><br><br><center>the forum: " + forum.getName() + " is not implemented yet</center><br><br></body></html>", "101");
+			ShowBoard sb = new ShowBoard("<html><body><br><br><center>The forum: " + forum.getName() + " is not implemented yet!</center><br><br></body></html>", "101");
 			activeChar.sendPacket(sb);
 			activeChar.sendPacket(new ShowBoard(null, "102"));
 			activeChar.sendPacket(new ShowBoard(null, "103"));
@@ -179,7 +189,6 @@ public class PostBBSManager extends BaseBBSManager
 	 */
 	private void showMemoPost(Topic topic, L2PcInstance activeChar, Forum forum)
 	{
-		//
 		Post p = getGPosttByTopic(topic);
 		Locale locale = Locale.getDefault();
 		DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL, locale);
