@@ -21,7 +21,7 @@ package l2r.gameserver.model.zone.type;
 import java.util.Map;
 
 import javolution.util.FastMap;
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.zone.L2ZoneType;
@@ -31,7 +31,7 @@ import l2r.gameserver.model.zone.L2ZoneType;
  */
 public class L2RespawnZone extends L2ZoneType
 {
-	private final Map<PcRace, String> _raceRespawnPoint = new FastMap<>();
+	private final Map<Race, String> _raceRespawnPoint = new FastMap<>();
 	
 	public L2RespawnZone(int id)
 	{
@@ -60,10 +60,10 @@ public class L2RespawnZone extends L2ZoneType
 	
 	public void addRaceRespawnPoint(String race, String point)
 	{
-		_raceRespawnPoint.put(PcRace.valueOf(race), point);
+		_raceRespawnPoint.put(Race.valueOf(race), point);
 	}
 	
-	public Map<PcRace, String> getAllRespawnPoints()
+	public Map<Race, String> getAllRespawnPoints()
 	{
 		return _raceRespawnPoint;
 	}

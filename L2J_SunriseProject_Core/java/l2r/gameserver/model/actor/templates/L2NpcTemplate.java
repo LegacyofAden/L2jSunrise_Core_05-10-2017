@@ -24,7 +24,7 @@ import java.util.Map;
 
 import javolution.util.FastMap;
 import l2r.gameserver.data.xml.impl.HerbDropData;
-import l2r.gameserver.enums.NpcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.L2DropCategory;
 import l2r.gameserver.model.L2DropData;
 import l2r.gameserver.model.L2MinionData;
@@ -60,7 +60,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	private final int _lHand;
 	private final int _enchantEffect;
 	
-	private NpcRace _race = NpcRace.NONE;
+	private Race _race = Race.NONE;
 	private final String _clientClass;
 	
 	private final int _dropHerbGroup;
@@ -645,11 +645,11 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	/**
 	 * @return the NPC race.
 	 */
-	public NpcRace getRace()
+	public Race getRace()
 	{
 		if (_race == null)
 		{
-			_race = NpcRace.NONE;
+			_race = Race.NONE;
 		}
 		return _race;
 	}
@@ -789,7 +789,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	 */
 	public boolean isUndead()
 	{
-		return _race == NpcRace.UNDEAD;
+		return _race == Race.UNDEAD;
 	}
 	
 	public void setAIData(L2NpcAIData AIData)
@@ -802,82 +802,82 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 		switch (raceId)
 		{
 			case 1:
-				_race = NpcRace.UNDEAD;
+				_race = Race.UNDEAD;
 				break;
 			case 2:
-				_race = NpcRace.MAGICCREATURE;
+				_race = Race.MAGICCREATURE;
 				break;
 			case 3:
-				_race = NpcRace.BEAST;
+				_race = Race.BEAST;
 				break;
 			case 4:
-				_race = NpcRace.ANIMAL;
+				_race = Race.ANIMAL;
 				break;
 			case 5:
-				_race = NpcRace.PLANT;
+				_race = Race.PLANT;
 				break;
 			case 6:
-				_race = NpcRace.HUMANOID;
+				_race = Race.HUMANOID;
 				break;
 			case 7:
-				_race = NpcRace.SPIRIT;
+				_race = Race.SPIRIT;
 				break;
 			case 8:
-				_race = NpcRace.ANGEL;
+				_race = Race.ANGEL;
 				break;
 			case 9:
-				_race = NpcRace.DEMON;
+				_race = Race.DEMON;
 				break;
 			case 10:
-				_race = NpcRace.DRAGON;
+				_race = Race.DRAGON;
 				break;
 			case 11:
-				_race = NpcRace.GIANT;
+				_race = Race.GIANT;
 				break;
 			case 12:
-				_race = NpcRace.BUG;
+				_race = Race.BUG;
 				break;
 			case 13:
-				_race = NpcRace.FAIRIE;
+				_race = Race.FAIRIE;
 				break;
 			case 14:
-				_race = NpcRace.HUMAN;
+				_race = Race.HUMAN;
 				break;
 			case 15:
-				_race = NpcRace.ELVE;
+				_race = Race.ELF;
 				break;
 			case 16:
-				_race = NpcRace.DARKELVE;
+				_race = Race.DARK_ELF;
 				break;
 			case 17:
-				_race = NpcRace.ORC;
+				_race = Race.ORC;
 				break;
 			case 18:
-				_race = NpcRace.DWARVE;
+				_race = Race.DWARF;
 				break;
 			case 19:
-				_race = NpcRace.OTHER;
+				_race = Race.OTHER;
 				break;
 			case 20:
-				_race = NpcRace.NONLIVING;
+				_race = Race.NONLIVING;
 				break;
 			case 21:
-				_race = NpcRace.SIEGEWEAPON;
+				_race = Race.SIEGEWEAPON;
 				break;
 			case 22:
-				_race = NpcRace.DEFENDINGARMY;
+				_race = Race.DEFENDINGARMY;
 				break;
 			case 23:
-				_race = NpcRace.MERCENARIE;
+				_race = Race.MERCENARIE;
 				break;
 			case 24:
-				_race = NpcRace.UNKNOWN;
+				_race = Race.UNKNOWN;
 				break;
 			case 25:
-				_race = NpcRace.KAMAEL;
+				_race = Race.KAMAEL;
 				break;
 			default:
-				_race = NpcRace.NONE;
+				_race = Race.NONE;
 				break;
 		}
 	}

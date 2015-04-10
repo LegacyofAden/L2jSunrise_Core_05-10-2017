@@ -20,7 +20,7 @@ package l2r.gameserver.model.conditions;
 
 import java.util.Set;
 
-import l2r.gameserver.enums.NpcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.stats.Env;
 
@@ -30,13 +30,13 @@ import l2r.gameserver.model.stats.Env;
  */
 public class ConditionTargetNpcRace extends Condition
 {
-	private final Set<NpcRace> _races;
+	private final Set<Race> _races;
 	
 	/**
 	 * Instantiates a new condition target NPC race
 	 * @param races the races
 	 */
-	public ConditionTargetNpcRace(Set<NpcRace> races)
+	public ConditionTargetNpcRace(Set<Race> races)
 	{
 		_races = races;
 	}

@@ -19,10 +19,16 @@
 package l2r.gameserver.enums;
 
 /**
- * @author Zoey76
+ * @author vGodFather
  */
-public enum NpcRace
+public enum Race
 {
+	HUMAN,
+	ELF,
+	DARK_ELF,
+	ORC,
+	DWARF,
+	KAMAEL,
 	UNDEAD,
 	MAGICCREATURE,
 	BEAST,
@@ -36,17 +42,11 @@ public enum NpcRace
 	GIANT,
 	BUG,
 	FAIRIE,
-	HUMAN,
-	ELVE,
-	DARKELVE,
-	ORC,
-	DWARVE,
 	OTHER,
 	NONLIVING,
 	SIEGEWEAPON,
 	DEFENDINGARMY,
 	MERCENARIE,
 	UNKNOWN,
-	KAMAEL,
 	NONE
 }

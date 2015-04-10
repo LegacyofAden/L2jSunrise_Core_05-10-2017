@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import l2r.gameserver.data.xml.impl.ExperienceData;
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.base.ClassId;
@@ -98,7 +98,7 @@ public class L2PcTemplate extends L2CharTemplate
 	/**
 	 * @return the template race.
 	 */
-	public PcRace getRace()
+	public Race getRace()
 	{
 		return _classId.getRace();
 	}

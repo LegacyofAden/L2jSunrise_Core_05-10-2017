@@ -89,8 +89,8 @@ import l2r.gameserver.enums.MessageType;
 import l2r.gameserver.enums.MountType;
 import l2r.gameserver.enums.PartyDistributionType;
 import l2r.gameserver.enums.PcCondOverride;
-import l2r.gameserver.enums.PcRace;
 import l2r.gameserver.enums.PrivateStoreType;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.enums.Sex;
 import l2r.gameserver.enums.ShotType;
 import l2r.gameserver.enums.Team;
@@ -2754,7 +2754,7 @@ public final class L2PcInstance extends L2Playable
 	/**
 	 * @return the Race object of the L2PcInstance.
 	 */
-	public PcRace getRace()
+	public Race getRace()
 	{
 		if (!isSubClassActive())
 		{
@@ -12844,7 +12844,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			ivlim = Config.INVENTORY_MAXIMUM_GM;
 		}
-		else if (getRace() == PcRace.Dwarf)
+		else if (getRace() == Race.DWARF)
 		{
 			ivlim = Config.INVENTORY_MAXIMUM_DWARF;
 		}
@@ -12860,7 +12860,7 @@ public final class L2PcInstance extends L2Playable
 	public int getWareHouseLimit()
 	{
 		int whlim;
-		if (getRace() == PcRace.Dwarf)
+		if (getRace() == Race.DWARF)
 		{
 			whlim = Config.WAREHOUSE_SLOTS_DWARF;
 		}
@@ -12878,7 +12878,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		int pslim;
 		
-		if (getRace() == PcRace.Dwarf)
+		if (getRace() == Race.DWARF)
 		{
 			pslim = Config.MAX_PVTSTORESELL_SLOTS_DWARF;
 		}
@@ -12896,7 +12896,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		int pblim;
 		
-		if (getRace() == PcRace.Dwarf)
+		if (getRace() == Race.DWARF)
 		{
 			pblim = Config.MAX_PVTSTOREBUY_SLOTS_DWARF;
 		}
@@ -15732,12 +15732,12 @@ public final class L2PcInstance extends L2Playable
 	
 	private L2PcTemplate createRandomAntifeedTemplate()
 	{
-		PcRace race = null;
+		Race race = null;
 		
 		while (race == null)
 		{
-			race = PcRace.values()[Rnd.get(PcRace.values().length)];
-			if ((race == getRace()) || (race == PcRace.Kamael))
+			race = Race.values()[Rnd.get(Race.values().length)];
+			if ((race == getRace()) || (race == Race.KAMAEL))
 			{
 				race = null;
 			}
@@ -15754,7 +15754,7 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
-		if (getRace() == PcRace.Kamael)
+		if (getRace() == Race.KAMAEL)
 		{
 			_antifeedSex = getAppearance().getSex();
 		}

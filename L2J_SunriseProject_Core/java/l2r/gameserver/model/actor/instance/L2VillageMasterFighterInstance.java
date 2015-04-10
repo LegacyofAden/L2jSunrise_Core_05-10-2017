@@ -18,7 +18,7 @@
  */
 package l2r.gameserver.model.actor.instance;
 
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.base.ClassType;
 import l2r.gameserver.model.base.PlayerClass;
@@ -38,7 +38,7 @@ public final class L2VillageMasterFighterInstance extends L2VillageMasterInstanc
 			return false;
 		}
 		
-		return pclass.isOfRace(PcRace.Human) || pclass.isOfRace(PcRace.Elf);
+		return pclass.isOfRace(Race.HUMAN) || pclass.isOfRace(Race.ELF);
 	}
 	
 	@Override

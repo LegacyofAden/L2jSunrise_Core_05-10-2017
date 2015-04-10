@@ -30,7 +30,7 @@ import java.util.Set;
 
 import l2r.Config;
 import l2r.gameserver.data.xml.IXmlReader;
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.L2SkillLearn;
 import l2r.gameserver.model.L2SkillLearn.SubClassData;
@@ -207,7 +207,7 @@ public final class SkillTreesData implements IXmlReader
 											skillLearn.addPreReqSkill(new SkillHolder(parseInteger(attrs, "id"), parseInteger(attrs, "lvl")));
 											break;
 										case "race":
-											skillLearn.addRace(PcRace.valueOf(b.getTextContent()));
+											skillLearn.addRace(Race.valueOf(b.getTextContent()));
 											break;
 										case "residenceId":
 											skillLearn.addResidenceId(Integer.valueOf(b.getTextContent()));
@@ -572,7 +572,7 @@ public final class SkillTreesData implements IXmlReader
 			return result;
 		}
 		
-		final PcRace race = player.getRace();
+		final Race race = player.getRace();
 		for (L2SkillLearn skill : skills.values())
 		{
 			if (!skill.getRaces().isEmpty() && !skill.getRaces().contains(race))
@@ -607,7 +607,7 @@ public final class SkillTreesData implements IXmlReader
 	public List<L2SkillLearn> getAvailableFishingSkills(L2PcInstance player)
 	{
 		final List<L2SkillLearn> result = new ArrayList<>();
-		final PcRace playerRace = player.getRace();
+		final Race playerRace = player.getRace();
 		for (L2SkillLearn skill : _fishingSkillTree.values())
 		{
 			// If skill is Race specific and the player's race isn't allowed, skip it.
@@ -700,7 +700,7 @@ public final class SkillTreesData implements IXmlReader
 	public List<L2SkillLearn> getAvailableTransformSkills(L2PcInstance player)
 	{
 		final List<L2SkillLearn> result = new ArrayList<>();
-		final PcRace race = player.getRace();
+		final Race race = player.getRace();
 		for (L2SkillLearn skill : _transformSkillTree.values())
 		{
 			if ((player.getLevel() >= skill.getGetLevel()) && (skill.getRaces().isEmpty() || skill.getRaces().contains(race)))
@@ -1159,8 +1159,8 @@ public final class SkillTreesData implements IXmlReader
 		
 		// Race specific skills from Fishing and Transformation skill trees.
 		final List<Integer> list = new ArrayList<>();
-		_skillsByRaceHashCodes = new HashMap<>(PcRace.values().length);
-		for (PcRace r : PcRace.values())
+		_skillsByRaceHashCodes = new HashMap<>(Race.values().length);
+		for (Race r : Race.values())
 		{
 			for (L2SkillLearn s : _fishingSkillTree.values())
 			{
@@ -1300,7 +1300,7 @@ public final class SkillTreesData implements IXmlReader
 		int dwarvenOnlyFishingSkillCount = 0;
 		for (L2SkillLearn fishSkill : _fishingSkillTree.values())
 		{
-			if (fishSkill.getRaces().contains(PcRace.Dwarf))
+			if (fishSkill.getRaces().contains(Race.DWARF))
 			{
 				dwarvenOnlyFishingSkillCount++;
 			}

@@ -32,7 +32,7 @@ import l2r.gameserver.data.xml.impl.MultisellData;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.data.xml.impl.TransformData;
 import l2r.gameserver.enums.InstanceType;
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.CastleManager;
@@ -165,9 +165,9 @@ public final class L2AioNpcInstance extends L2Npc
 		player.sendPacket(html);
 	}
 	
-	protected static String getSubClassMenu(PcRace pRace)
+	protected static String getSubClassMenu(Race pRace)
 	{
-		if (Config.ALT_GAME_SUBCLASS_EVERYWHERE || (pRace != PcRace.Kamael))
+		if (Config.ALT_GAME_SUBCLASS_EVERYWHERE || (pRace != Race.KAMAEL))
 		{
 			return "data/html/sunrise/AioNpc/subclass/SubClass.htm";
 		}
@@ -536,12 +536,12 @@ public final class L2AioNpcInstance extends L2Npc
 					}
 					else
 					{
-						if ((player.getRace() == PcRace.Elf) || (player.getRace() == PcRace.DarkElf))
+						if ((player.getRace() == Race.ELF) || (player.getRace() == Race.DARK_ELF))
 						{
 							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Fail_Elves.htm");
 							player.sendPacket(html);
 						}
-						else if (player.getRace() == PcRace.Kamael)
+						else if (player.getRace() == Race.KAMAEL)
 						{
 							html.setFile(player.getHtmlPrefix(), "data/html/sunrise/AioNpc/subclass/SubClass_Fail_Kamael.htm");
 							player.sendPacket(html);

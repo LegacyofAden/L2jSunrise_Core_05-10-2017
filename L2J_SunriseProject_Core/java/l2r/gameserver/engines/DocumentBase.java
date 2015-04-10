@@ -34,8 +34,7 @@ import l2r.Config;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.CategoryType;
 import l2r.gameserver.enums.InstanceType;
-import l2r.gameserver.enums.NpcRace;
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.ChanceCondition;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.base.PlayerState;
@@ -628,12 +627,12 @@ public abstract class DocumentBase
 				case "races":
 				{
 					final String[] racesVal = a.getNodeValue().split(",");
-					final PcRace[] races = new PcRace[racesVal.length];
+					final Race[] races = new Race[racesVal.length];
 					for (int r = 0; r < racesVal.length; r++)
 					{
 						if (racesVal[r] != null)
 						{
-							races[r] = PcRace.valueOf(racesVal[r]);
+							races[r] = Race.valueOf(racesVal[r]);
 						}
 					}
 					cond = joinAnd(cond, new ConditionPlayerRace(races));
@@ -1159,10 +1158,10 @@ public abstract class DocumentBase
 				{
 					// used for npc race
 					final String[] values = a.getNodeValue().split(",");
-					final Set<NpcRace> array = new HashSet<>(values.length);
+					final Set<Race> array = new HashSet<>(values.length);
 					for (String value : values)
 					{
-						array.add(NpcRace.valueOf(getValue(value, null)));
+						array.add(Race.valueOf(getValue(value, null)));
 					}
 					cond = joinAnd(cond, new ConditionTargetNpcRace(array));
 					break;
@@ -1171,12 +1170,12 @@ public abstract class DocumentBase
 				{
 					// used for pc race
 					final String[] racesVal = a.getNodeValue().split(",");
-					final PcRace[] races = new PcRace[racesVal.length];
+					final Race[] races = new Race[racesVal.length];
 					for (int r = 0; r < racesVal.length; r++)
 					{
 						if (racesVal[r] != null)
 						{
-							races[r] = PcRace.valueOf(racesVal[r]);
+							races[r] = Race.valueOf(racesVal[r]);
 						}
 					}
 					cond = joinAnd(cond, new ConditionTargetRace(races));

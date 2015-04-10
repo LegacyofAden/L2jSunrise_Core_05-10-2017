@@ -18,12 +18,6 @@
  */
 package l2r.gameserver.model.base;
 
-import static l2r.gameserver.enums.PcRace.DarkElf;
-import static l2r.gameserver.enums.PcRace.Dwarf;
-import static l2r.gameserver.enums.PcRace.Elf;
-import static l2r.gameserver.enums.PcRace.Human;
-import static l2r.gameserver.enums.PcRace.Kamael;
-import static l2r.gameserver.enums.PcRace.Orc;
 import static l2r.gameserver.model.base.ClassLevel.First;
 import static l2r.gameserver.model.base.ClassLevel.Fourth;
 import static l2r.gameserver.model.base.ClassLevel.Second;
@@ -37,7 +31,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import l2r.Config;
-import l2r.gameserver.enums.PcRace;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 
 /**
@@ -45,68 +39,68 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
  */
 public enum PlayerClass
 {
-	HumanFighter(Human, Fighter, First),
-	Warrior(Human, Fighter, Second),
-	Gladiator(Human, Fighter, Third),
-	Warlord(Human, Fighter, Third),
-	HumanKnight(Human, Fighter, Second),
-	Paladin(Human, Fighter, Third),
-	DarkAvenger(Human, Fighter, Third),
-	Rogue(Human, Fighter, Second),
-	TreasureHunter(Human, Fighter, Third),
-	Hawkeye(Human, Fighter, Third),
-	HumanMystic(Human, Mystic, First),
-	HumanWizard(Human, Mystic, Second),
-	Sorceror(Human, Mystic, Third),
-	Necromancer(Human, Mystic, Third),
-	Warlock(Human, Mystic, Third),
-	Cleric(Human, Priest, Second),
-	Bishop(Human, Priest, Third),
-	Prophet(Human, Priest, Third),
+	HumanFighter(Race.HUMAN, Fighter, First),
+	Warrior(Race.HUMAN, Fighter, Second),
+	Gladiator(Race.HUMAN, Fighter, Third),
+	Warlord(Race.HUMAN, Fighter, Third),
+	HumanKnight(Race.HUMAN, Fighter, Second),
+	Paladin(Race.HUMAN, Fighter, Third),
+	DarkAvenger(Race.HUMAN, Fighter, Third),
+	Rogue(Race.HUMAN, Fighter, Second),
+	TreasureHunter(Race.HUMAN, Fighter, Third),
+	Hawkeye(Race.HUMAN, Fighter, Third),
+	HumanMystic(Race.HUMAN, Mystic, First),
+	HumanWizard(Race.HUMAN, Mystic, Second),
+	Sorceror(Race.HUMAN, Mystic, Third),
+	Necromancer(Race.HUMAN, Mystic, Third),
+	Warlock(Race.HUMAN, Mystic, Third),
+	Cleric(Race.HUMAN, Priest, Second),
+	Bishop(Race.HUMAN, Priest, Third),
+	Prophet(Race.HUMAN, Priest, Third),
 	
-	ElvenFighter(Elf, Fighter, First),
-	ElvenKnight(Elf, Fighter, Second),
-	TempleKnight(Elf, Fighter, Third),
-	Swordsinger(Elf, Fighter, Third),
-	ElvenScout(Elf, Fighter, Second),
-	Plainswalker(Elf, Fighter, Third),
-	SilverRanger(Elf, Fighter, Third),
-	ElvenMystic(Elf, Mystic, First),
-	ElvenWizard(Elf, Mystic, Second),
-	Spellsinger(Elf, Mystic, Third),
-	ElementalSummoner(Elf, Mystic, Third),
-	ElvenOracle(Elf, Priest, Second),
-	ElvenElder(Elf, Priest, Third),
+	ElvenFighter(Race.ELF, Fighter, First),
+	ElvenKnight(Race.ELF, Fighter, Second),
+	TempleKnight(Race.ELF, Fighter, Third),
+	Swordsinger(Race.ELF, Fighter, Third),
+	ElvenScout(Race.ELF, Fighter, Second),
+	Plainswalker(Race.ELF, Fighter, Third),
+	SilverRanger(Race.ELF, Fighter, Third),
+	ElvenMystic(Race.ELF, Mystic, First),
+	ElvenWizard(Race.ELF, Mystic, Second),
+	Spellsinger(Race.ELF, Mystic, Third),
+	ElementalSummoner(Race.ELF, Mystic, Third),
+	ElvenOracle(Race.ELF, Priest, Second),
+	ElvenElder(Race.ELF, Priest, Third),
 	
-	DarkElvenFighter(DarkElf, Fighter, First),
-	PalusKnight(DarkElf, Fighter, Second),
-	ShillienKnight(DarkElf, Fighter, Third),
-	Bladedancer(DarkElf, Fighter, Third),
-	Assassin(DarkElf, Fighter, Second),
-	AbyssWalker(DarkElf, Fighter, Third),
-	PhantomRanger(DarkElf, Fighter, Third),
-	DarkElvenMystic(DarkElf, Mystic, First),
-	DarkElvenWizard(DarkElf, Mystic, Second),
-	Spellhowler(DarkElf, Mystic, Third),
-	PhantomSummoner(DarkElf, Mystic, Third),
-	ShillienOracle(DarkElf, Priest, Second),
-	ShillienElder(DarkElf, Priest, Third),
+	DarkElvenFighter(Race.DARK_ELF, Fighter, First),
+	PalusKnight(Race.DARK_ELF, Fighter, Second),
+	ShillienKnight(Race.DARK_ELF, Fighter, Third),
+	Bladedancer(Race.DARK_ELF, Fighter, Third),
+	Assassin(Race.DARK_ELF, Fighter, Second),
+	AbyssWalker(Race.DARK_ELF, Fighter, Third),
+	PhantomRanger(Race.DARK_ELF, Fighter, Third),
+	DarkElvenMystic(Race.DARK_ELF, Mystic, First),
+	DarkElvenWizard(Race.DARK_ELF, Mystic, Second),
+	Spellhowler(Race.DARK_ELF, Mystic, Third),
+	PhantomSummoner(Race.DARK_ELF, Mystic, Third),
+	ShillienOracle(Race.DARK_ELF, Priest, Second),
+	ShillienElder(Race.DARK_ELF, Priest, Third),
 	
-	OrcFighter(Orc, Fighter, First),
-	OrcRaider(Orc, Fighter, Second),
-	Destroyer(Orc, Fighter, Third),
-	OrcMonk(Orc, Fighter, Second),
-	Tyrant(Orc, Fighter, Third),
-	OrcMystic(Orc, Mystic, First),
-	OrcShaman(Orc, Mystic, Second),
-	Overlord(Orc, Mystic, Third),
-	Warcryer(Orc, Mystic, Third),
+	OrcFighter(Race.ORC, Fighter, First),
+	OrcRaider(Race.ORC, Fighter, Second),
+	Destroyer(Race.ORC, Fighter, Third),
+	OrcMonk(Race.ORC, Fighter, Second),
+	Tyrant(Race.ORC, Fighter, Third),
+	OrcMystic(Race.ORC, Mystic, First),
+	OrcShaman(Race.ORC, Mystic, Second),
+	Overlord(Race.ORC, Mystic, Third),
+	Warcryer(Race.ORC, Mystic, Third),
 	
-	DwarvenFighter(Dwarf, Fighter, First),
-	DwarvenScavenger(Dwarf, Fighter, Second),
-	BountyHunter(Dwarf, Fighter, Third),
-	DwarvenArtisan(Dwarf, Fighter, Second),
-	Warsmith(Dwarf, Fighter, Third),
+	DwarvenFighter(Race.DWARF, Fighter, First),
+	DwarvenScavenger(Race.DWARF, Fighter, Second),
+	BountyHunter(Race.DWARF, Fighter, Third),
+	DwarvenArtisan(Race.DWARF, Fighter, Second),
+	Warsmith(Race.DWARF, Fighter, Third),
 	
 	dummyEntry1(null, null, null),
 	dummyEntry2(null, null, null),
@@ -141,63 +135,63 @@ public enum PlayerClass
 	/*
 	 * (3rd classes)
 	 */
-	duelist(Human, Fighter, Fourth),
-	dreadnought(Human, Fighter, Fourth),
-	phoenixKnight(Human, Fighter, Fourth),
-	hellKnight(Human, Fighter, Fourth),
-	sagittarius(Human, Fighter, Fourth),
-	adventurer(Human, Fighter, Fourth),
-	archmage(Human, Mystic, Fourth),
-	soultaker(Human, Mystic, Fourth),
-	arcanaLord(Human, Mystic, Fourth),
-	cardinal(Human, Priest, Fourth),
-	hierophant(Human, Priest, Fourth),
+	duelist(Race.HUMAN, Fighter, Fourth),
+	dreadnought(Race.HUMAN, Fighter, Fourth),
+	phoenixKnight(Race.HUMAN, Fighter, Fourth),
+	hellKnight(Race.HUMAN, Fighter, Fourth),
+	sagittarius(Race.HUMAN, Fighter, Fourth),
+	adventurer(Race.HUMAN, Fighter, Fourth),
+	archmage(Race.HUMAN, Mystic, Fourth),
+	soultaker(Race.HUMAN, Mystic, Fourth),
+	arcanaLord(Race.HUMAN, Mystic, Fourth),
+	cardinal(Race.HUMAN, Priest, Fourth),
+	hierophant(Race.HUMAN, Priest, Fourth),
 	
-	evaTemplar(Elf, Fighter, Fourth),
-	swordMuse(Elf, Fighter, Fourth),
-	windRider(Elf, Fighter, Fourth),
-	moonlightSentinel(Elf, Fighter, Fourth),
-	mysticMuse(Elf, Mystic, Fourth),
-	elementalMaster(Elf, Mystic, Fourth),
-	evaSaint(Elf, Priest, Fourth),
+	evaTemplar(Race.ELF, Fighter, Fourth),
+	swordMuse(Race.ELF, Fighter, Fourth),
+	windRider(Race.ELF, Fighter, Fourth),
+	moonlightSentinel(Race.ELF, Fighter, Fourth),
+	mysticMuse(Race.ELF, Mystic, Fourth),
+	elementalMaster(Race.ELF, Mystic, Fourth),
+	evaSaint(Race.ELF, Priest, Fourth),
 	
-	shillienTemplar(DarkElf, Fighter, Fourth),
-	spectralDancer(DarkElf, Fighter, Fourth),
-	ghostHunter(DarkElf, Fighter, Fourth),
-	ghostSentinel(DarkElf, Fighter, Fourth),
-	stormScreamer(DarkElf, Mystic, Fourth),
-	spectralMaster(DarkElf, Mystic, Fourth),
-	shillienSaint(DarkElf, Priest, Fourth),
+	shillienTemplar(Race.DARK_ELF, Fighter, Fourth),
+	spectralDancer(Race.DARK_ELF, Fighter, Fourth),
+	ghostHunter(Race.DARK_ELF, Fighter, Fourth),
+	ghostSentinel(Race.DARK_ELF, Fighter, Fourth),
+	stormScreamer(Race.DARK_ELF, Mystic, Fourth),
+	spectralMaster(Race.DARK_ELF, Mystic, Fourth),
+	shillienSaint(Race.DARK_ELF, Priest, Fourth),
 	
-	titan(Orc, Fighter, Fourth),
-	grandKhavatari(Orc, Fighter, Fourth),
-	dominator(Orc, Mystic, Fourth),
-	doomcryer(Orc, Mystic, Fourth),
+	titan(Race.ORC, Fighter, Fourth),
+	grandKhavatari(Race.ORC, Fighter, Fourth),
+	dominator(Race.ORC, Mystic, Fourth),
+	doomcryer(Race.ORC, Mystic, Fourth),
 	
-	fortuneSeeker(Dwarf, Fighter, Fourth),
-	maestro(Dwarf, Fighter, Fourth),
+	fortuneSeeker(Race.DWARF, Fighter, Fourth),
+	maestro(Race.DWARF, Fighter, Fourth),
 	
 	dummyEntry31(null, null, null),
 	dummyEntry32(null, null, null),
 	dummyEntry33(null, null, null),
 	dummyEntry34(null, null, null),
 	
-	maleSoldier(Kamael, Fighter, First),
-	femaleSoldier(Kamael, Fighter, First),
-	trooper(Kamael, Fighter, Second),
-	warder(Kamael, Fighter, Second),
-	berserker(Kamael, Fighter, Third),
-	maleSoulbreaker(Kamael, Fighter, Third),
-	femaleSoulbreaker(Kamael, Fighter, Third),
-	arbalester(Kamael, Fighter, Third),
-	doombringer(Kamael, Fighter, Fourth),
-	maleSoulhound(Kamael, Fighter, Fourth),
-	femaleSoulhound(Kamael, Fighter, Fourth),
-	trickster(Kamael, Fighter, Fourth),
-	inspector(Kamael, Fighter, Third),
-	judicator(Kamael, Fighter, Fourth);
+	maleSoldier(Race.KAMAEL, Fighter, First),
+	femaleSoldier(Race.KAMAEL, Fighter, First),
+	trooper(Race.KAMAEL, Fighter, Second),
+	warder(Race.KAMAEL, Fighter, Second),
+	berserker(Race.KAMAEL, Fighter, Third),
+	maleSoulbreaker(Race.KAMAEL, Fighter, Third),
+	femaleSoulbreaker(Race.KAMAEL, Fighter, Third),
+	arbalester(Race.KAMAEL, Fighter, Third),
+	doombringer(Race.KAMAEL, Fighter, Fourth),
+	maleSoulhound(Race.KAMAEL, Fighter, Fourth),
+	femaleSoulhound(Race.KAMAEL, Fighter, Fourth),
+	trickster(Race.KAMAEL, Fighter, Fourth),
+	inspector(Race.KAMAEL, Fighter, Third),
+	judicator(Race.KAMAEL, Fighter, Fourth);
 	
-	private PcRace _race;
+	private Race _race;
 	private ClassLevel _level;
 	private ClassType _type;
 	
@@ -241,9 +235,9 @@ public enum PlayerClass
 		subclassSetMap.put(Spellhowler, subclasseSet5);
 	}
 	
-	PlayerClass(PcRace pRace, ClassType pType, ClassLevel pLevel)
+	PlayerClass(Race race, ClassType pType, ClassLevel pLevel)
 	{
-		_race = pRace;
+		_race = race;
 		_level = pLevel;
 		_type = pType;
 	}
@@ -254,7 +248,7 @@ public enum PlayerClass
 		
 		if (_level == Third)
 		{
-			if (player.getRace() != Kamael)
+			if (player.getRace() != Race.KAMAEL)
 			{
 				subclasses = EnumSet.copyOf(mainSubclassSet);
 				
@@ -262,15 +256,15 @@ public enum PlayerClass
 				
 				switch (player.getRace())
 				{
-					case Elf:
-						subclasses.removeAll(getSet(DarkElf, Third));
+					case ELF:
+						subclasses.removeAll(getSet(Race.DARK_ELF, Third));
 						break;
-					case DarkElf:
-						subclasses.removeAll(getSet(Elf, Third));
+					case DARK_ELF:
+						subclasses.removeAll(getSet(Race.ELF, Third));
 						break;
 				}
 				
-				subclasses.removeAll(getSet(Kamael, Third));
+				subclasses.removeAll(getSet(Race.KAMAEL, Third));
 				
 				Set<PlayerClass> unavailableClasses = subclassSetMap.get(this);
 				
@@ -282,7 +276,7 @@ public enum PlayerClass
 			}
 			else
 			{
-				subclasses = getSet(Kamael, Third);
+				subclasses = getSet(Race.KAMAEL, Third);
 				subclasses.remove(this);
 				// Check sex, male subclasses female and vice versa
 				// If server owner set MaxSubclass > 3 some kamael's cannot take 4 sub
@@ -291,11 +285,11 @@ public enum PlayerClass
 				{
 					if (player.getAppearance().getSex())
 					{
-						subclasses.removeAll(EnumSet.of(maleSoulbreaker));
+						subclasses.removeAll(EnumSet.of(femaleSoulbreaker));
 					}
 					else
 					{
-						subclasses.removeAll(EnumSet.of(femaleSoulbreaker));
+						subclasses.removeAll(EnumSet.of(maleSoulbreaker));
 					}
 				}
 				if (!player.getSubClasses().containsKey(2) || (player.getSubClasses().get(2).getLevel() < 75))
@@ -307,7 +301,7 @@ public enum PlayerClass
 		return subclasses;
 	}
 	
-	public static final EnumSet<PlayerClass> getSet(PcRace race, ClassLevel level)
+	public static final EnumSet<PlayerClass> getSet(Race race, ClassLevel level)
 	{
 		EnumSet<PlayerClass> allOf = EnumSet.noneOf(PlayerClass.class);
 		
@@ -324,7 +318,7 @@ public enum PlayerClass
 		return allOf;
 	}
 	
-	public final boolean isOfRace(PcRace pRace)
+	public final boolean isOfRace(Race pRace)
 	{
 		return _race == pRace;
 	}
