@@ -20,7 +20,6 @@ package l2r.gameserver.model.actor.instance;
 
 import java.util.StringTokenizer;
 
-import javolution.text.TextBuilder;
 import l2r.Config;
 import l2r.gameserver.SevenSigns;
 import l2r.gameserver.cache.HtmCache;
@@ -886,8 +885,7 @@ public class L2SignsPriestInstance extends L2Npc
 					showChatWindow(player, val, fileSuffix, false);
 					break;
 				case 20: // Seal Status (for when joining a cabal)
-					TextBuilder contentBuffer = new TextBuilder();
-					
+					StringBuilder contentBuffer = new StringBuilder();
 					if (this instanceof L2DawnPriestInstance)
 					{
 						contentBuffer.append("<html><body>Priest of Dawn:<br><font color=\"LEVEL\">[ Seal Status ]</font><br>");
