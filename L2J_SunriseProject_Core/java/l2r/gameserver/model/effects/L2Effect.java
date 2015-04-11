@@ -30,10 +30,10 @@ import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.interfaces.IChanceSkillTrigger;
 import l2r.gameserver.model.skills.L2Skill;
-import l2r.gameserver.model.skills.funcs.Func;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
-import l2r.gameserver.model.skills.funcs.Lambda;
 import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.model.stats.functions.AbstractFunction;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
+import l2r.gameserver.model.stats.functions.Lambda;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.AbnormalStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExOlympiadSpelledInfo;
@@ -49,7 +49,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 {
 	protected static final Logger _log = LoggerFactory.getLogger(L2Effect.class);
 	
-	private static final Func[] _emptyFunctionSet = new Func[0];
+	private static final AbstractFunction[] _emptyFunctionSet = new AbstractFunction[0];
 	
 	// member _effector is the instance of L2Character that cast/used the spell/skill that is
 	// causing this effect. Do not confuse with the instance of L2Character that
@@ -552,21 +552,21 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		}
 	}
 	
-	public Func[] getStatFuncs()
+	public AbstractFunction[] getStatFuncs()
 	{
 		if (_funcTemplates == null)
 		{
 			return _emptyFunctionSet;
 		}
 		
-		final ArrayList<Func> funcs = new ArrayList<>(_funcTemplates.length);
+		final ArrayList<AbstractFunction> funcs = new ArrayList<>(_funcTemplates.length);
 		
 		Env env = new Env();
 		env.setCharacter(_effector);
 		env.setTarget(_effected);
 		env.setSkill(_skill);
 		
-		Func f;
+		AbstractFunction f;
 		for (FuncTemplate t : _funcTemplates)
 		{
 			f = t.getFunc(env, this); // effect is owner
@@ -580,7 +580,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		{
 			return _emptyFunctionSet;
 		}
-		return funcs.toArray(new Func[funcs.size()]);
+		return funcs.toArray(new AbstractFunction[funcs.size()]);
 	}
 	
 	public final void addIcon(AbnormalStatusUpdate mi)

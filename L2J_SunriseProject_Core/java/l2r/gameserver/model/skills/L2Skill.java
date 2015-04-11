@@ -52,12 +52,12 @@ import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.model.holders.ItemHolder;
 import l2r.gameserver.model.interfaces.IChanceSkillTrigger;
 import l2r.gameserver.model.interfaces.IIdentifiable;
-import l2r.gameserver.model.skills.funcs.Func;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
 import l2r.gameserver.model.skills.targets.L2TargetType;
 import l2r.gameserver.model.stats.BaseStats;
 import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.model.stats.Formulas;
+import l2r.gameserver.model.stats.functions.AbstractFunction;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.FlyToLocation.FlyType;
 import l2r.gameserver.network.serverpackets.SystemMessage;
@@ -98,7 +98,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public static final int COND_CHARGES = 0x0080;
 	public static final int COND_SHIELD = 0x0100;
 	
-	private static final Func[] _emptyFunctionSet = new Func[0];
+	private static final AbstractFunction[] _emptyFunctionSet = new AbstractFunction[0];
 	private static final L2Effect[] _emptyEffectSet = new L2Effect[0];
 	
 	// these two build the primary key
@@ -1433,7 +1433,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		
 	}
 	
-	public final Func[] getStatFuncs(L2Effect effect, L2Character player)
+	public final AbstractFunction[] getStatFuncs(L2Effect effect, L2Character player)
 	{
 		if (_funcTemplates == null)
 		{
@@ -1445,13 +1445,13 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 			return _emptyFunctionSet;
 		}
 		
-		List<Func> funcs = new ArrayList<>(_funcTemplates.length);
+		List<AbstractFunction> funcs = new ArrayList<>(_funcTemplates.length);
 		
 		Env env = new Env();
 		env.setCharacter(player);
 		env.setSkill(this);
 		
-		Func f;
+		AbstractFunction f;
 		for (FuncTemplate t : _funcTemplates)
 		{
 			f = t.getFunc(env, this); // skill is owner
@@ -1465,7 +1465,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		{
 			return _emptyFunctionSet;
 		}
-		return funcs.toArray(new Func[funcs.size()]);
+		return funcs.toArray(new AbstractFunction[funcs.size()]);
 	}
 	
 	public boolean hasEffects()

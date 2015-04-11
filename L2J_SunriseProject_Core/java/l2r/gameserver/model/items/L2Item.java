@@ -45,9 +45,9 @@ import l2r.gameserver.model.items.type.EtcItemType;
 import l2r.gameserver.model.items.type.ItemType;
 import l2r.gameserver.model.items.type.MaterialType;
 import l2r.gameserver.model.skills.L2Skill;
-import l2r.gameserver.model.skills.funcs.Func;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
 import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.model.stats.functions.AbstractFunction;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.util.StringUtil;
@@ -158,7 +158,7 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 	private SkillHolder[] _skillHolder;
 	private SkillHolder _unequipSkill = null;
 	
-	protected static final Func[] _emptyFunctionSet = new Func[0];
+	protected static final AbstractFunction[] _emptyFunctionSet = new AbstractFunction[0];
 	protected static final L2Effect[] _emptyEffectSet = new L2Effect[0];
 	
 	private final int _useSkillDisTime;
@@ -692,21 +692,21 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 	 * @param player : L2Character pointing out the player
 	 * @return Func[] : array of functions
 	 */
-	public final Func[] getStatFuncs(L2ItemInstance item, L2Character player)
+	public final AbstractFunction[] getStatFuncs(L2ItemInstance item, L2Character player)
 	{
 		if ((_funcTemplates == null) || (_funcTemplates.length == 0))
 		{
 			return _emptyFunctionSet;
 		}
 		
-		ArrayList<Func> funcs = new ArrayList<>(_funcTemplates.length);
+		ArrayList<AbstractFunction> funcs = new ArrayList<>(_funcTemplates.length);
 		
 		Env env = new Env();
 		env.setCharacter(player);
 		env.setTarget(player);
 		env.setItem(item);
 		
-		Func f;
+		AbstractFunction f;
 		for (FuncTemplate t : _funcTemplates)
 		{
 			f = t.getFunc(env, item);
@@ -720,7 +720,7 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 		{
 			return _emptyFunctionSet;
 		}
-		return funcs.toArray(new Func[funcs.size()]);
+		return funcs.toArray(new AbstractFunction[funcs.size()]);
 	}
 	
 	/**
@@ -779,31 +779,31 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 	 */
 	public void attach(FuncTemplate f)
 	{
-		switch (f.stat)
+		switch (f.getStat())
 		{
 			case FIRE_RES:
 			case FIRE_POWER:
-				setElementals(new Elementals(Elementals.FIRE, (int) f.lambda.calc(null)));
+				setElementals(new Elementals(Elementals.FIRE, (int) f.getLambda().calc(null)));
 				break;
 			case WATER_RES:
 			case WATER_POWER:
-				setElementals(new Elementals(Elementals.WATER, (int) f.lambda.calc(null)));
+				setElementals(new Elementals(Elementals.WATER, (int) f.getLambda().calc(null)));
 				break;
 			case WIND_RES:
 			case WIND_POWER:
-				setElementals(new Elementals(Elementals.WIND, (int) f.lambda.calc(null)));
+				setElementals(new Elementals(Elementals.WIND, (int) f.getLambda().calc(null)));
 				break;
 			case EARTH_RES:
 			case EARTH_POWER:
-				setElementals(new Elementals(Elementals.EARTH, (int) f.lambda.calc(null)));
+				setElementals(new Elementals(Elementals.EARTH, (int) f.getLambda().calc(null)));
 				break;
 			case HOLY_RES:
 			case HOLY_POWER:
-				setElementals(new Elementals(Elementals.HOLY, (int) f.lambda.calc(null)));
+				setElementals(new Elementals(Elementals.HOLY, (int) f.getLambda().calc(null)));
 				break;
 			case DARK_RES:
 			case DARK_POWER:
-				setElementals(new Elementals(Elementals.DARK, (int) f.lambda.calc(null)));
+				setElementals(new Elementals(Elementals.DARK, (int) f.getLambda().calc(null)));
 				break;
 		}
 		// If _functTemplates is empty, create it and add the FuncTemplate f in it

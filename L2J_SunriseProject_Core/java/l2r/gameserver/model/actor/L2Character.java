@@ -119,13 +119,13 @@ import l2r.gameserver.model.options.OptionsSkillType;
 import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
-import l2r.gameserver.model.skills.funcs.Func;
 import l2r.gameserver.model.skills.l2skills.L2SkillSummon;
 import l2r.gameserver.model.skills.targets.L2TargetType;
 import l2r.gameserver.model.stats.BaseStats;
 import l2r.gameserver.model.stats.Calculator;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
+import l2r.gameserver.model.stats.functions.AbstractFunction;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.AbstractNpcInfo;
 import l2r.gameserver.network.serverpackets.ActionFailed;
@@ -3943,7 +3943,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * must be create in its _calculators before addind new Func object. <B><U> Actions</U> :</B> <li>If _calculators is linked to NPC_STD_CALCULATOR, create a copy of NPC_STD_CALCULATOR in _calculators</li> <li>Add the Func object to _calculators</li>
 	 * @param f The Func object to add to the Calculator corresponding to the state affected
 	 */
-	public final void addStatFunc(Func f)
+	public final void addStatFunc(AbstractFunction f)
 	{
 		if (f == null)
 		{
@@ -3968,7 +3968,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 			
 			// Select the Calculator of the affected state in the Calculator set
-			int stat = f.stat.ordinal();
+			int stat = f.getStat().ordinal();
 			
 			if (_calculators[stat] == null)
 			{
@@ -3995,11 +3995,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * </ul>
 	 * @param funcs The list of Func objects to add to the Calculator corresponding to the state affected
 	 */
-	public final void addStatFuncs(Func[] funcs)
+	public final void addStatFuncs(AbstractFunction[] funcs)
 	{
 		if (!isPlayer() && getKnownList().getKnownPlayers().isEmpty())
 		{
-			for (Func f : funcs)
+			for (AbstractFunction f : funcs)
 			{
 				addStatFunc(f);
 			}
@@ -4007,9 +4007,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		else
 		{
 			final List<Stats> modifiedStats = new ArrayList<>();
-			for (Func f : funcs)
+			for (AbstractFunction f : funcs)
 			{
-				modifiedStats.add(f.stat);
+				modifiedStats.add(f.getStat());
 				addStatFunc(f);
 			}
 			broadcastModifiedStats(modifiedStats);
@@ -4031,7 +4031,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * </ul>
 	 * @param f The Func object to remove from the Calculator corresponding to the state affected
 	 */
-	public final void removeStatFunc(Func f)
+	public final void removeStatFunc(AbstractFunction f)
 	{
 		if (f == null)
 		{
@@ -4039,7 +4039,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		// Select the Calculator of the affected state in the Calculator set
-		int stat = f.stat.ordinal();
+		int stat = f.getStat().ordinal();
 		
 		synchronized (this)
 		{
@@ -4090,11 +4090,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * </ul>
 	 * @param funcs The list of Func objects to add to the Calculator corresponding to the state affected
 	 */
-	public final void removeStatFuncs(Func[] funcs)
+	public final void removeStatFuncs(AbstractFunction[] funcs)
 	{
 		if (!isPlayer() && getKnownList().getKnownPlayers().isEmpty())
 		{
-			for (Func f : funcs)
+			for (AbstractFunction f : funcs)
 			{
 				removeStatFunc(f);
 			}
@@ -4102,9 +4102,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		else
 		{
 			final List<Stats> modifiedStats = new ArrayList<>();
-			for (Func f : funcs)
+			for (AbstractFunction f : funcs)
 			{
-				modifiedStats.add(f.stat);
+				modifiedStats.add(f.getStat());
 				removeStatFunc(f);
 			}
 			

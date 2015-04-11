@@ -124,13 +124,13 @@ import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.type.ArmorType;
 import l2r.gameserver.model.items.type.WeaponType;
 import l2r.gameserver.model.skills.L2Skill;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
-import l2r.gameserver.model.skills.funcs.Lambda;
-import l2r.gameserver.model.skills.funcs.LambdaCalc;
-import l2r.gameserver.model.skills.funcs.LambdaConst;
-import l2r.gameserver.model.skills.funcs.LambdaStats;
 import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.model.stats.Stats;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
+import l2r.gameserver.model.stats.functions.Lambda;
+import l2r.gameserver.model.stats.functions.LambdaCalc;
+import l2r.gameserver.model.stats.functions.LambdaConst;
+import l2r.gameserver.model.stats.functions.LambdaStats;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -229,61 +229,47 @@ public abstract class DocumentBase
 		}
 		for (; n != null; n = n.getNextSibling())
 		{
-			if ("add".equalsIgnoreCase(n.getNodeName()))
+			final String name = n.getNodeName().toLowerCase();
+			
+			switch (name)
 			{
-				attachFunc(n, template, "Add", condition);
-			}
-			else if ("sub".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "Sub", condition);
-			}
-			else if ("mul".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "Mul", condition);
-			}
-			else if ("basemul".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "BaseMul", condition);
-			}
-			else if ("div".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "Div", condition);
-			}
-			else if ("set".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "Set", condition);
-			}
-			else if ("share".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "Share", condition);
-			}
-			else if ("enchant".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "Enchant", condition);
-			}
-			else if ("enchanthp".equalsIgnoreCase(n.getNodeName()))
-			{
-				attachFunc(n, template, "EnchantHp", condition);
-			}
-			else if ("effect".equalsIgnoreCase(n.getNodeName()))
-			{
-				if (template instanceof EffectTemplate)
+				case "effect":
 				{
-					throw new RuntimeException("Nested effects");
+					if (template instanceof EffectTemplate)
+					{
+						throw new RuntimeException("Nested effects");
+					}
+					attachEffect(n, template, condition);
+					break;
 				}
-				attachEffect(n, template, condition);
+				case "add":
+				case "sub":
+				case "mul":
+				case "div":
+				case "set":
+				case "share":
+				case "enchant":
+				case "enchanthp":
+				{
+					attachFunc(n, template, name, condition);
+				}
 			}
 		}
 	}
 	
-	protected void attachFunc(Node n, Object template, String name, Condition attachCond)
+	protected void attachFunc(Node n, Object template, String functionName, Condition attachCond)
 	{
 		Stats stat = Stats.valueOfXml(n.getAttributes().getNamedItem("stat").getNodeValue());
-		String order = n.getAttributes().getNamedItem("order").getNodeValue();
+		int order = -1;
+		final Node orderNode = n.getAttributes().getNamedItem("order");
+		if (orderNode != null)
+		{
+			order = Integer.parseInt(orderNode.getNodeValue());
+		}
+		
 		Lambda lambda = getLambda(n, template);
-		int ord = Integer.decode(getValue(order, template));
 		Condition applayCond = parseCondition(n.getFirstChild(), template);
-		FuncTemplate ft = new FuncTemplate(attachCond, applayCond, name, stat, ord, lambda);
+		FuncTemplate ft = new FuncTemplate(attachCond, applayCond, functionName, order, stat, lambda);
 		if (template instanceof L2Item)
 		{
 			((L2Item) template).attach(ft);
@@ -305,7 +291,7 @@ public abstract class DocumentBase
 		sb.setCharAt(0, Character.toUpperCase(name.charAt(0)));
 		name = sb.toString();
 		Lambda lambda = getLambda(n, template);
-		FuncTemplate ft = new FuncTemplate(null, null, name, null, calc.funcs.length, lambda);
+		FuncTemplate ft = new FuncTemplate(null, null, name, calc.funcs.length, null, lambda);
 		calc.addFunc(ft.getFunc(new Env(), calc));
 	}
 	

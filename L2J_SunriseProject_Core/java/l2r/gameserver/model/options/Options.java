@@ -26,9 +26,9 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.skills.L2Skill;
-import l2r.gameserver.model.skills.funcs.Func;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
 import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.model.stats.functions.AbstractFunction;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
 import l2r.gameserver.network.serverpackets.SkillCoolTime;
 
 /**
@@ -37,7 +37,7 @@ import l2r.gameserver.network.serverpackets.SkillCoolTime;
 public class Options
 {
 	private final int _id;
-	private static final Func[] _emptyFunctionSet = new Func[0];
+	private static final AbstractFunction[] _emptyFunctionSet = new AbstractFunction[0];
 	private final List<FuncTemplate> _funcs = new ArrayList<>();
 	
 	private SkillHolder _activeSkill = null;
@@ -63,21 +63,21 @@ public class Options
 		return !_funcs.isEmpty();
 	}
 	
-	public Func[] getStatFuncs(L2ItemInstance item, L2Character player)
+	public AbstractFunction[] getStatFuncs(L2ItemInstance item, L2Character player)
 	{
 		if (_funcs.isEmpty())
 		{
 			return _emptyFunctionSet;
 		}
 		
-		List<Func> funcs = new ArrayList<>(_funcs.size());
+		List<AbstractFunction> funcs = new ArrayList<>(_funcs.size());
 		
 		Env env = new Env();
 		env.setCharacter(player);
 		env.setTarget(player);
 		env.setItem(item);
 		
-		Func f;
+		AbstractFunction f;
 		for (FuncTemplate t : _funcs)
 		{
 			f = t.getFunc(env, this);
@@ -85,14 +85,14 @@ public class Options
 			{
 				funcs.add(f);
 			}
-			player.sendDebugMessage("Adding stats: " + t.stat + " val: " + t.lambda.calc(env));
+			player.sendDebugMessage("Adding stats: " + t.getStat() + " val: " + t.getLambda().calc(env));
 		}
 		
 		if (funcs.isEmpty())
 		{
 			return _emptyFunctionSet;
 		}
-		return funcs.toArray(new Func[funcs.size()]);
+		return funcs.toArray(new AbstractFunction[funcs.size()]);
 	}
 	
 	public void addFunc(FuncTemplate template)

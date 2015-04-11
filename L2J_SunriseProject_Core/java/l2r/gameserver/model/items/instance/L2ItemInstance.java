@@ -72,7 +72,7 @@ import l2r.gameserver.model.items.type.ItemType;
 import l2r.gameserver.model.options.EnchantOptions;
 import l2r.gameserver.model.options.Options;
 import l2r.gameserver.model.quest.QuestState;
-import l2r.gameserver.model.skills.funcs.Func;
+import l2r.gameserver.model.stats.functions.AbstractFunction;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.DropItem;
 import l2r.gameserver.network.serverpackets.GetItem;
@@ -1437,7 +1437,7 @@ public final class L2ItemInstance extends L2Object
 	 * @param player : L2Character designating the player
 	 * @return Func[]
 	 */
-	public Func[] getStatFuncs(L2Character player)
+	public AbstractFunction[] getStatFuncs(L2Character player)
 	{
 		return getItem().getStatFuncs(this, player);
 	}

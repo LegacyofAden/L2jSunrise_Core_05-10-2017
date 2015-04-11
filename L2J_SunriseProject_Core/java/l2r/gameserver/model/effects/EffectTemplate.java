@@ -25,9 +25,9 @@ import l2r.gameserver.handler.EffectHandler;
 import l2r.gameserver.model.ChanceCondition;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.conditions.Condition;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
-import l2r.gameserver.model.skills.funcs.Lambda;
 import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
+import l2r.gameserver.model.stats.functions.Lambda;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

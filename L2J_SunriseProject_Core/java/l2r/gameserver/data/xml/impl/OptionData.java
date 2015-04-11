@@ -26,9 +26,9 @@ import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.options.Options;
 import l2r.gameserver.model.options.OptionsSkillHolder;
 import l2r.gameserver.model.options.OptionsSkillType;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
-import l2r.gameserver.model.skills.funcs.LambdaConst;
 import l2r.gameserver.model.stats.Stats;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
+import l2r.gameserver.model.stats.functions.LambdaConst;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -89,11 +89,6 @@ public class OptionData implements IXmlReader
 												parseFuncs(fd.getAttributes(), "Mul", op);
 												break;
 											}
-											case "basemul":
-											{
-												parseFuncs(fd.getAttributes(), "BaseMul", op);
-												break;
-											}
 											case "sub":
 											{
 												parseFuncs(fd.getAttributes(), "Sub", op);
@@ -150,9 +145,14 @@ public class OptionData implements IXmlReader
 	private void parseFuncs(NamedNodeMap attrs, String func, Options op)
 	{
 		Stats stat = Stats.valueOfXml(parseString(attrs, "stat"));
-		int ord = Integer.decode(parseString(attrs, "order"));
 		double val = parseDouble(attrs, "val");
-		op.addFunc(new FuncTemplate(null, null, func, stat, ord, new LambdaConst(val)));
+		int order = -1;
+		final Node orderNode = attrs.getNamedItem("order");
+		if (orderNode != null)
+		{
+			order = Integer.parseInt(orderNode.getNodeValue());
+		}
+		op.addFunc(new FuncTemplate(null, null, func, order, stat, new LambdaConst(val)));
 	}
 	
 	public Options getOptions(int id)

@@ -25,12 +25,13 @@ import java.util.List;
 import java.util.Map;
 
 import l2r.gameserver.data.xml.IXmlReader;
+import l2r.gameserver.enums.StatFunction;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.items.type.CrystalType;
-import l2r.gameserver.model.skills.funcs.FuncTemplate;
-import l2r.gameserver.model.skills.funcs.LambdaConst;
 import l2r.gameserver.model.stats.Stats;
+import l2r.gameserver.model.stats.functions.FuncTemplate;
+import l2r.gameserver.model.stats.functions.LambdaConst;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -43,7 +44,7 @@ public class EnchantItemHPBonusData implements IXmlReader
 {
 	private final Map<CrystalType, List<Integer>> _armorHPBonuses = new EnumMap<>(CrystalType.class);
 	
-	private static final float fullArmorModifier = 1.5f; // TODO: Move it to config!
+	private static final float FULL_ARMOR_MODIFIER = 1.5f; // TODO: Move it to config!
 	
 	/**
 	 * Instantiates a new enchant hp bonus data.
@@ -64,12 +65,12 @@ public class EnchantItemHPBonusData implements IXmlReader
 				{
 					if ("enchantHP".equalsIgnoreCase(d.getNodeName()))
 					{
-						List<Integer> bonuses = new ArrayList<>();
+						final List<Integer> bonuses = new ArrayList<>(12);
 						for (Node e = d.getFirstChild(); e != null; e = e.getNextSibling())
 						{
 							if ("bonus".equalsIgnoreCase(e.getNodeName()))
 							{
-								bonuses.add(Integer.valueOf(e.getTextContent()));
+								bonuses.add(Integer.parseInt(e.getTextContent()));
 							}
 						}
 						_armorHPBonuses.put(parseEnum(d.getAttributes(), CrystalType.class, "grade"), bonuses);
@@ -101,7 +102,7 @@ public class EnchantItemHPBonusData implements IXmlReader
 						case L2Item.SLOT_UNDERWEAR:
 						case L2Item.SLOT_L_HAND:
 						case L2Item.SLOT_BELT:
-							item.attach(new FuncTemplate(null, null, "EnchantHp", Stats.MAX_HP, 0x60, new LambdaConst(0)));
+							item.attach(new FuncTemplate(null, null, StatFunction.ENCHANTHP.getName(), -1, Stats.MAX_HP, new LambdaConst(0)));
 							break;
 						default:
 							break;
@@ -119,7 +120,7 @@ public class EnchantItemHPBonusData implements IXmlReader
 					switch (item.getBodyPart())
 					{
 						case L2Item.SLOT_L_HAND:
-							item.attach(new FuncTemplate(null, null, "EnchantHp", Stats.MAX_HP, 0x60, new LambdaConst(0)));
+							item.attach(new FuncTemplate(null, null, StatFunction.ENCHANTHP.getName(), -1, Stats.MAX_HP, new LambdaConst(0)));
 							break;
 						default:
 							break;
@@ -153,7 +154,7 @@ public class EnchantItemHPBonusData implements IXmlReader
 		final int bonus = values.get(Math.min(item.getOlyEnchantLevel(), values.size()) - 1);
 		if (item.getItem().getBodyPart() == L2Item.SLOT_FULL_ARMOR)
 		{
-			return (int) (bonus * fullArmorModifier);
+			return (int) (bonus * FULL_ARMOR_MODIFIER);
 		}
 		return bonus;
 	}
