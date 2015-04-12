@@ -78,6 +78,7 @@ import l2r.gameserver.data.xml.impl.HennaData;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.data.xml.impl.PetData;
 import l2r.gameserver.data.xml.impl.PlayerTemplateData;
+import l2r.gameserver.data.xml.impl.PlayerXpPercentLostData;
 import l2r.gameserver.data.xml.impl.ProductItemData;
 import l2r.gameserver.data.xml.impl.RecipeData;
 import l2r.gameserver.data.xml.impl.SkillData;
@@ -925,6 +926,8 @@ public final class L2PcInstance extends L2Playable
 	
 	// Save responder name for log it
 	private String _lastPetitionGmName = null;
+	
+	private boolean _hasCharmOfCourage = false;
 	
 	/**
 	 * Create a new L2PcInstance and add it in the characters table of the database.<br>
@@ -4292,7 +4295,7 @@ public final class L2PcInstance extends L2Playable
 		
 		// TODO: Should possibly be checked only in L2PcInstance's useMagic
 		// Can't use Hero and resurrect skills during Olympiad
-		if (isInOlympiadMode() && (skill.isHeroSkill() || (skill.getSkillType() == L2SkillType.RESURRECT)))
+		if (isInOlympiadMode() && (skill.isHeroSkill() || (skill.hasEffectType(L2EffectType.RESURRECTION))))
 		{
 			sendPacket(SystemMessageId.THIS_SKILL_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT);
 			return false;
@@ -5603,11 +5606,12 @@ public final class L2PcInstance extends L2Playable
 			}
 			else
 			{
+				final boolean insidePvpZone = isInsideZone(ZoneIdType.PVP) || isInsideZone(ZoneIdType.SIEGE);
 				if ((pk == null) || !pk.isCursedWeaponEquipped())
 				{
 					onDieDropItem(killer); // Check if any item should be dropped
 					
-					if (!(isInsideZone(ZoneIdType.PVP) && !isInsideZone(ZoneIdType.SIEGE)))
+					if (!insidePvpZone)
 					{
 						if ((pk != null) && (pk.getClan() != null) && (getClan() != null) && !isAcademyMember() && !(pk.isAcademyMember()))
 						{
@@ -5631,21 +5635,15 @@ public final class L2PcInstance extends L2Playable
 					}
 					
 					// If player is Lucky shouldn't get penalized.
-					if (!isLucky() && !getNevitSystem().isAdventBlessingActive())
+					if (!isLucky() && !insidePvpZone && !getNevitSystem().isAdventBlessingActive())
 					{
-						// Reduce the Experience of the L2PcInstance in function of the calculated Death Penalty
-						// NOTE: deathPenalty +- Exp will update karma
-						// Penalty is lower if the player is at war with the pk (war has to be declared)
-						
-						final boolean siegeNpc = (killer instanceof L2DefenderInstance) || (killer instanceof L2FortCommanderInstance);
-						final boolean atWar = (pk != null) && (getClan() != null) && (getClan().isAtWarWith(pk.getClanId()));
 						if (Config.ALT_GAME_DELEVEL)
 						{
-							deathPenalty(atWar, (pk != null), siegeNpc);
+							calculateDeathExpPenalty(killer, isAtWarWith(pk));
 						}
 						else
 						{
-							deathPenalty(atWar, (pk != null), siegeNpc, false);
+							calculateDeathExpPenalty(killer, isAtWarWith(pk), false);
 						}
 					}
 				}
@@ -5697,10 +5695,6 @@ public final class L2PcInstance extends L2Playable
 		
 		AntiFeedManager.getInstance().setLastDeathTime(getObjectId());
 		
-		if (isPhoenixBlessed() || (isAffected(EffectFlag.CHARM_OF_COURAGE) && isInSiege()))
-		{
-			reviveRequest(this, null, false);
-		}
 		return true;
 	}
 	
@@ -6039,83 +6033,47 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Reduce the Experience (and level if necessary) of the L2PcInstance in function of the calculated Death Penalty. <B><U> Actions</U> :</B> <li>Calculate the Experience loss</li> <li>Set the value of _expBeforeDeath</li> <li>Set the new Experience value of the L2PcInstance and Decrease its level
-	 * if necessary</li> <li>Send a Server->Client StatusUpdate packet with its new Experience</li>
-	 * @param atwar
-	 * @param killed_by_pc
-	 * @param killed_by_siege_npc
+	 * Reduce the Experience (and level if necessary) of the L2PcInstance in function of the calculated Death Penalty.<BR>
+	 * <B><U> Actions</U> :</B> <li>Calculate the Experience loss</li> <li>Set the value of _expBeforeDeath</li> <li>Set the new Experience value of the L2PcInstance and Decrease its level if necessary</li> <li>Send a Server->Client StatusUpdate packet with its new Experience</li>
+	 * @param killer
+	 * @param atWar
 	 */
-	public void deathPenalty(boolean atwar, boolean killed_by_pc, boolean killed_by_siege_npc)
+	public void calculateDeathExpPenalty(L2Character killer, boolean atWar)
 	{
-		deathPenalty(atwar, killed_by_pc, killed_by_siege_npc, true);
+		calculateDeathExpPenalty(killer, atWar, true);
 	}
 	
 	/**
-	 * Reduce the Experience (and level if necessary) of the L2PcInstance in function of the calculated Death Penalty. <B><U> Actions</U> :</B> <li>Calculate the Experience loss</li> <li>Set the value of _expBeforeDeath</li> <li>Set the new Experience value of the L2PcInstance and Decrease its level
-	 * if necessary</li> <li>Send a Server->Client StatusUpdate packet with its new Experience</li>
-	 * @param atwar
-	 * @param killed_by_pc
-	 * @param killed_by_siege_npc
+	 * Reduce the Experience (and level if necessary) of the L2PcInstance in function of the calculated Death Penalty.<BR>
+	 * <B><U> Actions</U> :</B> <li>Calculate the Experience loss</li> <li>Set the value of _expBeforeDeath</li> <li>Set the new Experience value of the L2PcInstance and Decrease its level if necessary</li> <li>Send a Server->Client StatusUpdate packet with its new Experience</li>
+	 * @param killer
+	 * @param atWar
 	 * @param decreaseExp
 	 */
-	public void deathPenalty(boolean atwar, boolean killed_by_pc, boolean killed_by_siege_npc, boolean decreaseExp)
+	public void calculateDeathExpPenalty(L2Character killer, boolean atWar, boolean decreaseExp)
 	{
-		// TODO Need Correct Penalty
-		// Get the level of the L2PcInstance
 		final int lvl = getLevel();
+		double percentLost = PlayerXpPercentLostData.getInstance().getXpPercent(getLevel());
 		
-		int clan_luck = getSkillLevel(L2Skill.SKILL_CLAN_LUCK);
-		
-		double clan_luck_modificator = 1.0;
-		
-		if (!killed_by_pc)
+		if (killer != null)
 		{
-			switch (clan_luck)
+			if (killer.isRaid())
 			{
-				case 3:
-					clan_luck_modificator = 0.8;
-					break;
-				case 2:
-					clan_luck_modificator = 0.8;
-					break;
-				case 1:
-					clan_luck_modificator = 0.88;
-					break;
-				default:
-					clan_luck_modificator = 1.0;
-					break;
+				percentLost *= calcStat(Stats.REDUCE_EXP_LOST_BY_RAID, 1);
+			}
+			else if (killer.isMonster())
+			{
+				percentLost *= calcStat(Stats.REDUCE_EXP_LOST_BY_MOB, 1);
+			}
+			else if (killer.isPlayable())
+			{
+				percentLost *= calcStat(Stats.REDUCE_EXP_LOST_BY_PVP, 1);
 			}
 		}
-		else
-		{
-			switch (clan_luck)
-			{
-				case 3:
-					clan_luck_modificator = 0.5;
-					break;
-				case 2:
-					clan_luck_modificator = 0.5;
-					break;
-				case 1:
-					clan_luck_modificator = 0.5;
-					break;
-				default:
-					clan_luck_modificator = 1.0;
-					break;
-			}
-		}
-		
-		// The death steal you some Exp
-		double percentLost = Config.PLAYER_XP_PERCENT_LOST[getLevel()] * clan_luck_modificator;
 		
 		if (getKarma() > 0)
 		{
 			percentLost *= Config.RATE_KARMA_EXP_LOST;
-		}
-		
-		if (isFestivalParticipant() || atwar)
-		{
-			percentLost /= 4.0;
 		}
 		
 		// Calculate the Experience loss
@@ -6136,29 +6094,13 @@ public final class L2PcInstance extends L2Playable
 			lostExp = 0;
 		}
 		
+		if (isFestivalParticipant() || atWar)
+		{
+			lostExp /= 4.0;
+		}
+		
 		// Get the Experience before applying penalty
 		setExpBeforeDeath(getExp());
-		
-		// No xp loss inside pvp zone unless
-		// - it's a siege zone and you're NOT participating
-		// - you're killed by a non-pc whose not belong to the siege
-		if (isInsideZone(ZoneIdType.PVP))
-		{
-			// No xp loss for siege participants inside siege zone
-			if (isInsideZone(ZoneIdType.SIEGE))
-			{
-				if (isInSiege() && (killed_by_pc || killed_by_siege_npc))
-				{
-					lostExp = 0;
-					retailLostExp = 0;
-				}
-			}
-			else if (killed_by_pc)
-			{
-				lostExp = 0;
-				retailLostExp = 0;
-			}
-		}
 		
 		if (getNevitSystem().isAdventBlessingActive())
 		{
@@ -11343,7 +11285,6 @@ public final class L2PcInstance extends L2Playable
 	public void doRevive()
 	{
 		super.doRevive();
-		stopEffects(L2EffectType.CHARMOFCOURAGE);
 		updateEffectIcons();
 		sendPacket(new EtcStatusUpdate(this));
 		_revivePet = false;
@@ -11390,7 +11331,7 @@ public final class L2PcInstance extends L2Playable
 		doRevive();
 	}
 	
-	public void reviveRequest(L2PcInstance reviver, L2Skill skill, boolean Pet)
+	public void reviveRequest(L2PcInstance reviver, L2Skill skill, boolean Pet, int power)
 	{
 		if (isResurrectionBlocked())
 		{
@@ -11420,24 +11361,12 @@ public final class L2PcInstance extends L2Playable
 		{
 			_reviveRequested = 1;
 			int restoreExp = 0;
-			if (isPhoenixBlessed())
-			{
-				_revivePower = 100;
-			}
-			else if (isAffected(EffectFlag.CHARM_OF_COURAGE))
-			{
-				_revivePower = 0;
-			}
-			else
-			{
-				_revivePower = Formulas.calculateSkillResurrectRestorePercent(skill.getPower(), reviver);
-			}
 			
+			_revivePower = Formulas.calculateSkillResurrectRestorePercent(power, reviver);
 			restoreExp = (int) Math.round(((getExpBeforeDeath() - getExp()) * _revivePower) / 100);
-			
 			_revivePet = Pet;
 			
-			if (isAffected(EffectFlag.CHARM_OF_COURAGE))
+			if (hasCharmOfCourage())
 			{
 				ConfirmDlg dlg = new ConfirmDlg(SystemMessageId.RESURRECT_USING_CHARM_OF_COURAGE.getId());
 				dlg.addTime(60000);
@@ -11457,12 +11386,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			return;
 		}
-		// If character refuses a PhoenixBless autoress, cancel all buffs he had
-		if ((answer == 0) && isPhoenixBlessed())
-		{
-			stopEffects(L2EffectType.NOBLESSE_BLESSING);
-			stopAllEffectsExceptThoseThatLastThroughDeath();
-		}
+		
 		if (answer == 1)
 		{
 			if (!_revivePet)
@@ -11488,6 +11412,7 @@ public final class L2PcInstance extends L2Playable
 				}
 			}
 		}
+		_revivePet = false;
 		_reviveRequested = 0;
 		_revivePower = 0;
 	}
@@ -13212,9 +13137,37 @@ public final class L2PcInstance extends L2Playable
 	
 	public void calculateDeathPenaltyBuffLevel(L2Character killer)
 	{
-		if (((getKarma() > 0) || (Rnd.get(1, 100) <= Config.DEATH_PENALTY_CHANCE)) && !(killer instanceof L2PcInstance) && !(canOverrideCond(PcCondOverride.DEATH_PENALTY)) && !(isCharmOfLuckAffected() && killer.isRaid()) && !isPhoenixBlessed() && !isLucky() && !(isInsideZone(ZoneIdType.PVP) || isInsideZone(ZoneIdType.SIEGE)))
+		if (killer == null)
 		{
-			increaseDeathPenaltyBuffLevel();
+			_log.warn(this + " called calculateDeathPenaltyBuffLevel with killer null!");
+			return;
+		}
+		
+		if (isResurrectSpecialAffected() || isLucky() || isInsideZone(ZoneIdType.PVP) || isInsideZone(ZoneIdType.SIEGE) || canOverrideCond(PcCondOverride.DEATH_PENALTY))
+		{
+			return;
+		}
+		double percent = 1.0;
+		
+		if (killer.isRaid())
+		{
+			percent *= calcStat(Stats.REDUCE_DEATH_PENALTY_BY_RAID, 1);
+		}
+		else if (killer.isMonster())
+		{
+			percent *= calcStat(Stats.REDUCE_DEATH_PENALTY_BY_MOB, 1);
+		}
+		else if (killer.isPlayable())
+		{
+			percent *= calcStat(Stats.REDUCE_DEATH_PENALTY_BY_PVP, 1);
+		}
+		
+		if (Rnd.get(1, 100) <= ((Config.DEATH_PENALTY_CHANCE) * percent))
+		{
+			if (!killer.isPlayable() || (getKarma() > 0))
+			{
+				increaseDeathPenaltyBuffLevel();
+			}
 		}
 	}
 	
@@ -13234,9 +13187,7 @@ public final class L2PcInstance extends L2Playable
 				removeSkill(skill, true);
 			}
 		}
-		
 		_deathPenaltyBuffLevel++;
-		
 		addSkill(SkillData.getInstance().getInfo(5076, getDeathPenaltyBuffLevel()), false);
 		sendPacket(new EtcStatusUpdate(this));
 		SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.DEATH_PENALTY_LEVEL_S1_ADDED);
@@ -14414,6 +14365,23 @@ public final class L2PcInstance extends L2Playable
 	public boolean isPartyBanned()
 	{
 		return PunishmentManager.getInstance().hasPunishment(getObjectId(), PunishmentAffect.CHARACTER, PunishmentType.PARTY_BAN);
+	}
+	
+	/**
+	 * Set true/false if character got Charm of Courage
+	 * @param val true/false
+	 */
+	public void setCharmOfCourage(boolean val)
+	{
+		_hasCharmOfCourage = val;
+	}
+	
+	/**
+	 * @return {@code true} if effect is present, {@code false} otherwise.
+	 */
+	public boolean hasCharmOfCourage()
+	{
+		return _hasCharmOfCourage;
 	}
 	
 	/**

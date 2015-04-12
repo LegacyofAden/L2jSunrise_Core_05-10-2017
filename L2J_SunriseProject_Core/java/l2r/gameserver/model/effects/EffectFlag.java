@@ -24,9 +24,7 @@ package l2r.gameserver.model.effects;
 public enum EffectFlag
 {
 	NONE,
-	CHARM_OF_COURAGE,
-	CHARM_OF_LUCK,
-	PHOENIX_BLESSING,
+	RESURRECTION_SPECIAL,
 	NOBLESS_BLESSING,
 	SILENT_MOVE,
 	PROTECTION_BLESSING,

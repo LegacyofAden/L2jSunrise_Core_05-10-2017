@@ -94,7 +94,6 @@ public enum L2SkillType
 	CONT,
 	FUSION,
 	
-	RESURRECT,
 	CHARGEDAM(L2SkillChargeDmg.class),
 	RECALL(L2SkillTeleport.class),
 	TELEPORT(L2SkillTeleport.class),

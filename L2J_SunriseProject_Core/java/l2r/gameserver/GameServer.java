@@ -73,6 +73,7 @@ import l2r.gameserver.data.xml.impl.MultisellData;
 import l2r.gameserver.data.xml.impl.OptionData;
 import l2r.gameserver.data.xml.impl.PetData;
 import l2r.gameserver.data.xml.impl.PlayerTemplateData;
+import l2r.gameserver.data.xml.impl.PlayerXpPercentLostData;
 import l2r.gameserver.data.xml.impl.ProductItemData;
 import l2r.gameserver.data.xml.impl.RecipeData;
 import l2r.gameserver.data.xml.impl.SecondaryAuthData;
@@ -252,6 +253,7 @@ public class GameServer
 		ClassListData.getInstance();
 		InitialEquipmentData.getInstance();
 		ExperienceData.getInstance();
+		PlayerXpPercentLostData.getInstance();
 		KarmaData.getInstance();
 		HitConditionBonusData.getInstance();
 		PlayerTemplateData.getInstance();

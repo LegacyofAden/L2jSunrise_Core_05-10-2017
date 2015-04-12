@@ -20,7 +20,6 @@ package l2r.gameserver.network.serverpackets;
 
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
-import l2r.gameserver.model.effects.EffectFlag;
 
 /**
  * @author Luca Baldi
@@ -44,7 +43,7 @@ public class EtcStatusUpdate extends L2GameServerPacket
 		writeD(_activeChar.isInsideZone(ZoneIdType.DANGER_AREA) ? 1 : 0); // 1 = danger area
 		writeD(_activeChar.getExpertiseWeaponPenalty()); // Weapon Grade Penalty [1-4]
 		writeD(_activeChar.getExpertiseArmorPenalty()); // Armor Grade Penalty [1-4]
-		writeD(_activeChar.isAffected(EffectFlag.CHARM_OF_COURAGE) ? 1 : 0); // 1 = charm of courage (allows resurrection on the same spot upon death on the siege battlefield)
+		writeD(_activeChar.hasCharmOfCourage() ? 1 : 0); // 1 = charm of courage (allows resurrection on the same spot upon death on the siege battlefield)
 		writeD(_activeChar.getDeathPenaltyBuffLevel()); // 1-15 death penalty, lvl (combat ability decreased due to death)
 		writeD(_activeChar.getChargedSouls());
 	}

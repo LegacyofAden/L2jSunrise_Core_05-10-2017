@@ -1281,6 +1281,13 @@ public class L2CharacterAI extends AbstractAI
 				}
 				int castRange = sk.getCastRange();
 				boolean hasLongRangeDamageSkill = false;
+				
+				if (sk.hasEffectType(L2EffectType.RESURRECTION))
+				{
+					resurrectSkills.add(sk);
+					hasHealOrResurrect = true;
+				}
+				
 				switch (sk.getSkillType())
 				{
 					case BUFF:
@@ -1319,10 +1326,6 @@ public class L2CharacterAI extends AbstractAI
 						// trickSkills.add(sk);
 					case DEBUFF:
 						debuffSkills.add(sk);
-						break;
-					case RESURRECT:
-						resurrectSkills.add(sk);
-						hasHealOrResurrect = true;
 						break;
 					case NOTDONE:
 					case COREDONE:

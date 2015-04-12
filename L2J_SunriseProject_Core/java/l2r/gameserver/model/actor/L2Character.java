@@ -1819,7 +1819,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			return;
 		}
 		
-		if (skill.getSkillType() == L2SkillType.RESURRECT)
+		if (skill.hasEffectType(L2EffectType.RESURRECTION))
 		{
 			if (isResurrectionBlocked() || target.isResurrectionBlocked())
 			{
@@ -2526,33 +2526,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		// Stop HP/MP/CP Regeneration task
 		getStatus().stopHpMpRegeneration();
 		
-		// Stop all active skills effects in progress on the L2Character,
-		// if the Character isn't affected by Soul of The Phoenix or Salvation
-		if (isPlayable() && ((L2Playable) this).isPhoenixBlessed())
-		{
-			if (((L2Playable) this).isCharmOfLuckAffected())
-			{
-				stopEffects(L2EffectType.CHARM_OF_LUCK);
-			}
-			if (((L2Playable) this).isNoblesseBlessed())
-			{
-				stopEffects(L2EffectType.NOBLESSE_BLESSING);
-			}
-		}
-		// Same thing if the Character isn't a Noblesse Blessed L2Playable
-		else if (isPlayable() && ((L2Playable) this).isNoblesseBlessed())
-		{
-			stopEffects(L2EffectType.NOBLESSE_BLESSING);
-			
-			if (((L2Playable) this).isCharmOfLuckAffected())
-			{
-				stopEffects(L2EffectType.CHARM_OF_LUCK);
-			}
-		}
-		else
-		{
-			stopAllEffectsExceptThoseThatLastThroughDeath();
-		}
+		stopAllEffectsExceptThoseThatLastThroughDeath();
 		
 		calculateRewards(killer);
 		
@@ -2571,27 +2545,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		getAttackByList().clear();
-		// If character is PhoenixBlessed
-		// or has charm of courage inside siege battlefield (exact operation to be confirmed)
-		// a resurrection popup will show up
-		if (isSummon())
-		{
-			if (((L2Summon) this).isPhoenixBlessed() && (((L2Summon) this).getOwner() != null))
-			{
-				((L2Summon) this).getOwner().reviveRequest(((L2Summon) this).getOwner(), null, true);
-			}
-		}
-		if (isPlayer())
-		{
-			if (((L2Playable) this).isPhoenixBlessed())
-			{
-				getActingPlayer().reviveRequest(getActingPlayer(), null, false);
-			}
-			else if (isAffected(EffectFlag.CHARM_OF_COURAGE) && getActingPlayer().isInSiege())
-			{
-				getActingPlayer().reviveRequest(getActingPlayer(), null, false);
-			}
-		}
+		
 		try
 		{
 			if (_fusionSkill != null)
@@ -2649,33 +2603,18 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		{
 			setIsPendingRevive(false);
 			setIsDead(false);
-			boolean restorefull = false;
 			
-			if (isPlayable() && ((L2Playable) this).isPhoenixBlessed())
+			if ((Config.RESPAWN_RESTORE_CP > 0) && (getCurrentCp() < (getMaxCp() * Config.RESPAWN_RESTORE_CP)))
 			{
-				restorefull = true;
-				stopEffects(L2EffectType.PHOENIX_BLESSING);
+				_status.setCurrentCp(getMaxCp() * Config.RESPAWN_RESTORE_CP);
 			}
-			if (restorefull)
+			if ((Config.RESPAWN_RESTORE_HP > 0) && (getCurrentHp() < (getMaxHp() * Config.RESPAWN_RESTORE_HP)))
 			{
-				_status.setCurrentCp(getCurrentCp()); // this is not confirmed, so just trigger regeneration
-				_status.setCurrentHp(getMaxHp()); // confirmed
-				_status.setCurrentMp(getMaxMp()); // and also confirmed
+				_status.setCurrentHp(getMaxHp() * Config.RESPAWN_RESTORE_HP);
 			}
-			else
+			if ((Config.RESPAWN_RESTORE_MP > 0) && (getCurrentMp() < (getMaxMp() * Config.RESPAWN_RESTORE_MP)))
 			{
-				if ((Config.RESPAWN_RESTORE_CP > 0) && (getCurrentCp() < (getMaxCp() * Config.RESPAWN_RESTORE_CP)))
-				{
-					_status.setCurrentCp(getMaxCp() * Config.RESPAWN_RESTORE_CP);
-				}
-				if ((Config.RESPAWN_RESTORE_HP > 0) && (getCurrentHp() < (getMaxHp() * Config.RESPAWN_RESTORE_HP)))
-				{
-					_status.setCurrentHp(getMaxHp() * Config.RESPAWN_RESTORE_HP);
-				}
-				if ((Config.RESPAWN_RESTORE_MP > 0) && (getCurrentMp() < (getMaxMp() * Config.RESPAWN_RESTORE_MP)))
-				{
-					_status.setCurrentMp(getMaxMp() * Config.RESPAWN_RESTORE_MP);
-				}
+				_status.setCurrentMp(getMaxMp() * Config.RESPAWN_RESTORE_MP);
 			}
 			
 			// Start broadcast status
@@ -7134,6 +7073,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * @return
 	 */
 	public abstract int getLevel();
+	
+	public final double calcStat(Stats stat, double init)
+	{
+		return getStat().calcStat(stat, init, null, null);
+	}
 	
 	// Stat - NEED TO REMOVE ONCE L2CHARSTAT IS COMPLETE
 	public final double calcStat(Stats stat, double init, L2Character target, L2Skill skill)

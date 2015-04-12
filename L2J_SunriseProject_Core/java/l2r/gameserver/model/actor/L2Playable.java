@@ -35,6 +35,7 @@ import l2r.gameserver.model.events.impl.character.OnCreatureKill;
 import l2r.gameserver.model.events.returns.TerminateReturn;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.model.skills.L2Skill;
+import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 
 /**
  * This class represents all Playable characters in the world.<br>
@@ -130,30 +131,34 @@ public abstract class L2Playable extends L2Character
 		// Stop HP/MP/CP Regeneration task
 		getStatus().stopHpMpRegeneration();
 		
-		// Stop all active skills effects in progress on the L2Character,
-		// if the Character isn't affected by Soul of The Phoenix or Salvation
-		if (isPhoenixBlessed())
-		{
-			if (isCharmOfLuckAffected())
-			{
-				stopEffects(L2EffectType.CHARM_OF_LUCK);
-			}
-			if (isNoblesseBlessed())
-			{
-				stopEffects(L2EffectType.NOBLESSE_BLESSING);
-			}
-		}
-		// Same thing if the Character isn't a Noblesse Blessed L2Playable
-		else if (isNoblesseBlessed())
+		boolean deleteBuffs = true;
+		
+		if (isNoblesseBlessedAffected())
 		{
 			stopEffects(L2EffectType.NOBLESSE_BLESSING);
+			deleteBuffs = false;
+		}
+		if (isResurrectSpecialAffected())
+		{
+			stopEffects(L2EffectType.RESURRECTION_SPECIAL);
+			deleteBuffs = false;
+		}
+		if (isPlayer())
+		{
+			L2PcInstance activeChar = getActingPlayer();
 			
-			if (isCharmOfLuckAffected())
+			if (activeChar.hasCharmOfCourage())
 			{
-				stopEffects(L2EffectType.CHARM_OF_LUCK);
+				if (activeChar.isInSiege())
+				{
+					getActingPlayer().reviveRequest(getActingPlayer(), null, false, 0);
+				}
+				activeChar.setCharmOfCourage(false);
+				activeChar.sendPacket(new EtcStatusUpdate(activeChar));
 			}
 		}
-		else
+		
+		if (deleteBuffs)
 		{
 			stopAllEffectsExceptThoseThatLastThroughDeath();
 		}
@@ -273,17 +278,18 @@ public abstract class L2Playable extends L2Character
 		return true;
 	}
 	
-	// Support for Noblesse Blessing skill, where buffs are retained
-	// after resurrect
-	public final boolean isNoblesseBlessed()
+	// Support for Noblesse Blessing skill, where buffs are retained after resurrect
+	public final boolean isNoblesseBlessedAffected()
 	{
-		return _effects.isAffected(EffectFlag.NOBLESS_BLESSING);
+		return isAffected(EffectFlag.NOBLESS_BLESSING);
 	}
 	
-	// Support for Soul of the Phoenix and Salvation skills
-	public final boolean isPhoenixBlessed()
+	/**
+	 * @return {@code true} if char can resurrect by himself, {@code false} otherwise
+	 */
+	public final boolean isResurrectSpecialAffected()
 	{
-		return _effects.isAffected(EffectFlag.PHOENIX_BLESSING);
+		return isAffected(EffectFlag.RESURRECTION_SPECIAL);
 	}
 	
 	/**
@@ -301,15 +307,6 @@ public abstract class L2Playable extends L2Character
 	public final boolean isProtectionBlessingAffected()
 	{
 		return _effects.isAffected(EffectFlag.PROTECTION_BLESSING);
-	}
-	
-	/**
-	 * Charm of Luck - During a Raid/Boss war, decreased chance for death penalty.
-	 * @return
-	 */
-	public final boolean isCharmOfLuckAffected()
-	{
-		return _effects.isAffected(EffectFlag.CHARM_OF_LUCK);
 	}
 	
 	@Override
