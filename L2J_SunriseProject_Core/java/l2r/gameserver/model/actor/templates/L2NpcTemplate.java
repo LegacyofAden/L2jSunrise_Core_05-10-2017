@@ -402,6 +402,12 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 						{
 							addResSkill(skill);
 						}
+						else if (skill.hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+						{
+							addAtkSkill(skill);
+							addUniversalSkill(skill);
+							addRangeSkill(skill);
+						}
 						else
 						{
 							addUniversalSkill(skill);

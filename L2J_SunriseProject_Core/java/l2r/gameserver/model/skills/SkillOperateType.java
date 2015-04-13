@@ -34,7 +34,7 @@ package l2r.gameserver.model.skills;
  * </ul>
  * @author Zoey76
  */
-public enum L2SkillOpType
+public enum SkillOperateType
 {
 	/**
 	 * Active Skill with "Instant Effect" (for example damage skills heal/pdam/mdam/cpdam skills).

@@ -20,14 +20,9 @@ package l2r.gameserver.enums;
 
 public enum TeleportWhereType
 {
-	Castle,
-	Castle_banish,
-	ClanHall,
-	ClanHall_banish,
-	SiegeFlag,
-	Town,
-	Fortress,
-	Fortress_banish,
-	Territory,
-	Territory_banish
+	CASTLE,
+	CLANHALL,
+	SIEGEFLAG,
+	TOWN,
+	FORTRESS
 }

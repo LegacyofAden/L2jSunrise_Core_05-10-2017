@@ -1461,6 +1461,36 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 		}
 		
+		if (sk.hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+		{
+			if (!canAura(sk))
+			{
+				if (GeoData.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && (dist2 <= srange))
+				{
+					clientStopMoving(null);
+					caster.doCast(sk);
+					return true;
+				}
+				
+				L2Character target = skillTargetReconsider(sk);
+				if (target != null)
+				{
+					clientStopMoving(null);
+					L2Object targets = attackTarget;
+					caster.setTarget(target);
+					caster.doCast(sk);
+					caster.setTarget(targets);
+					return true;
+				}
+			}
+			else
+			{
+				clientStopMoving(null);
+				caster.doCast(sk);
+				return true;
+			}
+		}
+		
 		switch (sk.getSkillType())
 		{
 			case BUFF:

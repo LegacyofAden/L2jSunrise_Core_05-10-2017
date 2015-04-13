@@ -61,8 +61,6 @@ public enum L2SkillType
 	MUTE,
 	PARALYZE,
 	DISARM,
-	// reco
-	GIVE_RECO,
 	// Aggro
 	AGGDAMAGE,
 	AGGREDUCE,
@@ -72,11 +70,6 @@ public enum L2SkillType
 	// Misc
 	UNLOCK,
 	UNLOCK_SPECIAL,
-	ENCHANT_ARMOR,
-	ENCHANT_WEAPON,
-	ENCHANT_ATTRIBUTE,
-	SOULSHOT,
-	SPIRITSHOT,
 	DELUXE_KEY_UNLOCK,
 	SOW,
 	DUMMY,
@@ -85,7 +78,6 @@ public enum L2SkillType
 	LEARN_SKILL(L2SkillLearnSkill.class),
 	// Summons
 	SUMMON(L2SkillSummon.class),
-	FEED_PET,
 	ERASE,
 	BETRAY,
 	
@@ -98,13 +90,11 @@ public enum L2SkillType
 	RECALL(L2SkillTeleport.class),
 	TELEPORT(L2SkillTeleport.class),
 	TRANSFORMDISPEL,
-	SHIFT_TARGET,
 	
 	// Skill is done within the core.
 	COREDONE,
 	// unimplemented
-	NOTDONE,
-	BALLISTA;
+	NOTDONE;
 	
 	private final Class<? extends L2Skill> _class;
 	

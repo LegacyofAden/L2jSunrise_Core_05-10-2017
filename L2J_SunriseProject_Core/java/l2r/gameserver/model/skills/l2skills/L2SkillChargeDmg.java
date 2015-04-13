@@ -18,27 +18,22 @@
  */
 package l2r.gameserver.model.skills.l2skills;
 
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import l2r.Config;
 import l2r.gameserver.enums.ShotType;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.L2Character;
+import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.effects.L2Effect;
+import l2r.gameserver.model.items.L2Weapon;
+import l2r.gameserver.model.items.type.WeaponType;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.stats.BaseStats;
-import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.model.stats.Formulas;
-import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.model.stats.Stats;
+import l2r.util.Rnd;
 
 public class L2SkillChargeDmg extends L2Skill
 {
-	private static final Logger _logDamage = Logger.getLogger("damage");
-	
 	public L2SkillChargeDmg(StatsSet set)
 	{
 		super(set);
@@ -47,18 +42,20 @@ public class L2SkillChargeDmg extends L2Skill
 	@Override
 	public void useSkill(L2Character caster, L2Object[] targets)
 	{
+		final L2PcInstance attacker = caster instanceof L2PcInstance ? (L2PcInstance) caster : null;
+		if (attacker == null)
+		{
+			return;
+		}
+		
 		if (caster.isAlikeDead())
 		{
 			return;
 		}
 		
-		double modifier = 0;
-		if (caster.isPlayer())
-		{
-			// Charges Formula (each charge increase +25%)
-			modifier = ((caster.getActingPlayer().getCharges() * 0.25) + 1);
-		}
 		boolean ss = useSoulShot() && caster.isChargedShot(ShotType.SOULSHOTS);
+		double ssBoost = ss ? 2 : 1.0;
+		final L2Skill skill = this;
 		
 		for (L2Character target : (L2Character[]) targets)
 		{
@@ -68,136 +65,104 @@ public class L2SkillChargeDmg extends L2Skill
 			}
 			
 			// Calculate skill evasion
-			boolean skillIsEvaded = Formulas.calcPhysicalSkillEvasion(target, this);
+			final boolean skillIsEvaded = Formulas.calcPhysicalSkillEvasion(caster, target, this);
 			if (skillIsEvaded)
 			{
-				if (caster.isPlayer())
-				{
-					SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_DODGES_ATTACK);
-					sm.addString(target.getName());
-					caster.getActingPlayer().sendPacket(sm);
-				}
-				if (target.isPlayer())
-				{
-					SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.AVOIDED_C1_ATTACK2);
-					sm.addString(caster.getName());
-					target.getActingPlayer().sendPacket(sm);
-				}
-				
-				// no futher calculations needed.
 				continue;
 			}
 			
-			// TODO: should we use dual or not?
-			// because if so, damage are lowered but we don't do anything special with dual then
-			// like in doAttackHitByDual which in fact does the calcPhysDam call twice
-			// boolean dual = caster.isUsingDualWeapon();
-			byte shld = Formulas.calcShldUse(caster, target, this);
-			boolean crit = false;
-			if ((getBaseCritRate() > 0) && !isStaticDamage())
+			final boolean isPvP = attacker.isPlayable() && target.isPlayable();
+			final boolean isPvE = attacker.isPlayable() && target.isAttackable();
+			double attack = attacker.getPAtk(target);
+			int defence = target.getPDef(attacker);
+			
+			if (!ignoreShield())
 			{
-				crit = Formulas.calcCrit(getBaseCritRate() * 10 * BaseStats.STR.calcBonus(caster), true, target);
+				byte shield = Formulas.calcShldUse(attacker, target, skill, true);
+				switch (shield)
+				{
+					case Formulas.SHIELD_DEFENSE_FAILED:
+					{
+						break;
+					}
+					case Formulas.SHIELD_DEFENSE_SUCCEED:
+					{
+						defence += target.getShldDef();
+						break;
+					}
+					case Formulas.SHIELD_DEFENSE_PERFECT_BLOCK:
+					{
+						defence = -1;
+						break;
+					}
+				}
 			}
-			// damage calculation, crit is static 2x
-			double damage = isStaticDamage() ? getPower() : Formulas.calcPhysDam(caster, target, this, shld, false, false, ss);
-			if (crit)
+			
+			double damage = 1;
+			boolean critical = false;
+			
+			if (defence != -1)
 			{
-				damage *= 2;
+				// FIXME: Traits
+				// double damageMultiplier = Formulas.calcWeaponTraitBonus(attacker, target) * Formulas.calcAttributeBonus(attacker, target, skill) * Formulas.calcGeneralTraitBonus(attacker, target, skill.getTraitType(), true);
+				double damageMultiplier = Formulas.calcValakasTrait(attacker, target, skill);
+				
+				double weaponTypeBoost;
+				L2Weapon weapon = attacker.getActiveWeaponItem();
+				if ((weapon != null) && ((weapon.getItemType() == WeaponType.BOW) || (weapon.getItemType() == WeaponType.CROSSBOW)))
+				{
+					weaponTypeBoost = 70;
+				}
+				else
+				{
+					weaponTypeBoost = 77;
+				}
+				
+				// charge count should be the count before casting the skill but since its reduced before calling effects
+				// we add skill consume charges to current charges
+				double energyChargesBoost = (((attacker.getCharges() + skill.getChargeConsume()) - 1) * 0.2) + 1;
+				
+				attack += getPower(attacker, target, isPvP, isPvE);
+				attack *= ssBoost;
+				attack *= energyChargesBoost;
+				attack *= weaponTypeBoost;
+				
+				damage = attack / defence;
+				damage *= damageMultiplier;
+				if (target instanceof L2PcInstance)
+				{
+					damage *= attacker.getStat().calcStat(Stats.PVP_PHYS_SKILL_DMG, 1.0);
+					damage *= target.getStat().calcStat(Stats.PVP_PHYS_SKILL_DEF, 1.0);
+					damage = attacker.getStat().calcStat(Stats.PHYSICAL_SKILL_POWER, damage);
+				}
+				
+				critical = (BaseStats.STR.calcBonus(attacker) * getBaseCritRate()) > (Rnd.nextDouble() * 100);
+				if (critical)
+				{
+					damage *= 2;
+				}
 			}
 			
 			if (damage > 0)
 			{
-				byte reflect = Formulas.calcSkillReflect(target, this);
-				if (hasEffects())
-				{
-					if ((reflect & Formulas.SKILL_REFLECT_SUCCEED) != 0)
-					{
-						caster.stopSkillEffects(getId());
-						getEffects(target, caster);
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
-						sm.addSkillName(this);
-						caster.sendPacket(sm);
-					}
-					else
-					{
-						// activate attacked effects, if any
-						target.stopSkillEffects(getId());
-						if (Formulas.calcSkillSuccess(caster, target, this, shld, false, false, true))
-						{
-							getEffects(caster, target, new Env(shld, false, false, false));
-							
-							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
-							sm.addSkillName(this);
-							target.sendPacket(sm);
-						}
-						else
-						{
-							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_RESISTED_YOUR_S2);
-							sm.addCharName(target);
-							sm.addSkillName(this);
-							caster.sendPacket(sm);
-						}
-					}
-				}
+				attacker.sendDamageMessage(target, (int) damage, false, critical, false);
+				target.reduceCurrentHp(damage, attacker, skill);
+				target.notifyDamageReceived(damage, attacker, skill, critical, false);
 				
-				double finalDamage = isStaticDamage() ? damage : damage * modifier;
-				
-				if (Config.LOG_GAME_DAMAGE && caster.isPlayable() && (damage > Config.LOG_GAME_DAMAGE_THRESHOLD))
-				{
-					LogRecord record = new LogRecord(Level.INFO, "");
-					record.setParameters(new Object[]
-					{
-						caster,
-						" did damage ",
-						(int) damage,
-						this,
-						" to ",
-						target
-					});
-					record.setLoggerName("pdam");
-					_logDamage.log(record);
-				}
-				
-				target.reduceCurrentHp(finalDamage, caster, this);
-				
+				// vGodFather: Do we need to trigger this?
 				// Maybe launch chance skills on us
 				if (caster.getChanceSkills() != null)
 				{
-					caster.getChanceSkills().onSkillHit(target, this, false, finalDamage);
+					caster.getChanceSkills().onSkillHit(target, this, false, damage);
 				}
 				// Maybe launch chance skills on target
 				if (target.getChanceSkills() != null)
 				{
-					target.getChanceSkills().onSkillHit(caster, this, true, finalDamage);
+					target.getChanceSkills().onSkillHit(caster, this, true, damage);
 				}
 				
-				// vengeance reflected damage
-				if ((reflect & Formulas.SKILL_REFLECT_VENGEANCE) != 0)
-				{
-					if (target.isPlayer())
-					{
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.COUNTERED_C1_ATTACK);
-						sm.addCharName(caster);
-						target.sendPacket(sm);
-					}
-					if (caster.isPlayer())
-					{
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_PERFORMING_COUNTERATTACK);
-						sm.addCharName(target);
-						caster.sendPacket(sm);
-					}
-					// Formula from Diego Vargas post: http://www.l2guru.com/forum/showthread.php?p=3122630
-					// 1189 x Your PATK / PDEF of target
-					double vegdamage = ((1189 * target.getPAtk(caster)) / (double) caster.getPDef(target));
-					caster.reduceCurrentHp(vegdamage, target, this);
-				}
-				
-				caster.sendDamageMessage(target, (int) finalDamage, false, crit, false);
-				
-			}
-			else
-			{
-				caster.sendDamageMessage(target, 0, false, false, true);
+				// Check if damage should be reflected
+				Formulas.calcDamageReflected(attacker, target, skill, damage);
 			}
 		}
 		

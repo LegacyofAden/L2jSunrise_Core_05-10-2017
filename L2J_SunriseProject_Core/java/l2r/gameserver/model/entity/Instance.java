@@ -359,7 +359,7 @@ public final class Instance
 				}
 				else
 				{
-					player.teleToLocation(TeleportWhereType.Town);
+					player.teleToLocation(TeleportWhereType.TOWN);
 				}
 			}
 		}
@@ -883,7 +883,7 @@ public final class Instance
 					}
 					else
 					{
-						player.teleToLocation(TeleportWhereType.Town);
+						player.teleToLocation(TeleportWhereType.TOWN);
 					}
 				}
 			}, _ejectTime));

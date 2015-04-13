@@ -131,7 +131,7 @@ public class L2NoRestartZone extends L2ZoneType
 		@Override
 		public void run()
 		{
-			_player.teleToLocation(TeleportWhereType.Town);
+			_player.teleToLocation(TeleportWhereType.TOWN);
 		}
 	}
 }

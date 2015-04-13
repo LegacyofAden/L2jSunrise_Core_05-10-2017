@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.model.zone.type;
 
-import l2r.gameserver.enums.TeleportWhereType;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.ClanHallManager;
 import l2r.gameserver.model.actor.L2Character;
@@ -88,10 +87,5 @@ public class L2ClanHallZone extends L2ResidenceZone
 		{
 			character.setInsideZone(ZoneIdType.CLAN_HALL, false);
 		}
-	}
-	
-	public void banishForeigners(int owningClanId)
-	{
-		super.banishForeigners(owningClanId, TeleportWhereType.ClanHall_banish);
 	}
 }

@@ -112,7 +112,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	
 	// not needed, just for easier debug
 	private final String _name;
-	private final L2SkillOpType _operateType;
+	private final SkillOperateType _operateType;
 	private final int _magic;
 	private final L2TraitType _traitType;
 	private final boolean _staticReuse;
@@ -263,7 +263,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_displayId = set.getInt("displayId", _id);
 		_displayLevel = set.getInt("displayLevel", _level);
 		_name = set.getString("name", "");
-		_operateType = set.getEnum("operateType", L2SkillOpType.class);
+		_operateType = set.getEnum("operateType", SkillOperateType.class);
 		_magic = set.getInt("isMagic", 0);
 		_traitType = set.getEnum("trait", L2TraitType.class, L2TraitType.NONE);
 		_staticReuse = set.getBoolean("staticReuse", false);
@@ -1024,6 +1024,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	
 	public final boolean useSoulShot()
 	{
+		if (hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+		{
+			return true;
+		}
+		
 		switch (getSkillType())
 		{
 			case PDAM:

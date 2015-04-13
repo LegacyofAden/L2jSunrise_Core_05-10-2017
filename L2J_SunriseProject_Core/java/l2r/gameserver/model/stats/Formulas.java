@@ -27,6 +27,7 @@ import l2r.gameserver.SevenSigns;
 import l2r.gameserver.SevenSignsFestival;
 import l2r.gameserver.data.xml.impl.HitConditionBonusData;
 import l2r.gameserver.data.xml.impl.KarmaData;
+import l2r.gameserver.enums.ShotType;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.ClanHallManager;
@@ -1778,10 +1779,10 @@ public final class Formulas
 		{
 			double mAtk = attacker.getMAtk(null, null);
 			double val = 0;
-			// TODO: FIX Bless spiritshot multiplier
-			/*
-			 * if (skill.isBlessedSpiritShot())// only blessed spiritshot! { val = mAtk * 3.0;// 3.0 is the blessed spiritshot multiplier }
-			 */
+			if (attacker.isChargedShot(ShotType.BLESSED_SPIRITSHOTS))
+			{
+				val = mAtk * 3.0;// 3.0 is the blessed spiritshot multiplier
+			}
 			val += mAtk;
 			val = (Math.sqrt(val) / target.getMDef(null, null)) * 11.0;
 			mAtkMod = val;
@@ -1806,7 +1807,6 @@ public final class Formulas
 		}
 		
 		return result;
-		// return (Rnd.get(1000) < (finalRate * 10));
 	}
 	
 	public static boolean calcSkillSuccess(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean ss, boolean sps, boolean bss)
@@ -1870,10 +1870,10 @@ public final class Formulas
 		{
 			double mAtk = attacker.getMAtk(null, null);
 			double val = 0;
-			// TODO: FIX Bless spiritshot multiplier
-			/*
-			 * if (skill.isBlessedSpiritShot())// only blessed spiritshot! { val = mAtk * 3.0;// 3.0 is the blessed spiritshot multiplier }
-			 */
+			if (attacker.isChargedShot(ShotType.BLESSED_SPIRITSHOTS))
+			{
+				val = mAtk * 3.0;// 3.0 is the blessed spiritshot multiplier
+			}
 			val += mAtk;
 			val = (Math.sqrt(val) / target.getMDef(null, null)) * 11.0;
 			mAtkMod = val;
@@ -1898,7 +1898,6 @@ public final class Formulas
 		}
 		
 		return result;
-		// return (Rnd.get(1000) < (finalRate * 10));
 	}
 	
 	public static boolean calcCubicSkillSuccess(L2CubicInstance attacker, L2Character target, L2Skill skill, byte shld)
@@ -1969,7 +1968,6 @@ public final class Formulas
 		}
 		
 		return result;
-		// return (Rnd.get(1000) < (finalRate * 10));
 	}
 	
 	public static boolean calcMagicSuccess(L2Character attacker, L2Character target, L2Skill skill)
@@ -1979,8 +1977,6 @@ public final class Formulas
 			return true;
 		}
 		
-		// FIXME: Fix this LevelMod Formula.
-		// int lvlDifference = (target.getLevel() - (skill.getMagicLevel() > 0 ? skill.getMagicLevel() : attacker.getLevel()));
 		int lvlDifference = (target.getLevel() - (skill.hasEffectType(L2EffectType.SPOIL) ? skill.getMagicLevel() : attacker.getLevel()));
 		double lvlModifier = Math.pow(1.3, lvlDifference);
 		float targetModifier = 1;
@@ -2013,7 +2009,6 @@ public final class Formulas
 		}
 		
 		return result;
-		// return (Rnd.get(1000) < (rate * 10));
 	}
 	
 	public static double calcManaDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean sps, boolean bss, boolean mcrit)
@@ -2113,6 +2108,31 @@ public final class Formulas
 		}
 		
 		return Rnd.get(1000) < (target.calcStat(Stats.P_SKILL_EVASION, 0, null, skill) * 10);
+	}
+	
+	public static boolean calcPhysicalSkillEvasion(L2Character activeChar, L2Character target, L2Skill skill)
+	{
+		if (skill.isMagic() || skill.isDebuff())
+		{
+			return false;
+		}
+		if (Rnd.get(100) < target.calcStat(Stats.P_SKILL_EVASION, 0, null, skill))
+		{
+			if (activeChar.isPlayer())
+			{
+				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_DODGES_ATTACK);
+				sm.addString(target.getName());
+				activeChar.getActingPlayer().sendPacket(sm);
+			}
+			if (target.isPlayer())
+			{
+				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.AVOIDED_C1_ATTACK2);
+				sm.addString(activeChar.getName());
+				target.getActingPlayer().sendPacket(sm);
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	public static boolean calcSkillMastery(L2Character actor, L2Skill sk)
@@ -2217,7 +2237,7 @@ public final class Formulas
 				attack_attribute_mod = 0.06909;
 				defence_attribute_mod = 0.078;
 			}
-			else if (attack_attribute >= 350)
+			else if (defence_attribute >= 350)
 			{
 				attack_attribute_mod = 0.0887;
 				defence_attribute_mod = 0.1007;
@@ -2376,6 +2396,17 @@ public final class Formulas
 		
 		byte reflect = SKILL_REFLECT_FAILED;
 		// Check for non-reflected skilltypes, need additional retail check
+		
+		if (skill.hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+		{
+			final Stats stat = skill.isMagic() ? Stats.VENGEANCE_SKILL_MAGIC_DAMAGE : Stats.VENGEANCE_SKILL_PHYSICAL_DAMAGE;
+			final double venganceChance = target.getStat().calcStat(stat, 0, target, skill);
+			if (venganceChance > Rnd.get(100))
+			{
+				reflect |= SKILL_REFLECT_VENGEANCE;
+			}
+		}
+		
 		switch (skill.getSkillType())
 		{
 		// vGodfather fixes
@@ -2598,6 +2629,29 @@ public final class Formulas
 		}
 		
 		return canceled;
+	}
+	
+	/**
+	 * Calculate Probability in following effects:<br>
+	 * TargetCancel,<br>
+	 * TargetMeProbability,<br>
+	 * SkillTurning,<br>
+	 * Betray,<br>
+	 * Bluff,<br>
+	 * DeleteHate,<br>
+	 * RandomizeHate,<br>
+	 * DeleteHateOfMe,<br>
+	 * TransferHate,<br>
+	 * Confuse<br>
+	 * @param baseChance chance from effect parameter
+	 * @param attacker
+	 * @param target
+	 * @param skill
+	 * @return chance for effect to succeed
+	 */
+	public static boolean calcProbability(double baseChance, L2Character attacker, L2Character target, L2Skill skill)
+	{
+		return Rnd.get(100) < ((((((skill.getMagicLevel() + baseChance) - target.getLevel()) + 30) - target.getINT()) * calcAttributeBonus(attacker, target, skill)) * calcValakasTrait(attacker, target, skill));
 	}
 	
 	/**

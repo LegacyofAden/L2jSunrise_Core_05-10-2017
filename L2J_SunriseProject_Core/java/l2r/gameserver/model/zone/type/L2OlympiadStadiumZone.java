@@ -293,7 +293,7 @@ public class L2OlympiadStadiumZone extends L2ZoneRespawn
 					_player.getSummon().unSummon(_player);
 				}
 				
-				_player.teleToLocation(TeleportWhereType.Town);
+				_player.teleToLocation(TeleportWhereType.TOWN);
 				_player.setInstanceId(0);
 				_player = null;
 			}

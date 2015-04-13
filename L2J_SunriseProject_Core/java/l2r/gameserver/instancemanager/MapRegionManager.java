@@ -258,7 +258,7 @@ public class MapRegionManager implements IXmlReader
 			if ((player.getClan() != null) && !player.isFlyingMounted() && !player.isFlying()) // flying players in gracia cant use teleports to aden continent
 			{
 				// If teleport to clan hall
-				if (teleportWhere == TeleportWhereType.ClanHall)
+				if (teleportWhere == TeleportWhereType.CLANHALL)
 				{
 					clanhall = ClanHallManager.getInstance().getAbstractHallByOwner(player.getClan());
 					if (clanhall != null)
@@ -276,7 +276,7 @@ public class MapRegionManager implements IXmlReader
 				}
 				
 				// If teleport to castle
-				if (teleportWhere == TeleportWhereType.Castle)
+				if (teleportWhere == TeleportWhereType.CASTLE)
 				{
 					castle = CastleManager.getInstance().getCastleByOwner(player.getClan());
 					// Otherwise check if player is on castle or fortress ground
@@ -301,7 +301,7 @@ public class MapRegionManager implements IXmlReader
 				}
 				
 				// If teleport to fortress
-				if (teleportWhere == TeleportWhereType.Fortress)
+				if (teleportWhere == TeleportWhereType.FORTRESS)
 				{
 					fort = FortManager.getInstance().getFortByOwner(player.getClan());
 					// Otherwise check if player is on castle or fortress ground
@@ -326,7 +326,7 @@ public class MapRegionManager implements IXmlReader
 				}
 				
 				// If teleport to SiegeHQ
-				if (teleportWhere == TeleportWhereType.SiegeFlag)
+				if (teleportWhere == TeleportWhereType.SIEGEFLAG)
 				{
 					castle = CastleManager.getInstance().getCastle(player);
 					fort = FortManager.getInstance().getFort(player);
@@ -334,7 +334,7 @@ public class MapRegionManager implements IXmlReader
 					L2SiegeFlagInstance tw_flag = TerritoryWarManager.getInstance().getHQForClan(player.getClan());
 					if (tw_flag != null)
 					{
-						return new Location(tw_flag.getX(), tw_flag.getY(), tw_flag.getZ());
+						return tw_flag.getLocation();
 					}
 					else if (castle != null)
 					{
@@ -345,8 +345,7 @@ public class MapRegionManager implements IXmlReader
 							if ((flags != null) && !flags.isEmpty())
 							{
 								// Spawn to flag - Need more work to get player to the nearest flag
-								L2Npc flag = flags.get(0);
-								return new Location(flag.getX(), flag.getY(), flag.getZ());
+								return flags.get(0).getLocation();
 							}
 						}
 						
@@ -360,8 +359,7 @@ public class MapRegionManager implements IXmlReader
 							if ((flags != null) && !flags.isEmpty())
 							{
 								// Spawn to flag - Need more work to get player to the nearest flag
-								L2Npc flag = flags.get(0);
-								return new Location(flag.getX(), flag.getY(), flag.getZ());
+								return flags.get(0).getLocation();
 							}
 						}
 					}
@@ -371,35 +369,9 @@ public class MapRegionManager implements IXmlReader
 						List<L2Npc> flags = sHall.getSiege().getFlag(player.getClan());
 						if ((flags != null) && !flags.isEmpty())
 						{
-							L2Npc flag = flags.get(0);
-							return new Location(flag.getX(), flag.getY(), flag.getZ());
+							return flags.get(0).getLocation();
 						}
 					}
-				}
-			}
-			
-			if (teleportWhere == TeleportWhereType.Castle_banish)
-			{
-				castle = CastleManager.getInstance().getCastle(player);
-				if (castle != null)
-				{
-					return castle.getResidenceZone().getBanishSpawnLoc();
-				}
-			}
-			else if (teleportWhere == TeleportWhereType.Fortress_banish)
-			{
-				fort = FortManager.getInstance().getFort(activeChar);
-				if (fort != null)
-				{
-					return fort.getResidenceZone().getBanishSpawnLoc();
-				}
-			}
-			else if (teleportWhere == TeleportWhereType.ClanHall_banish)
-			{
-				clanhall = ClanHallManager.getInstance().getClanHall(activeChar);
-				if (clanhall != null)
-				{
-					return clanhall.getZone().getBanishSpawnLoc();
 				}
 			}
 			

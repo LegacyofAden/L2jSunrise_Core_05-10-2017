@@ -192,7 +192,7 @@ public class L2BossZone extends L2ZoneType
 				}
 				else
 				{
-					player.teleToLocation(TeleportWhereType.Town);
+					player.teleToLocation(TeleportWhereType.TOWN);
 				}
 			}
 			else if (character.isSummon())
@@ -213,7 +213,7 @@ public class L2BossZone extends L2ZoneType
 					}
 					else
 					{
-						player.teleToLocation(TeleportWhereType.Town);
+						player.teleToLocation(TeleportWhereType.TOWN);
 					}
 				}
 				((L2Summon) character).unSummon(player);
@@ -345,7 +345,7 @@ public class L2BossZone extends L2ZoneType
 			}
 			else
 			{
-				player.teleToLocation(TeleportWhereType.Town);
+				player.teleToLocation(TeleportWhereType.TOWN);
 			}
 			return false;
 		}
@@ -399,7 +399,7 @@ public class L2BossZone extends L2ZoneType
 					}
 					else
 					{
-						player.teleToLocation(TeleportWhereType.Town);
+						player.teleToLocation(TeleportWhereType.TOWN);
 					}
 				}
 			}

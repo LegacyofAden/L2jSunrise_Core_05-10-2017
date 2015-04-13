@@ -150,19 +150,19 @@ public class L2SkillTeleport extends L2Skill
 				{
 					if (_recallType.equalsIgnoreCase("Castle"))
 					{
-						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.Castle);
+						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.CASTLE);
 					}
 					else if (_recallType.equalsIgnoreCase("ClanHall"))
 					{
-						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.ClanHall);
+						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.CLANHALL);
 					}
 					else if (_recallType.equalsIgnoreCase("Fortress"))
 					{
-						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.Fortress);
+						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.FORTRESS);
 					}
 					else
 					{
-						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.Town);
+						loc = MapRegionManager.getInstance().getTeleToLocation(target, TeleportWhereType.TOWN);
 					}
 				}
 				if (loc != null)

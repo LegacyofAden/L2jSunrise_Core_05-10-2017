@@ -9390,33 +9390,6 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
-		if (skill.hasEffectType(L2EffectType.TELEPORT_TO_TARGET))
-		{
-			// You cannot jump while rooted right ;)
-			if (isMovementDisabled())
-			{
-				// Sends message that skill cannot be used...
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
-				sm.addSkillName(skill.getId());
-				sendPacket(sm);
-				
-				// Send a Server->Client packet ActionFailed to the L2PcInstance
-				sendPacket(ActionFailed.STATIC_PACKET);
-				
-				return false;
-			}
-			// And this skill cannot be used in peace zone, not even on NPCs!
-			if (isInsideZone(ZoneIdType.PEACE))
-			{
-				// Sends a sys msg to client
-				sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
-				
-				// Send a Server->Client packet ActionFailed to the L2PcInstance
-				sendPacket(ActionFailed.STATIC_PACKET);
-				
-				return false;
-			}
-		}
 		// Check if the skill is defensive
 		if (!skill.isOffensive() && target.isMonster() && !forceUse)
 		{
@@ -11139,7 +11112,7 @@ public final class L2PcInstance extends L2Playable
 			// if the rent of a wyvern expires while over a flying zone, tp to down before unmounting
 			if (checkLandingState() && (getMountType() == MountType.WYVERN))
 			{
-				teleToLocation(TeleportWhereType.Town);
+				teleToLocation(TeleportWhereType.TOWN);
 			}
 			
 			if (dismount()) // this should always be true now, since we teleported already
@@ -11219,7 +11192,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			if (!isGM() && isIn7sDungeon() && (SevenSigns.getInstance().getPlayerCabal(getObjectId()) != SevenSigns.getInstance().getCabalHighestScore()))
 			{
-				teleToLocation(TeleportWhereType.Town);
+				teleToLocation(TeleportWhereType.TOWN);
 				setIsIn7sDungeon(false);
 				sendMessage("You have been teleported to the nearest town due to the beginning of the Seal Validation period.");
 			}
@@ -11228,7 +11201,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			if (!isGM() && isIn7sDungeon() && (SevenSigns.getInstance().getPlayerCabal(getObjectId()) == SevenSigns.CABAL_NULL))
 			{
-				teleToLocation(TeleportWhereType.Town);
+				teleToLocation(TeleportWhereType.TOWN);
 				setIsIn7sDungeon(false);
 				sendMessage("You have been teleported to the nearest town because you have not signed for any cabal.");
 			}

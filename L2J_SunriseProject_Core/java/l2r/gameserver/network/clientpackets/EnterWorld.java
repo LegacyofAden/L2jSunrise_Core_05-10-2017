@@ -548,7 +548,7 @@ public class EnterWorld extends L2GameClientPacket
 		// Actually should be checked for inside castle only?
 		if (!activeChar.canOverrideCond(PcCondOverride.ZONE_CONDITIONS) && activeChar.isInsideZone(ZoneIdType.SIEGE) && (!activeChar.isInSiege() || (activeChar.getSiegeState() < 2)))
 		{
-			activeChar.teleToLocation(TeleportWhereType.Town);
+			activeChar.teleToLocation(TeleportWhereType.TOWN);
 		}
 		
 		if (Config.ALLOW_MAIL)
@@ -580,7 +580,7 @@ public class EnterWorld extends L2GameClientPacket
 		if (Olympiad.getInstance().playerInStadia(activeChar))
 		{
 			activeChar.doRevive();
-			activeChar.teleToLocation(TeleportWhereType.Town);
+			activeChar.teleToLocation(TeleportWhereType.TOWN);
 			activeChar.sendMessage("You have been teleported to the nearest town due to you being in an Olympiad Stadium");
 		}
 		if (Protection.isProtectionOn())

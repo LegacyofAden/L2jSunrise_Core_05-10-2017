@@ -18,8 +18,6 @@
  */
 package l2r.gameserver.model.zone.type;
 
-import l2r.gameserver.enums.TeleportWhereType;
-import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.zone.L2ZoneRespawn;
 
@@ -35,25 +33,15 @@ public abstract class L2ResidenceZone extends L2ZoneRespawn
 		super(id);
 	}
 	
-	@Override
-	public void onDieInside(L2Character character)
-	{
-	}
-	
-	@Override
-	public void onReviveInside(L2Character character)
-	{
-	}
-	
-	protected void banishForeigners(int owningClanId, TeleportWhereType type)
+	public void banishForeigners(int owningClanId)
 	{
 		for (L2PcInstance temp : getPlayersInside())
 		{
-			if ((temp.getClanId() == owningClanId) && (owningClanId != 0))
+			if ((owningClanId != 0) && (temp.getClanId() == owningClanId))
 			{
 				continue;
 			}
-			temp.teleToLocation(type);
+			temp.teleToLocation(getBanishSpawnLoc(), true);
 		}
 	}
 	
