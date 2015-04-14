@@ -274,8 +274,7 @@ public class L2DonateManagerInstance extends L2Npc
 			player.broadcastUserInfo();
 			// Transform-untransorm player quickly to force the client to reload the character textures
 			TransformData.getInstance().transformPlayer(105, player);
-			TransformFinalizer ef = new TransformFinalizer(player);
-			player.setSkillCast(ThreadPoolManager.getInstance().scheduleGeneral(ef, 200));
+			player.setSkillCast(ThreadPoolManager.getInstance().scheduleGeneral(new TransformFinalizer(player), 200));
 		}
 		// GM Shop
 		else if (command.startsWith("showMultiSellWindow"))
@@ -283,7 +282,6 @@ public class L2DonateManagerInstance extends L2Npc
 			try
 			{
 				int multi = Integer.valueOf(subCommand[1]);
-				
 				if (DonateManagerConfigs.MULTISELL_LIST.contains(multi))
 				{
 					player.setIsUsingAioMultisell(true);

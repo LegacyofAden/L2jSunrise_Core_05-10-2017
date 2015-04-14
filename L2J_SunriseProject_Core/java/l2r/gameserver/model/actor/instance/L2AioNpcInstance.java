@@ -1251,8 +1251,7 @@ public final class L2AioNpcInstance extends L2Npc
 			player.broadcastUserInfo();
 			// Transform-untransorm player quickly to force the client to reload the character textures
 			TransformData.getInstance().transformPlayer(105, player);
-			TransformFinalizer ef = new TransformFinalizer(player);
-			player.setSkillCast(ThreadPoolManager.getInstance().scheduleGeneral(ef, 200));
+			player.setSkillCast(ThreadPoolManager.getInstance().scheduleGeneral(new TransformFinalizer(player), 200));
 		}
 		// GM Shop
 		else if (command.startsWith("showMultiSellWindow"))
@@ -1260,8 +1259,15 @@ public final class L2AioNpcInstance extends L2Npc
 			try
 			{
 				int multi = Integer.valueOf(subCommand[1]);
-				player.setIsUsingAioMultisell(true);
-				MultisellData.getInstance().separateAndSend(multi, player, null, false);
+				if (AioItemsConfigs.MULTISELL_LIST.contains(multi))
+				{
+					player.setIsUsingAioMultisell(true);
+					MultisellData.getInstance().separateAndSend(multi, player, null, false);
+				}
+				else
+				{
+					SecurityActions.startSecurity(player, SecurityType.AIO_NPC);
+				}
 			}
 			catch (Exception e)
 			{
