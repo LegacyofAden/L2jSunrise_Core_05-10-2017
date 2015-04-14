@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -264,13 +263,9 @@ public final class FourSepulchersManager
 		_hallInUse.put(31923, false);
 		_hallInUse.put(31924, false);
 		
-		if (!_archonSpawned.isEmpty())
+		for (int npcId : _archonSpawned.keySet())
 		{
-			Set<Integer> npcIdSet = _archonSpawned.keySet();
-			for (int npcId : npcIdSet)
-			{
-				_archonSpawned.put(npcId, false);
-			}
+			_archonSpawned.put(npcId, false);
 		}
 	}
 	
@@ -1250,11 +1245,6 @@ public final class FourSepulchersManager
 	{
 		for (L2Npc mob : _allMobs)
 		{
-			if (mob == null)
-			{
-				continue;
-			}
-			
 			try
 			{
 				if (mob.getSpawn() != null)
