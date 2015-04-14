@@ -216,7 +216,14 @@ public final class DimensionalRiftManager
 		{
 			_log.warn("Error on loading dimensional rift spawns: " + e.getMessage(), e);
 		}
-		_log.info(getClass().getSimpleName() + ": Loaded " + countGood + " dimensional rift spawns, " + countBad + " errors.");
+		if (countBad > 0)
+		{
+			_log.info(getClass().getSimpleName() + ": Loaded " + countGood + " dimensional rift spawns, " + countBad + " errors.");
+		}
+		else
+		{
+			_log.info(getClass().getSimpleName() + ": Loaded " + countGood + " dimensional rift spawns.");
+		}
 	}
 	
 	public void reload()

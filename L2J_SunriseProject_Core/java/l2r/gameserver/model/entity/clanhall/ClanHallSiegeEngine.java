@@ -88,7 +88,7 @@ public abstract class ClanHallSiegeEngine extends Quest implements Siegable
 		_hall.setSiege(this);
 		
 		_siegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new PrepareOwner(), _hall.getNextSiegeTime() - System.currentTimeMillis() - 3600000);
-		_log.info(_hall.getName() + " next siege: " + getSiegeDate().getTime());
+		_log.info(_hall.getName() + ": " + getSiegeDate().getTime());
 		loadAttackers();
 	}
 	
