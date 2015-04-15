@@ -41,6 +41,7 @@ public final class FuncTemplate
 	private final Stats _stat;
 	private final int _order;
 	private final Lambda _lambda;
+	public final Class<?> functionClass;
 	
 	public FuncTemplate(Condition attachCond, Condition applayCond, String functionName, int order, Stats stat, Lambda lambda)
 	{
@@ -61,7 +62,7 @@ public final class FuncTemplate
 		
 		try
 		{
-			final Class<?> functionClass = Class.forName("l2r.gameserver.model.stats.functions.Func" + function.getName());
+			functionClass = Class.forName("l2r.gameserver.model.stats.functions.Func" + function.getName());
 			_constructor = functionClass.getConstructor(Stats.class, // Stats to update
 				Integer.TYPE, // Order of execution
 				Object.class, // Owner
