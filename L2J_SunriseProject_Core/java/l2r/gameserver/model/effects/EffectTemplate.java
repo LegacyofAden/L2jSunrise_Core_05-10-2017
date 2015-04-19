@@ -192,9 +192,4 @@ public class EffectTemplate
 	{
 		return _parameters;
 	}
-	
-	public boolean hasParameters()
-	{
-		return _parameters != null;
-	}
 }

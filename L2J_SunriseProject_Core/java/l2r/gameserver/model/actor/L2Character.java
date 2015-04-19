@@ -5521,11 +5521,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		// Recharge any active auto-soulshot tasks for current creature.
 		rechargeShots(true, false);
-		
-		if (!isCastingNow() && !isCastingSimultaneouslyNow())
-		{
-			getAI().notifyEvent(CtrlEvent.EVT_CANCEL);
-		}
 	}
 	
 	/**

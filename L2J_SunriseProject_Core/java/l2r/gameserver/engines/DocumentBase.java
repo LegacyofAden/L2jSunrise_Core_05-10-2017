@@ -485,6 +485,7 @@ public abstract class DocumentBase
 		StatsSet parameters = null;
 		while ((n != null))
 		{
+			// Parse all parameters.
 			if ((n.getNodeType() == Node.ELEMENT_NODE) && "param".equals(n.getNodeName()))
 			{
 				if (parameters == null)
@@ -500,7 +501,7 @@ public abstract class DocumentBase
 			}
 			n = n.getNextSibling();
 		}
-		return parameters;
+		return parameters == null ? StatsSet.EMPTY_STATSET : parameters;
 	}
 	
 	protected Condition parseCondition(Node n, Object template)
