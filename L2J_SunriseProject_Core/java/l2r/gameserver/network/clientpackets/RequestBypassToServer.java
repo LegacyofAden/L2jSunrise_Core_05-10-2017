@@ -59,6 +59,19 @@ import gr.sr.voteEngine.old.VoteHandler;
 public final class RequestBypassToServer extends L2GameClientPacket
 {
 	private static final String _C__23_REQUESTBYPASSTOSERVER = "[C] 23 RequestBypassToServer";
+	// FIXME: This is for compatibility, will be changed when bypass functionality got an overhaul by NosBit
+	private static final String[] _possibleNonHtmlCommands =
+	{
+		"_bbs",
+		"bbs",
+		"nxs",
+		"_mail",
+		"_friend",
+		"_match",
+		"_diary",
+		"_olympiad?command",
+		"manor_menu_select"
+	};
 	
 	// S
 	private String _command;
@@ -78,15 +91,42 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			return;
 		}
 		
-		if (!getClient().getFloodProtectors().getServerBypass().tryPerformAction(_command))
-		{
-			return;
-		}
-		
 		if (_command.isEmpty())
 		{
 			_log.info(activeChar.getName() + " send empty requestbypass");
 			activeChar.logout();
+			return;
+		}
+		
+		boolean requiresBypassValidation = true;
+		for (String possibleNonHtmlCommand : _possibleNonHtmlCommands)
+		{
+			if (_command.startsWith(possibleNonHtmlCommand))
+			{
+				requiresBypassValidation = false;
+				break;
+			}
+		}
+		
+		int bypassOriginId = 0;
+		if (requiresBypassValidation)
+		{
+			bypassOriginId = activeChar.validateHtmlAction(_command);
+			if (bypassOriginId == -1)
+			{
+				_log.warn("Player " + activeChar.getName() + " sent non cached bypass: '" + _command + "'");
+				return;
+			}
+			
+			if ((bypassOriginId > 0) && !Util.isInsideRangeOfObjectId(activeChar, bypassOriginId, L2Npc.INTERACTION_DISTANCE))
+			{
+				// No logging here, this could be a common case where the player has the html still open and run too far away and then clicks a html action
+				return;
+			}
+		}
+		
+		if (!getClient().getFloodProtectors().getServerBypass().tryPerformAction(_command))
+		{
 			return;
 		}
 		
@@ -152,11 +192,6 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			}
 			else if (_command.startsWith("npc_"))
 			{
-				if (!activeChar.validateBypass(_command))
-				{
-					return;
-				}
-				
 				activeChar.setIsUsingAioWh(false);
 				activeChar.setIsUsingAioMultisell(false);
 				
@@ -184,11 +219,6 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			}
 			else if (_command.startsWith("item_"))
 			{
-				if (!activeChar.validateBypass(_command))
-				{
-					return;
-				}
-				
 				int endOfId = _command.indexOf('_', 5);
 				String id;
 				if (endOfId > 0)

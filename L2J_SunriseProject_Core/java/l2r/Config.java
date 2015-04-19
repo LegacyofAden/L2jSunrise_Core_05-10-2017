@@ -998,7 +998,7 @@ public final class Config
 	// Debug Settings
 	// --------------------------------------------------
 	public static boolean DEBUG;
-	public static boolean DEBUG_PLAYER_BYPASSES;
+	public static boolean HTML_ACTION_CACHE_DEBUG;
 	public static boolean DEBUG_POSSIBLE_ITEMS_DUPE;
 	public static boolean DEBUG_INSTANCES;
 	public static boolean DEBUG_SKILL_PARSING;
@@ -2500,7 +2500,7 @@ public final class Config
 			final PropertiesParser Debug = new PropertiesParser(DEBUG_CONFIG_FILE);
 			
 			DEBUG = Debug.getBoolean("Debug", false);
-			DEBUG_PLAYER_BYPASSES = Debug.getBoolean("DebugPlayerBypasses", false);
+			HTML_ACTION_CACHE_DEBUG = Debug.getBoolean("HtmlActionCacheDebug", false);
 			DEBUG_POSSIBLE_ITEMS_DUPE = Debug.getBoolean("DebugPossibleItemsDupe", false);
 			DEBUG_INSTANCES = Debug.getBoolean("InstanceDebug", false);
 			DEBUG_SKILL_PARSING = Debug.getBoolean("DebugSkillParsing", false);

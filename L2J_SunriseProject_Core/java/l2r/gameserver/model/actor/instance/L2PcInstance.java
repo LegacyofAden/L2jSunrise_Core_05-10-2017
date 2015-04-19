@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -84,6 +85,7 @@ import l2r.gameserver.data.xml.impl.RecipeData;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.data.xml.impl.SkillTreesData;
 import l2r.gameserver.enums.CtrlIntention;
+import l2r.gameserver.enums.HtmlActionScope;
 import l2r.gameserver.enums.IllegalActionPunishmentType;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.MessageType;
@@ -254,6 +256,7 @@ import l2r.gameserver.model.zone.type.L2BossZone;
 import l2r.gameserver.model.zone.type.L2NoRestartZone;
 import l2r.gameserver.network.L2GameClient;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.AbstractHtmlPacket;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.ChangeWaitType;
 import l2r.gameserver.network.serverpackets.CharInfo;
@@ -818,9 +821,17 @@ public final class L2PcInstance extends L2Playable
 	private ScheduledFuture<?> _taskRentPet;
 	private ScheduledFuture<?> _taskWater;
 	
+	/** Last Html Npcs, 0 = last html was not bound to an npc */
+	private final int[] _htmlActionOriginObjectIds = new int[HtmlActionScope.values().length];
+	/**
+	 * Origin of the last incoming html action request.<br>
+	 * This can be used for htmls continuing the conversation with an npc.
+	 */
+	private int _lastHtmlActionOriginObjId;
+	
 	/** Bypass validations */
-	private final List<String> _validBypass = new FastList<String>().shared();
-	private final List<String> _validBypass2 = new FastList<String>().shared();
+	@SuppressWarnings("unchecked")
+	private final LinkedList<String>[] _htmlActionCaches = new LinkedList[HtmlActionScope.values().length];
 	
 	private Forum _forumMail;
 	private Forum _forumMemo;
@@ -1149,6 +1160,11 @@ public final class L2PcInstance extends L2Playable
 		setInstanceType(InstanceType.L2PcInstance);
 		super.initCharStatusUpdateValues();
 		initPcStatusUpdateValues();
+		
+		for (int i = 0; i < _htmlActionCaches.length; ++i)
+		{
+			_htmlActionCaches[i] = new LinkedList<>();
+		}
 		
 		_accountName = accountName;
 		app.setOwner(this);
@@ -11654,64 +11670,72 @@ public final class L2PcInstance extends L2Playable
 		_snoopedPlayer.remove(pci);
 	}
 	
-	public void addBypass(String bypass)
+	public void addHtmlAction(HtmlActionScope scope, String action)
 	{
-		if (bypass == null)
-		{
-			return;
-		}
-		
-		_validBypass.add(bypass);
+		_htmlActionCaches[scope.ordinal()].add(action);
 	}
 	
-	public void addBypass2(String bypass)
+	public void clearHtmlActions(HtmlActionScope scope)
 	{
-		if (bypass == null)
-		{
-			return;
-		}
-		
-		_validBypass2.add(bypass);
+		_htmlActionCaches[scope.ordinal()].clear();
 	}
 	
-	public boolean validateBypass(String cmd)
+	public void setHtmlActionOriginObjectId(HtmlActionScope scope, int npcObjId)
 	{
-		if (!Config.BYPASS_VALIDATION)
+		if (npcObjId < 0)
 		{
-			return true;
+			throw new IllegalArgumentException();
 		}
 		
-		for (String bp : _validBypass)
+		_htmlActionOriginObjectIds[scope.ordinal()] = npcObjId;
+	}
+	
+	public int getLastHtmlActionOriginId()
+	{
+		return _lastHtmlActionOriginObjId;
+	}
+	
+	private boolean validateHtmlAction(Iterable<String> actionIter, String action)
+	{
+		for (String cachedAction : actionIter)
 		{
-			if (bp == null)
+			if (cachedAction.charAt(cachedAction.length() - 1) == AbstractHtmlPacket.VAR_PARAM_START_CHAR)
 			{
-				continue;
+				if (action.startsWith(cachedAction.substring(0, cachedAction.length() - 1).trim()))
+				{
+					return true;
+				}
 			}
-			
-			if (bp.equals(cmd))
+			else if (cachedAction.equals(action))
 			{
 				return true;
 			}
 		}
 		
-		for (String bp : _validBypass2)
-		{
-			if (bp == null)
-			{
-				continue;
-			}
-			
-			if (cmd.startsWith(bp))
-			{
-				return true;
-			}
-		}
-		
-		if (Config.DEBUG_PLAYER_BYPASSES)
-		{
-			_log.warn("[L2PcInstance] player [" + getName() + "] sent invalid bypass '" + cmd + "'.");
-		}
 		return false;
+	}
+	
+	/**
+	 * Check if the HTML action was sent in a HTML packet.<br>
+	 * If the HTML action was not sent for whatever reason, -1 is returned.<br>
+	 * Otherwise, the NPC object ID or 0 is returned.<br>
+	 * 0 means the HTML action was not bound to an NPC<br>
+	 * and no range checks need to be made.
+	 * @param action the HTML action to check
+	 * @return NPC object ID, 0 or -1
+	 */
+	public int validateHtmlAction(String action)
+	{
+		for (int i = 0; i < _htmlActionCaches.length; ++i)
+		{
+			if (validateHtmlAction(_htmlActionCaches[i], action))
+			{
+				_lastHtmlActionOriginObjId = _htmlActionOriginObjectIds[i];
+				return _lastHtmlActionOriginObjId;
+			}
+		}
+		
+		return -1;
 	}
 	
 	/**
@@ -11766,12 +11790,6 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		return true;
-	}
-	
-	public void clearBypass()
-	{
-		_validBypass.clear();
-		_validBypass2.clear();
 	}
 	
 	/**

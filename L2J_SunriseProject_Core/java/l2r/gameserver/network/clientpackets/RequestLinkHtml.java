@@ -19,8 +19,10 @@
 
 package l2r.gameserver.network.clientpackets;
 
+import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
+import l2r.gameserver.util.Util;
 
 /**
  * Lets drink to code!
@@ -46,23 +48,35 @@ public final class RequestLinkHtml extends L2GameClientPacket
 			return;
 		}
 		
+		if (_link.isEmpty())
+		{
+			_log.warn("Player " + actor.getName() + " sent empty html link!");
+			return;
+		}
+		
 		if (_link.contains("..") || !_link.contains(".htm"))
 		{
 			_log.warn("[RequestLinkHtml] hack? link contains prohibited characters: '" + _link + "', skipped");
 			return;
 		}
-		try
+		
+		int htmlObjectId = actor.validateHtmlAction("link " + _link);
+		if (htmlObjectId == -1)
 		{
-			String filename = "data/html/" + _link;
-			NpcHtmlMessage msg = new NpcHtmlMessage(0);
-			msg.disableValidation();
-			msg.setFile(actor.getHtmlPrefix(), filename);
-			sendPacket(msg);
+			_log.warn("Player " + actor.getName() + " sent non cached  html link: link " + _link);
+			return;
 		}
-		catch (Exception e)
+		
+		if ((htmlObjectId > 0) && !Util.isInsideRangeOfObjectId(actor, htmlObjectId, L2Npc.INTERACTION_DISTANCE))
 		{
-			_log.warn("Bad RequestLinkHtml: ", e);
+			// No logging here, this could be a common case
+			return;
 		}
+		
+		String filename = "data/html/" + _link;
+		final NpcHtmlMessage msg = new NpcHtmlMessage(htmlObjectId);
+		msg.setFile(actor.getHtmlPrefix(), filename);
+		sendPacket(msg);
 	}
 	
 	@Override

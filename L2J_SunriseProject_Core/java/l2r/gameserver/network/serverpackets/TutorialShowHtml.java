@@ -18,19 +18,40 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-public final class TutorialShowHtml extends L2GameServerPacket
+import l2r.gameserver.enums.HtmlActionScope;
+
+/**
+ * TutorialShowHtml server packet implementation.
+ * @author HorridoJoho
+ */
+public final class TutorialShowHtml extends AbstractHtmlPacket
 {
-	private final String _html;
-	
 	public TutorialShowHtml(String html)
 	{
-		_html = html;
+		super(html);
+	}
+	
+	/**
+	 * This constructor is just here to be able to show a tutorial html<br>
+	 * window bound to an npc.
+	 * @param npcObjId
+	 * @param html
+	 */
+	public TutorialShowHtml(int npcObjId, String html)
+	{
+		super(npcObjId, html);
 	}
 	
 	@Override
 	protected void writeImpl()
 	{
 		writeC(0xA6);
-		writeS(_html);
+		writeS(getHtml());
+	}
+	
+	@Override
+	public HtmlActionScope getScope()
+	{
+		return HtmlActionScope.TUTORIAL_HTML;
 	}
 }

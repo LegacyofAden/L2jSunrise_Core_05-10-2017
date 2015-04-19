@@ -16,31 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.network.serverpackets;
-
-import l2r.gameserver.enums.HtmlActionScope;
+package l2r.gameserver.enums;
 
 /**
- * TutorialCloseHtml server packet implementation.
  * @author HorridoJoho
  */
-public class TutorialCloseHtml extends L2GameServerPacket
+public enum HtmlActionScope
 {
-	public static final TutorialCloseHtml STATIC_PACKET = new TutorialCloseHtml();
-	
-	private TutorialCloseHtml()
-	{
-	}
-	
-	@Override
-	public void runImpl()
-	{
-		getClient().getActiveChar().clearHtmlActions(HtmlActionScope.TUTORIAL_HTML);
-	}
-	
-	@Override
-	protected void writeImpl()
-	{
-		writeC(0xa9);
-	}
+	NPC_HTML,
+	NPC_ITEM_HTML,
+	NPC_QUEST_HTML,
+	TUTORIAL_HTML,
+	COMM_BOARD_HTML
 }
