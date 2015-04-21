@@ -45,8 +45,8 @@ import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import l2r.gameserver.util.GMAudit;
 import l2r.gameserver.util.Util;
 import gr.sr.aioItem.AioItemNpcs;
-import gr.sr.configsEngine.configs.impl.AioBufferConfigs;
 import gr.sr.configsEngine.configs.impl.AioItemsConfigs;
+import gr.sr.configsEngine.configs.impl.BufferConfigs;
 import gr.sr.configsEngine.configs.impl.IndividualVoteSystemConfigs;
 import gr.sr.interf.SunriseEvents;
 import gr.sr.javaBuffer.buffItem.AioItemBuffer;
@@ -283,7 +283,7 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			}
 			else if (_command.startsWith("Aiobuff"))
 			{
-				if (AioBufferConfigs.ENABLE_AIO_BUFFER)
+				if (BufferConfigs.ENABLE_ITEM_BUFFER)
 				{
 					String sub = _command.substring(8);
 					AioItemBuffer.onBypassFeedback(activeChar, sub);

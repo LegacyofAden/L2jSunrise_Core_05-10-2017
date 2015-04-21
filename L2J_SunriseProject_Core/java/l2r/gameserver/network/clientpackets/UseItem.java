@@ -47,6 +47,7 @@ import l2r.gameserver.network.serverpackets.ExUseSharedGroupItem;
 import l2r.gameserver.network.serverpackets.ItemList;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Util;
+import gr.sr.configsEngine.configs.impl.SecuritySystemConfigs;
 import gr.sr.interf.SunriseEvents;
 
 /**
@@ -222,7 +223,7 @@ public final class UseItem extends L2GameClientPacket
 		if (item.isEquipable())
 		{
 			// over enchanted item precaution
-			if (!activeChar.isGM() && (item.getEnchantLevel() > Config.MAX_ENCHANT_LEVEL) && (Config.MAX_ENCHANT_LEVEL > 0))
+			if (!activeChar.isGM() && (item.getEnchantLevel() > SecuritySystemConfigs.MAX_ENCHANT_LEVEL) && (SecuritySystemConfigs.MAX_ENCHANT_LEVEL > 0))
 			{
 				activeChar.sendMessage("You will be kicked for using overenchanted item!");
 				Util.handleIllegalPlayerAction(activeChar, "Player " + activeChar.getName() + " has overenchanted item.", Config.DEFAULT_PUNISH);

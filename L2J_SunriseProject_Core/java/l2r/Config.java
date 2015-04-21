@@ -1045,7 +1045,6 @@ public final class Config
 	public static IdFactoryType IDFACTORY_TYPE;
 	public static boolean BAD_ID_CHECKING;
 	
-	public static int MAX_ENCHANT_LEVEL;
 	public static double ENCHANT_CHANCE_ELEMENT_STONE;
 	public static double ENCHANT_CHANCE_ELEMENT_CRYSTAL;
 	public static double ENCHANT_CHANCE_ELEMENT_JEWEL;
@@ -1640,7 +1639,6 @@ public final class Config
 			WAREHOUSE_SLOTS_CLAN = Character.getInt("MaximumWarehouseSlotsForClan", 150);
 			ALT_FREIGHT_SLOTS = Character.getInt("MaximumFreightSlots", 200);
 			ALT_FREIGHT_PRICE = Character.getInt("FreightPrice", 1000);
-			MAX_ENCHANT_LEVEL = Character.getInt("MaxEnchantLevel", 0);
 			ENCHANT_CHANCE_ELEMENT_STONE = Character.getDouble("EnchantChanceElementStone", 50);
 			ENCHANT_CHANCE_ELEMENT_CRYSTAL = Character.getDouble("EnchantChanceElementCrystal", 30);
 			ENCHANT_CHANCE_ELEMENT_JEWEL = Character.getDouble("EnchantChanceElementJewel", 20);

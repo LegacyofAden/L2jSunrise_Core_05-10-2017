@@ -42,7 +42,6 @@ public class CharSelectionInfo extends L2GameServerPacket
 	private static Logger _log = LoggerFactory.getLogger(CharSelectionInfo.class);
 	private final String _loginName;
 	private final int _sessionId;
-	private int _activeId;
 	private final CharSelectInfoPackage[] _characterPackages;
 	
 	/**
@@ -55,15 +54,6 @@ public class CharSelectionInfo extends L2GameServerPacket
 		_sessionId = sessionId;
 		_loginName = loginName;
 		_characterPackages = loadCharacterSelectInfo(_loginName);
-		_activeId = -1;
-	}
-	
-	public CharSelectionInfo(String loginName, int sessionId, int activeId)
-	{
-		_sessionId = sessionId;
-		_loginName = loginName;
-		_characterPackages = loadCharacterSelectInfo(_loginName);
-		_activeId = activeId;
 	}
 	
 	public CharSelectInfoPackage[] getCharInfo()
@@ -82,17 +72,14 @@ public class CharSelectionInfo extends L2GameServerPacket
 		writeD(Config.MAX_CHARACTERS_NUMBER_PER_ACCOUNT);
 		writeC(0x00);
 		
-		long lastAccess = 0L;
-		
-		if (_activeId == -1)
+		long lastAccess = -1L;
+		int lastUsed = -1;
+		for (int i = 0; i < size; i++)
 		{
-			for (int i = 0; i < size; i++)
+			if (lastAccess < _characterPackages[i].getLastAccess())
 			{
-				if (lastAccess < _characterPackages[i].getLastAccess())
-				{
-					lastAccess = _characterPackages[i].getLastAccess();
-					_activeId = i;
-				}
+				lastAccess = _characterPackages[i].getLastAccess();
+				lastUsed = i;
 			}
 		}
 		
@@ -190,7 +177,7 @@ public class CharSelectionInfo extends L2GameServerPacket
 			// delete .. if != 0
 			// then char is inactive
 			writeD(charInfoPackage.getClassId());
-			writeD(i == _activeId ? 0x01 : 0x00); // c3 auto-select char
+			writeD(i == lastUsed ? 1 : 0); // c3 auto-select char
 			
 			writeC(charInfoPackage.getEnchantEffect() > 127 ? 127 : charInfoPackage.getEnchantEffect());
 			writeH(0x00);
