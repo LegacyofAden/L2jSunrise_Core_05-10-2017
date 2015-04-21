@@ -449,7 +449,7 @@ public class Hero
 		final List<StatsSet> mainList = HERO_DIARY.get(charid);
 		if (mainList != null)
 		{
-			final NpcHtmlMessage diaryReply = new NpcHtmlMessage(5);
+			final NpcHtmlMessage diaryReply = new NpcHtmlMessage();
 			final String htmContent = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/olympiad/herodiary.htm");
 			final String heroMessage = HERO_MESSAGE.get(charid);
 			if ((htmContent != null) && (heroMessage != null))
@@ -535,7 +535,7 @@ public class Hero
 		final List<StatsSet> heroFights = HERO_FIGHTS.get(charid);
 		if (heroFights != null)
 		{
-			final NpcHtmlMessage FightReply = new NpcHtmlMessage(5);
+			final NpcHtmlMessage FightReply = new NpcHtmlMessage();
 			final String htmContent = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/olympiad/herohistory.htm");
 			if (htmContent != null)
 			{

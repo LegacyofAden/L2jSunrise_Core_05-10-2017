@@ -300,7 +300,7 @@ public class L2DonateManagerInstance extends L2Npc
 		// Donate generate captcha code
 		else if (command.startsWith("donateFormMain"))
 		{
-			NpcHtmlMessage playerReply = new NpcHtmlMessage(5);
+			NpcHtmlMessage playerReply = new NpcHtmlMessage();
 			
 			// Random image file name
 			int imgId = IdFactory.getInstance().getNextId();

@@ -47,7 +47,7 @@ public class GenerateHtmls
 	 */
 	public static void sendPacket(L2PcInstance player, String html)
 	{
-		NpcHtmlMessage msg = new NpcHtmlMessage(5);
+		NpcHtmlMessage msg = new NpcHtmlMessage();
 		msg.setFile(player.getHtmlPrefix(), "/data/html/sunrise/AioItemNpcs/" + html);
 		player.sendPacket(msg);
 	}
@@ -58,7 +58,7 @@ public class GenerateHtmls
 	 */
 	public static final void showRbInfo(L2PcInstance player)
 	{
-		NpcHtmlMessage html = new NpcHtmlMessage(5);
+		NpcHtmlMessage html = new NpcHtmlMessage();
 		StringBuilder tb = new StringBuilder();
 		tb.append("<html><title>Rb Info</title><body>");
 		tb.append("<br><br>");
@@ -113,7 +113,7 @@ public class GenerateHtmls
 		tb.append("<button value=\"Help\" action=\"bypass -h Aioitem_showAchievementHelp\" width=160 height=32 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\">");
 		tb.append("<br><br><img src=\"L2UI.SquareWhite\" width=\"280\" height=\"1\">");
 		tb.append("<td><button value=\"Back\" action=\"bypass -h Aioitem_Chat_service/services.htm\" width=90 height=21 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></td>");
-		NpcHtmlMessage msg = new NpcHtmlMessage(5);
+		NpcHtmlMessage msg = new NpcHtmlMessage();
 		msg.setHtml(tb.toString());
 		
 		player.sendPacket(msg);
@@ -153,7 +153,7 @@ public class GenerateHtmls
 			tb.append("<center><button value=\"Back\" action=\"bypass -h Aioitem_showAchievementMain\" width=160 height=32 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></center>");
 		}
 		
-		NpcHtmlMessage msg = new NpcHtmlMessage(5);
+		NpcHtmlMessage msg = new NpcHtmlMessage();
 		msg.setHtml(tb.toString());
 		
 		player.sendPacket(msg);
@@ -193,7 +193,7 @@ public class GenerateHtmls
 		tb.append("<br><img src=\"l2ui.squaregray\" width=\"270\" height=\"1s\"><br>");
 		tb.append("<center><button value=\"Back\" action=\"bypass -h Aioitem_showMyAchievements\" width=160 height=32 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></center>");
 		
-		NpcHtmlMessage msg = new NpcHtmlMessage(5);
+		NpcHtmlMessage msg = new NpcHtmlMessage();
 		msg.setHtml(tb.toString());
 		
 		player.sendPacket(msg);
@@ -218,7 +218,7 @@ public class GenerateHtmls
 		tb.append("<br><img src=\"l2ui.squaregray\" width=\"270\" height=\"1s\"><br>");
 		tb.append("<center><button value=\"Back\" action=\"bypass -h Aioitem_showAchievementMain\" width=160 height=32 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></center>");
 		
-		NpcHtmlMessage msg = new NpcHtmlMessage(5);
+		NpcHtmlMessage msg = new NpcHtmlMessage();
 		msg.setHtml(tb.toString());
 		
 		player.sendPacket(msg);
@@ -244,7 +244,7 @@ public class GenerateHtmls
 		tb.append("<br><img src=\"l2ui.squaregray\" width=\"270\" height=\"1s\"><br>");
 		tb.append("<center><button value=\"Back\" action=\"bypass -h Aioitem_showAchievementMain\" width=160 height=32 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></center>");
 		
-		NpcHtmlMessage msg = new NpcHtmlMessage(5);
+		NpcHtmlMessage msg = new NpcHtmlMessage();
 		msg.setHtml(tb.toString());
 		
 		player.sendPacket(msg);
@@ -315,7 +315,7 @@ public class GenerateHtmls
 	 */
 	public static void showTopFa(L2PcInstance player)
 	{
-		NpcHtmlMessage html = new NpcHtmlMessage(5);
+		NpcHtmlMessage html = new NpcHtmlMessage();
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top Fa</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
@@ -350,7 +350,7 @@ public class GenerateHtmls
 	 */
 	public static void showTopPvp(L2PcInstance player)
 	{
-		NpcHtmlMessage html = new NpcHtmlMessage(5);
+		NpcHtmlMessage html = new NpcHtmlMessage();
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top PvP</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
@@ -386,7 +386,7 @@ public class GenerateHtmls
 	 */
 	public static void showTopPk(L2PcInstance player)
 	{
-		NpcHtmlMessage html = new NpcHtmlMessage(5);
+		NpcHtmlMessage html = new NpcHtmlMessage();
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top Pk</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
@@ -422,7 +422,7 @@ public class GenerateHtmls
 	 */
 	public static void showTopClan(L2PcInstance player)
 	{
-		NpcHtmlMessage html = new NpcHtmlMessage(5);
+		NpcHtmlMessage html = new NpcHtmlMessage();
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><title>Top Clan</title><body><center><br>");
 		sb.append("<table border=1 width = 280>");
