@@ -15444,6 +15444,11 @@ public final class L2PcInstance extends L2Playable
 	
 	public boolean isFriend(L2PcInstance target)
 	{
+		return isFriend(target, false);
+	}
+	
+	public boolean isFriend(L2PcInstance target, boolean onlyAllyMembers)
+	{
 		if (target == this)
 		{
 			return true;
@@ -15498,6 +15503,16 @@ public final class L2PcInstance extends L2Playable
 				}
 				return false;
 			}
+		}
+		
+		if (onlyAllyMembers)
+		{
+			if (isInSameParty(target) || isInSameChannel(target) || isInSameClan(target) || isInSameAlly(target))
+			{
+				return true;
+			}
+			
+			return false;
 		}
 		
 		if ((target.getPvpFlag() > 0) || (target.getKarma() > 0))
