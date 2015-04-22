@@ -691,7 +691,7 @@ public final class SystemMessageId
 	
 	/**
 	 * ID: 110<br>
-	 * Message: $s1 $s2's effect can be felt.
+	 * Message: $s1's effect can be felt.
 	 */
 	public static final SystemMessageId YOU_FEEL_S1_EFFECT;
 	
@@ -895,7 +895,7 @@ public final class SystemMessageId
 	
 	/**
 	 * ID: 144<br>
-	 * Message: That is the incorrect target.
+	 * Message: That is an incorrect target.
 	 */
 	public static final SystemMessageId TARGET_IS_INCORRECT;
 	
@@ -4336,7 +4336,7 @@ public final class SystemMessageId
 	 * ID: 749<br>
 	 * Message: The effect of $s1 has been removed.
 	 */
-	public static final SystemMessageId EFFECT_S1_DISAPPEARED;
+	public static final SystemMessageId EFFECT_S1_HAS_BEEN_REMOVED;
 	
 	/**
 	 * ID: 750<br>
@@ -8842,7 +8842,7 @@ public final class SystemMessageId
 	 * ID: 1510<br>
 	 * Message: $c1 is making an attempt at resurrection with $s2 experience points. Do you want to be resurrected?
 	 */
-	public static final SystemMessageId RESSURECTION_REQUEST_BY_C1_FOR_S2_XP;
+	public static final SystemMessageId RESURRECTION_REQUEST_BY_C1_FOR_S2_XP;
 	
 	/**
 	 * ID: 1511<br>
@@ -12324,7 +12324,7 @@ public final class SystemMessageId
 	 * ID: 2097<br>
 	 * Message: $c1's level requirement is not sufficient and cannot be entered.
 	 */
-	public static final SystemMessageId C1_S_LEVEL_DOES_NOT_CORRESPOND_TO_THE_REQUIREMENTS_FOR_ENTRY;
+	public static final SystemMessageId C1_S_LEVEL_REQUIREMENT_IS_NOT_SUFFICIENT_AND_CANNOT_BE_ENTERED;
 	
 	/**
 	 * ID: 2098<br>
@@ -12336,7 +12336,7 @@ public final class SystemMessageId
 	 * ID: 2099<br>
 	 * Message: $c1's item requirement is not sufficient and cannot be entered.
 	 */
-	public static final SystemMessageId C1_S_ITEM_REQUIREMENT_IS_NOT_SUFFICIENT_AND_CANNOT_BE_ENTERED;
+	public static final SystemMessageId C1_ITEM_REQUIREMENT_NOT_SUFFICIENT;
 	
 	/**
 	 * ID: 2100<br>
@@ -12348,19 +12348,19 @@ public final class SystemMessageId
 	 * ID: 2101<br>
 	 * Message: You are not currently in a party, so you cannot enter.
 	 */
-	public static final SystemMessageId YOU_ARE_NOT_CURRENTLY_IN_A_PARTY_SO_YOU_CANNOT_ENTER;
+	public static final SystemMessageId NOT_IN_PARTY_CANT_ENTER;
 	
 	/**
 	 * ID: 2102<br>
 	 * Message: You cannot enter due to the party having exceeded the limit.
 	 */
-	public static final SystemMessageId YOU_CANNOT_ENTER_DUE_TO_THE_PARTY_HAVING_EXCEEDED_THE_LIMIT;
+	public static final SystemMessageId PARTY_EXCEEDED_THE_LIMIT_CANT_ENTER;
 	
 	/**
 	 * ID: 2103<br>
 	 * Message: You cannot enter because you are not associated with the current command channel.
 	 */
-	public static final SystemMessageId YOU_CANNOT_ENTER_BECAUSE_YOU_ARE_NOT_ASSOCIATED_WITH_THE_CURRENT_COMMAND_CHANNEL;
+	public static final SystemMessageId NOT_IN_COMMAND_CHANNEL_CANT_ENTER;
 	
 	/**
 	 * ID: 2104<br>
@@ -12852,7 +12852,7 @@ public final class SystemMessageId
 	 * ID: 2185<br>
 	 * Message: Only a party leader can try to enter.
 	 */
-	public static final SystemMessageId ONLY_A_PARTY_LEADER_CAN_MAKE_THE_REQUEST_TO_ENTER;
+	public static final SystemMessageId ONLY_PARTY_LEADER_CAN_ENTER;
 	
 	/**
 	 * ID: 2186<br>
@@ -13697,12 +13697,6 @@ public final class SystemMessageId
 	public static final SystemMessageId YOU_CANNOT_RECEIVE_A_VITAMIN_ITEM_DURING_AN_EXCHANGE;
 	
 	/**
-	 * ID: 2389<br>
-	 * Message: The maximum accumulation allowed of PC cafe points has been exceeded. You can no longer acquire PC cafe points.
-	 */
-	public static final SystemMessageId THE_MAXMIMUM_ACCUMULATION_ALLOWED_OF_PC_CAFE_POINTS_HAS_BEEN_EXCEEDED;
-	
-	/**
 	 * ID: 2377<br>
 	 * Message: You cannot report a character who is in a peace zone or a battlefield
 	 */
@@ -13743,6 +13737,12 @@ public final class SystemMessageId
 	 * Message: You cannot report this person again at this time
 	 */
 	public static final SystemMessageId YOU_CANNOT_REPORT_CHAR_AT_THIS_TIME_4;
+	
+	/**
+	 * ID: 2389<br>
+	 * Message: The maximum accumulation allowed of PC cafe points has been exceeded. You can no longer acquire PC cafe points.
+	 */
+	public static final SystemMessageId THE_MAXMIMUM_ACCUMULATION_ALLOWED_OF_PC_CAFE_POINTS_HAS_BEEN_EXCEEDED;
 	
 	/**
 	 * ID: 2390<br>
@@ -14174,7 +14174,7 @@ public final class SystemMessageId
 	 * ID: 2720<br>
 	 * Message: Instant zone from here: $s1's entry has been restricted.
 	 */
-	public static final SystemMessageId INSTANT_ZONE_S1_S_ENTRY_HAS_BEEN_RESTRICTED_YOU_CAN_CHECK_THE_NEXT_POSSIBLE_ENTRY_TIME_BY_USING_THE_COMMAND_INSTANCEZONE;
+	public static final SystemMessageId INSTANT_ZONE_FROM_HERE_S1_S_ENTRY_HAS_BEEN_RESTRICTED;
 	
 	/**
 	 * ID: 2721<br>
@@ -14749,7 +14749,7 @@ public final class SystemMessageId
 	 * ID: 3033<br>
 	 * Message: By using the invisible skill, sneak into the Dawn's document storage!
 	 */
-	public static final SystemMessageId BY_USING_THE_INVISIBLE_SKILL_SNEAK_INTO_THE_DAWN_S_DOCUMENT_STORAGE;
+	public static final SystemMessageId SNEAK_INTO_DAWNS_DOCUMENT_STORAGE;
 	
 	/**
 	 * ID: 3034<br>
@@ -14761,13 +14761,13 @@ public final class SystemMessageId
 	 * ID: 3037<br>
 	 * Message: Male guards can detect the concealment but the female guards cannot.
 	 */
-	public static final SystemMessageId MALE_GUARDS_CAN_DETECT_THE_CONCEALMENT_BUT_THE_FEMALE_GUARDS_CANNOT;
+	public static final SystemMessageId MALE_GUARDS_CAN_DETECT_FEMALES_DONT;
 	
 	/**
 	 * ID: 3038<br>
 	 * Message: Female guards notice the disguises from far away better than the male guards do, so beware.
 	 */
-	public static final SystemMessageId FEMALE_GUARDS_NOTICE_THE_DISGUISES_FROM_FAR_AWAY_BETTER_THAN_THE_MALE_GUARDS_DO_SO_BEWARE;
+	public static final SystemMessageId FEMALE_GUARDS_NOTICE_BETTER_THAN_MALE;
 	
 	/**
 	 * ID: 3039<br>
@@ -14791,7 +14791,7 @@ public final class SystemMessageId
 	 * ID: 3060<br>
 	 * Message: The sealing device glitters and moves. Activation complete normally!
 	 */
-	public static final SystemMessageId THE_SEALING_DEVICE_GLITTERS_AND_MOVES_ACTIVATION_COMPLETE_NORMALLY;
+	public static final SystemMessageId THE_SEALING_DEVICE_ACTIVATION_COMPLETE;
 	
 	/**
 	 * ID: 3062<br>
@@ -15271,12 +15271,6 @@ public final class SystemMessageId
 	 * Message: You cannot mount a Steed while holding a flag!
 	 */
 	public static SystemMessageId YOU_CANNOT_MOUNT_A_STEED_WHILE_HOLDING_A_FLAG = null;
-	
-	/**
-	 * ID: 6510<br>
-	 * Message: Chaotic Zone
-	 */
-	public static final SystemMessageId CHAOTIC_ZONE;
 	
 	/**
 	 * Map containing all SystemMessageIds<br>
@@ -15994,7 +15988,7 @@ public final class SystemMessageId
 		YOU_ARE_NOT_IN_PETITION_CHAT = new SystemMessageId(745);
 		CURRENTLY_NO_PETITION = new SystemMessageId(746);
 		DIST_TOO_FAR_CASTING_STOPPED = new SystemMessageId(748);
-		EFFECT_S1_DISAPPEARED = new SystemMessageId(749);
+		EFFECT_S1_HAS_BEEN_REMOVED = new SystemMessageId(749);
 		NO_MORE_SKILLS_TO_LEARN = new SystemMessageId(750);
 		CANNOT_INVITE_CONFLICT_CLAN = new SystemMessageId(751);
 		CANNOT_USE_NAME = new SystemMessageId(752);
@@ -16745,7 +16739,7 @@ public final class SystemMessageId
 		THIS_ITEM_CANT_BE_EQUIPPED_FOR_THE_OLYMPIAD_EVENT = new SystemMessageId(1507);
 		THIS_ITEM_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT = new SystemMessageId(1508);
 		THIS_SKILL_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT = new SystemMessageId(1509);
-		RESSURECTION_REQUEST_BY_C1_FOR_S2_XP = new SystemMessageId(1510);
+		RESURRECTION_REQUEST_BY_C1_FOR_S2_XP = new SystemMessageId(1510);
 		MASTER_CANNOT_RES = new SystemMessageId(1511);
 		CANNOT_RES_PET = new SystemMessageId(1512);
 		RES_HAS_ALREADY_BEEN_PROPOSED = new SystemMessageId(1513);
@@ -17325,13 +17319,13 @@ public final class SystemMessageId
 		ANOTHER_USER_PURCHASING_TRY_AGAIN_LATER = new SystemMessageId(2094);
 		ACCOUNT_CANNOT_SHOUT = new SystemMessageId(2095);
 		C1_IS_IN_A_LOCATION_WHICH_CANNOT_BE_ENTERED_THEREFORE_IT_CANNOT_BE_PROCESSED = new SystemMessageId(2096);
-		C1_S_LEVEL_DOES_NOT_CORRESPOND_TO_THE_REQUIREMENTS_FOR_ENTRY = new SystemMessageId(2097);
+		C1_S_LEVEL_REQUIREMENT_IS_NOT_SUFFICIENT_AND_CANNOT_BE_ENTERED = new SystemMessageId(2097);
 		C1_S_QUEST_REQUIREMENT_IS_NOT_SUFFICIENT_AND_CANNOT_BE_ENTERED = new SystemMessageId(2098);
-		C1_S_ITEM_REQUIREMENT_IS_NOT_SUFFICIENT_AND_CANNOT_BE_ENTERED = new SystemMessageId(2099);
+		C1_ITEM_REQUIREMENT_NOT_SUFFICIENT = new SystemMessageId(2099);
 		C1_MAY_NOT_RE_ENTER_YET = new SystemMessageId(2100);
-		YOU_ARE_NOT_CURRENTLY_IN_A_PARTY_SO_YOU_CANNOT_ENTER = new SystemMessageId(2101);
-		YOU_CANNOT_ENTER_DUE_TO_THE_PARTY_HAVING_EXCEEDED_THE_LIMIT = new SystemMessageId(2102);
-		YOU_CANNOT_ENTER_BECAUSE_YOU_ARE_NOT_ASSOCIATED_WITH_THE_CURRENT_COMMAND_CHANNEL = new SystemMessageId(2103);
+		NOT_IN_PARTY_CANT_ENTER = new SystemMessageId(2101);
+		PARTY_EXCEEDED_THE_LIMIT_CANT_ENTER = new SystemMessageId(2102);
+		NOT_IN_COMMAND_CHANNEL_CANT_ENTER = new SystemMessageId(2103);
 		MAXIMUM_INSTANCE_ZONE_NUMBER_EXCEEDED_CANT_ENTER = new SystemMessageId(2104);
 		YOU_HAVE_ENTERED_ANOTHER_INSTANT_ZONE_THEREFORE_YOU_CANNOT_ENTER_CORRESPONDING_DUNGEON = new SystemMessageId(2105);
 		DUNGEON_EXPIRES_IN_S1_MINUTES = new SystemMessageId(2106);
@@ -17413,7 +17407,7 @@ public final class SystemMessageId
 		CANT_POLYMORPH_ON_BOAT = new SystemMessageId(2182);
 		THE_FORTRESS_BATTLE_OF_S1_HAS_FINISHED = new SystemMessageId(2183);
 		S1_CLAN_IS_VICTORIOUS_IN_THE_FORTRESS_BATTLE_OF_S2 = new SystemMessageId(2184);
-		ONLY_A_PARTY_LEADER_CAN_MAKE_THE_REQUEST_TO_ENTER = new SystemMessageId(2185);
+		ONLY_PARTY_LEADER_CAN_ENTER = new SystemMessageId(2185);
 		SOUL_CANNOT_BE_ABSORBED_ANYMORE = new SystemMessageId(2186);
 		THE_TARGET_IS_LOCATED_WHERE_YOU_CANNOT_CHARGE = new SystemMessageId(2187);
 		ENCHANTMENT_ALREADY_IN_PROGRESS = new SystemMessageId(2188);
@@ -17629,7 +17623,7 @@ public final class SystemMessageId
 		LOC_IN_SEED_INFINITY_S1_S2_S3 = new SystemMessageId(2711);
 		LOC_OUT_SEED_INFINITY_S1_S2_S3 = new SystemMessageId(2712);
 		LOC_CLEFT_S1_S2_S3 = new SystemMessageId(2716);
-		INSTANT_ZONE_S1_S_ENTRY_HAS_BEEN_RESTRICTED_YOU_CAN_CHECK_THE_NEXT_POSSIBLE_ENTRY_TIME_BY_USING_THE_COMMAND_INSTANCEZONE = new SystemMessageId(2720);
+		INSTANT_ZONE_FROM_HERE_S1_S_ENTRY_HAS_BEEN_RESTRICTED = new SystemMessageId(2720);
 		TOO_HIGH_TO_PERFORM_THIS_ACTION = new SystemMessageId(2721);
 		ANOTHER_AIRSHIP_ALREADY_SUMMONED = new SystemMessageId(2722);
 		YOU_CANNOT_BOARD_NOT_MEET_REQUEIREMENTS = new SystemMessageId(2727);
@@ -17725,14 +17719,14 @@ public final class SystemMessageId
 		S1_RETURNED_MAIL = new SystemMessageId(3029);
 		YOU_CANT_CANCEL_RECEIVED_MAIL = new SystemMessageId(3030);
 		BY_USING_THE_SKILL_OF_EINHASAD_S_HOLY_SWORD_DEFEAT_THE_EVIL_LILIMS = new SystemMessageId(3031);
-		BY_USING_THE_INVISIBLE_SKILL_SNEAK_INTO_THE_DAWN_S_DOCUMENT_STORAGE = new SystemMessageId(3033);
+		SNEAK_INTO_DAWNS_DOCUMENT_STORAGE = new SystemMessageId(3033);
 		DOOR_IS_ENTRANCE_APPROACH_DEVICE = new SystemMessageId(3034);
-		MALE_GUARDS_CAN_DETECT_THE_CONCEALMENT_BUT_THE_FEMALE_GUARDS_CANNOT = new SystemMessageId(3037);
-		FEMALE_GUARDS_NOTICE_THE_DISGUISES_FROM_FAR_AWAY_BETTER_THAN_THE_MALE_GUARDS_DO_SO_BEWARE = new SystemMessageId(3038);
+		MALE_GUARDS_CAN_DETECT_FEMALES_DONT = new SystemMessageId(3037);
+		FEMALE_GUARDS_NOTICE_BETTER_THAN_MALE = new SystemMessageId(3038);
 		USING_EINHASAD_HOLY_WATER_TO_OPEN_DOOR = new SystemMessageId(3039);
 		USING_COURT_MAGICIANS_STAFF_TO_OPEN_DOOR = new SystemMessageId(3040);
 		S1_NOT_RECEIVE_DURING_WAITING_TIME_MAIL_RETURNED = new SystemMessageId(3059);
-		THE_SEALING_DEVICE_GLITTERS_AND_MOVES_ACTIVATION_COMPLETE_NORMALLY = new SystemMessageId(3060);
+		THE_SEALING_DEVICE_ACTIVATION_COMPLETE = new SystemMessageId(3060);
 		DO_YOU_WANT_TO_PAY_S1_ADENA = new SystemMessageId(3062);
 		DO_YOU_WANT_TO_FORWARD = new SystemMessageId(3063);
 		UNREAD_MAIL = new SystemMessageId(3064);
@@ -17813,7 +17807,6 @@ public final class SystemMessageId
 		THOMAS_D_TURKEY_DEFETED = new SystemMessageId(6504);
 		THOMAS_D_TURKEY_DISAPPEARED = new SystemMessageId(6505);
 		YOU_CANNOT_MOUNT_A_STEED_WHILE_HOLDING_A_FLAG = new SystemMessageId(6506);
-		CHAOTIC_ZONE = new SystemMessageId(6510);
 		
 		buildFastLookupTable();
 	}

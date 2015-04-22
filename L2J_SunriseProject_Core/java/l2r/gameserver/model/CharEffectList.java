@@ -850,7 +850,7 @@ public class CharEffectList
 			}
 			else
 			{
-				sm = SystemMessage.getSystemMessage(SystemMessageId.EFFECT_S1_DISAPPEARED);
+				sm = SystemMessage.getSystemMessage(SystemMessageId.EFFECT_S1_HAS_BEEN_REMOVED);
 			}
 			sm.addSkillName(effect);
 			_owner.sendPacket(sm);

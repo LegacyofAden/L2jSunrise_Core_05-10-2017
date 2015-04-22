@@ -11360,7 +11360,7 @@ public final class L2PcInstance extends L2Playable
 				sendPacket(dlg);
 				return;
 			}
-			ConfirmDlg dlg = new ConfirmDlg(SystemMessageId.RESSURECTION_REQUEST_BY_C1_FOR_S2_XP.getId());
+			ConfirmDlg dlg = new ConfirmDlg(SystemMessageId.RESURRECTION_REQUEST_BY_C1_FOR_S2_XP.getId());
 			dlg.addPcName(reviver);
 			dlg.addString(Integer.toString(restoreExp));
 			sendPacket(dlg);
