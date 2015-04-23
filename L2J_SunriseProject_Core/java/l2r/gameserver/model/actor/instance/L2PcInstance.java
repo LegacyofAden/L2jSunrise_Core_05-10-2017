@@ -9564,65 +9564,26 @@ public final class L2PcInstance extends L2Playable
 				return false;
 			}
 			
-			// final boolean isCtrlPressed = (getCurrentSkill() != null) && getCurrentSkill().isCtrlPressed();
-			final boolean isInsideSiegeZone = isInsideZone(ZoneIdType.SIEGE);
 			if (targetPlayer != null)
 			{
-				if (isInDuel())
-				{
-					if (!targetPlayer.isInDuel())
-					{
-						return false;
-					}
-					
-					if ((getDuelId() != 0) && (getDuelId() == targetPlayer.getDuelId()))
-					{
-						return true;
-					}
-				}
-				
-				if (isInOlympiadMode())
-				{
-					if (!targetPlayer.isInOlympiadMode())
-					{
-						return false;
-					}
-					
-					// vGodfather fix
-					if (((getOlympiadGameId() + 1) != 0) && (getOlympiadGameId() == targetPlayer.getOlympiadGameId()))
-					{
-						return true;
-					}
-				}
-				
-				if (targetPlayer.isInOlympiadMode())
-				{
-					return false;
-				}
-				
 				if (targetPlayer.isInsideZone(ZoneIdType.PEACE))
 				{
 					return false;
 				}
 				
-				// On retail, you can't debuff party members at all unless you're in duel.
+				// Duel
+				if (isInDuel() && targetPlayer.isInDuel())
+				{
+					if (getDuelId() == targetPlayer.getDuelId())
+					{
+						return true;
+					}
+				}
+				
+				// Party
 				if (isInSameParty(targetPlayer) || isInSameChannel(targetPlayer))
 				{
 					return false;
-				}
-				
-				// During Fortress/Castle Sieges, they can't debuff eachothers if they are in the same side.
-				if (isInsideSiegeZone && isInSiege() && (getSiegeState() != 0) && (targetPlayer.getSiegeState() != 0))
-				{
-					final Siege siege = SiegeManager.getInstance().getSiege(getX(), getY(), getZ());
-					if (siege != null)
-					{
-						if ((siege.checkIsDefender(getClan()) && siege.checkIsDefender(targetPlayer.getClan())) || (siege.checkIsAttacker(getClan()) && siege.checkIsAttacker(targetPlayer.getClan())))
-						{
-							sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS));
-							return false;
-						}
-					}
 				}
 				
 				// You can debuff anyone except party members while in an arena...
@@ -9636,23 +9597,38 @@ public final class L2PcInstance extends L2Playable
 					return true;
 				}
 				
-				final L2Clan aClan = getClan();
-				final L2Clan tClan = targetPlayer.getClan();
-				
-				if ((aClan != null) && (tClan != null))
+				// Olympiad
+				if (isInOlympiadMode() && targetPlayer.isInOlympiadMode())
 				{
-					if (aClan.isAtWarWith(tClan.getId()) && tClan.isAtWarWith(aClan.getId()))
+					if (getOlympiadGameId() == targetPlayer.getOlympiadGameId())
 					{
 						return true;
 					}
 				}
 				
-				if ((getClanId() != 0) && (getClanId() == targetPlayer.getClanId()))
+				// Siege
+				final boolean isInsideSiegeZone = isInsideZone(ZoneIdType.SIEGE);
+				if (isInsideSiegeZone && isInSiege() && (getSiegeState() != 0) && (targetPlayer.getSiegeState() != 0))
 				{
-					return false;
+					final Siege siege = SiegeManager.getInstance().getSiege(getX(), getY(), getZ());
+					if (siege != null)
+					{
+						if ((siege.checkIsDefender(getClan()) && siege.checkIsDefender(targetPlayer.getClan())) || (siege.checkIsAttacker(getClan()) && siege.checkIsAttacker(targetPlayer.getClan())))
+						{
+							sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS));
+							return false;
+						}
+					}
 				}
 				
-				if ((getAllyId() != 0) && (getAllyId() == targetPlayer.getAllyId()))
+				// Two side war
+				if (isInTwoSidedWar(targetPlayer))
+				{
+					return true;
+				}
+				
+				// Ally
+				if (isInSameClan(targetPlayer) || isInSameAlly(targetPlayer))
 				{
 					return false;
 				}
@@ -15444,54 +15420,43 @@ public final class L2PcInstance extends L2Playable
 	
 	public boolean isFriend(L2PcInstance target)
 	{
-		return isFriend(target, false);
-	}
-	
-	public boolean isFriend(L2PcInstance target, boolean onlyAllyMembers)
-	{
 		if (target == this)
 		{
 			return true;
 		}
 		
-		final boolean isInsideSiegeZone = isInsideZone(ZoneIdType.SIEGE);
-		
+		// Duel
 		if (isInDuel() && target.isInDuel())
 		{
-			if ((getDuelId() != 0) && (getDuelId() == target.getDuelId()))
+			if (getDuelId() == target.getDuelId())
 			{
 				return false;
 			}
 		}
 		
+		// Party
 		if (isInSameParty(target) || isInSameChannel(target))
 		{
 			return true;
 		}
 		
+		// You can debuff anyone except party members while in an arena...
+		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP))
+		{
+			return false;
+		}
+		
+		// Olympiad
 		if (isInOlympiadMode() && target.isInOlympiadMode())
 		{
-			if (((getOlympiadGameId() + 1) != 0) && (getOlympiadGameId() == target.getOlympiadGameId()))
+			if (getOlympiadGameId() == target.getOlympiadGameId())
 			{
-				if (isInSameParty(target))
-				{
-					return true;
-				}
 				return false;
 			}
 		}
 		
-		if (isInTwoSidedWar(target))
-		{
-			return false;
-		}
-		
-		// You can debuff anyone except party members while in an arena...
-		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP) && !isInSameParty(target) && !isInSameChannel(target))
-		{
-			return false;
-		}
-		
+		// Siege
+		final boolean isInsideSiegeZone = isInsideZone(ZoneIdType.SIEGE);
 		if (isInsideSiegeZone && isInSiege() && (getSiegeState() != 0) && (target.getSiegeState() != 0))
 		{
 			final Siege siege = SiegeManager.getInstance().getSiege(getX(), getY(), getZ());
@@ -15505,14 +15470,16 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
-		if (onlyAllyMembers)
+		// Two side war
+		if (isInTwoSidedWar(target))
 		{
-			if (isInSameParty(target) || isInSameChannel(target) || isInSameClan(target) || isInSameAlly(target))
-			{
-				return true;
-			}
-			
 			return false;
+		}
+		
+		// Ally
+		if (isInSameClan(target) || isInSameAlly(target))
+		{
+			return true;
 		}
 		
 		if ((target.getPvpFlag() > 0) || (target.getKarma() > 0))
