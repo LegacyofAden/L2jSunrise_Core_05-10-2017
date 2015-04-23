@@ -44,6 +44,7 @@ import l2r.gameserver.instancemanager.SiegeManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager.Territory;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.entity.olympiad.OlympiadManager;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.player.clan.OnPlayerClanJoin;
 import l2r.gameserver.model.events.impl.character.player.clan.OnPlayerClanLeaderChange;
@@ -2345,6 +2346,12 @@ public class L2Clan implements IIdentifiable, INamable
 			{
 				activeChar.sendPacket(SystemMessageId.SUBCLAN_IS_FULL);
 			}
+			return false;
+		}
+		// vGodFather: extra check to prevent exploit with clan skills in oly
+		if (target.isInOlympiadMode() || target.inObserverMode() || OlympiadManager.getInstance().isRegistered(target))
+		{
+			activeChar.sendMessage("You cannot invite target while is in olympiad mode.");
 			return false;
 		}
 		return true;
