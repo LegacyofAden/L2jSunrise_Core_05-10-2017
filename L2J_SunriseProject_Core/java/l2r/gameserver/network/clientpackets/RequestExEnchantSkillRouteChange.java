@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.EnchantSkillGroupsData;
 import l2r.gameserver.data.xml.impl.SkillData;
+import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.model.L2EnchantSkillGroup.EnchantSkillHolder;
 import l2r.gameserver.model.L2EnchantSkillLearn;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -70,6 +71,12 @@ public final class RequestExEnchantSkillRouteChange extends L2GameClientPacket
 		L2PcInstance player = getClient().getActiveChar();
 		if (player == null)
 		{
+			return;
+		}
+		
+		if (!player.isInsideZone(ZoneIdType.PEACE))
+		{
+			player.sendMessage("You cannot use the skill enhancing function outside of peace zones.");
 			return;
 		}
 		
