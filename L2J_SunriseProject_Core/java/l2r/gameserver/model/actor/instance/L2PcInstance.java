@@ -9566,6 +9566,7 @@ public final class L2PcInstance extends L2Playable
 			
 			if (targetPlayer != null)
 			{
+				// Pece Zone
 				if (targetPlayer.isInsideZone(ZoneIdType.PEACE))
 				{
 					return false;
