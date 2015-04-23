@@ -25,7 +25,7 @@ public class GenerateHtmls
 	public static void captchaHtml(L2PcInstance activeChar, String botType)
 	{
 		StringBuilder tb = new StringBuilder();
-		NpcHtmlMessage antibotReply = new NpcHtmlMessage(0);
+		NpcHtmlMessage antibotReply = new NpcHtmlMessage();
 		
 		generateAntibotImages(activeChar);
 		// Random image file name

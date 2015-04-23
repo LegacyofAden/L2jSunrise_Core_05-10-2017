@@ -600,7 +600,7 @@ public final class Util
 	 */
 	public static void sendHtml(L2PcInstance activeChar, String html)
 	{
-		NpcHtmlMessage npcHtml = new NpcHtmlMessage(0);
+		NpcHtmlMessage npcHtml = new NpcHtmlMessage();
 		npcHtml.setHtml(html);
 		activeChar.sendPacket(npcHtml);
 	}

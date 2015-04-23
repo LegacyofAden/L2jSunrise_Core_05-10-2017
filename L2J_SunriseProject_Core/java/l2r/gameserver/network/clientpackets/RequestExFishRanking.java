@@ -41,7 +41,7 @@ public final class RequestExFishRanking extends L2GameClientPacket
 	{
 		if (LeaderboardsConfigs.RANK_FISHERMAN_ENABLED)
 		{
-			NpcHtmlMessage htm = new NpcHtmlMessage(0);
+			NpcHtmlMessage htm = new NpcHtmlMessage();
 			htm.setHtml(FishermanLeaderboard.getInstance().showHtm(getClient().getActiveChar().getObjectId()));
 			getClient().getActiveChar().sendPacket(htm);
 		}

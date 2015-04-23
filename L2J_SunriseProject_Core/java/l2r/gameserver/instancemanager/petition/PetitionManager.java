@@ -416,7 +416,7 @@ public final class PetitionManager
 		
 		htmlContent.append("</table></center></body></html>");
 		
-		NpcHtmlMessage htmlMsg = new NpcHtmlMessage(0);
+		NpcHtmlMessage htmlMsg = new NpcHtmlMessage();
 		htmlMsg.setHtml(htmlContent.toString());
 		activeChar.sendPacket(htmlMsg);
 	}
@@ -450,7 +450,7 @@ public final class PetitionManager
 		Petition currPetition = getPendingPetitions().get(petitionId);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		
-		NpcHtmlMessage html = new NpcHtmlMessage(0);
+		NpcHtmlMessage html = new NpcHtmlMessage();
 		html.setFile(activeChar.getHtmlPrefix(), "data/html/admin/petition.htm");
 		html.replace("%petition%", String.valueOf(currPetition.getId()));
 		html.replace("%time%", dateFormat.format(new Date(currPetition.getSubmitTime())));
