@@ -862,15 +862,14 @@ public final class Formulas
 		
 		if (crit)
 		{
-			// Finally retail like formula
-			damage = 2 * attacker.calcStat(Stats.CRITICAL_DAMAGE, 1, target, skill) * target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE, 1, target, null) * ((70 * damage) / defence);
-			// Crit dmg add is almost useless in normal hits...
-			damage += ((attacker.calcStat(Stats.CRITICAL_DAMAGE_ADD, 0, target, skill) * 70) / defence);
+			// H5 Damage Formula
+			damage = 2 * attacker.calcStat(Stats.CRITICAL_DAMAGE, 1, target, skill) * target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE, 1, target, null) * ((76 * damage) / defence);
+			damage += ((attacker.calcStat(Stats.CRITICAL_DAMAGE_ADD, 0, target, skill) * 77) / defence);
 			damage += target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE_ADD, 0, target, skill);
 		}
 		else
 		{
-			damage = (70 * damage) / defence;
+			damage = (76 * damage) / defence;
 		}
 		
 		if (stat != null)
@@ -1013,13 +1012,23 @@ public final class Formulas
 		return damage;
 	}
 	
-	public static final double calcMagicDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean ss, boolean bss, boolean mcrit)
+	public static final double calcMagicDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean sps, boolean bss, boolean mcrit)
 	{
-		int mAtk = attacker.getMAtk(target, skill);
-		int mDef = target.getMDef(attacker, skill);
+		double mDef = target.getMDef(attacker, skill);
+		switch (shld)
+		{
+			case SHIELD_DEFENSE_SUCCEED:
+				mDef += target.getShldDef(); // kamael
+				break;
+			case SHIELD_DEFENSE_PERFECT_BLOCK: // perfect block
+				return 1;
+		}
+		
+		double mAtk = attacker.getMAtk(target, skill);
 		final boolean isPvP = attacker.isPlayable() && target.isPlayable();
 		final boolean isPvE = attacker.isPlayable() && target.isAttackable();
-		// Pvp bonuses for def
+		
+		// PvP bonuses for defense
 		if (isPvP)
 		{
 			if (skill.isMagic())
@@ -1032,23 +1041,8 @@ public final class Formulas
 			}
 		}
 		
-		switch (shld)
-		{
-			case SHIELD_DEFENSE_SUCCEED:
-				mDef += target.getShldDef(); // kamael
-				break;
-			case SHIELD_DEFENSE_PERFECT_BLOCK: // perfect block
-				return 1;
-		}
-		
-		if (bss)
-		{
-			mAtk *= 4;
-		}
-		else if (ss)
-		{
-			mAtk *= 2;
-		}
+		// Bonus Spirit shot
+		mAtk *= bss ? 4 : sps ? 2 : 1;
 		// MDAM Formula.
 		double damage = ((91 * Math.sqrt(mAtk)) / mDef) * skill.getPower(attacker, target, isPvP, isPvE);
 		
@@ -1132,8 +1126,7 @@ public final class Formulas
 	
 	public static final double calcMagicDam(L2CubicInstance attacker, L2Character target, L2Skill skill, boolean mcrit, byte shld)
 	{
-		int mDef = target.getMDef(attacker.getOwner(), skill);
-		
+		double mDef = target.getMDef(attacker.getOwner(), skill);
 		switch (shld)
 		{
 			case SHIELD_DEFENSE_SUCCEED:
@@ -2198,35 +2191,21 @@ public final class Formulas
 	public static double calcAttributeBonus(L2Character attacker, L2Character target, L2Skill skill)
 	{
 		int attack_attribute;
-		int defence_attribute;
 		
 		if (skill != null)
 		{
-			if (skill.getElement() == -1)
+			if ((skill.getElement() == -1) || (attacker.getAttackElement() != skill.getElement()))
 			{
-				attack_attribute = 0;
-				defence_attribute = target.getDefenseElementValue((byte) -1);
+				return 1;
 			}
-			else
-			{
-				if (attacker.getAttackElement() == skill.getElement())
-				{
-					attack_attribute = attacker.getAttackElementValue(attacker.getAttackElement()) + skill.getElementPower();
-					defence_attribute = target.getDefenseElementValue(attacker.getAttackElement());
-				}
-				else
-				{
-					attack_attribute = skill.getElementPower();
-					defence_attribute = target.getDefenseElementValue(skill.getElement());
-				}
-			}
+			attack_attribute = attacker.getAttackElementValue(attacker.getAttackElement()) + skill.getElementPower();
 		}
 		else
 		{
 			attack_attribute = attacker.getAttackElementValue(attacker.getAttackElement());
-			defence_attribute = target.getDefenseElementValue(attacker.getAttackElement());
 		}
 		
+		int defence_attribute = target.getDefenseElementValue(attacker.getAttackElement());
 		double attack_attribute_mod = 0;
 		double defence_attribute_mod = 0;
 		

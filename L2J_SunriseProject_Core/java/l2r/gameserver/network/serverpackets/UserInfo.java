@@ -203,18 +203,18 @@ public final class UserInfo extends L2GameServerPacket
 		writeD(_activeChar.getInventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_BELT)); // CT2.3
 		writeD(_activeChar.getInventory().getMaxTalismanCount()); // CT2.3
 		writeD(_activeChar.getInventory().getCloakStatus()); // CT2.3
-		writeD(_activeChar.getPAtk(null));
+		writeD((int) _activeChar.getPAtk(null));
 		writeD(_activeChar.getPAtkSpd());
-		writeD(_activeChar.getPDef(null));
+		writeD((int) _activeChar.getPDef(null));
 		writeD(_activeChar.getEvasionRate(null));
 		writeD(_activeChar.getAccuracy());
 		writeD(_activeChar.getCriticalHit(null, null));
-		writeD(_activeChar.getMAtk(null, null));
+		writeD((int) _activeChar.getMAtk(null, null));
 		
 		writeD(_activeChar.getMAtkSpd());
 		writeD(_activeChar.getPAtkSpd());
 		
-		writeD(_activeChar.getMDef(null, null));
+		writeD((int) _activeChar.getMDef(null, null));
 		
 		writeD(_activeChar.getPvpFlag()); // 0-non-pvp 1-pvp = violet name
 		writeD(_activeChar.getKarma());

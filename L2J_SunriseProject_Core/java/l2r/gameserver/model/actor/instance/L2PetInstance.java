@@ -1241,18 +1241,6 @@ public class L2PetInstance extends L2Summon
 	}
 	
 	@Override
-	public int getMAtk(L2Character target, L2Skill skill)
-	{
-		return getStat().getMAtk(target, skill);
-	}
-	
-	@Override
-	public int getMDef(L2Character target, L2Skill skill)
-	{
-		return getStat().getMDef(target, skill);
-	}
-	
-	@Override
 	public final int getSkillLevel(int skillId)
 	{
 		if (getKnownSkill(skillId) == null)

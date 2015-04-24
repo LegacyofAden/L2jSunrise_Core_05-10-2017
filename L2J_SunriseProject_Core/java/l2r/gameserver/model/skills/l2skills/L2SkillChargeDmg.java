@@ -74,7 +74,7 @@ public class L2SkillChargeDmg extends L2Skill
 			final boolean isPvP = attacker.isPlayable() && target.isPlayable();
 			final boolean isPvE = attacker.isPlayable() && target.isAttackable();
 			double attack = attacker.getPAtk(target);
-			int defence = target.getPDef(attacker);
+			double defence = target.getPDef(attacker);
 			
 			if (!ignoreShield())
 			{
