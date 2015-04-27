@@ -37,7 +37,7 @@ import l2r.loginserver.LoginController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginStatusThread extends Thread
+public final class LoginStatusThread extends Thread
 {
 	private static final Logger _log = LoggerFactory.getLogger(LoginStatusThread.class);
 	

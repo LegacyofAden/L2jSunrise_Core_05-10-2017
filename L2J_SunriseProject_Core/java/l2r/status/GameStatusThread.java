@@ -36,7 +36,7 @@ import l2r.gameserver.handler.TelnetHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GameStatusThread extends Thread
+public final class GameStatusThread extends Thread
 {
 	private static final Logger _log = LoggerFactory.getLogger(GameStatusThread.class);
 	

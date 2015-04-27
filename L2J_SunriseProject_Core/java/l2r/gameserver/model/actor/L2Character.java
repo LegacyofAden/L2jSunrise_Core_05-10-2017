@@ -20,7 +20,6 @@ package l2r.gameserver.model.actor;
 
 import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_ACTIVE;
 import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_ATTACK;
-import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_FOLLOW;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -4774,15 +4773,17 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			distance = Math.sqrt((dx * dx) + (dy * dy));
 		}
 		
+		// @formatter:off
 		// Define movement angles needed
 		// ^
-		// | X (x,y)
-		// | /
-		// | /distance
+		// |    X (x,y)
+		// |   /
+		// |  / distance
 		// | /
 		// |/ angle
 		// X ---------->
 		// (curx,cury)
+		// @formatter:on
 		
 		double cos;
 		double sin;
@@ -4848,8 +4849,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			
 			// Movement checks:
 			// when PATHFINDING > 0, for all characters except mobs returning home (could be changed later to teleport if pathfinding fails)
-			if (((Config.PATHFINDING > 0) && (!(isAttackable() && ((L2Attackable) this).isReturningToSpawnPoint()))) || (isPlayer() && !(isInVehicle && (distance > 1500))) || (isSummon() && !(getAI().getIntention() == AI_INTENTION_FOLLOW)) // assuming intention_follow only when following owner
-				|| isAfraid() || (this instanceof L2RiftInvaderInstance))
+			if (((Config.PATHFINDING > 0) && (!(isAttackable() && ((L2Attackable) this).isReturningToSpawnPoint()))) //
+				|| (isPlayer() && !(isInVehicle && (distance > 1500))) //
+				|| (this instanceof L2RiftInvaderInstance))
 			{
 				if (isOnGeodataPath())
 				{
@@ -4899,7 +4901,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			// Pathfinding checks. Only when geodata setting is 2, the LoS check gives shorter result
 			// than the original movement was and the LoS gives a shorter distance than 2000
 			// This way of detecting need for pathfinding could be changed.
-			if ((Config.PATHFINDING > 0) && ((originalDistance - distance) > 30) && (distance < 2000) && !isAfraid())
+			if ((Config.PATHFINDING > 0) && ((originalDistance - distance) > 30) && (distance < 2000))
 			{
 				// Path calculation
 				// Overrides previous movement check
@@ -4908,13 +4910,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					m.geoPath = PathFinding.getInstance().findPath(curX, curY, curZ, originalX, originalY, originalZ, getInstanceId(), isPlayable());
 					if ((m.geoPath == null) || (m.geoPath.size() < 2)) // No path found
 					{
-						// * Even though there's no path found (remember geonodes aren't perfect),
+						// Even though there's no path found (remember geonodes aren't perfect),
 						// the mob is attacking and right now we set it so that the mob will go
 						// after target anyway, is dz is small enough.
-						// * With cellpathfinding this approach could be changed but would require taking
+						// With cellpathfinding this approach could be changed but would require taking
 						// off the geonodes and some more checks.
-						// * Summons will follow their masters no matter what.
-						// * Currently minions also must move freely since L2AttackableAI commands
+						// Summons will follow their masters no matter what.
+						// Currently minions also must move freely since L2AttackableAI commands
 						// them to move along with their leader
 						if (isPlayer() || (!isPlayable() && !isMinion() && (Math.abs(z - curZ) > 140)) || (isSummon() && !((L2Summon) this).getFollowStatus()))
 						{

@@ -22,11 +22,11 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import javolution.util.FastMap;
 import l2r.Config;
 
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
 public class MailSystem
 {
 	private static final Logger _log = LoggerFactory.getLogger(MailSystem.class);
-	private final Map<String, MailContent> _mailData = new FastMap<>();
+	private final Map<String, MailContent> _mailData = new HashMap<>();
 	
 	public static MailSystem getInstance()
 	{

@@ -24,6 +24,7 @@ import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_IDLE;
 
 import java.util.concurrent.Future;
 
+import l2r.Config;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlIntention;
@@ -53,7 +54,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 	@Override
 	protected void onIntentionAttack(L2Character target)
 	{
-		if (PathFinding.getInstance().findPath(_actor.getX(), _actor.getY(), _actor.getZ(), target.getX(), target.getY(), target.getZ(), _actor.getInstanceId(), true) == null)
+		if ((Config.PATHFINDING > 0) && (PathFinding.getInstance().findPath(_actor.getX(), _actor.getY(), _actor.getZ(), target.getX(), target.getY(), target.getZ(), _actor.getInstanceId(), true) == null))
 		{
 			return;
 		}

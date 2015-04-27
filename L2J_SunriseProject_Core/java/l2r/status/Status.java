@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.Server;
 import l2r.util.Rnd;
@@ -125,7 +125,7 @@ public class Status extends Thread
 		}
 		statusServerSocket = new ServerSocket(_statusPort);
 		_uptime = (int) System.currentTimeMillis();
-		_loginStatus = new FastList<>();
+		_loginStatus = new ArrayList<>();
 	}
 	
 	private String rndPW(int length)
@@ -156,7 +156,7 @@ public class Status extends Thread
 	
 	public void sendMessageToTelnets(String msg)
 	{
-		List<LoginStatusThread> lsToRemove = new FastList<>();
+		List<LoginStatusThread> lsToRemove = new ArrayList<>(); // TODO(Zoey76): Unused?
 		for (LoginStatusThread ls : _loginStatus)
 		{
 			if (ls.isInterrupted())

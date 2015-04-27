@@ -18,6 +18,7 @@
  */
 package l2r.loginserver;
 
+import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,12 +33,15 @@ import org.mmocore.network.IClientFactory;
 import org.mmocore.network.IMMOExecutor;
 import org.mmocore.network.MMOConnection;
 import org.mmocore.network.ReceivablePacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author KenM
  */
 public class SelectorHelper implements IMMOExecutor<L2LoginClient>, IClientFactory<L2LoginClient>, IAcceptFilter
 {
+	private static final Logger LOG = LoggerFactory.getLogger(LoginController.class);
 	private final ThreadPoolExecutor _generalPacketsThreadPool;
 	private final IPv4Filter _ipv4filter;
 	
@@ -64,6 +68,14 @@ public class SelectorHelper implements IMMOExecutor<L2LoginClient>, IClientFacto
 	@Override
 	public boolean accept(SocketChannel sc)
 	{
-		return _ipv4filter.accept(sc) && !LoginController.getInstance().isBannedAddress(sc.socket().getInetAddress());
+		try
+		{
+			return _ipv4filter.accept(sc) && !LoginController.getInstance().isBannedAddress(sc.socket().getInetAddress());
+		}
+		catch (UnknownHostException e)
+		{
+			LOG.error(SelectorHelper.class.getSimpleName() + ": Invalid address: " + sc.socket().getInetAddress() + "; " + e.getMessage());
+		}
+		return false;
 	}
 }

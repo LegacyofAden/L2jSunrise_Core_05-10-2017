@@ -37,11 +37,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.L2World;
@@ -111,7 +112,7 @@ public class LoginServerThread extends Thread
 	private final boolean _reserveHost;
 	private int _maxPlayer;
 	private final List<WaitingClient> _waitingClients;
-	private final FastMap<String, L2GameClient> _accountsInGameServer = new FastMap<>();
+	private final Map<String, L2GameClient> _accountsInGameServer = new ConcurrentHashMap<>();
 	private int _status;
 	private String _serverName;
 	private final List<String> _subnets;
@@ -140,8 +141,7 @@ public class LoginServerThread extends Thread
 		_reserveHost = Config.RESERVE_HOST_ON_LOGIN;
 		_subnets = Config.GAME_SERVER_SUBNETS;
 		_hosts = Config.GAME_SERVER_HOSTS;
-		_waitingClients = new FastList<>();
-		_accountsInGameServer.shared();
+		_waitingClients = new CopyOnWriteArrayList<>();
 		_maxPlayer = Config.MAXIMUM_ONLINE_USERS;
 	}
 	
@@ -290,7 +290,7 @@ public class LoginServerThread extends Thread
 							sendPacket(st);
 							if (L2World.getInstance().getAllPlayersCount() > 0)
 							{
-								FastList<String> playerList = new FastList<>();
+								final List<String> playerList = new ArrayList<>();
 								for (L2PcInstance player : L2World.getInstance().getPlayers())
 								{
 									playerList.add(player.getAccountName());

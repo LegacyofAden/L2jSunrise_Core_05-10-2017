@@ -18,7 +18,8 @@
  */
 package l2r.gameserver.network.loginservercon.gameserverpackets;
 
-import javolution.util.FastList;
+import java.util.List;
+
 import l2r.util.network.BaseSendablePacket;
 
 /**
@@ -33,7 +34,7 @@ public class PlayerInGame extends BaseSendablePacket
 		writeS(player);
 	}
 	
-	public PlayerInGame(FastList<String> players)
+	public PlayerInGame(List<String> players)
 	{
 		writeC(0x02);
 		writeH(players.size());
