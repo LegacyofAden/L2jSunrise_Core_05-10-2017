@@ -36,7 +36,7 @@ public class GenerateHtmls
 		if (activeChar.isHopZoneDone() && activeChar.isTopZoneDone())
 		{
 			StringBuilder tb = new StringBuilder();
-			NpcHtmlMessage html = new NpcHtmlMessage(1);
+			NpcHtmlMessage html = new NpcHtmlMessage();
 			
 			tb.append("<html><head><title>Vote Reward Panel</title></head><body>");
 			tb.append("<center>");
@@ -77,7 +77,7 @@ public class GenerateHtmls
 		if (!activeChar.isHopZoneDone() || !activeChar.isTopZoneDone())
 		{
 			StringBuilder tb = new StringBuilder();
-			NpcHtmlMessage html = new NpcHtmlMessage(1);
+			NpcHtmlMessage html = new NpcHtmlMessage();
 			
 			tb.append("<html><head><title>Vote System Panel</title></head><body>");
 			tb.append("<center><br>");

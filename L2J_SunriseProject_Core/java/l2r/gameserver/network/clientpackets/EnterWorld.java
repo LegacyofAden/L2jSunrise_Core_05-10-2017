@@ -451,7 +451,7 @@ public class EnterWorld extends L2GameClientPacket
 		
 		if (showClanNotice)
 		{
-			NpcHtmlMessage notice = new NpcHtmlMessage(1);
+			final NpcHtmlMessage notice = new NpcHtmlMessage();
 			notice.setFile(activeChar.getHtmlPrefix(), "data/html/clanNotice.htm");
 			notice.replace("%clan_name%", activeChar.getClan().getName());
 			notice.replace("%notice_text%", activeChar.getClan().getNotice());

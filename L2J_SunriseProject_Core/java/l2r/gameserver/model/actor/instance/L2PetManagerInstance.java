@@ -58,7 +58,7 @@ public class L2PetManagerInstance extends L2MerchantInstance
 			filename = "data/html/petmanager/restore-unsummonpet.htm";
 		}
 		
-		NpcHtmlMessage html = new NpcHtmlMessage(1);
+		final NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 		html.setFile(player.getHtmlPrefix(), filename);
 		if (Config.ALLOW_RENTPET && Config.LIST_PET_RENT_NPC.contains(getId()))
 		{
