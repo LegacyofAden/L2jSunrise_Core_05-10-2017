@@ -1078,6 +1078,8 @@ public final class Config
 	public static int SERVER_ID;
 	public static byte[] HEX_ID;
 	public static boolean AUTO_CREATE_ACCOUNTS;
+	public static String ANAME_TEMPLATE;
+	public static String APASSWD_TEMPLATE;
 	public static boolean FLOOD_PROTECTION;
 	public static int FAST_CONNECTION_LIMIT;
 	public static int NORMAL_CONNECTION_TIME;
@@ -2848,6 +2850,8 @@ public final class Config
 			SHOW_LICENCE = ServerSettings.getBoolean("ShowLicence", true);
 			
 			AUTO_CREATE_ACCOUNTS = ServerSettings.getBoolean("AutoCreateAccounts", true);
+			ANAME_TEMPLATE = ServerSettings.getString("AccountTemplate", "[A-Za-z0-9]{4,14}");
+			APASSWD_TEMPLATE = ServerSettings.getString("PasswordTemplate", "[A-Za-z0-9]{4,16}");
 			
 			FLOOD_PROTECTION = ServerSettings.getBoolean("EnableFloodProtection", true);
 			FAST_CONNECTION_LIMIT = ServerSettings.getInt("FastConnectionLimit", 15);

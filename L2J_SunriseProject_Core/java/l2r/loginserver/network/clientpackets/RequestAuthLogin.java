@@ -121,6 +121,13 @@ public class RequestAuthLogin extends L2LoginClientPacket
 			return;
 		}
 		
+		if ((Config.AUTO_CREATE_ACCOUNTS) && (!_user.matches(Config.ANAME_TEMPLATE) || !_password.matches(Config.APASSWD_TEMPLATE)))
+		{
+			// Invalid account template
+			client.close(LoginFailReason.REASON_USER_OR_PASS_WRONG);
+			return;
+		}
+		
 		InetAddress clientAddr = getClient().getConnection().getInetAddress();
 		
 		final LoginController lc = LoginController.getInstance();
