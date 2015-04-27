@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.data.xml.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +43,7 @@ import l2r.gameserver.model.holders.ItemHolder;
 import l2r.gameserver.model.holders.PlayerSkillHolder;
 import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.interfaces.ISkillsHolder;
+import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
 
 import org.w3c.dom.Document;
@@ -126,7 +126,7 @@ public final class SkillTreesData implements IXmlReader
 		_gameMasterAuraSkillTree.clear();
 		
 		// Load files.
-		parseDirectory(new File(Config.DATAPACK_ROOT, "data/xml/skillTrees/"));
+		parseDatapackDirectory("data/xml/skillTrees/", false);
 		
 		// Generate check arrays.
 		generateCheckArrays();
@@ -143,11 +143,7 @@ public final class SkillTreesData implements IXmlReader
 	@Override
 	public void parseDocument(Document doc)
 	{
-		NamedNodeMap attrs;
-		Node attr;
-		String type = null;
 		int cId = -1;
-		int parentClassId = -1;
 		ClassId classId = null;
 		for (Node n = doc.getFirstChild(); n != null; n = n.getNextSibling())
 		{
@@ -159,9 +155,8 @@ public final class SkillTreesData implements IXmlReader
 					{
 						final Map<Integer, L2SkillLearn> classSkillTree = new HashMap<>();
 						final Map<Integer, L2SkillLearn> trasferSkillTree = new HashMap<>();
-						
-						type = d.getAttributes().getNamedItem("type").getNodeValue();
-						attr = d.getAttributes().getNamedItem("classId");
+						final String type = d.getAttributes().getNamedItem("type").getNodeValue();
+						Node attr = d.getAttributes().getNamedItem("classId");
 						if (attr != null)
 						{
 							cId = Integer.parseInt(attr.getNodeValue());
@@ -175,7 +170,7 @@ public final class SkillTreesData implements IXmlReader
 						attr = d.getAttributes().getNamedItem("parentClassId");
 						if (attr != null)
 						{
-							parentClassId = Integer.parseInt(attr.getNodeValue());
+							final int parentClassId = Integer.parseInt(attr.getNodeValue());
 							if ((cId > -1) && (cId != parentClassId) && (parentClassId > -1) && !_parentClassMap.containsKey(classId))
 							{
 								_parentClassMap.put(classId, ClassId.values()[parentClassId]);
@@ -187,7 +182,7 @@ public final class SkillTreesData implements IXmlReader
 							if ("skill".equalsIgnoreCase(c.getNodeName()))
 							{
 								final StatsSet learnSkillSet = new StatsSet();
-								attrs = c.getAttributes();
+								NamedNodeMap attrs = c.getAttributes();
 								for (int i = 0; i < attrs.getLength(); i++)
 								{
 									attr = attrs.item(i);
@@ -504,6 +499,7 @@ public final class SkillTreesData implements IXmlReader
 	{
 		final List<L2SkillLearn> result = new ArrayList<>();
 		final Map<Integer, L2SkillLearn> skills = getCompleteClassSkillTree(classId);
+		
 		if (skills.isEmpty())
 		{
 			// The Skill Tree for this class is undefined.
@@ -513,7 +509,7 @@ public final class SkillTreesData implements IXmlReader
 		
 		for (L2SkillLearn skill : skills.values())
 		{
-			if (((skill.getSkillId() == L2Skill.SKILL_DIVINE_INSPIRATION) && (!Config.AUTO_LEARN_DIVINE_INSPIRATION && includeAutoGet) && !player.isGM()))
+			if (((skill.getSkillId() == CommonSkill.DIVINE_INSPIRATION.getId()) && (!Config.AUTO_LEARN_DIVINE_INSPIRATION && includeAutoGet) && !player.isGM()))
 			{
 				continue;
 			}
@@ -621,7 +617,7 @@ public final class SkillTreesData implements IXmlReader
 				final L2Skill oldSkill = player.getSkills().get(skill.getSkillId());
 				if (oldSkill != null)
 				{
-					if (oldSkill.getLevel() < (skill.getSkillLevel()))
+					if (oldSkill.getLevel() == (skill.getSkillLevel() - 1))
 					{
 						result.add(skill);
 					}
@@ -730,6 +726,7 @@ public final class SkillTreesData implements IXmlReader
 	public List<L2SkillLearn> getAvailablePledgeSkills(L2Clan clan)
 	{
 		final List<L2SkillLearn> result = new ArrayList<>();
+		
 		for (L2SkillLearn skill : _pledgeSkillTree.values())
 		{
 			if (!skill.isResidencialSkill() && (clan.getLevel() >= skill.getGetLevel()))
@@ -737,7 +734,7 @@ public final class SkillTreesData implements IXmlReader
 				final L2Skill oldSkill = clan.getSkills().get(skill.getSkillId());
 				if (oldSkill != null)
 				{
-					if (oldSkill.getLevel() == (skill.getSkillLevel() - 1))
+					if (oldSkill.getLevel() < skill.getSkillLevel())
 					{
 						result.add(skill);
 					}
@@ -755,30 +752,23 @@ public final class SkillTreesData implements IXmlReader
 	 * Gets the available pledge skills.
 	 * @param clan the pledge skill learning clan
 	 * @param includeSquad if squad skill will be added too
-	 * @return all the available Pledge skills for a given {@code clan}
+	 * @return all the available pledge skills for a given {@code clan}
 	 */
-	public HashMap<Integer, L2SkillLearn> getMaxPledgeSkills(L2Clan clan, boolean includeSquad)
+	public Map<Integer, L2SkillLearn> getMaxPledgeSkills(L2Clan clan, boolean includeSquad)
 	{
-		final HashMap<Integer, L2SkillLearn> result = new HashMap<>();
-		
+		final Map<Integer, L2SkillLearn> result = new HashMap<>();
 		for (L2SkillLearn skill : _pledgeSkillTree.values())
 		{
 			if (!skill.isResidencialSkill() && (clan.getLevel() >= skill.getGetLevel()))
 			{
 				final L2Skill oldSkill = clan.getSkills().get(skill.getSkillId());
-				if (oldSkill != null)
-				{
-					if (oldSkill.getLevel() < (skill.getSkillLevel()))
-					{
-						result.put(skill.getSkillId(), skill);
-					}
-				}
-				else
+				if ((oldSkill == null) || (oldSkill.getLevel() < skill.getSkillLevel()))
 				{
 					result.put(skill.getSkillId(), skill);
 				}
 			}
 		}
+		
 		if (includeSquad)
 		{
 			for (L2SkillLearn skill : _subPledgeSkillTree.values())
@@ -786,14 +776,7 @@ public final class SkillTreesData implements IXmlReader
 				if ((clan.getLevel() >= skill.getGetLevel()))
 				{
 					final L2Skill oldSkill = clan.getSkills().get(skill.getSkillId());
-					if (oldSkill != null)
-					{
-						if (oldSkill.getLevel() < (skill.getSkillLevel()))
-						{
-							result.put(skill.getSkillId(), skill);
-						}
-					}
-					else
+					if ((oldSkill == null) || (oldSkill.getLevel() < skill.getSkillLevel()))
 					{
 						result.put(skill.getSkillId(), skill);
 					}

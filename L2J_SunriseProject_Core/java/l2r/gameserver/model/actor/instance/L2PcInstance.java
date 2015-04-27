@@ -1901,12 +1901,12 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public boolean hasDwarvenCraft()
 	{
-		return getSkillLevel(L2Skill.SKILL_CREATE_DWARVEN) >= 1;
+		return getSkillLevel(CommonSkill.CREATE_DWARVEN.getId()) >= 1;
 	}
 	
 	public int getDwarvenCraft()
 	{
-		return getSkillLevel(L2Skill.SKILL_CREATE_DWARVEN);
+		return getSkillLevel(CommonSkill.CREATE_DWARVEN.getId());
 	}
 	
 	/**
@@ -1914,12 +1914,12 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public boolean hasCommonCraft()
 	{
-		return getSkillLevel(L2Skill.SKILL_CREATE_COMMON) >= 1;
+		return getSkillLevel(CommonSkill.CREATE_COMMON.getId()) >= 1;
 	}
 	
 	public int getCommonCraft()
 	{
-		return getSkillLevel(L2Skill.SKILL_CREATE_COMMON);
+		return getSkillLevel(CommonSkill.CREATE_COMMON.getId());
 	}
 	
 	/**

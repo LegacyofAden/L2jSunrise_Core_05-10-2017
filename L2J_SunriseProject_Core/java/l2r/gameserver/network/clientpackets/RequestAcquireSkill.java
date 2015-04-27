@@ -41,6 +41,7 @@ import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
+import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.AcquireSkillDone;
@@ -310,15 +311,6 @@ public final class RequestAcquireSkill extends L2GameClientPacket
 					return;
 				}
 				
-				// Certification Skills - Exploit fix
-				if ((prevSkillLevel == -1) && (_level > 1))
-				{
-					// The previous level skill has not been learned.
-					activeChar.sendPacket(SystemMessageId.PREVIOUS_LEVEL_SKILL_NOT_LEARNED);
-					Util.handleIllegalPlayerAction(activeChar, "Player " + activeChar.getName() + " is requesting skill Id: " + _id + " level " + _level + " without knowing it's previous level!", IllegalActionPunishmentType.NONE);
-					return;
-				}
-				
 				QuestState st = activeChar.getQuestState("SubClassSkills");
 				if (st == null)
 				{
@@ -452,7 +444,7 @@ public final class RequestAcquireSkill extends L2GameClientPacket
 					return false;
 				}
 				
-				if (!Config.DIVINE_SP_BOOK_NEEDED && (_id == L2Skill.SKILL_DIVINE_INSPIRATION))
+				if (!Config.DIVINE_SP_BOOK_NEEDED && (_id == CommonSkill.DIVINE_INSPIRATION.getId()))
 				{
 					return true;
 				}
@@ -464,7 +456,7 @@ public final class RequestAcquireSkill extends L2GameClientPacket
 					{
 						if (player.getSkillLevel(skill.getSkillId()) != skill.getSkillLvl())
 						{
-							if (skill.getSkillId() == L2Skill.SKILL_ONYX_BEAST_TRANSFORMATION)
+							if (skill.getSkillId() == CommonSkill.ONYX_BEAST_TRANSFORMATION.getId())
 							{
 								player.sendPacket(SystemMessageId.YOU_MUST_LEARN_ONYX_BEAST_SKILL);
 							}

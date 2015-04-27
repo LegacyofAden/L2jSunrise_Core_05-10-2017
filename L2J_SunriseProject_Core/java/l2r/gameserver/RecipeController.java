@@ -36,6 +36,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
+import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.network.SystemMessageId;
@@ -198,7 +199,7 @@ public class RecipeController
 			_recipeList = pRecipeList;
 			
 			_isValid = false;
-			_skillId = _recipeList.isDwarvenRecipe() ? L2Skill.SKILL_CREATE_DWARVEN : L2Skill.SKILL_CREATE_COMMON;
+			_skillId = _recipeList.isDwarvenRecipe() ? CommonSkill.CREATE_DWARVEN.getId() : CommonSkill.CREATE_COMMON.getId();
 			_skillLevel = _player.getSkillLevel(_skillId);
 			_skill = _player.getKnownSkill(_skillId);
 			

@@ -25,7 +25,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.itemcontainer.PcInventory;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.items.type.CrystalType;
-import l2r.gameserver.model.skills.L2Skill;
+import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.InventoryUpdate;
@@ -79,7 +79,7 @@ public final class RequestCrystallizeItem extends L2GameClientPacket
 			return;
 		}
 		
-		int skillLevel = activeChar.getSkillLevel(L2Skill.SKILL_CRYSTALLIZE);
+		int skillLevel = activeChar.getSkillLevel(CommonSkill.CRYSTALLIZE.getId());
 		if (skillLevel <= 0)
 		{
 			activeChar.sendPacket(SystemMessageId.CRYSTALLIZE_LEVEL_TOO_LOW);

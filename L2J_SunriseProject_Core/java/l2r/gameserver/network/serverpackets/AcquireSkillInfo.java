@@ -25,7 +25,7 @@ import l2r.Config;
 import l2r.gameserver.model.L2SkillLearn;
 import l2r.gameserver.model.base.AcquireSkillType;
 import l2r.gameserver.model.holders.ItemHolder;
-import l2r.gameserver.model.skills.L2Skill;
+import l2r.gameserver.model.skills.CommonSkill;
 
 /**
  * Acquire Skill Info server packet implementation.
@@ -80,7 +80,7 @@ public class AcquireSkillInfo extends L2GameServerPacket
 		{
 			for (ItemHolder item : skillLearn.getRequiredItems())
 			{
-				if (!Config.DIVINE_SP_BOOK_NEEDED && (_id == L2Skill.SKILL_DIVINE_INSPIRATION))
+				if (!Config.DIVINE_SP_BOOK_NEEDED && (_id == CommonSkill.DIVINE_INSPIRATION.getId()))
 				{
 					continue;
 				}
