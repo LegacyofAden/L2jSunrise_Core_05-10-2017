@@ -1205,9 +1205,10 @@ public class CharEffectList
 			return;
 		}
 		
+		updateEffectFlags();
+		
 		if (!_owner.isPlayable())
 		{
-			updateEffectFlags();
 			return;
 		}
 		
@@ -1245,9 +1246,6 @@ public class CharEffectList
 			psSummon = new PartySpelled(_owner);
 		}
 		
-		boolean foundRemovedOnAction = false;
-		boolean foundRemovedOnDamage = false;
-		
 		if (hasBuffs())
 		{
 			for (L2Effect e : getBuffs())
@@ -1255,15 +1253,6 @@ public class CharEffectList
 				if (e == null)
 				{
 					continue;
-				}
-				
-				if (e.getSkill().isRemovedOnAnyActionExceptMove())
-				{
-					foundRemovedOnAction = true;
-				}
-				if (e.getSkill().isRemovedOnDamage())
-				{
-					foundRemovedOnDamage = true;
 				}
 				
 				if (!e.getShowIcon())
@@ -1312,12 +1301,7 @@ public class CharEffectList
 					}
 				}
 			}
-			
 		}
-		
-		_hasBuffsRemovedOnAnyAction = foundRemovedOnAction;
-		_hasBuffsRemovedOnDamage = foundRemovedOnDamage;
-		foundRemovedOnDamage = false;
 		
 		if (hasDebuffs())
 		{
@@ -1328,24 +1312,14 @@ public class CharEffectList
 					continue;
 				}
 				
-				if (e.getSkill().isRemovedOnAnyActionExceptMove())
-				{
-					foundRemovedOnAction = true;
-				}
-				if (e.getSkill().isRemovedOnDamage())
-				{
-					foundRemovedOnDamage = true;
-				}
-				
 				if (!e.getShowIcon())
 				{
 					continue;
 				}
 				
-				switch (e.getEffectType())
+				if (e.getEffectType() == L2EffectType.SIGNET_GROUND)
 				{
-					case SIGNET_GROUND:
-						continue;
+					continue;
 				}
 				
 				if (e.getInUse())
@@ -1371,10 +1345,7 @@ public class CharEffectList
 					}
 				}
 			}
-			
 		}
-		
-		_hasDebuffsRemovedOnDamage = foundRemovedOnDamage;
 		
 		if (asu != null)
 		{
@@ -1418,48 +1389,37 @@ public class CharEffectList
 	
 	protected void updateEffectFlags()
 	{
-		boolean foundRemovedOnAction = false;
-		boolean foundRemovedOnDamage = false;
-		
 		if (hasBuffs())
 		{
-			for (L2Effect e : getBuffs())
+			for (L2Effect info : getBuffs())
 			{
-				if (e == null)
+				if (info == null)
 				{
 					continue;
 				}
 				
-				if (e.getSkill().isRemovedOnAnyActionExceptMove())
+				if (info.getSkill().isRemovedOnAnyActionExceptMove())
 				{
-					foundRemovedOnAction = true;
+					_hasBuffsRemovedOnAnyAction = true;
 				}
-				if (e.getSkill().isRemovedOnDamage())
+				
+				if (info.getSkill().isRemovedOnDamage())
 				{
-					foundRemovedOnDamage = true;
+					_hasBuffsRemovedOnDamage = true;
 				}
 			}
 		}
-		_hasBuffsRemovedOnAnyAction = foundRemovedOnAction;
-		_hasBuffsRemovedOnDamage = foundRemovedOnDamage;
-		foundRemovedOnDamage = false;
 		
 		if (hasDebuffs())
 		{
-			for (L2Effect e : getDebuffs())
+			for (L2Effect info : getDebuffs())
 			{
-				if (e == null)
+				if ((info != null) && info.getSkill().isRemovedOnDamage())
 				{
-					continue;
-				}
-				
-				if (e.getSkill().isRemovedOnDamage())
-				{
-					foundRemovedOnDamage = true;
+					_hasDebuffsRemovedOnDamage = true;
 				}
 			}
 		}
-		_hasDebuffsRemovedOnDamage = foundRemovedOnDamage;
 	}
 	
 	/**
