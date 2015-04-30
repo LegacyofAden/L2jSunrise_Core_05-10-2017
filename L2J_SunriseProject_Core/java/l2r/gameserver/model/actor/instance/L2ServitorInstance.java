@@ -37,6 +37,7 @@ import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.effects.L2Effect;
+import l2r.gameserver.model.skills.AbnormalType;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.l2skills.L2SkillSummon;
 import l2r.gameserver.network.serverpackets.SetSummonRemainTime;
@@ -366,12 +367,9 @@ public class L2ServitorInstance extends L2Summon
 						
 						final L2Skill skill = effect.getSkill();
 						// Do not save heals.
-						switch (effect.getEffectType())
+						if (skill.getAbnormalType() == AbnormalType.life_force_others)
 						{
-							case HEAL_OVER_TIME:
-							case CPHEAL_OVER_TIME:
-							case HIDE:
-								continue;
+							continue;
 						}
 						
 						if (skill.isToggle())

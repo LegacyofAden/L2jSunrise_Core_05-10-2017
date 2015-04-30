@@ -58,6 +58,7 @@ import l2r.gameserver.model.itemcontainer.PetInventory;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.L2Weapon;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
+import l2r.gameserver.model.skills.AbnormalType;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
@@ -1037,13 +1038,9 @@ public class L2PetInstance extends L2Summon
 					
 					L2Skill skill = effect.getSkill();
 					// Do not save heals.
-					switch (effect.getEffectType())
+					if (skill.getAbnormalType() == AbnormalType.life_force_others)
 					{
-						case HEAL_OVER_TIME:
-						case CPHEAL_OVER_TIME:
-							// TODO: Fix me.
-						case HIDE:
-							continue;
+						continue;
 					}
 					
 					if (skill.isToggle())

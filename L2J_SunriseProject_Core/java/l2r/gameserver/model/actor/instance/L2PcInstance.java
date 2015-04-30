@@ -242,6 +242,7 @@ import l2r.gameserver.model.punishment.PunishmentAffect;
 import l2r.gameserver.model.punishment.PunishmentType;
 import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
+import l2r.gameserver.model.skills.AbnormalType;
 import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
@@ -8063,12 +8064,9 @@ public final class L2PcInstance extends L2Playable
 					
 					final L2Skill skill = effect.getSkill();
 					// Do not save heals.
-					switch (effect.getEffectType())
+					if (skill.getAbnormalType() == AbnormalType.life_force_others)
 					{
-						case HEAL_OVER_TIME:
-						case CPHEAL_OVER_TIME:
-						case HIDE:
-							continue;
+						continue;
 					}
 					
 					if (skill.isToggle())
