@@ -328,31 +328,38 @@ public class LoginController
 		_bannedIps.putIfAbsent(address, System.currentTimeMillis() + duration);
 	}
 	
-	public boolean isBannedAddress(InetAddress address) throws UnknownHostException
+	public boolean isBannedAddress(InetAddress address)
 	{
-		String[] parts = address.getHostAddress().split("\\.");
-		Long bi = _bannedIps.get(address);
-		if (bi == null)
+		try
 		{
-			bi = _bannedIps.get(InetAddress.getByName(parts[0] + "." + parts[1] + "." + parts[2] + ".0"));
-		}
-		if (bi == null)
-		{
-			bi = _bannedIps.get(InetAddress.getByName(parts[0] + "." + parts[1] + ".0.0"));
-		}
-		if (bi == null)
-		{
-			bi = _bannedIps.get(InetAddress.getByName(parts[0] + ".0.0.0"));
-		}
-		if (bi != null)
-		{
-			if ((bi > 0) && (bi < System.currentTimeMillis()))
+			String[] parts = address.getHostAddress().split("\\.");
+			Long bi = _bannedIps.get(address);
+			if (bi == null)
 			{
-				_bannedIps.remove(address);
-				_log.info("Removed expired ip address ban " + address.getHostAddress() + ".");
-				return false;
+				bi = _bannedIps.get(InetAddress.getByName(parts[0] + "." + parts[1] + "." + parts[2] + ".0"));
 			}
-			return true;
+			if (bi == null)
+			{
+				bi = _bannedIps.get(InetAddress.getByName(parts[0] + "." + parts[1] + ".0.0"));
+			}
+			if (bi == null)
+			{
+				bi = _bannedIps.get(InetAddress.getByName(parts[0] + ".0.0.0"));
+			}
+			if (bi != null)
+			{
+				if ((bi > 0) && (bi < System.currentTimeMillis()))
+				{
+					_bannedIps.remove(address);
+					_log.info("Removed expired ip address ban " + address.getHostAddress() + ".");
+					return false;
+				}
+				return true;
+			}
+		}
+		catch (Exception e)
+		{
+			return false;
 		}
 		return false;
 	}
