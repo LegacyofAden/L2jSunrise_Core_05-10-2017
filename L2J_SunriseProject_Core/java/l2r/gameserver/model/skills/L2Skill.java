@@ -124,9 +124,10 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final int _castRange;
 	private final int _effectRange;
 	
-	// Abnormal levels for skills and their canceling, e.g. poison vs negate
-	private final int _abnormalLvl; // e.g. poison or bleed lvl 2
-	// Note: see also _effectAbnormalLvl
+	/** Abnormal level, global effect level. */
+	private final int _abnormalLvl;
+	/** Abnormal type: global effect "group". */
+	private final AbnormalType _abnormalType;
 	private final int _negateLvl; // abnormalLvl is negated with negateLvl
 	private final int[] _negateId; // cancels the effect of skill ID
 	private final L2SkillType[] _negateStats; // lists the effect types that are canceled
@@ -277,7 +278,9 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_castRange = set.getInt("castRange", -1);
 		_effectRange = set.getInt("effectRange", -1);
 		
-		_abnormalLvl = set.getInt("abnormalLvl", -1);
+		_abnormalLvl = set.getInt("abnormalLvl", 0);
+		_abnormalType = set.getEnum("abnormalType", AbnormalType.class, AbnormalType.NONE);
+		
 		_effectAbnormalLvl = set.getInt("effectAbnormalLvl", -1); // support for a separate effect abnormal lvl, e.g. poison inside a different skill
 		_negateLvl = set.getInt("negateLvl", -1);
 		
@@ -620,6 +623,15 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public final Map<String, Byte> getNegateAbnormals()
 	{
 		return _negateAbnormals;
+	}
+	
+	/**
+	 * Gets the skill abnormal type.
+	 * @return the abnormal type
+	 */
+	public AbnormalType getAbnormalType()
+	{
+		return _abnormalType;
 	}
 	
 	public final int getAbnormalLvl()
@@ -1086,7 +1098,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	 */
 	public boolean isHealingPotionSkill()
 	{
-		return hasEffectType(L2EffectType.HEAL_OVER_TIME);
+		return getAbnormalType() == AbnormalType.hp_recover;
 	}
 	
 	public final int getChargeConsume()
