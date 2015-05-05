@@ -15749,9 +15749,21 @@ public final class L2PcInstance extends L2Playable
 		return _antiFeed;
 	}
 	
-	public void setAntiFeed(boolean soloAntiFeed)
+	public void setAntiFeed(boolean start)
 	{
-		_antiFeed = soloAntiFeed;
+		if (!start)
+		{
+			getAppearance().setVisibleName(getName());
+			getAppearance().setVisibleTitle(getTitle());
+		}
+		else
+		{
+			getAppearance().setVisibleName("Unknown");
+			getAppearance().setVisibleTitle("");
+		}
+		
+		broadcastUserInfo();
+		_antiFeed = start;
 	}
 	
 	public void registerShortCut(L2ShortCut shortcut, boolean storeToDb)
