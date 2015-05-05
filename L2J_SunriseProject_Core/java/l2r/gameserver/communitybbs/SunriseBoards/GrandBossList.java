@@ -6,6 +6,10 @@ import java.sql.ResultSet;
 
 import l2r.L2DatabaseFactory;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class GrandBossList
 {
 	private final StringBuilder _GrandBossList = new StringBuilder();

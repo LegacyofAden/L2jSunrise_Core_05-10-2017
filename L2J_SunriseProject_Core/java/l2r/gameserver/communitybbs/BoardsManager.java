@@ -22,6 +22,7 @@ import l2r.Config;
 import l2r.gameserver.communitybbs.Managers.ClanBBSManager;
 import l2r.gameserver.communitybbs.Managers.MailBBSManager;
 import l2r.gameserver.communitybbs.Managers.PostBBSManager;
+import l2r.gameserver.communitybbs.Managers.ServicesBBSManager;
 import l2r.gameserver.communitybbs.Managers.TopBBSManager;
 import l2r.gameserver.communitybbs.Managers.TopicBBSManager;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -30,6 +31,10 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ShowBoard;
 import gr.sr.interf.SunriseEvents;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class BoardsManager
 {
 	public void handleCommands(L2GameClient client, String command)
@@ -48,6 +53,12 @@ public class BoardsManager
 		if (!Config.ENABLE_COMMUNITY)
 		{
 			activeChar.sendPacket(SystemMessageId.CB_OFFLINE);
+			return;
+		}
+		
+		if (command.startsWith(ServicesBBSManager.getInstance()._servicesBBSCommand))
+		{
+			ServicesBBSManager.getInstance().cbByPass(command, activeChar);
 			return;
 		}
 		

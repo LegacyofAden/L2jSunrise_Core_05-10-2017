@@ -4,6 +4,10 @@ import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 import gr.sr.dataHolder.PlayersTopData;
 import gr.sr.datatables.SunriseTable;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class TopOnlinePlayers
 {
 	private final StringBuilder _topOnline = new StringBuilder();

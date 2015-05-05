@@ -8,6 +8,10 @@ import java.util.Date;
 
 import l2r.L2DatabaseFactory;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class CastleStatus
 {
 	private final StringBuilder _playerList = new StringBuilder();

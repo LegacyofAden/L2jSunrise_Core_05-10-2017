@@ -7,6 +7,10 @@ import java.sql.ResultSet;
 import l2r.L2DatabaseFactory;
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class RaidList
 {
 	private final StringBuilder _raidList = new StringBuilder();

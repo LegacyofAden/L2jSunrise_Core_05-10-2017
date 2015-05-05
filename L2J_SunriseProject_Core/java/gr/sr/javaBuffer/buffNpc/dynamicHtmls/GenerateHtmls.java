@@ -142,7 +142,7 @@ public class GenerateHtmls
 			tb.append("</table>");
 			i++;
 		}
-		tb.append("<br><br><img src=L2UI.SquareWhite width=280 height=1><button value=\"Back\" action=\"bypass -h npc_%objectId%_Chat_555-13.htm\" width=90 height=21 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\">");
+		tb.append("<br><br><img src=L2UI.SquareWhite width=280 height=1><button value=\"Back\" action=\"bypass -h npc_%objectId%_Chat_scheme.htm\" width=90 height=21 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\">");
 		tb.append(_endHtml);
 		
 		BufferPacketSender.sendPacket(player, tb.toString(), BufferPacketCategories.DYNAMIC, objectId);
@@ -190,7 +190,7 @@ public class GenerateHtmls
 		// Temporary fix for long html
 		tb.append("</table>");
 		tb.append("<center>");
-		tb.append("<br><br><img src=L2UI.SquareWhite width=280 height=1><button value=\"Back\" action=\"bypass -h npc_%objectId%_Chat_555.htm\" width=90 height=21 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\">");
+		tb.append("<br><br><img src=L2UI.SquareWhite width=280 height=1><button value=\"Back\" action=\"bypass -h npc_%objectId%_Chat_main.htm\" width=90 height=21 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\">");
 		tb.append(_endHtml);
 		
 		BufferPacketSender.sendPacket(player, tb.toString(), BufferPacketCategories.DYNAMIC, objectId);

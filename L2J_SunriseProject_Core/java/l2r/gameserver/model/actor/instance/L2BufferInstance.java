@@ -25,7 +25,7 @@ public class L2BufferInstance extends L2Npc
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		html.setFile(player.getHtmlPrefix(), "data/html/sunrise/NpcBuffer/" + getTemplate().getId() + ".htm");
+		html.setFile(player.getHtmlPrefix(), "data/html/sunrise/NpcBuffer/main.htm");
 		html.replace("%objectId%", String.valueOf(getObjectId()));
 		player.sendPacket(html);
 	}
@@ -70,7 +70,31 @@ public class L2BufferInstance extends L2Npc
 			html.replace("%objectId%", String.valueOf(getObjectId()));
 			player.sendPacket(html);
 		}
-		
+		// Method to remove all players buffs
+		else if (command.startsWith("removebuff"))
+		{
+			player.stopAllEffects();
+			BufferPacketSender.sendPacket(player, "functions.htm", BufferPacketCategories.FILE, getObjectId());
+		}
+		// Method to restore HP/MP/CP
+		else if (command.startsWith("healme"))
+		{
+			player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
+			player.setCurrentCp(player.getMaxCp());
+			BufferPacketSender.sendPacket(player, "functions.htm", BufferPacketCategories.FILE, getObjectId());
+		}
+		// Method to give auto buffs depends on class
+		else if (command.startsWith("autobuff"))
+		{
+			if ((player.getPvpFlag() != 0) && !player.isInsideZone(ZoneIdType.PEACE))
+			{
+				player.sendMessage("Cannot use this feature here with flag.");
+				return;
+			}
+			
+			AutoBuff.autoBuff(player);
+			BufferPacketSender.sendPacket(player, "functions.htm", BufferPacketCategories.FILE, getObjectId());
+		}
 		// Send buffs from profile to player or party or pet
 		else if (command.startsWith("bufffor"))
 		{
@@ -86,36 +110,15 @@ public class L2BufferInstance extends L2Npc
 			{
 				JavaBufferBypass.callSelfBuffCommand(player, subCommand[1]);
 			}
-		}
-		
-		// Buffer
-		else if (command.startsWith("removebuff"))
-		{
-			player.stopAllEffects();
-			BufferPacketSender.sendPacket(player, "555-2.htm", BufferPacketCategories.FILE, getObjectId());
-		}
-		else if (command.startsWith("healme"))
-		{
-			player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
-			player.setCurrentCp(player.getMaxCp());
-			BufferPacketSender.sendPacket(player, "555-2.htm", BufferPacketCategories.FILE, getObjectId());
-		}
-		else if (command.startsWith("autobuff"))
-		{
-			if ((player.getPvpFlag() != 0) && !player.isInsideZone(ZoneIdType.PEACE))
-			{
-				player.sendMessage("Cannot use this feature here with flag.");
-				return;
-			}
 			
-			AutoBuff.autoBuff(player);
-			BufferPacketSender.sendPacket(player, "555-2.htm", BufferPacketCategories.FILE, getObjectId());
+			BufferPacketSender.sendPacket(player, "main.htm", BufferPacketCategories.FILE, getObjectId());
 		}
+		// Method to give single buffs
 		else if (command.startsWith("buff"))
 		{
 			JavaBufferBypass.callBuffCommand(player, subCommand[1], subCommand[0], getObjectId());
 		}
-		
+		// Scheme create new profile
 		else if (command.startsWith("saveProfile"))
 		{
 			try
@@ -125,7 +128,7 @@ public class L2BufferInstance extends L2Npc
 			catch (Exception e)
 			{
 				player.sendMessage("Please specify a valid profile name.");
-				BufferPacketSender.sendPacket(player, "555-11.htm", BufferPacketCategories.FILE, getObjectId());
+				BufferPacketSender.sendPacket(player, "newSchemeProfile.htm", BufferPacketCategories.FILE, getObjectId());
 				return;
 			}
 		}
@@ -137,11 +140,11 @@ public class L2BufferInstance extends L2Npc
 		{
 			JavaBufferBypass.callAddCommand(player, subCommand[0], subCommand[1], subCommand[2], getObjectId());
 		}
-		
-		// Scheme removals
+		// Method to delete player's selected profile
 		else if (command.startsWith("deleteProfile"))
 		{
 			PlayerMethods.delProfile(subCommand[1], player);
+			BufferPacketSender.sendPacket(player, "main.htm", BufferPacketCategories.FILE, getObjectId());
 		}
 		else if (command.startsWith("showBuffsToDelete"))
 		{

@@ -8,6 +8,10 @@ import java.util.Map;
 
 import l2r.L2DatabaseFactory;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class HeroeList
 {
 	private final StringBuilder _heroeList = new StringBuilder();
