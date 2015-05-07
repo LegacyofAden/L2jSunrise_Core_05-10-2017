@@ -16,7 +16,7 @@ import gr.sr.javaBuffer.PlayerMethods;
 public class GenerateHtmls
 {
 	/* Constants for dynamic htmls */
-	private static final String _headHtml = "<html><title>AIO Item Buffer</title><body><center>";
+	private static final String _headHtml = "<html><title>Item Buffer</title><body><center>";
 	private static final String _endHtml = "</center></body></html>";
 	
 	/**
