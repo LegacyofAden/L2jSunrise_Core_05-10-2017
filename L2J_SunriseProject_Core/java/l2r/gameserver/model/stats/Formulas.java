@@ -2506,28 +2506,13 @@ public final class Formulas
 	public static List<L2Effect> calcCancelStealEffects(L2Character activeChar, L2Character target, L2Skill skill, double power, boolean randomizeList)
 	{
 		// Resists.
-		int cancelMagicLvl = skill.getMagicLevel();
-		int count = skill.getMaxNegatedEffects();
-		int finalCount = Rnd.get(1, count);
-		final double vuln = target.calcStat(Stats.CANCEL_VULN, 0, target, null);
-		final double prof = activeChar.calcStat(Stats.CANCEL_PROF, 0, target, null);
-		double resMod = 1 + ((vuln + prof) / 100);
-		double rate = power / resMod;
+		int negatedEffectCount = calcNegatedEffectCount(skill);
+		boolean result = calcStealSuccess(activeChar, target, skill, power);
 		
 		final L2Effect[] effects = target.getAllEffects();
-		List<L2Effect> canceled = new ArrayList<>(count);
+		List<L2Effect> canceled = new ArrayList<>();
 		
-		if (activeChar.isDebug())
-		{
-			final StatsSet set = new StatsSet();
-			set.set("baseMod", rate);
-			set.set("magicLevel", cancelMagicLvl);
-			set.set("resMod", resMod);
-			set.set("rate", rate);
-			Debug.sendSkillDebug(activeChar, target, skill, set);
-		}
-		
-		if (calcStealChance(activeChar, target))
+		if (result)
 		{
 			// Cancel for Abnormals.
 			if (skill.getNegateAbnormals() != null)
@@ -2589,7 +2574,7 @@ public final class Formulas
 				{
 					for (L2Effect e : _effectList)
 					{
-						if (negated < finalCount)
+						if (negated < negatedEffectCount)
 						{
 							negated++;
 							canceled.add(e);
@@ -2681,21 +2666,40 @@ public final class Formulas
 		return result;
 	}
 	
-	private static boolean calcStealChance(L2Character effected, L2Character effector)
+	private static int calcNegatedEffectCount(L2Skill skill)
 	{
-		double cancel_res_multiplier = effected.calcStat(Stats.CANCEL_VULN, 1, null, null);
-		int dml = effector.getLevel() - effected.getLevel(); // to check: magicLevel or player level? Since it's magic skill setting player level as default
-		double prelimChance = (dml + 50) * (1 - (cancel_res_multiplier * .01)); // 50 is random reasonable constant which gives ~50% chance of steal success while else is equal
+		int count = skill.getMaxNegatedEffects();
+		return Rnd.get(1, count);
+	}
+	
+	private static boolean calcStealSuccess(L2Character activeChar, L2Character target, L2Skill skill, double power)
+	{
+		int cancelMagicLvl = skill.getMagicLevel();
+		final double vuln = target.calcStat(Stats.CANCEL_VULN, 0, target, null);
+		final double prof = activeChar.calcStat(Stats.CANCEL_PROF, 0, target, null);
+		double resMod = 1 + (((vuln + prof) * -1) / 100);
+		double rate = power / resMod;
+		double finalRate = rate;
 		
-		if ((FormulasConfigs.DECREASE_CANCEL_SUCCESS_RATE > 0) && (prelimChance > FormulasConfigs.DECREASE_CANCEL_SUCCESS_RATE))
+		finalRate += FormulasConfigs.MODIFY_CANCEL_SUCCESS_RATE;
+		if (finalRate < 0)
 		{
-			prelimChance -= FormulasConfigs.DECREASE_CANCEL_SUCCESS_RATE;
-			if (prelimChance < 1)
-			{
-				return false;
-			}
+			finalRate = 0;
 		}
 		
-		return Rnd.get(1000) < (prelimChance * 10);
+		boolean result = Rnd.chance(finalRate);
+		if (activeChar.isDebug())
+		{
+			final StatsSet set = new StatsSet();
+			set.set("baseMod", rate);
+			set.set("magicLevel", cancelMagicLvl);
+			set.set("resMod", resMod);
+			set.set("rate", rate);
+			set.set("finalRate", finalRate);
+			set.set("result", String.valueOf(result));
+			Debug.sendSkillDebug(activeChar, target, skill, set);
+		}
+		
+		return result;
 	}
 }

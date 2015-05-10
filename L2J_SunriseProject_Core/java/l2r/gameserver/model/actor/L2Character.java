@@ -5426,7 +5426,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					notifyDamageReceived(reflectedDamage, target, null, crit, false);
 				}
 				
-				if (!isBow) // Do not absorb if weapon is of type bow
+				if (!isBow && !target.isInvul()) // Do not absorb if weapon is of type bow or target is invul
 				{
 					// Absorb HP from the damage inflicted
 					double absorbPercent = getStat().calcStat(Stats.ABSORB_DAMAGE_PERCENT, 0, null, null);
@@ -5465,7 +5465,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 							setCurrentMp(getCurrentMp() + absorbDamage);
 						}
 					}
-					
 				}
 				
 				// Notify AI with EVT_ATTACKED
