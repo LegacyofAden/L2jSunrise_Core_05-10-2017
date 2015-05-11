@@ -297,7 +297,7 @@ public abstract class L2Playable extends L2Character
 	 */
 	public boolean isSilentMoving()
 	{
-		return _effects.isAffected(EffectFlag.SILENT_MOVE);
+		return isAffected(EffectFlag.SILENT_MOVE);
 	}
 	
 	/**
@@ -306,13 +306,13 @@ public abstract class L2Playable extends L2Character
 	 */
 	public final boolean isProtectionBlessingAffected()
 	{
-		return _effects.isAffected(EffectFlag.PROTECTION_BLESSING);
+		return isAffected(EffectFlag.PROTECTION_BLESSING);
 	}
 	
 	@Override
 	public void updateEffectIcons(boolean partyOnly)
 	{
-		_effects.updateEffectIcons(partyOnly);
+		getEffectList().updateEffectIcons(partyOnly);
 	}
 	
 	public boolean isLockedTarget()

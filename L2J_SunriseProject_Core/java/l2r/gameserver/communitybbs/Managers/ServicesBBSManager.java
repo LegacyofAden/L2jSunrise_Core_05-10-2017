@@ -126,6 +126,7 @@ public class ServicesBBSManager extends BaseBBSManager
 				{
 					String multisell = commandSeperator(command);
 					int multi = Integer.valueOf(multisell);
+					activeChar.setIsUsingAioMultisell(true);
 					MultisellData.getInstance().separateAndSend(multi, activeChar, null, false);
 					
 					if ((multi == 539) || (multi == 540) || (multi == 541))

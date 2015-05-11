@@ -514,12 +514,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 					getEffected().sendPacket(smsg3);
 				}
 				
-				// Remove short buff.
-				if (this == _effected.getEffectList().getShortBuff())
-				{
-					_effected.getEffectList().shortBuffStatusUpdate(null);
-				}
-				
 				// if task is null - stopEffectTask does not remove effect
 				if ((_currentFuture == null) && (getEffected() != null))
 				{

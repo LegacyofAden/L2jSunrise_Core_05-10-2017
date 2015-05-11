@@ -176,6 +176,7 @@ import l2r.gameserver.model.actor.tasks.player.RecoGiveTask;
 import l2r.gameserver.model.actor.tasks.player.RentPetTask;
 import l2r.gameserver.model.actor.tasks.player.ResetChargesTask;
 import l2r.gameserver.model.actor.tasks.player.ResetSoulsTask;
+import l2r.gameserver.model.actor.tasks.player.ShortBuffTask;
 import l2r.gameserver.model.actor.tasks.player.SitDownTask;
 import l2r.gameserver.model.actor.tasks.player.StandUpTask;
 import l2r.gameserver.model.actor.tasks.player.TeleportWatchdogTask;
@@ -310,6 +311,7 @@ import l2r.gameserver.network.serverpackets.RelationChanged;
 import l2r.gameserver.network.serverpackets.Ride;
 import l2r.gameserver.network.serverpackets.ServerClose;
 import l2r.gameserver.network.serverpackets.SetupGauge;
+import l2r.gameserver.network.serverpackets.ShortBuffStatusUpdate;
 import l2r.gameserver.network.serverpackets.ShortCutInit;
 import l2r.gameserver.network.serverpackets.SkillCoolTime;
 import l2r.gameserver.network.serverpackets.SkillList;
@@ -13087,6 +13089,31 @@ public final class L2PcInstance extends L2Playable
 			_soulTask.cancel(false);
 			_soulTask = null;
 		}
+	}
+	
+	private ScheduledFuture<?> _shortBuffTask = null;
+	private int _shortBuffTaskSkillId = 0;
+	
+	public void shortBuffStatusUpdate(int magicId, int level, int time)
+	{
+		if (_shortBuffTask != null)
+		{
+			_shortBuffTask.cancel(false);
+			_shortBuffTask = null;
+		}
+		_shortBuffTask = ThreadPoolManager.getInstance().scheduleGeneral(new ShortBuffTask(this), time * 1000);
+		setShortBuffTaskSkillId(magicId);
+		sendPacket(new ShortBuffStatusUpdate(magicId, level, time));
+	}
+	
+	public int getShortBuffTaskSkillId()
+	{
+		return _shortBuffTaskSkillId;
+	}
+	
+	public void setShortBuffTaskSkillId(int id)
+	{
+		_shortBuffTaskSkillId = id;
 	}
 	
 	public int getDeathPenaltyBuffLevel()

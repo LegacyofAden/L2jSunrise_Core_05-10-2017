@@ -43,7 +43,6 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.AbnormalStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExOlympiadSpelledInfo;
 import l2r.gameserver.network.serverpackets.PartySpelled;
-import l2r.gameserver.network.serverpackets.ShortBuffStatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
 import org.slf4j.Logger;
@@ -62,8 +61,6 @@ public class CharEffectList
 	private FastList<L2Effect> _passives;
 	/** Map containing the all stacked effect in progress for each abnormal type. */
 	private Map<String, List<L2Effect>> _stackedEffects;
-	/** Short buff skill ID. */
-	private L2Effect _shortBuff = null;
 	private volatile boolean _hasBuffsRemovedOnAnyAction = false;
 	private volatile boolean _hasBuffsRemovedOnDamage = false;
 	private volatile boolean _hasDebuffsRemovedOnDamage = false;
@@ -335,35 +332,6 @@ public class CharEffectList
 	}
 	
 	/**
-	 * Gets the Short Buff info.
-	 * @return the short buff info
-	 */
-	public L2Effect getShortBuff()
-	{
-		return _shortBuff;
-	}
-	
-	/**
-	 * Sets the Short Buff data and sends an update if the effected is a player.
-	 * @param info the buff info
-	 */
-	public void shortBuffStatusUpdate(L2Effect info)
-	{
-		if (_owner.isPlayer())
-		{
-			_shortBuff = info;
-			if (info == null)
-			{
-				_owner.sendPacket(ShortBuffStatusUpdate.RESET_SHORT_BUFF);
-			}
-			else
-			{
-				_owner.sendPacket(new ShortBuffStatusUpdate(info.getSkill().getId(), info.getSkill().getLevel(), info.getSkill().getBuffDuration() / 1000));
-			}
-		}
-	}
-	
-	/**
 	 * Checks if the given skill stacks with an existing one.
 	 * @param checkSkill the skill to be checked
 	 * @return Returns whether or not this skill will stack
@@ -408,11 +376,6 @@ public class CharEffectList
 					buffCount++;
 				}
 			}
-		}
-		
-		if (getShortBuff() != null)
-		{
-			buffCount--;
 		}
 		
 		return buffCount;
@@ -1269,14 +1232,7 @@ public class CharEffectList
 				{
 					if (asu != null)
 					{
-						if (e.getSkill().isHealingPotionSkill())
-						{
-							shortBuffStatusUpdate(e);
-						}
-						else
-						{
-							e.addIcon(asu);
-						}
+						e.addIcon(asu);
 					}
 					
 					if (ps != null)
