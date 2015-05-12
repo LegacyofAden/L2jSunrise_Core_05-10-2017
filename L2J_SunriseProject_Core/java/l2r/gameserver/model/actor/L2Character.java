@@ -4832,7 +4832,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		m.disregardingGeodata = false;
 		
 		if (!isFlying() // flying chars not checked - even canSeeTarget doesn't work yet
-			&& (!isInsideZone(ZoneIdType.WATER) || isInsideZone(ZoneIdType.SIEGE))) // swimming also not checked unless in siege zone - but distance is limited
+			&& (!isInsideZone(ZoneIdType.WATER) || (isInsideZone(ZoneIdType.SIEGE) || isInsideZone(ZoneIdType.CASTLE)))) // swimming also not checked unless in siege zone - but distance is limited
 		{
 			final boolean isInVehicle = isPlayer() && (getActingPlayer().getVehicle() != null);
 			if (isInVehicle)
