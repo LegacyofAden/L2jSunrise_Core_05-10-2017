@@ -567,9 +567,6 @@ public final class L2PcInstance extends L2Playable
 	public boolean _TopZoneDone = false;
 	private int _tries;
 	
-	/** Antifeed System */
-	private boolean _antifeedProtection = false;
-	
 	/** Anti Bot System */
 	private String _botAnswer;
 	private String _farmBotCode;
@@ -15693,82 +15690,6 @@ public final class L2PcInstance extends L2Playable
 	// ============================================== //
 	// Antifeed Protection Engine By L][Sunrise Team //
 	// ============================================== //
-	private L2PcTemplate _antifeedTemplate = null;
-	private boolean _antifeedSex;
-	
-	private L2PcTemplate createRandomAntifeedTemplate()
-	{
-		Race race = null;
-		
-		while (race == null)
-		{
-			race = Race.values()[Rnd.get(Race.values().length)];
-			if ((race == getRace()) || (race == Race.KAMAEL))
-			{
-				race = null;
-			}
-		}
-		
-		PlayerClass p;
-		for (ClassId c : ClassId.values())
-		{
-			p = PlayerClass.values()[c.getId()];
-			if (p.isOfRace(race) && p.isOfLevel(ClassLevel.Fourth))
-			{
-				_antifeedTemplate = PlayerTemplateData.getInstance().getTemplate(c);
-				break;
-			}
-		}
-		
-		if (getRace() == Race.KAMAEL)
-		{
-			_antifeedSex = getAppearance().getSex();
-		}
-		
-		_antifeedSex = Rnd.get(2) == 0 ? true : false;
-		
-		return _antifeedTemplate;
-	}
-	
-	public void startAntifeedProtection(boolean start, boolean broadcast)
-	{
-		if (!start)
-		{
-			getAppearance().setVisibleName(getName());
-			_antifeedTemplate = null;
-		}
-		else
-		{
-			getAppearance().setVisibleName("Unknown");
-			createRandomAntifeedTemplate();
-		}
-		
-		if (broadcast)
-		{
-			broadcastUserInfo();
-		}
-	}
-	
-	public L2PcTemplate getAntifeedTemplate()
-	{
-		return _antifeedTemplate;
-	}
-	
-	public boolean getAntifeedSex()
-	{
-		return _antifeedSex;
-	}
-	
-	public boolean hasAntifeedProtection()
-	{
-		return _antifeedProtection;
-	}
-	
-	public void setAntiFeedProtection(boolean antiFeedProtection)
-	{
-		_antifeedProtection = antiFeedProtection;
-	}
-	
 	// For Flag zone
 	private boolean _antiFeed = false;
 	
@@ -15777,7 +15698,12 @@ public final class L2PcInstance extends L2Playable
 		return _antiFeed;
 	}
 	
-	public void setAntiFeed(boolean start)
+	public void startAntifeedProtection(boolean start)
+	{
+		startAntifeedProtection(start, true);
+	}
+	
+	public void startAntifeedProtection(boolean start, boolean broadcast)
 	{
 		if (!start)
 		{
@@ -15788,6 +15714,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			getAppearance().setVisibleName("Unknown");
 			getAppearance().setVisibleTitle("");
+			// createRandomAntifeedTemplate();
 		}
 		
 		broadcastUserInfo();

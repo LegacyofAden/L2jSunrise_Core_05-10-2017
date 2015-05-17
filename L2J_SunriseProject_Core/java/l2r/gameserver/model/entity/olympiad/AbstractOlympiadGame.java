@@ -194,7 +194,7 @@ public abstract class AbstractOlympiadGame
 			loc.setInstanceId(OlympiadGameManager.getInstance().getOlympiadTask(id).getZone().getInstanceId());
 			if (Config.ENABLE_OLY_ANTIFEED)
 			{
-				player.setAntiFeed(true);
+				player.startAntifeedProtection(true);
 			}
 			player.teleToLocation(loc, false);
 			player.sendPacket(new ExOlympiadMode(2));
@@ -420,7 +420,7 @@ public abstract class AbstractOlympiadGame
 		player.setInstanceId(0);
 		if (Config.ENABLE_OLY_ANTIFEED)
 		{
-			player.setAntiFeed(false);
+			player.startAntifeedProtection(false);
 		}
 		player.teleToLocation(loc);
 		player.unsetLastLocation();

@@ -120,11 +120,6 @@ public class CharInfo extends L2GameServerPacket
 			antifeed = false;
 		}
 		
-		if (_activeChar.hasAntifeedProtection())
-		{
-			antifeed = true;
-		}
-		
 		if (_invisible)
 		{
 			final L2PcInstance activeChar = getClient().getActiveChar();
@@ -218,35 +213,18 @@ public class CharInfo extends L2GameServerPacket
 			writeD(_z);
 			writeD(_vehicleId);
 			writeD(_objId);
-			if (antifeed)
+			
+			writeS(_activeChar.getAppearance().getVisibleName());
+			writeD(_activeChar.getRace().ordinal());
+			writeD(_activeChar.getAppearance().getSex() ? 1 : 0);
+			
+			if (_activeChar.getClassIndex() == 0)
 			{
-				writeS("Unknown"); // visible name
-				writeD(_activeChar.getAntifeedTemplate().getRace().ordinal()); // race
-				writeD(_activeChar.getAntifeedSex() ? 0 : 1); // sex
-				writeD(_activeChar.getAntifeedTemplate().getClassId().getId()); // class
+				writeD(_activeChar.getClassId().getId());
 			}
 			else
 			{
-				if (_activeChar.hasAntiFeed())
-				{
-					writeS("Unknown"); // visible name
-				}
-				else
-				{
-					writeS(_activeChar.getAppearance().getVisibleName());
-				}
-				
-				writeD(_activeChar.getRace().ordinal());
-				writeD(_activeChar.getAppearance().getSex() ? 1 : 0);
-				
-				if (_activeChar.getClassIndex() == 0)
-				{
-					writeD(_activeChar.getClassId().getId());
-				}
-				else
-				{
-					writeD(_activeChar.getBaseClass());
-				}
+				writeD(_activeChar.getBaseClass());
 			}
 			
 			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_UNDER));
@@ -324,46 +302,14 @@ public class CharInfo extends L2GameServerPacket
 			writeF(_moveMultiplier);
 			writeF(_activeChar.getAttackSpeedMultiplier());
 			
-			if (antifeed)
-			{
-				if (_activeChar.getAntifeedSex())
-				{
-					writeF(_activeChar.getAntifeedTemplate().getFCollisionRadiusFemale());
-					writeF(_activeChar.getAntifeedTemplate().getFCollisionHeightFemale());
-				}
-				else
-				{
-					writeF(_activeChar.getAntifeedTemplate().getfCollisionRadius());
-					writeF(_activeChar.getAntifeedTemplate().getfCollisionHeight());
-				}
-			}
-			else
-			{
-				writeF(_activeChar.getCollisionRadius());
-				writeF(_activeChar.getCollisionHeight());
-			}
+			writeF(_activeChar.getCollisionRadius());
+			writeF(_activeChar.getCollisionHeight());
 			
-			if (antifeed)
-			{
-				writeD(0);
-				writeD(0);
-				writeD(0);
-			}
-			else
-			{
-				writeD(_activeChar.getAppearance().getHairStyle());
-				writeD(_activeChar.getAppearance().getHairColor());
-				writeD(_activeChar.getAppearance().getFace());
-			}
+			writeD(_activeChar.getAppearance().getHairStyle());
+			writeD(_activeChar.getAppearance().getHairColor());
+			writeD(_activeChar.getAppearance().getFace());
 			
-			if (antifeed || _activeChar.hasAntiFeed())
-			{
-				writeS("");
-			}
-			else
-			{
-				writeS(gmSeeInvis ? "Invisible" : _activeChar.getAppearance().getVisibleTitle());
-			}
+			writeS(gmSeeInvis ? "Invisible" : _activeChar.getAppearance().getVisibleTitle());
 			
 			if (_activeChar.isCursedWeaponEquipped() || antifeed || _activeChar.hasAntiFeed())
 			{
@@ -412,14 +358,8 @@ public class CharInfo extends L2GameServerPacket
 				writeH(_activeChar.getRecomHave()); // Blue value for name (0 = white, 255 = pure blue)
 			}
 			writeD(_activeChar.getMountNpcId() + 1000000);
-			if (antifeed)
-			{
-				writeD(_activeChar.getAntifeedTemplate().getClassId().getId());
-			}
-			else
-			{
-				writeD(_activeChar.getClassId().getId());
-			}
+			
+			writeD(_activeChar.getClassId().getId());
 			writeD(0x00); // ?
 			writeC(_activeChar.isMounted() || (_airShipHelm != 0) ? 0 : _activeChar.getEnchantEffect());
 			

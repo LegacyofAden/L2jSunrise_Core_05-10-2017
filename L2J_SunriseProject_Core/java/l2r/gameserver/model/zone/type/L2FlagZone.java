@@ -54,7 +54,7 @@ public class L2FlagZone extends L2ZoneType
 			}
 			if (FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
 			{
-				activeChar.setAntiFeed(true);
+				activeChar.startAntifeedProtection(true);
 			}
 			
 			activeChar.broadcastUserInfo();
@@ -79,7 +79,7 @@ public class L2FlagZone extends L2ZoneType
 			}
 			if (FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
 			{
-				activeChar.setAntiFeed(false);
+				activeChar.startAntifeedProtection(false);
 			}
 			
 			activeChar.broadcastUserInfo();
