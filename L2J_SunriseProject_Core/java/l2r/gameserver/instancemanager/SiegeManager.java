@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.xml.impl.SkillData;
@@ -270,7 +269,7 @@ public class SiegeManager
 	
 	public final List<Siege> getSieges()
 	{
-		FastList<Siege> sieges = new FastList<>();
+		List<Siege> sieges = new ArrayList<>();
 		for (Castle castle : CastleManager.getInstance().getCastles())
 		{
 			sieges.add(castle.getSiege());

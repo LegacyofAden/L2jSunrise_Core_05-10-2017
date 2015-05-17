@@ -279,6 +279,7 @@ public class GameServer
 		DoorData.getInstance();
 		ItemAuctionManager.getInstance();
 		CastleManager.getInstance().loadInstances();
+		FortManager.getInstance().loadInstances();
 		NpcBufferTable.getInstance();
 		GrandBossManager.getInstance().initZones();
 		EventDroplist.getInstance();
@@ -344,17 +345,16 @@ public class GameServer
 		printSection("Siege");
 		SiegeManager.getInstance().getSieges();
 		CastleManager.getInstance().activateInstances();
-		FortManager.getInstance().loadInstances();
 		FortManager.getInstance().activateInstances();
 		FortSiegeManager.getInstance();
 		SiegeScheduleData.getInstance();
 		
-		printSection("Others");
 		MerchantPriceConfigData.getInstance().updateReferences();
 		TerritoryWarManager.getInstance();
 		CastleManorManager.getInstance();
 		MercTicketManager.getInstance();
 		
+		printSection("Others");
 		MonsterRace.getInstance();
 		
 		SevenSigns.getInstance().spawnSevenSignsNPC();

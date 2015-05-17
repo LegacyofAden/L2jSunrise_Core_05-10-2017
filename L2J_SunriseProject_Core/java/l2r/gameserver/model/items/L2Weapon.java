@@ -412,7 +412,7 @@ public final class L2Weapon extends L2Item
 		
 		final L2Skill onMagicSkill = _skillsOnMagic.getSkill();
 		// No Trigger if Offensive Skill
-		if (trigger.isOffensive() && onMagicSkill.isOffensive())
+		if (trigger.isOffensive() != onMagicSkill.isOffensive())
 		{
 			return _emptyEffectSet;
 		}
