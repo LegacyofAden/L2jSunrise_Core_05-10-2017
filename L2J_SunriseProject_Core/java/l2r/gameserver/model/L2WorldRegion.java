@@ -353,20 +353,6 @@ public final class L2WorldRegion
 		
 		// turn the AI on or off to match the region's activation.
 		switchAI(value);
-		
-		// TODO
-		// turn the geodata on or off to match the region's activation.
-		if (Config.DEBUG_PATH || Config.DEBUG)
-		{
-			if (value)
-			{
-				_log.info("Starting Grid " + _tileX + "," + _tileY);
-			}
-			else
-			{
-				_log.info("Stoping Grid " + _tileX + "," + _tileY);
-			}
-		}
 	}
 	
 	/**

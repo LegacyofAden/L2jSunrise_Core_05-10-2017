@@ -1033,7 +1033,6 @@ public final class Config
 	public static int PATHFIND_MAX_Z_DIFF;
 	public static boolean PATHFIND_DIAGONAL;
 	public static int TRICK_HEIGHT;
-	public static boolean DEBUG_PATH;
 	public static boolean ENABLE_FALLING_DAMAGE;
 	
 	public static enum IdFactoryType
@@ -2521,7 +2520,6 @@ public final class Config
 			final PropertiesParser Geodata = new PropertiesParser(GEODATA_CONFIG_FILE);
 			
 			GEODATA = Geodata.getBoolean("AllowGeoData", false);
-			DEBUG_PATH = Geodata.getBoolean("DebugPath", false);
 			ENABLE_FALLING_DAMAGE = Geodata.getBoolean("EnableFallingDamage", true);
 			
 			String correctZ = GEODATA ? Geodata.getString("GeoCorrectSpawnZ", "ALL") : "NONE";
