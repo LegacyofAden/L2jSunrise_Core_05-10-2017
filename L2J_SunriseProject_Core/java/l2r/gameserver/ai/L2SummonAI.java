@@ -32,7 +32,6 @@ import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.skills.L2Skill;
-import l2r.gameserver.pathfinding.PathFinding;
 import l2r.util.Rnd;
 
 public class L2SummonAI extends L2PlayableAI implements Runnable
@@ -54,7 +53,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 	@Override
 	protected void onIntentionAttack(L2Character target)
 	{
-		if ((Config.PATHFINDING > 0) && (PathFinding.getInstance().findPath(_actor.getX(), _actor.getY(), _actor.getZ(), target.getX(), target.getY(), target.getZ(), _actor.getInstanceId(), true) == null))
+		if ((Config.GEODATA) && (GeoData.getInstance().pathFind(_actor.getX(), _actor.getY(), _actor.getZ(), target.getX(), target.getY(), target.getZ()) == null))
 		{
 			return;
 		}
@@ -248,7 +247,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 				
 				final int targetX = ownerX + (int) (AVOID_RADIUS * Math.cos(angle));
 				final int targetY = ownerY + (int) (AVOID_RADIUS * Math.sin(angle));
-				if (GeoData.getInstance().canMove(_actor.getX(), _actor.getY(), _actor.getZ(), targetX, targetY, _actor.getZ(), _actor.getInstanceId()))
+				if (GeoData.getInstance().canMoveToCoord(_actor.getX(), _actor.getY(), _actor.getZ(), targetX, targetY, _actor.getZ(), true))
 				{
 					moveTo(targetX, targetY, _actor.getZ());
 				}

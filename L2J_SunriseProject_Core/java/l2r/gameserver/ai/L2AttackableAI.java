@@ -710,7 +710,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
 			
 			moveTo(x1, y1, z1);
-			// final Location moveLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
+			// final Location moveLoc = GeoClient.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
 			// moveTo(moveLoc.getX(), moveLoc.getY(), moveLoc.getZ());
 		}
 	}
@@ -911,7 +911,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					if (!npc.isInsideRadius(newX, newY, 0, collision, false, false))
 					{
 						int newZ = npc.getZ() + 30;
-						if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), newX, newY, newZ, npc.getInstanceId()))
+						if (GeoData.getInstance().canMoveToCoord(npc.getX(), npc.getY(), npc.getZ(), newX, newY, newZ, true))
 						{
 							moveTo(newX, newY, newZ);
 						}
@@ -951,7 +951,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						posY = posY - 300;
 					}
 					
-					if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), posX, posY, posZ, npc.getInstanceId()))
+					if (GeoData.getInstance().canMoveToCoord(npc.getX(), npc.getY(), npc.getZ(), posX, posY, posZ, true))
 					{
 						setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new Location(posX, posY, posZ, 0));
 					}
@@ -2040,7 +2040,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					{
 						continue;
 					}
-					if(!GeoData.getInstance().canSeeTarget(_actor,getAttackTarget()))
+					if(!GeoClient.getInstance().canSeeTarget(_actor,getAttackTarget()))
 						continue;
 					clientStopMoving(null);
 					L2Object target = getAttackTarget();

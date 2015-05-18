@@ -36,8 +36,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -50,10 +48,10 @@ import java.util.stream.IntStream;
 
 import l2r.gameserver.engines.DocumentParser;
 import l2r.gameserver.enums.IllegalActionPunishmentType;
-import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.util.FloodProtectorConfig;
 import l2r.gameserver.util.Util;
+import l2r.geoserver.geodata.PathFindBuffers;
 import l2r.util.PropertiesParser;
 import l2r.util.StringUtil;
 
@@ -1017,22 +1015,25 @@ public final class Config
 	// --------------------------------------------------
 	// Geodata Settings
 	// --------------------------------------------------
-	public static int PATHFINDING;
-	public static String GEODATA_DRIVER;
-	public static File PATHNODE_DIR;
-	public static String PATHFIND_BUFFERS;
-	public static float LOW_WEIGHT;
-	public static float MEDIUM_WEIGHT;
-	public static float HIGH_WEIGHT;
-	public static boolean ADVANCED_DIAGONAL_STRATEGY;
-	public static float DIAGONAL_WEIGHT;
-	public static int MAX_POSTFILTER_PASSES;
+	public static enum CorrectSpawnsZ
+	{
+		TOWN,
+		MONSTER,
+		ALL,
+		NONE
+	}
+	
+	public static boolean GEODATA;
+	public static CorrectSpawnsZ GEO_CORRECT_Z;
+	public static int CLIENT_SHIFTZ;
+	public static boolean PATH_CLEAN;
+	public static int MAX_Z_DIFF;
+	public static boolean ALLOW_FALL_FROM_WALLS;
+	public static int MIN_LAYER_HEIGHT;
+	public static int PATHFIND_MAX_Z_DIFF;
+	public static boolean PATHFIND_DIAGONAL;
+	public static int TRICK_HEIGHT;
 	public static boolean DEBUG_PATH;
-	public static boolean FORCE_GEODATA;
-	public static int COORD_SYNCHRONIZE;
-	public static Path GEODATA_PATH;
-	public static boolean TRY_LOAD_UNSPECIFIED_REGIONS;
-	public static Map<String, Boolean> GEODATA_REGIONS;
 	public static boolean ENABLE_FALLING_DAMAGE;
 	
 	public static enum IdFactoryType
@@ -2519,45 +2520,22 @@ public final class Config
 			// Load General L2Properties file (if exists)
 			final PropertiesParser Geodata = new PropertiesParser(GEODATA_CONFIG_FILE);
 			
-			GEODATA_DRIVER = Geodata.getString("GeoDataDriver", "l2r.gameserver.geoengine.NullDriver");
-			
-			try
-			{
-				PATHNODE_DIR = new File(Geodata.getString("PathnodeDirectory", "data/pathnode").replaceAll("\\\\", "/")).getCanonicalFile();
-			}
-			catch (IOException e)
-			{
-				_log.warn("Error setting pathnode directory!", e);
-				PATHNODE_DIR = new File("data/pathnode");
-			}
-			
-			PATHFINDING = Geodata.getInt("PathFinding", 0);
-			PATHFIND_BUFFERS = Geodata.getString("PathFindBuffers", "100x6;128x6;192x6;256x4;320x4;384x4;500x2");
-			LOW_WEIGHT = Geodata.getFloat("LowWeight", 0.5f);
-			MEDIUM_WEIGHT = Geodata.getFloat("MediumWeight", 2);
-			HIGH_WEIGHT = Geodata.getFloat("HighWeight", 3);
-			ADVANCED_DIAGONAL_STRATEGY = Geodata.getBoolean("AdvancedDiagonalStrategy", true);
-			DIAGONAL_WEIGHT = Geodata.getFloat("DiagonalWeight", 0.707f);
-			MAX_POSTFILTER_PASSES = Geodata.getInt("MaxPostfilterPasses", 3);
+			GEODATA = Geodata.getBoolean("AllowGeoData", false);
 			DEBUG_PATH = Geodata.getBoolean("DebugPath", false);
-			FORCE_GEODATA = Geodata.getBoolean("ForceGeoData", true);
-			COORD_SYNCHRONIZE = Geodata.getInt("CoordSynchronize", -1);
 			ENABLE_FALLING_DAMAGE = Geodata.getBoolean("EnableFallingDamage", true);
 			
-			GEODATA_PATH = Paths.get(Geodata.getString("GeoDataPath", "./data/geodata"));
-			TRY_LOAD_UNSPECIFIED_REGIONS = Geodata.getBoolean("TryLoadUnspecifiedRegions", true);
-			GEODATA_REGIONS = new HashMap<>();
-			for (int regionX = L2World.TILE_X_MIN; regionX <= L2World.TILE_X_MAX; regionX++)
-			{
-				for (int regionY = L2World.TILE_Y_MIN; regionY <= L2World.TILE_Y_MAX; regionY++)
-				{
-					String key = regionX + "_" + regionY;
-					if (Geodata.containskey(regionX + "_" + regionY))
-					{
-						GEODATA_REGIONS.put(key, Geodata.getBoolean(key, false));
-					}
-				}
-			}
+			String correctZ = GEODATA ? Geodata.getString("GeoCorrectSpawnZ", "ALL") : "NONE";
+			GEO_CORRECT_Z = CorrectSpawnsZ.valueOf(correctZ.toUpperCase());
+			CLIENT_SHIFTZ = Geodata.getInt("GeoClientShiftZ", 16);
+			PATH_CLEAN = Geodata.getBoolean("PathFindClean", true);
+			ALLOW_FALL_FROM_WALLS = Geodata.getBoolean("AllowFallFromWalls", false);
+			PATHFIND_DIAGONAL = Geodata.getBoolean("PathFindDiagonal", false);
+			MAX_Z_DIFF = Geodata.getInt("MaxZDiff", 64);
+			MIN_LAYER_HEIGHT = Geodata.getInt("MinLayerHeight", 64);
+			PATHFIND_MAX_Z_DIFF = Geodata.getInt("PathFindMaxZDiff", 32);
+			TRICK_HEIGHT = Geodata.getInt("MinTrickHeight", 16);
+			
+			PathFindBuffers.initBuffers("8x100;8x128;8x192;4x256;2x320;2x384;1x500");
 			
 			final File hexIdFile = new File(HEXID_FILE);
 			if (hexIdFile.exists())
@@ -3084,27 +3062,6 @@ public final class Config
 				break;
 			case "multipleitemdrop":
 				MULTIPLE_ITEM_DROP = Boolean.parseBoolean(pValue);
-				break;
-			case "lowweight":
-				LOW_WEIGHT = Float.parseFloat(pValue);
-				break;
-			case "mediumweight":
-				MEDIUM_WEIGHT = Float.parseFloat(pValue);
-				break;
-			case "highweight":
-				HIGH_WEIGHT = Float.parseFloat(pValue);
-				break;
-			case "advanceddiagonalstrategy":
-				ADVANCED_DIAGONAL_STRATEGY = Boolean.parseBoolean(pValue);
-				break;
-			case "diagonalweight":
-				DIAGONAL_WEIGHT = Float.parseFloat(pValue);
-				break;
-			case "maxpostfilterpasses":
-				MAX_POSTFILTER_PASSES = Integer.parseInt(pValue);
-				break;
-			case "coordsynchronize":
-				COORD_SYNCHRONIZE = Integer.parseInt(pValue);
 				break;
 			case "deletecharafterdays":
 				DELETE_DAYS = Integer.parseInt(pValue);

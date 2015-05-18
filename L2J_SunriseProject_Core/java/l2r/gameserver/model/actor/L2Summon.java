@@ -20,6 +20,7 @@ package l2r.gameserver.model.actor;
 
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
+import l2r.gameserver.GeoData;
 import l2r.gameserver.ai.L2CharacterAI;
 import l2r.gameserver.ai.L2SummonAI;
 import l2r.gameserver.data.xml.impl.ExperienceData;
@@ -68,7 +69,6 @@ import l2r.gameserver.network.serverpackets.PetStatusUpdate;
 import l2r.gameserver.network.serverpackets.RelationChanged;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.TeleportToLocation;
-import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.taskmanager.DecayTaskManager;
 import l2r.gameserver.util.Util;
 
@@ -666,7 +666,7 @@ public abstract class L2Summon extends L2Playable
 			return false;
 		}
 		
-		if ((this != target) && skill.isPhysical() && (Config.PATHFINDING > 0) && (PathFinding.getInstance().findPath(getX(), getY(), getZ(), target.getX(), target.getY(), target.getZ(), getInstanceId(), true) == null))
+		if ((this != target) && skill.isPhysical() && (Config.GEODATA) && (GeoData.getInstance().pathFind(getX(), getY(), getZ(), target.getX(), target.getY(), target.getZ()) == null))
 		{
 			sendPacket(SystemMessageId.CANT_SEE_TARGET);
 			return false;

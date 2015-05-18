@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
+import l2r.gameserver.GeoData;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -81,7 +82,7 @@ public class ValidatePosition extends L2GameClientPacket
 		
 		if (activeChar.isInBoat())
 		{
-			if (Config.COORD_SYNCHRONIZE == 2)
+			if (Config.GEODATA)
 			{
 				dx = _x - activeChar.getInVehiclePosition().getX();
 				dy = _y - activeChar.getInVehiclePosition().getY();
@@ -145,47 +146,29 @@ public class ValidatePosition extends L2GameClientPacket
 		}
 		else if (diffSq < 360000) // if too large, messes observation
 		{
-			if (Config.COORD_SYNCHRONIZE == -1) // Only Z coordinate synched to server,
-			// mainly used when no geodata but can be used also with geodata
+			if (!activeChar.isMoving() || !activeChar.validateMovementHeading(_heading))
 			{
-				activeChar.setXYZ(realX, realY, _z);
-				return;
-			}
-			if (Config.COORD_SYNCHRONIZE == 1) // Trusting also client x,y coordinates (should not be used with geodata)
-			{
-				if (!activeChar.isMoving() || !activeChar.validateMovementHeading(_heading)) // Heading changed on client = possible obstacle
+				if (diffSq < 2500)
 				{
-					// character is not moving, take coordinates from client
-					if (diffSq < 2500)
-					{
-						activeChar.setXYZ(realX, realY, _z);
-					}
-					else
-					{
-						activeChar.setXYZ(_x, _y, _z);
-					}
+					activeChar.setXYZ(realX, realY, _z);
 				}
 				else
 				{
-					activeChar.setXYZ(realX, realY, _z);
+					activeChar.setXYZ(_x, _y, _z);
 				}
-				
-				activeChar.setHeading(_heading);
-				return;
 			}
-			// Sync 2 (or other),
-			// intended for geodata. Sends a validation packet to client
-			// when too far from server calculated true coordinate.
-			// Due to geodata/zone errors, some Z axis checks are made. (maybe a temporary solution)
-			// Important: this code part must work together with L2Character.updatePosition
-			if ((diffSq > 250000) || (Math.abs(dz) > 200))
+			else
 			{
-				// if ((_z - activeChar.getClientZ()) < 200 && Math.abs(activeChar.getLastServerPosition().getZ()-realZ) > 70)
-				
+				activeChar.setXYZ(realX, realY, _z);
+			}
+			activeChar.setHeading(_heading);
+			
+			if (Config.GEODATA && ((diffSq > 250000) || (Math.abs(dz) > 200)))
+			{
 				if ((Math.abs(dz) > 200) && (Math.abs(dz) < 1500) && (Math.abs(_z - activeChar.getClientZ()) < 800))
 				{
 					activeChar.setXYZ(realX, realY, _z);
-					realZ = _z;
+					realZ = GeoData.getInstance().getSpawnHeight(_x, _y, activeChar.getZ());
 				}
 				else
 				{
@@ -193,7 +176,6 @@ public class ValidatePosition extends L2GameClientPacket
 					{
 						_log.info(activeChar.getName() + ": Synchronizing position Server --> Client");
 					}
-					
 					activeChar.sendPacket(new ValidateLocation(activeChar));
 				}
 			}

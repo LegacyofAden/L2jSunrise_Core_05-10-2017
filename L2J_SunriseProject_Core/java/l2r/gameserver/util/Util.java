@@ -105,6 +105,11 @@ public final class Util
 		return degree;
 	}
 	
+	public static double convertHeadingToRadian(int heading)
+	{
+		return Math.toRadians(convertHeadingToDegree(heading) - 90);
+	}
+	
 	public static final int convertDegreeToClientHeading(double degree)
 	{
 		if (degree < 0)
@@ -743,7 +748,7 @@ public final class Util
 				}
 				
 				final L2Character cha = (L2Character) obj;
-				if (((cha.getZ() < (npc.getZ() - 100)) && (cha.getZ() > (npc.getZ() + 100))) || !(GeoData.getInstance().canSeeTarget(cha.getX(), cha.getY(), cha.getZ(), npc.getX(), npc.getY(), npc.getZ())))
+				if (((cha.getZ() < (npc.getZ() - 100)) && (cha.getZ() > (npc.getZ() + 100))) || !(GeoData.getInstance().canSeeTarget(cha, npc)))
 				{
 					continue;
 				}
