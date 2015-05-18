@@ -83,10 +83,19 @@ public class CharacterSelect extends L2GameClientPacket
 			return;
 		}
 		
-		if (SecondaryAuthData.getInstance().isEnabled() && !client.getSecondaryAuth().isAuthed())
+		if (SecondaryAuthData.getInstance().isEnabled())
 		{
-			client.getSecondaryAuth().openDialog();
-			return;
+			if (!client.getSecondaryAuth().isAuthed())
+			{
+				client.getSecondaryAuth().setTempCharSlotId(_charSlot);
+				client.getSecondaryAuth().openDialog();
+				return;
+			}
+			
+			if (client.getSecondaryAuth().getTempCharSlotId() > -1)
+			{
+				_charSlot = client.getSecondaryAuth().getTempCharSlotId();
+			}
 		}
 		
 		// We should always be able to acquire the lock
@@ -136,6 +145,7 @@ public class CharacterSelect extends L2GameClientPacket
 					
 					// load up character from disk
 					final L2PcInstance cha = client.loadCharFromDisk(_charSlot);
+					client.getSecondaryAuth().setTempCharSlotId(-1);
 					if (cha == null)
 					{
 						return; // handled in L2GameClient

@@ -320,4 +320,16 @@ public class SecondaryPasswordAuth
 		_wrongAttempts = 0;
 		return true;
 	}
+	
+	private int _tempCharSlotId = -1;
+	
+	public int getTempCharSlotId()
+	{
+		return _tempCharSlotId;
+	}
+	
+	public void setTempCharSlotId(int tempCharSlotId)
+	{
+		_tempCharSlotId = tempCharSlotId;
+	}
 }
