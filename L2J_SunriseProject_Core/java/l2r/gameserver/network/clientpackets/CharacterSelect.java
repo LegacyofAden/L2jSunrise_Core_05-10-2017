@@ -145,7 +145,11 @@ public class CharacterSelect extends L2GameClientPacket
 					
 					// load up character from disk
 					final L2PcInstance cha = client.loadCharFromDisk(_charSlot);
-					client.getSecondaryAuth().setTempCharSlotId(-1);
+					if (SecondaryAuthData.getInstance().isEnabled())
+					{
+						client.getSecondaryAuth().setTempCharSlotId(-1);
+					}
+					
 					if (cha == null)
 					{
 						return; // handled in L2GameClient

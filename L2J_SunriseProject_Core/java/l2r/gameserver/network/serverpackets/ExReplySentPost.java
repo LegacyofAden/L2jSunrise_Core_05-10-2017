@@ -23,6 +23,7 @@ import l2r.gameserver.model.itemcontainer.ItemContainer;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 
 /**
+ * ExReplySentPost packet implementation.
  * @author Migi, DS
  */
 public class ExReplySentPost extends L2GameServerPacket
@@ -102,6 +103,7 @@ public class ExReplySentPost extends L2GameServerPacket
 		else
 		{
 			writeD(0x00);
+			writeQ(_msg.getReqAdena());
 		}
 	}
 }

@@ -21,6 +21,7 @@ import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
+import l2r.gameserver.model.interfaces.ILocational;
 import l2r.geoserver.geodata.GeoEngine;
 import l2r.geoserver.geodata.PathFindBuffers;
 import l2r.geoserver.model.GeoCollision;
@@ -219,6 +220,11 @@ public class GeoData
 	public Location moveCheckWithoutDoors(Location fromPos, Location toPos, boolean returnPrev)
 	{
 		return moveCheck(fromPos.getX(), fromPos.getY(), fromPos.getZ(), toPos.getX(), toPos.getY(), toPos.getZ(), returnPrev);
+	}
+	
+	public Location moveCheck(ILocational origin, ILocational destination)
+	{
+		return moveCheck(origin.getX(), origin.getY(), origin.getZ(), destination.getX(), destination.getY(), destination.getZ(), false);
 	}
 	
 	public Location moveCheck(L2Character actor, Location toPos, boolean returnPrev)
