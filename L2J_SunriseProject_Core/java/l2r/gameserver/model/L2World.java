@@ -57,7 +57,7 @@ public final class L2World
 	 */
 	public static final int SHIFT_BY = 12;
 	
-	// private static final int TILE_SIZE = 32768;
+	private static final int TILE_SIZE = 32768;
 	
 	/** Map dimensions */
 	public static final int TILE_X_MIN = 11;
@@ -67,10 +67,11 @@ public final class L2World
 	public static final int TILE_ZERO_COORD_X = 20;
 	public static final int TILE_ZERO_COORD_Y = 18;
 	
-	public static final int MAP_MIN_X = -327680;
-	public static final int MAP_MAX_X = 229376;
-	public static final int MAP_MIN_Y = -262144;
-	public static final int MAP_MAX_Y = 294912;
+	public static final int MAP_MIN_X = (TILE_X_MIN - TILE_ZERO_COORD_X) * TILE_SIZE;
+	public static final int MAP_MIN_Y = (TILE_Y_MIN - TILE_ZERO_COORD_Y) * TILE_SIZE;
+	
+	public static final int MAP_MAX_X = ((TILE_X_MAX - TILE_ZERO_COORD_X) + 1) * TILE_SIZE;
+	public static final int MAP_MAX_Y = ((TILE_Y_MAX - TILE_ZERO_COORD_Y) + 1) * TILE_SIZE;
 	
 	/** calculated offset used so top left region is 0,0 */
 	public static final int OFFSET_X = Math.abs(MAP_MIN_X >> SHIFT_BY);

@@ -130,6 +130,7 @@ import l2r.gameserver.model.entity.olympiad.Olympiad;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.network.L2GameClient;
 import l2r.gameserver.network.L2GamePacketHandler;
+import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.script.faenor.FaenorScriptEngine;
 import l2r.gameserver.scripting.L2ScriptEngineManager;
 import l2r.gameserver.taskmanager.AutoAnnounceTaskManager;
@@ -204,6 +205,11 @@ public class GameServer
 		
 		printSection("Geodata");
 		GeoData.getInstance();
+		
+		if (Config.PATHFINDING > 0)
+		{
+			PathFinding.getInstance();
+		}
 		
 		printSection("World");
 		// start game time control early
