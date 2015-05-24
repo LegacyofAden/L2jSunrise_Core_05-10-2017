@@ -168,7 +168,7 @@ public class ServicesBBSManager extends BaseBBSManager
 				return;
 			}
 			
-			if (activeChar.isJailed() || activeChar.isInOlympiadMode() || activeChar.inObserverMode() || SunriseEvents.isInEvent(activeChar) || OlympiadManager.getInstance().isRegistered(activeChar))
+			if (activeChar.isJailed() || activeChar.isAlikeDead() || activeChar.isInOlympiadMode() || activeChar.inObserverMode() || SunriseEvents.isInEvent(activeChar) || OlympiadManager.getInstance().isRegistered(activeChar))
 			{
 				activeChar.sendMessage("Cannot use at the moment.");
 				separateAndSend(content, activeChar);
@@ -543,6 +543,14 @@ public class ServicesBBSManager extends BaseBBSManager
 		else if (command.startsWith(_servicesBBSCommand + "_functions_buffer"))
 		{
 			final String[] subCommand = command.split("_");
+			
+			if (activeChar.isJailed() || activeChar.isAlikeDead() || activeChar.isInOlympiadMode() || activeChar.inObserverMode() || SunriseEvents.isInEvent(activeChar) || OlympiadManager.getInstance().isRegistered(activeChar))
+			{
+				activeChar.sendMessage("Cannot use at the moment.");
+				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/buffer/main.htm");
+				separateAndSend(content, activeChar);
+				return;
+			}
 			
 			// Page navigation, html command how to starts
 			if (subCommand[4].startsWith("page"))
