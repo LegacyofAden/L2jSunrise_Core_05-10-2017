@@ -38,6 +38,7 @@ import l2r.gameserver.instancemanager.ClanHallManager;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.itemcontainer.ItemContainer;
 import l2r.gameserver.network.SystemMessageId;
 
 import org.slf4j.Logger;
@@ -296,29 +297,48 @@ public class Auction
 	}
 	
 	/**
-	 * Return Item in WHC
-	 * @param Clan
-	 * @param quantity
-	 * @param penalty
+	 * Returns the item to the clan warehouse.
+	 * @param clanName the clan name
+	 * @param quantity the Adena value
+	 * @param penalty if {@code true} fees are applied
 	 */
-	private void returnItem(String Clan, long quantity, boolean penalty)
+	private void returnItem(String clanName, long quantity, boolean penalty)
 	{
 		if (penalty)
 		{
 			quantity *= 0.9; // take 10% tax fee if needed
 		}
 		
-		// avoid overflow on return
-		final long limit = MAX_ADENA - ClanTable.getInstance().getClanByName(Clan).getWarehouse().getAdena();
-		quantity = Math.min(quantity, limit);
+		final L2Clan clan = ClanTable.getInstance().getClanByName(clanName);
+		if (clan == null)
+		{
+			_log.warn("Clan " + clanName + " doesn't exist!");
+			return;
+		}
 		
+		final ItemContainer cwh = clan.getWarehouse();
+		if (cwh == null)
+		{
+			_log.warn("There has been a problem with " + clanName + "'s clan warehouse!");
+			return;
+		}
+		
+		long limit = 1;
 		if (CustomServerConfigs.ALTERNATE_PAYMODE_CLANHALLS)
 		{
-			ClanTable.getInstance().getClanByName(Clan).getWarehouse().addItem("Outbidded", FADENA_ID, quantity, null, null);
+			// avoid overflow on return
+			limit = MAX_ADENA - cwh.getFAdena();
+			quantity = Math.min(quantity, limit);
+			
+			cwh.addItem("Outbidded", FADENA_ID, quantity, null, null);
 		}
 		else
 		{
-			ClanTable.getInstance().getClanByName(Clan).getWarehouse().addItem("Outbidded", ADENA_ID, quantity, null, null);
+			// avoid overflow on return
+			limit = MAX_ADENA - cwh.getAdena();
+			quantity = Math.min(quantity, limit);
+			
+			cwh.addItem("Outbidded", ADENA_ID, quantity, null, null);
 		}
 	}
 	
