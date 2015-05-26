@@ -33,6 +33,8 @@ import l2r.util.Rnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gr.sr.interf.SunriseEvents;
+
 public class CharStatus
 {
 	protected static final Logger _log = LoggerFactory.getLogger(CharStatus.class);
@@ -165,6 +167,14 @@ public class CharStatus
 			}
 		}
 		
+		if (attacker != null)
+		{
+			if (SunriseEvents.isInEvent(getActiveChar()) && SunriseEvents.isInEvent(attacker))
+			{
+				SunriseEvents.onDamageGive(getActiveChar(), attacker, (int) value, isDOT);
+			}
+		}
+		
 		if (value > 0)
 		{
 			setCurrentHp(Math.max(getCurrentHp() - value, 0));
@@ -180,7 +190,19 @@ public class CharStatus
 				_log.info("char is dead.");
 			}
 			
-			getActiveChar().doDie(attacker);
+			boolean allowDie = true;
+			if (SunriseEvents.isInEvent(getActiveChar()))
+			{
+				if (!SunriseEvents.allowDie(getActiveChar(), attacker))
+				{
+					allowDie = false;
+				}
+			}
+			
+			if (allowDie)
+			{
+				getActiveChar().doDie(attacker);
+			}
 		}
 	}
 	

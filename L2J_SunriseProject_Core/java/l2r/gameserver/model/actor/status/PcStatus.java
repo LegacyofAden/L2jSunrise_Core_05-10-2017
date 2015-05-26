@@ -146,10 +146,7 @@ public class PcStatus extends PlayableStatus
 						getActiveChar().setDuelState(Duel.DUELSTATE_INTERRUPTED);
 					}
 				}
-			}
-			
-			if (attackerPlayer != null)
-			{
+				
 				if (SunriseEvents.isInEvent(attackerPlayer))
 				{
 					SunriseEvents.onHit(attackerPlayer, getActiveChar(), fullValue, isDOT);
