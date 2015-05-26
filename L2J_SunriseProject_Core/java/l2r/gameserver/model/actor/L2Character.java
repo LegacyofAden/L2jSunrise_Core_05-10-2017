@@ -6879,7 +6879,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				}
 			}
 			// Notify AI
-			if (skill.isOffensive())
+			if (skill.isOffensive() && (skill.getTargetType() != L2TargetType.SELF))
 			{
 				switch (skill.getSkillType())
 				{
@@ -6890,10 +6890,14 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					default:
 						for (L2Object target : targets)
 						{
-							if ((target instanceof L2Character) && ((L2Character) target).hasAI())
+							if (target instanceof L2Character)
 							{
-								// notify target AI about the attack
-								((L2Character) target).getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
+								final L2Character creature = (L2Character) target;
+								if (creature.hasAI())
+								{
+									// notify target AI about the attack
+									creature.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
+								}
 							}
 						}
 						break;
