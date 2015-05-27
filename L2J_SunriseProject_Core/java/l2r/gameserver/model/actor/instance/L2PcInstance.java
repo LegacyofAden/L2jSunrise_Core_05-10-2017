@@ -14494,6 +14494,12 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
+		// If there is no geodata loaded for the place we are client Z correction might cause falling damage.
+		if (!GeoData.getInstance().hasGeo(getX(), getY()))
+		{
+			return false;
+		}
+		
 		final int damage = (int) Formulas.calcFallDam(this, deltaZ);
 		if (damage > 0)
 		{

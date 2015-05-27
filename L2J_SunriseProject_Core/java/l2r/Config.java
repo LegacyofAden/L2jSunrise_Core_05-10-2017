@@ -2538,6 +2538,7 @@ public final class Config
 			MAX_POSTFILTER_PASSES = geoData.getInt("MaxPostfilterPasses", 3);
 			DEBUG_PATH = geoData.getBoolean("DebugPath", false);
 			FORCE_GEODATA = geoData.getBoolean("ForceGeoData", true);
+			ENABLE_FALLING_DAMAGE = General.getBoolean("EnableFallingDamage", true);
 			COORD_SYNCHRONIZE = geoData.getInt("CoordSynchronize", -1);
 			GEODATA_PATH = Paths.get(geoData.getString("GeoDataPath", "./data/geodata"));
 			TRY_LOAD_UNSPECIFIED_REGIONS = geoData.getBoolean("TryLoadUnspecifiedRegions", true);
@@ -3375,9 +3376,6 @@ public final class Config
 				break;
 			case "altgametiredness":
 				ALT_GAME_TIREDNESS = Boolean.parseBoolean(pValue);
-				break;
-			case "enablefallingdamage":
-				ENABLE_FALLING_DAMAGE = Boolean.parseBoolean(pValue);
 				break;
 			case "altgamecreation":
 				ALT_GAME_CREATION = Boolean.parseBoolean(pValue);
