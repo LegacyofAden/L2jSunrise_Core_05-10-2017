@@ -2538,10 +2538,10 @@ public final class Config
 			MAX_POSTFILTER_PASSES = geoData.getInt("MaxPostfilterPasses", 3);
 			DEBUG_PATH = geoData.getBoolean("DebugPath", false);
 			FORCE_GEODATA = geoData.getBoolean("ForceGeoData", true);
-			ENABLE_FALLING_DAMAGE = General.getBoolean("EnableFallingDamage", true);
+			ENABLE_FALLING_DAMAGE = geoData.getBoolean("EnableFallingDamage", true);
 			COORD_SYNCHRONIZE = geoData.getInt("CoordSynchronize", -1);
-			GEODATA_PATH = Paths.get(geoData.getString("GeoDataPath", "./data/geodata"));
-			TRY_LOAD_UNSPECIFIED_REGIONS = geoData.getBoolean("TryLoadUnspecifiedRegions", true);
+			GEODATA_PATH = Paths.get(geoData.getString("geodataPath", "./data/geodata"));
+			TRY_LOAD_UNSPECIFIED_REGIONS = geoData.getBoolean("tryLoadUnspecifiedRegions", true);
 			GEODATA_REGIONS = new HashMap<>();
 			for (int regionX = L2World.TILE_X_MIN; regionX <= L2World.TILE_X_MAX; regionX++)
 			{

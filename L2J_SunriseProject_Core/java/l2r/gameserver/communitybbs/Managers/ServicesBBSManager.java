@@ -39,6 +39,7 @@ import l2r.gameserver.model.entity.olympiad.OlympiadManager;
 import l2r.gameserver.model.items.L2Henna;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+import l2r.gameserver.network.serverpackets.ExBuySellList;
 import l2r.gameserver.network.serverpackets.ExShowVariationCancelWindow;
 import l2r.gameserver.network.serverpackets.ExShowVariationMakeWindow;
 import l2r.gameserver.network.serverpackets.HennaEquipList;
@@ -157,6 +158,10 @@ public class ServicesBBSManager extends BaseBBSManager
 					SecurityActions.startSecurity(activeChar, SecurityType.COMMUNITY_SYSTEM);
 				}
 			}
+		}
+		else if (command.startsWith(_servicesBBSCommand + "_CommunitySell"))
+		{
+			activeChar.sendPacket(new ExBuySellList(activeChar, 0, true));
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_teleport"))
 		{
@@ -544,7 +549,7 @@ public class ServicesBBSManager extends BaseBBSManager
 		{
 			final String[] subCommand = command.split("_");
 			
-			if (activeChar.isJailed() || activeChar.isAlikeDead() || activeChar.isInOlympiadMode() || activeChar.inObserverMode() || SunriseEvents.isInEvent(activeChar) || OlympiadManager.getInstance().isRegistered(activeChar))
+			if (((activeChar.isInCombat() || (activeChar.getPvpFlag() != 0)) && !activeChar.isInsideZone(ZoneIdType.PEACE)) || activeChar.isJailed() || activeChar.isAlikeDead() || activeChar.isInOlympiadMode() || activeChar.inObserverMode() || SunriseEvents.isInEvent(activeChar) || OlympiadManager.getInstance().isRegistered(activeChar))
 			{
 				activeChar.sendMessage("Cannot use at the moment.");
 				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/buffer/main.htm");
