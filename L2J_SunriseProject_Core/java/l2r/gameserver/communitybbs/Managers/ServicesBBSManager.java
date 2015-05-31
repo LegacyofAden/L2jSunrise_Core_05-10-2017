@@ -544,9 +544,8 @@ public class ServicesBBSManager extends BaseBBSManager
 				{
 					activeChar.sendMessage("You cannot attribute items that are not equipped!");
 				}
-				
-				separateAndSend(content, activeChar);
 			}
+			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_changename"))
 		{
