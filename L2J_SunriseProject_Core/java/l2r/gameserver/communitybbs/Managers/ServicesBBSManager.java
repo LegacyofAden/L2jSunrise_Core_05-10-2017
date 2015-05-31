@@ -53,7 +53,6 @@ import l2r.gameserver.network.serverpackets.PartySmallWindowAll;
 import l2r.gameserver.network.serverpackets.PartySmallWindowDeleteAll;
 import l2r.gameserver.network.serverpackets.SetupGauge;
 import l2r.gameserver.network.serverpackets.ShowBoard;
-import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.WareHouseDepositList;
 import l2r.gameserver.util.Broadcast;
 import l2r.gameserver.util.Util;
@@ -441,12 +440,11 @@ public class ServicesBBSManager extends BaseBBSManager
 					armorType = Inventory.PAPERDOLL_RHAND;
 					break;
 				default:
-					activeChar.sendMessage("You can't enchant items that is not equipped");
+					activeChar.sendMessage("You cannot enchant items that are not equipped.");
 					break;
 			}
 			
 			String type = subCommand[2];
-			
 			int typeId = 0;
 			switch (type)
 			{
@@ -469,7 +467,7 @@ public class ServicesBBSManager extends BaseBBSManager
 					typeId = 5;
 					break;
 				default:
-					activeChar.sendMessage("You can't enchant the item. Wrong element");
+					activeChar.sendMessage("You cannot enchant the item. Wrong element.");
 					break;
 			}
 			
@@ -482,19 +480,19 @@ public class ServicesBBSManager extends BaseBBSManager
 					byte opositeElement = Elementals.getOppositeElement(elementtoAdd);
 					Elementals oldElement = parmorInstance.getElemental(elementtoAdd);
 					
+					if ((parmorInstance.isWeapon() && (parmorInstance.getElementals() != null)) || (parmorInstance.isArmor() && (oldElement != null) && (parmorInstance.getElementals() != null) && (parmorInstance.getElementals().length >= 3)))
+					{
+						separateAndSend(content, activeChar);
+						activeChar.sendPacket(SystemMessageId.ANOTHER_ELEMENTAL_POWER_ALREADY_ADDED);
+						return;
+					}
+					
 					if (parmorInstance.isWeapon())
 					{
-						if (((oldElement != null) && (oldElement.getElement() != elementtoAdd) && (oldElement.getElement() != -2)) || (parmorInstance.isArmor() && (parmorInstance.getElemental(elementtoAdd) == null) && (parmorInstance.getElementals() != null) && (parmorInstance.getElementals().length >= 3)))
-						{
-							separateAndSend(content, activeChar);
-							activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.ANOTHER_ELEMENTAL_POWER_ALREADY_ADDED));
-							return;
-						}
-						
 						if ((oldElement != null) && (oldElement.getValue() >= value))
 						{
 							separateAndSend(content, activeChar);
-							activeChar.sendMessage("You can not add same attribute to item!");
+							activeChar.sendMessage("You cannot add same attribute to item!");
 							return;
 						}
 						
@@ -519,34 +517,35 @@ public class ServicesBBSManager extends BaseBBSManager
 								if (elm.getElement() == opositeElement)
 								{
 									separateAndSend(content, activeChar);
-									activeChar.sendMessage("You can not add opposite attribute to item!");
+									activeChar.sendMessage("You cannot add opposite attribute to item!");
 									return;
 								}
 								if ((elm.getElement() == elementtoAdd) && (elm.getValue() >= value))
 								{
 									separateAndSend(content, activeChar);
-									activeChar.sendMessage("You can not add same attribute to item!");
+									activeChar.sendMessage("You cannot add same attribute to item!");
 									return;
 								}
 							}
 						}
 					}
 					
-					parmorInstance.setElementAttr((byte) typeId, value);
-					activeChar.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
-					activeChar.getInventory().equipItemAndRecord(parmorInstance);
-					
 					activeChar.destroyItemByItemId("Community Attribute Manager", CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ID, price, activeChar, true);
+					activeChar.getInventory().unEquipItemInSlot(armorType);
+					parmorInstance.setElementAttr((byte) typeId, value);
+					activeChar.getInventory().equipItem(parmorInstance);
+					activeChar.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
 					
 					InventoryUpdate iu = new InventoryUpdate();
 					iu.addModifiedItem(parmorInstance);
 					activeChar.sendPacket(iu);
-					separateAndSend(content, activeChar);
-					return;
 				}
+				else
+				{
+					activeChar.sendMessage("You cannot attribute items that are not equipped!");
+				}
+				
 				separateAndSend(content, activeChar);
-				activeChar.sendMessage("You can't attribute items that is not equipped!");
-				return;
 			}
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_changename"))
