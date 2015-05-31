@@ -34,9 +34,12 @@ import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.SiegeManager;
 import l2r.gameserver.instancemanager.TownManager;
+import l2r.gameserver.model.Elementals;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.olympiad.OlympiadManager;
+import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.L2Henna;
+import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.ExBuySellList;
@@ -44,11 +47,13 @@ import l2r.gameserver.network.serverpackets.ExShowVariationCancelWindow;
 import l2r.gameserver.network.serverpackets.ExShowVariationMakeWindow;
 import l2r.gameserver.network.serverpackets.HennaEquipList;
 import l2r.gameserver.network.serverpackets.HennaRemoveList;
+import l2r.gameserver.network.serverpackets.InventoryUpdate;
 import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.PartySmallWindowAll;
 import l2r.gameserver.network.serverpackets.PartySmallWindowDeleteAll;
 import l2r.gameserver.network.serverpackets.SetupGauge;
 import l2r.gameserver.network.serverpackets.ShowBoard;
+import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.WareHouseDepositList;
 import l2r.gameserver.util.Broadcast;
 import l2r.gameserver.util.Util;
@@ -390,6 +395,157 @@ public class ServicesBBSManager extends BaseBBSManager
 				}
 			}
 			separateAndSend(content, activeChar);
+		}
+		else if (command.startsWith(_servicesBBSCommand + "_atrEnchant"))
+		{
+			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ALLOW)
+			{
+				activeChar.sendMessage("This function is disabled by admin");
+				return;
+			}
+			
+			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_NONPEACE && !activeChar.isInsideZone(ZoneIdType.PEACE))
+			{
+				activeChar.sendMessage("You cannot use this function outside peace zone.");
+			}
+			
+			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_atrEnchant.htm");
+			final String[] subCommand = command.split(" ");
+			
+			String loc = subCommand[1];
+			int armorType = 0;
+			int price = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_PRICE_ARMOR;
+			int value = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_LVL_FOR_ARMOR;
+			
+			switch (loc)
+			{
+				case "head":
+					armorType = Inventory.PAPERDOLL_HEAD;
+					break;
+				case "chest":
+					armorType = Inventory.PAPERDOLL_CHEST;
+					break;
+				case "gloves":
+					armorType = Inventory.PAPERDOLL_GLOVES;
+					break;
+				case "feet":
+					armorType = Inventory.PAPERDOLL_FEET;
+					break;
+				case "legs":
+					armorType = Inventory.PAPERDOLL_LEGS;
+					break;
+				case "weapon":
+					price = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_PRICE_WEAPON;
+					value = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_LVL_FOR_WEAPON;
+					armorType = Inventory.PAPERDOLL_RHAND;
+					break;
+				default:
+					activeChar.sendMessage("You can't enchant items that is not equipped");
+					break;
+			}
+			
+			String type = subCommand[2];
+			
+			int typeId = 0;
+			switch (type)
+			{
+				case "Fire":
+					typeId = 0;
+					break;
+				case "Water":
+					typeId = 1;
+					break;
+				case "Wind":
+					typeId = 2;
+					break;
+				case "Earth":
+					typeId = 3;
+					break;
+				case "Holy":
+					typeId = 4;
+					break;
+				case "Dark":
+					typeId = 5;
+					break;
+				default:
+					activeChar.sendMessage("You can't enchant the item. Wrong element");
+					break;
+			}
+			
+			if (Conditions.checkPlayerItemCount(activeChar, CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ID, price))
+			{
+				L2ItemInstance parmorInstance = activeChar.getInventory().getPaperdollItem(armorType);
+				if ((parmorInstance != null) && (parmorInstance.getLocationSlot() == armorType))
+				{
+					byte elementtoAdd = (byte) typeId;
+					byte opositeElement = Elementals.getOppositeElement(elementtoAdd);
+					Elementals oldElement = parmorInstance.getElemental(elementtoAdd);
+					
+					if (parmorInstance.isWeapon())
+					{
+						if (((oldElement != null) && (oldElement.getElement() != elementtoAdd) && (oldElement.getElement() != -2)) || (parmorInstance.isArmor() && (parmorInstance.getElemental(elementtoAdd) == null) && (parmorInstance.getElementals() != null) && (parmorInstance.getElementals().length >= 3)))
+						{
+							separateAndSend(content, activeChar);
+							activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.ANOTHER_ELEMENTAL_POWER_ALREADY_ADDED));
+							return;
+						}
+						
+						if ((oldElement != null) && (oldElement.getValue() >= value))
+						{
+							separateAndSend(content, activeChar);
+							activeChar.sendMessage("You can not add same attribute to item!");
+							return;
+						}
+						
+						if (parmorInstance.getElementals() != null)
+						{
+							for (Elementals elm : parmorInstance.getElementals())
+							{
+								if (parmorInstance.isEquipped())
+								{
+									parmorInstance.getElemental(elm.getElement()).removeBonus(activeChar);
+								}
+								parmorInstance.clearElementAttr(elm.getElement());
+							}
+						}
+					}
+					else if (parmorInstance.isArmor())
+					{
+						if (parmorInstance.getElementals() != null)
+						{
+							for (Elementals elm : parmorInstance.getElementals())
+							{
+								if (elm.getElement() == opositeElement)
+								{
+									separateAndSend(content, activeChar);
+									activeChar.sendMessage("You can not add opposite attribute to item!");
+									return;
+								}
+								if ((elm.getElement() == elementtoAdd) && (elm.getValue() >= value))
+								{
+									separateAndSend(content, activeChar);
+									activeChar.sendMessage("You can not add same attribute to item!");
+									return;
+								}
+							}
+						}
+					}
+					
+					parmorInstance.setElementAttr((byte) typeId, value);
+					activeChar.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
+					activeChar.getInventory().equipItemAndRecord(parmorInstance);
+					
+					activeChar.destroyItemByItemId("Community Attribute Manager", CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ID, price, activeChar, true);
+					
+					InventoryUpdate iu = new InventoryUpdate();
+					iu.addModifiedItem(parmorInstance);
+					activeChar.sendPacket(iu);
+					separateAndSend(content, activeChar);
+				}
+				separateAndSend(content, activeChar);
+				activeChar.sendMessage("You can't attribute items that is not equipped!");
+				return;
+			}
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_changename"))
 		{
