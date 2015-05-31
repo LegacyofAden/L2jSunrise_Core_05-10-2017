@@ -407,6 +407,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_NONPEACE && !activeChar.isInsideZone(ZoneIdType.PEACE))
 			{
 				activeChar.sendMessage("You cannot use this function outside peace zone.");
+				return;
 			}
 			
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_atrEnchant.htm");
@@ -541,6 +542,7 @@ public class ServicesBBSManager extends BaseBBSManager
 					iu.addModifiedItem(parmorInstance);
 					activeChar.sendPacket(iu);
 					separateAndSend(content, activeChar);
+					return;
 				}
 				separateAndSend(content, activeChar);
 				activeChar.sendMessage("You can't attribute items that is not equipped!");
