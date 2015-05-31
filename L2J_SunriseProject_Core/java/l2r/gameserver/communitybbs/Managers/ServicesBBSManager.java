@@ -42,6 +42,7 @@ import l2r.gameserver.model.items.L2Henna;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+import l2r.gameserver.network.serverpackets.BuyList;
 import l2r.gameserver.network.serverpackets.ExBuySellList;
 import l2r.gameserver.network.serverpackets.ExShowVariationCancelWindow;
 import l2r.gameserver.network.serverpackets.ExShowVariationMakeWindow;
@@ -165,6 +166,9 @@ public class ServicesBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_CommunitySell"))
 		{
+			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gmshop.htm");
+			separateAndSend(content, activeChar);
+			activeChar.sendPacket(new BuyList(activeChar.getAdena()));
 			activeChar.sendPacket(new ExBuySellList(activeChar, 0, true));
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_teleport"))

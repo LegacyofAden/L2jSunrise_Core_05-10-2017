@@ -30,6 +30,16 @@ public final class BuyList extends L2GameServerPacket
 	private final Collection<Product> _list;
 	private final long _money;
 	private double _taxRate = 0;
+	private boolean _loadAll = true;
+	
+	public BuyList(long currentMoney)
+	{
+		_listId = -1;
+		_list = null;
+		_money = currentMoney;
+		_taxRate = 0;
+		_loadAll = false;
+	}
 	
 	public BuyList(L2BuyList list, long currentMoney, double taxRate)
 	{
@@ -37,6 +47,7 @@ public final class BuyList extends L2GameServerPacket
 		_list = list.getProducts();
 		_money = currentMoney;
 		_taxRate = taxRate;
+		_loadAll = true;
 	}
 	
 	@Override
@@ -46,47 +57,56 @@ public final class BuyList extends L2GameServerPacket
 		writeH(0xB7);
 		writeD(0x00);
 		writeQ(_money); // current money
-		writeD(_listId);
 		
-		writeH(_list.size());
-		
-		for (Product product : _list)
+		if (_loadAll)
 		{
-			if ((product.getCount() > 0) || !product.hasLimitedStock())
+			writeD(_listId);
+			
+			writeH(_list.size());
+			
+			for (Product product : _list)
 			{
-				writeD(product.getId());
-				writeD(product.getId());
-				writeD(0);
-				writeQ(product.getCount() < 0 ? 0 : product.getCount());
-				writeH(product.getItem().getType2());
-				writeH(product.getItem().getType1()); // Custom Type 1
-				writeH(0x00); // isEquipped
-				writeD(product.getItem().getBodyPart()); // Body Part
-				writeH(0x00); // Enchant
-				writeH(0x00); // Custom Type
-				writeD(0x00); // Augment
-				writeD(-1); // Mana
-				writeD(-9999); // Time
-				writeH(0x00); // Element Type
-				writeH(0x00); // Element Power
-				for (byte i = 0; i < 6; i++)
+				if ((product.getCount() > 0) || !product.hasLimitedStock())
 				{
+					writeD(product.getId());
+					writeD(product.getId());
+					writeD(0);
+					writeQ(product.getCount() < 0 ? 0 : product.getCount());
+					writeH(product.getItem().getType2());
+					writeH(product.getItem().getType1()); // Custom Type 1
+					writeH(0x00); // isEquipped
+					writeD(product.getItem().getBodyPart()); // Body Part
+					writeH(0x00); // Enchant
+					writeH(0x00); // Custom Type
+					writeD(0x00); // Augment
+					writeD(-1); // Mana
+					writeD(-9999); // Time
+					writeH(0x00); // Element Type
+					writeH(0x00); // Element Power
+					for (byte i = 0; i < 6; i++)
+					{
+						writeH(0x00);
+					}
+					// Enchant Effects
 					writeH(0x00);
-				}
-				// Enchant Effects
-				writeH(0x00);
-				writeH(0x00);
-				writeH(0x00);
-				
-				if ((product.getId() >= 3960) && (product.getId() <= 4026))
-				{
-					writeQ((long) (product.getPrice() * Config.RATE_SIEGE_GUARDS_PRICE * (1 + _taxRate)));
-				}
-				else
-				{
-					writeQ((long) (product.getPrice() * (1 + _taxRate)));
+					writeH(0x00);
+					writeH(0x00);
+					
+					if ((product.getId() >= 3960) && (product.getId() <= 4026))
+					{
+						writeQ((long) (product.getPrice() * Config.RATE_SIEGE_GUARDS_PRICE * (1 + _taxRate)));
+					}
+					else
+					{
+						writeQ((long) (product.getPrice() * (1 + _taxRate)));
+					}
 				}
 			}
+		}
+		else
+		{
+			writeD(-1);
+			writeH(0);
 		}
 	}
 }

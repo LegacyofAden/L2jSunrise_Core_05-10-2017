@@ -132,21 +132,24 @@ public final class RequestSellItem extends L2GameClientPacket
 		
 		double taxRate = 0;
 		
-		final L2BuyList buyList = BuyListData.getInstance().getBuyList(_listId);
-		if (buyList == null)
+		if (_listId != -1)
 		{
-			Util.handleIllegalPlayerAction(player, "Warning!! Character " + player.getName() + " of account " + player.getAccountName() + " sent a false BuyList list_id " + _listId, Config.DEFAULT_PUNISH);
-			return;
-		}
-		
-		if (merchant != null)
-		{
-			if (merchant instanceof L2MerchantInstance)
+			final L2BuyList buyList = BuyListData.getInstance().getBuyList(_listId);
+			if ((buyList == null))
 			{
-				if (!buyList.isNpcAllowed(((L2MerchantInstance) merchant).getId()))
+				Util.handleIllegalPlayerAction(player, "Warning!! Character " + player.getName() + " of account " + player.getAccountName() + " sent a false BuyList list_id " + _listId, Config.DEFAULT_PUNISH);
+				return;
+			}
+			
+			if ((merchant != null))
+			{
+				if (merchant instanceof L2MerchantInstance)
 				{
-					sendPacket(ActionFailed.STATIC_PACKET);
-					return;
+					if (!buyList.isNpcAllowed(((L2MerchantInstance) merchant).getId()))
+					{
+						sendPacket(ActionFailed.STATIC_PACKET);
+						return;
+					}
 				}
 			}
 		}
