@@ -38,6 +38,8 @@ public class CharStat
 	private long _exp = 0;
 	private int _sp = 0;
 	private byte _level = 1;
+	/** Creature's maximum buff count. */
+	private int _maxBuffCount = Config.BUFFS_MAX_AMOUNT;
 	
 	public CharStat(L2Character activeChar)
 	{
@@ -863,5 +865,23 @@ public class CharStat
 			default:
 				return 0;
 		}
+	}
+	
+	/**
+	 * Gets the maximum buff count.
+	 * @return the maximum buff count
+	 */
+	public int getMaxBuffCount()
+	{
+		return _maxBuffCount;
+	}
+	
+	/**
+	 * Sets the maximum buff count.
+	 * @param buffCount the buff count
+	 */
+	public void setMaxBuffCount(int buffCount)
+	{
+		_maxBuffCount = buffCount;
 	}
 }

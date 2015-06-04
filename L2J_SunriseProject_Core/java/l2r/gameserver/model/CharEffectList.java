@@ -378,6 +378,11 @@ public class CharEffectList
 			}
 		}
 		
+		if (_owner.isPlayer() && (_owner.getActingPlayer().getShortBuffTaskSkillId() > 0))
+		{
+			buffCount--;
+		}
+		
 		return buffCount;
 	}
 	
@@ -938,7 +943,7 @@ public class CharEffectList
 				}
 				else if (!newSkill.isHealingPotionSkill())
 				{
-					effectsToRemove = getBuffCount() - _owner.getMaxBuffCount();
+					effectsToRemove = getBuffCount() - _owner.getStat().getMaxBuffCount();
 					if (effectsToRemove >= 0)
 					{
 						if (newSkill.getSkillType() == L2SkillType.BUFF)

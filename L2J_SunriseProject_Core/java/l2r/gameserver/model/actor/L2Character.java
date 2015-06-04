@@ -7395,16 +7395,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	}
 	
 	/**
-	 * Check player max buff count
-	 * @return max buff count
-	 */
-	public int getMaxBuffCount()
-	{
-		final L2Effect effect = getFirstPassiveEffect(L2EffectType.ENLARGE_ABNORMAL_SLOT);
-		return Config.BUFFS_MAX_AMOUNT + (effect == null ? 0 : (int) effect.calc());
-	}
-	
-	/**
 	 * Send system message about damage.
 	 * @param target
 	 * @param damage
