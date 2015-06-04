@@ -81,6 +81,12 @@ public final class RequestOustPledgeMember extends L2GameClientPacket
 			return;
 		}
 		
+		if ((member.getPlayerInstance().getClient() != null) && member.getPlayerInstance().getClient().isDetached())
+		{
+			activeChar.sendMessage("A clan member may not be dismissed during offline mode.");
+			return;
+		}
+		
 		// this also updates the database
 		clan.removeClanMember(member.getObjectId(), System.currentTimeMillis() + (Config.ALT_CLAN_JOIN_DAYS * 86400000L)); // 24*60*60*1000 = 86400000
 		clan.setCharPenaltyExpiryTime(System.currentTimeMillis() + (Config.ALT_CLAN_JOIN_DAYS * 86400000L)); // 24*60*60*1000 = 86400000
