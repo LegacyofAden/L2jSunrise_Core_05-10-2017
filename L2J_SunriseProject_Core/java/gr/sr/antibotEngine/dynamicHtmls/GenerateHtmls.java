@@ -10,7 +10,8 @@ import gr.sr.imageGeneratorEngine.GenerateLogos;
 import gr.sr.imageGeneratorEngine.LogoType;
 
 /**
- * @author -=GodFather=-
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
  */
 public class GenerateHtmls
 {

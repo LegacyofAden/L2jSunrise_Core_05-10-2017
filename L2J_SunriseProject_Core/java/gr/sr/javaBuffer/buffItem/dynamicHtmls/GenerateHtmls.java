@@ -11,7 +11,8 @@ import gr.sr.javaBuffer.BufferPacketSender;
 import gr.sr.javaBuffer.PlayerMethods;
 
 /**
- * @author -=GodFather=-
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
  */
 public class GenerateHtmls
 {

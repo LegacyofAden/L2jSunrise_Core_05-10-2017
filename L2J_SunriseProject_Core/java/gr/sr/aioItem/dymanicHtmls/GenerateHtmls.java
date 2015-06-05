@@ -23,7 +23,8 @@ import gr.sr.dataHolder.PlayersTopData;
 import gr.sr.datatables.SunriseTable;
 
 /**
- * @author -=GodFather=-
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
  */
 public class GenerateHtmls
 {
