@@ -13516,7 +13516,7 @@ public final class NpcStringId
 	 * ID: 1800043<br>
 	 * Message: I'm the real one!
 	 */
-	public static final NpcStringId I_M_THE_REAL_ONE;
+	public static final NpcStringId IM_THE_REAL_ONE;
 	
 	/**
 	 * ID: 1800044<br>
@@ -13534,13 +13534,13 @@ public final class NpcStringId
 	 * ID: 1800046<br>
 	 * Message: Not that dude, I'm the real one!
 	 */
-	public static final NpcStringId NOT_THAT_DUDE_I_M_THE_REAL_ONE;
+	public static final NpcStringId NOT_THAT_DUDE_IM_THE_REAL_ONE;
 	
 	/**
 	 * ID: 1800047<br>
 	 * Message: Don't be fooled! Don't be fooled! I'm the real one!!
 	 */
-	public static final NpcStringId DON_T_BE_FOOLED_DON_T_BE_FOOLED_I_M_THE_REAL_ONE;
+	public static final NpcStringId DONT_BE_FOOLED_DONT_BE_FOOLED_IM_THE_REAL_ONE;
 	
 	/**
 	 * ID: 1800048<br>
@@ -13552,25 +13552,25 @@ public final class NpcStringId
 	 * ID: 1800049<br>
 	 * Message: You've been fooled!
 	 */
-	public static final NpcStringId YOU_VE_BEEN_FOOLED;
+	public static final NpcStringId YOUVE_BEEN_FOOLED;
 	
 	/**
 	 * ID: 1800050<br>
 	 * Message: Sorry, but...I'm the fake one.
 	 */
-	public static final NpcStringId SORRY_BUT_I_M_THE_FAKE_ONE;
+	public static final NpcStringId SORRY_BUT_IM_THE_FAKE_ONE;
 	
 	/**
 	 * ID: 1800051<br>
 	 * Message: I'm the real one! Phew!!
 	 */
-	public static final NpcStringId I_M_THE_REAL_ONE_PHEW;
+	public static final NpcStringId IM_THE_REAL_ONE_PHEW;
 	
 	/**
 	 * ID: 1800052<br>
 	 * Message: Can't you even find out?
 	 */
-	public static final NpcStringId CAN_T_YOU_EVEN_FIND_OUT;
+	public static final NpcStringId CANT_YOU_EVEN_FIND_OUT;
 	
 	/**
 	 * ID: 1800053<br>
@@ -13594,7 +13594,7 @@ public final class NpcStringId
 	 * ID: 1800056<br>
 	 * Message: You've done well!
 	 */
-	public static final NpcStringId YOU_VE_DONE_WELL;
+	public static final NpcStringId YOUVE_DONE_WELL;
 	
 	/**
 	 * ID: 1800057<br>
@@ -23887,20 +23887,20 @@ public final class NpcStringId
 		SNIFF_SNIFF_GIVE_ME_MORE_CRYSTAL_FRAGMENTS = new NpcStringId(1800040);
 		HOW_INSENSITIVE_ITS_NOT_NICE_TO_GIVE_ME_JUST_A_PIECE_CANT_YOU_GIVE_ME_MORE = new NpcStringId(1800041);
 		AH_I_M_HUNGRY = new NpcStringId(1800042);
-		I_M_THE_REAL_ONE = new NpcStringId(1800043);
+		IM_THE_REAL_ONE = new NpcStringId(1800043);
 		PICK_ME = new NpcStringId(1800044);
 		TRUST_ME = new NpcStringId(1800045);
-		NOT_THAT_DUDE_I_M_THE_REAL_ONE = new NpcStringId(1800046);
-		DON_T_BE_FOOLED_DON_T_BE_FOOLED_I_M_THE_REAL_ONE = new NpcStringId(1800047);
+		NOT_THAT_DUDE_IM_THE_REAL_ONE = new NpcStringId(1800046);
+		DONT_BE_FOOLED_DONT_BE_FOOLED_IM_THE_REAL_ONE = new NpcStringId(1800047);
 		JUST_ACT_LIKE_THE_REAL_ONE_OOPS = new NpcStringId(1800048);
-		YOU_VE_BEEN_FOOLED = new NpcStringId(1800049);
-		SORRY_BUT_I_M_THE_FAKE_ONE = new NpcStringId(1800050);
-		I_M_THE_REAL_ONE_PHEW = new NpcStringId(1800051);
-		CAN_T_YOU_EVEN_FIND_OUT = new NpcStringId(1800052);
+		YOUVE_BEEN_FOOLED = new NpcStringId(1800049);
+		SORRY_BUT_IM_THE_FAKE_ONE = new NpcStringId(1800050);
+		IM_THE_REAL_ONE_PHEW = new NpcStringId(1800051);
+		CANT_YOU_EVEN_FIND_OUT = new NpcStringId(1800052);
 		FIND_ME = new NpcStringId(1800053);
 		HUH_HOW_DID_YOU_KNOW_IT_WAS_ME = new NpcStringId(1800054);
 		EXCELLENT_CHOICE_TEEHEE = new NpcStringId(1800055);
-		YOU_VE_DONE_WELL = new NpcStringId(1800056);
+		YOUVE_DONE_WELL = new NpcStringId(1800056);
 		OH_VERY_SENSIBLE = new NpcStringId(1800057);
 		BEHOLD_THE_MIGHTY_POWER_OF_BAYLOR_FOOLISH_MORTAL = new NpcStringId(1800058);
 		NO_ONE_IS_GOING_TO_SURVIVE = new NpcStringId(1800059);
