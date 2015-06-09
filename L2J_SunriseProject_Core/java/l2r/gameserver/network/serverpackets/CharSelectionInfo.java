@@ -21,14 +21,13 @@ package l2r.gameserver.network.serverpackets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.sql.ClanTable;
 import l2r.gameserver.data.xml.impl.ExperienceData;
-import l2r.gameserver.instancemanager.CursedWeaponsManager;
 import l2r.gameserver.model.CharSelectInfoPackage;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.itemcontainer.Inventory;
@@ -42,7 +41,8 @@ public class CharSelectionInfo extends L2GameServerPacket
 	private static Logger _log = LoggerFactory.getLogger(CharSelectionInfo.class);
 	private final String _loginName;
 	private final int _sessionId;
-	private final CharSelectInfoPackage[] _characterPackages;
+	private int _activeId;
+	private final List<CharSelectInfoPackage> _characterPackages;
 	
 	/**
 	 * Constructor for CharSelectionInfo.
@@ -54,9 +54,18 @@ public class CharSelectionInfo extends L2GameServerPacket
 		_sessionId = sessionId;
 		_loginName = loginName;
 		_characterPackages = loadCharacterSelectInfo(_loginName);
+		_activeId = -1;
 	}
 	
-	public CharSelectInfoPackage[] getCharInfo()
+	public CharSelectionInfo(String loginName, int sessionId, int activeId)
+	{
+		_sessionId = sessionId;
+		_loginName = loginName;
+		_characterPackages = loadCharacterSelectInfo(_loginName);
+		_activeId = activeId;
+	}
+	
+	public List<CharSelectInfoPackage> getCharInfo()
 	{
 		return _characterPackages;
 	}
@@ -65,27 +74,31 @@ public class CharSelectionInfo extends L2GameServerPacket
 	protected final void writeImpl()
 	{
 		writeC(0x09);
-		int size = (_characterPackages.length);
+		int size = (_characterPackages.size());
 		writeD(size);
 		
 		// Can prevent players from creating new characters (if 0); (if 1, the client will ask if chars may be created (0x13) Response: (0x0D) )
 		writeD(Config.MAX_CHARACTERS_NUMBER_PER_ACCOUNT);
 		writeC(0x00);
 		
-		long lastAccess = -1L;
-		int lastUsed = -1;
-		for (int i = 0; i < size; i++)
+		long lastAccess = 0L;
+		
+		if (_activeId == -1)
 		{
-			if (lastAccess < _characterPackages[i].getLastAccess())
+			for (int i = 0; i < size; i++)
 			{
-				lastAccess = _characterPackages[i].getLastAccess();
-				lastUsed = i;
+				final CharSelectInfoPackage charInfoPackage = _characterPackages.get(i);
+				if (lastAccess < charInfoPackage.getLastAccess())
+				{
+					lastAccess = charInfoPackage.getLastAccess();
+					_activeId = i;
+				}
 			}
 		}
 		
 		for (int i = 0; i < size; i++)
 		{
-			CharSelectInfoPackage charInfoPackage = _characterPackages[i];
+			final CharSelectInfoPackage charInfoPackage = _characterPackages.get(i);
 			
 			writeS(charInfoPackage.getName());
 			writeD(charInfoPackage.getObjectId());
@@ -133,32 +146,10 @@ public class CharSelectionInfo extends L2GameServerPacket
 			writeD(0x00);
 			writeD(0x00);
 			
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_HAIR));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_REAR));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_LEAR));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_NECK));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_RFINGER));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_LFINGER));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_HEAD));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_RHAND));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_LHAND));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_GLOVES));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_CHEST));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_LEGS));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_FEET));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_CLOAK));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_RHAND));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_HAIR));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_HAIR2));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_RBRACELET));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_LBRACELET));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_DECO1));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_DECO2));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_DECO3));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_DECO4));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_DECO5));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_DECO6));
-			writeD(charInfoPackage.getPaperdollItemId(Inventory.PAPERDOLL_BELT));
+			for (int slot : getPaperdollOrder())
+			{
+				writeD(charInfoPackage.getPaperdollItemId(slot));
+			}
 			
 			writeD(charInfoPackage.getHairStyle());
 			writeD(charInfoPackage.getHairColor());
@@ -177,7 +168,7 @@ public class CharSelectionInfo extends L2GameServerPacket
 			// delete .. if != 0
 			// then char is inactive
 			writeD(charInfoPackage.getClassId());
-			writeD(i == lastUsed ? 1 : 0); // c3 auto-select char
+			writeD(i == _activeId ? 0x01 : 0x00); // c3 auto-select char
 			
 			writeC(charInfoPackage.getEnchantEffect() > 127 ? 127 : charInfoPackage.getEnchantEffect());
 			writeH(0x00);
@@ -200,33 +191,30 @@ public class CharSelectionInfo extends L2GameServerPacket
 		}
 	}
 	
-	private static CharSelectInfoPackage[] loadCharacterSelectInfo(String loginName)
+	private static List<CharSelectInfoPackage> loadCharacterSelectInfo(String loginName)
 	{
-		CharSelectInfoPackage charInfopackage;
-		List<CharSelectInfoPackage> characterList = new FastList<>();
-		
+		final List<CharSelectInfoPackage> characterList = new ArrayList<>();
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT account_name, charId, char_name, level, maxHp, curHp, maxMp, curMp, face, hairStyle, hairColor, sex, heading, x, y, z, exp, sp, karma, pvpkills, pkkills, clanid, race, classid, deletetime, cancraft, title, accesslevel, online, char_slot, lastAccess, base_class, transform_id, language, vitality_points FROM characters WHERE account_name=? ORDER BY createDate"))
+			PreparedStatement statement = con.prepareStatement("SELECT * FROM characters WHERE account_name=? ORDER BY createDate"))
 		{
 			statement.setString(1, loginName);
 			try (ResultSet charList = statement.executeQuery())
 			{
 				while (charList.next())// fills the package
 				{
-					charInfopackage = restoreChar(charList);
+					CharSelectInfoPackage charInfopackage = restoreChar(charList);
 					if (charInfopackage != null)
 					{
 						characterList.add(charInfopackage);
 					}
 				}
 			}
-			return characterList.toArray(new CharSelectInfoPackage[characterList.size()]);
 		}
 		catch (Exception e)
 		{
 			_log.warn("Could not restore char info: " + e.getMessage(), e);
 		}
-		return new CharSelectInfoPackage[0];
+		return characterList;
 	}
 	
 	private static void loadCharacterSubclassInfo(CharSelectInfoPackage charInfopackage, int ObjectId, int activeClassId)
@@ -326,33 +314,6 @@ public class CharSelectionInfo extends L2GameServerPacket
 		if (weaponObjId < 1)
 		{
 			weaponObjId = charInfopackage.getPaperdollObjectId(Inventory.PAPERDOLL_RHAND);
-		}
-		
-		// Check Transformation
-		int cursedWeaponId = CursedWeaponsManager.getInstance().checkOwnsWeaponId(objectId);
-		if (cursedWeaponId > 0)
-		{
-			// cursed weapon transformations
-			if (cursedWeaponId == 8190)
-			{
-				charInfopackage.setTransformId(301);
-			}
-			else if (cursedWeaponId == 8689)
-			{
-				charInfopackage.setTransformId(302);
-			}
-			else
-			{
-				charInfopackage.setTransformId(0);
-			}
-		}
-		else if (chardata.getInt("transform_id") > 0)
-		{
-			charInfopackage.setTransformId(chardata.getInt("transform_id"));
-		}
-		else
-		{
-			charInfopackage.setTransformId(0);
 		}
 		
 		if (weaponObjId > 0)

@@ -568,11 +568,6 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return _isSuicideAttack;
 	}
 	
-	public final boolean allowOnTransform()
-	{
-		return isPassive();
-	}
-	
 	/**
 	 * Return the power of the skill.
 	 * @param activeChar

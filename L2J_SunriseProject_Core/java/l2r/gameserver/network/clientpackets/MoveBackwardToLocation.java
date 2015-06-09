@@ -84,7 +84,11 @@ public class MoveBackwardToLocation extends L2GameClientPacket
 			return;
 		}
 		
-		activeChar.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+		if (activeChar.isAttackingNow())
+		{
+			activeChar.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+		}
+		
 		activeChar.setLastMovePacket();
 		
 		if ((Config.PLAYER_MOVEMENT_BLOCK_TIME > 0) && !activeChar.isGM() && (activeChar.getNotMoveUntil() > System.currentTimeMillis()))

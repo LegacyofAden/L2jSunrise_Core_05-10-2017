@@ -1107,14 +1107,7 @@ public class L2PetInstance extends L2Summon
 						
 						if (skill.hasEffects())
 						{
-							try
-							{
-								SummonEffectsTable.getInstance().addPetEffect(getControlObjectId(), skill, effectCount, effectCurTime);
-							}
-							catch (Exception e)
-							{
-								
-							}
+							SummonEffectsTable.getInstance().addPetEffect(getControlObjectId(), skill, effectCount, effectCurTime);
 						}
 					}
 				}

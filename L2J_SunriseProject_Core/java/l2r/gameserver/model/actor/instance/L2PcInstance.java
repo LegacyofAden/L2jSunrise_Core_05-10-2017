@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
@@ -218,8 +218,10 @@ import l2r.gameserver.model.events.impl.character.player.OnPlayerPvPKill;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerTransform;
 import l2r.gameserver.model.fishing.L2Fish;
 import l2r.gameserver.model.fishing.L2Fishing;
+import l2r.gameserver.model.holders.AdditionalSkillHolder;
 import l2r.gameserver.model.holders.ItemHolder;
 import l2r.gameserver.model.holders.PlayerEventHolder;
+import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.holders.SkillUseHolder;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.itemcontainer.ItemContainer;
@@ -409,10 +411,6 @@ public final class L2PcInstance extends L2Playable
 	private static final String INSERT_CHAR_RECIPE_SHOP = "REPLACE INTO character_recipeshoplist (`charId`, `recipeId`, `price`, `index`) VALUES (?, ?, ?, ?)";
 	private static final String RESTORE_CHAR_RECIPE_SHOP = "SELECT * FROM character_recipeshoplist WHERE charId=? ORDER BY `index`";
 	
-	// Character Transformation SQL String Definitions:
-	private static final String SELECT_CHAR_TRANSFORM = "SELECT transform_id FROM characters WHERE charId=?";
-	private static final String UPDATE_CHAR_TRANSFORM = "UPDATE characters SET transform_id=? WHERE charId=?";
-	
 	// Character zone restart time SQL String Definitions - L2Master mod
 	private static final String DELETE_ZONE_RESTART_LIMIT = "DELETE FROM character_norestart_zone_time WHERE charId = ?";
 	private static final String LOAD_ZONE_RESTART_LIMIT = "SELECT time_limit FROM character_norestart_zone_time WHERE charId = ?";
@@ -542,7 +540,7 @@ public final class L2PcInstance extends L2Playable
 	private long _offlineShopStart = 0;
 	
 	private Transform _transformation;
-	private int _transformationId = 0;
+	private volatile Map<Integer, L2Skill> _transformSkills;
 	
 	/** The table containing all L2RecipeList of the L2PcInstance */
 	private final Map<Integer, L2RecipeList> _dwarvenRecipeBook = new FastMap<>();
@@ -817,7 +815,6 @@ public final class L2PcInstance extends L2Playable
 	private int _fishy = 0;
 	private int _fishz = 0;
 	
-	private volatile Set<Integer> _transformAllowedSkills;
 	private ScheduledFuture<?> _taskRentPet;
 	private ScheduledFuture<?> _taskWater;
 	
@@ -5089,56 +5086,6 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * This is a simple query that inserts the transform Id into the character table for future reference.
-	 */
-	public void transformInsertInfo()
-	{
-		if (isTransformed() && getTransformation().isCursed())
-		{
-			return;
-		}
-		
-		_transformationId = getTransformationId();
-		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(UPDATE_CHAR_TRANSFORM))
-		{
-			statement.setInt(1, _transformationId);
-			statement.setInt(2, getObjectId());
-			statement.execute();
-		}
-		catch (Exception e)
-		{
-			_log.error("Transformation insert info: ", e);
-		}
-	}
-	
-	/**
-	 * This selects the current
-	 * @return transformation Id
-	 */
-	public int transformSelectInfo()
-	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(SELECT_CHAR_TRANSFORM))
-		{
-			statement.setInt(1, getObjectId());
-			try (ResultSet rset = statement.executeQuery())
-			{
-				if (rset.next())
-				{
-					_transformationId = rset.getInt("transform_id");
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			_log.error("Transformation select info: ", e);
-		}
-		return _transformationId;
-	}
-	
-	/**
 	 * Set a target. <B><U> Actions</U> :</B> <li>Remove the L2PcInstance from the _statusListener of the old target if it was a L2Character</li> <li>Add the L2PcInstance to the _statusListener of the new target if it's a L2Character</li> <li>Target the new L2Object (add the target to the
 	 * L2PcInstance _target, _knownObject and L2PcInstance to _KnownObject of the L2Object)</li>
 	 * @param newTarget The L2Object to target
@@ -7876,7 +7823,6 @@ public final class L2PcInstance extends L2Playable
 		storeCharSub();
 		storeEffect(storeActiveEffects);
 		storeItemReuseDelay();
-		transformInsertInfo();
 		if (Config.STORE_RECIPE_SHOPLIST)
 		{
 			storeRecipeShopList();
@@ -8094,7 +8040,7 @@ public final class L2PcInstance extends L2Playable
 					
 					final TimeStamp t = getSkillReuseTimeStamp(skill.getReuseHashCode());
 					statement.setLong(6, (t != null) && t.hasNotPassed() ? t.getReuse() : 0);
-					statement.setDouble(7, (t != null) && t.hasNotPassed() ? t.getStamp() : 0);
+					statement.setLong(7, (t != null) && t.hasNotPassed() ? t.getStamp() : 0);
 					
 					statement.setInt(8, 0); // Store type 0, active buffs/debuffs.
 					statement.setInt(9, getClassIndex());
@@ -8126,7 +8072,7 @@ public final class L2PcInstance extends L2Playable
 						statement.setInt(4, -1);
 						statement.setInt(5, -1);
 						statement.setLong(6, t.getReuse());
-						statement.setDouble(7, t.getStamp());
+						statement.setLong(7, t.getStamp());
 						statement.setInt(8, 1); // Restore type 1, skill reuse.
 						statement.setInt(9, getClassIndex());
 						statement.setInt(10, ++buff_index);
@@ -8161,7 +8107,7 @@ public final class L2PcInstance extends L2Playable
 						ps2.setInt(2, ts.getItemId());
 						ps2.setInt(3, ts.getItemObjectId());
 						ps2.setLong(4, ts.getReuse());
-						ps2.setDouble(5, ts.getStamp());
+						ps2.setLong(5, ts.getStamp());
 						ps2.execute();
 					}
 				}
@@ -10646,7 +10592,7 @@ public final class L2PcInstance extends L2Playable
 					}
 					else if (canUseSkill == 0)
 					{
-						if (!hasTransformSkill(s.getId()) && !s.allowOnTransform())
+						if (!s.isPassive())
 						{
 							continue;
 						}
@@ -10654,7 +10600,7 @@ public final class L2PcInstance extends L2Playable
 				}
 				else
 				{
-					if (!hasTransformSkill(s.getId()) && !s.allowOnTransform())
+					if (!s.isPassive())
 					{
 						continue;
 					}
@@ -10687,6 +10633,48 @@ public final class L2PcInstance extends L2Playable
 			sl.addSkill(s.getDisplayId(), s.getDisplayLevel(), s.isPassive(), isDisabled, isEnchantable);
 		}
 		
+		if (_transformation != null)
+		{
+			Map<Integer, Integer> ts = new TreeMap<>();
+			
+			for (SkillHolder holder : _transformation.getTemplate(this).getSkills())
+			{
+				ts.putIfAbsent(holder.getSkillId(), holder.getSkillLvl());
+				
+				if (ts.get(holder.getSkillId()) < holder.getSkillLvl())
+				{
+					ts.put(holder.getSkillId(), holder.getSkillLvl());
+				}
+				addTransformSkill(holder.getSkill());
+			}
+			
+			for (AdditionalSkillHolder holder : _transformation.getTemplate(this).getAdditionalSkills())
+			{
+				if (getLevel() >= holder.getMinLevel())
+				{
+					ts.putIfAbsent(holder.getSkillId(), holder.getSkillLvl());
+					if (ts.get(holder.getSkillId()) < holder.getSkillLvl())
+					{
+						ts.put(holder.getSkillId(), holder.getSkillLvl());
+					}
+					addTransformSkill(holder.getSkill());
+				}
+			}
+			
+			// Add collection skills.
+			for (L2SkillLearn skill : SkillTreesData.getInstance().getCollectSkillTree().values())
+			{
+				if (getKnownSkill(skill.getSkillId()) != null)
+				{
+					addTransformSkill(SkillData.getInstance().getInfo(skill.getSkillId(), skill.getSkillLevel()));
+				}
+			}
+			
+			for (Entry<Integer, Integer> transformSkill : ts.entrySet())
+			{
+				sl.addSkill(transformSkill.getKey(), transformSkill.getValue(), false, false, false);
+			}
+		}
 		sendPacket(sl);
 	}
 	
@@ -13362,23 +13350,34 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	public void addTransformSkill(int id)
+	public void addTransformSkill(L2Skill sk)
 	{
-		if (_transformAllowedSkills == null)
+		if (_transformSkills == null)
 		{
-			_transformAllowedSkills = new HashSet<>();
+			synchronized (this)
+			{
+				if (_transformSkills == null)
+				{
+					_transformSkills = new HashMap<>();
+				}
+			}
 		}
-		_transformAllowedSkills.add(id);
+		_transformSkills.put(sk.getId(), sk);
+	}
+	
+	public L2Skill getTransformSkill(int id)
+	{
+		return _transformSkills.get(id);
 	}
 	
 	public boolean hasTransformSkill(int id)
 	{
-		return (_transformAllowedSkills != null) && _transformAllowedSkills.contains(id);
+		return _transformSkills.containsKey(id);
 	}
 	
 	public synchronized void removeAllTransformSkills()
 	{
-		_transformAllowedSkills = null;
+		_transformSkills = null;
 	}
 	
 	protected void startFeed(int npcId)
