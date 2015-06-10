@@ -138,6 +138,8 @@ public enum AbnormalType
 	hp_recover,
 	hp_regen_down,
 	hp_regen_up,
+	mp_recover,
+	cp_recover,
 	improve_crt_rate_dmg_up,
 	improve_hit_defence_crt_rate_up,
 	improve_hp_mp_up,

@@ -1096,6 +1096,24 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return getAbnormalType() == AbnormalType.hp_recover;
 	}
 	
+	/**
+	 * Verify if this is a mana potion skill.
+	 * @return {@code true} if this is a mana potion skill, {@code false} otherwise
+	 */
+	public boolean isManaPotionSkill()
+	{
+		return getAbnormalType() == AbnormalType.mp_recover;
+	}
+	
+	/**
+	 * Verify if this is a mana potion skill.
+	 * @return {@code true} if this is a mana potion skill, {@code false} otherwise
+	 */
+	public boolean isCpPotionSkill()
+	{
+		return getAbnormalType() == AbnormalType.cp_recover;
+	}
+	
 	public final int getChargeConsume()
 	{
 		return _chargeConsume;

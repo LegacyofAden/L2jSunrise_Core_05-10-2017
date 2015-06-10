@@ -4301,7 +4301,7 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
-		if (isMounted() || inObserverMode())
+		if ((isMounted() && !skill.isHealingPotionSkill() && !skill.isManaPotionSkill() && !skill.isCpPotionSkill()) || inObserverMode())
 		{
 			return false;
 		}

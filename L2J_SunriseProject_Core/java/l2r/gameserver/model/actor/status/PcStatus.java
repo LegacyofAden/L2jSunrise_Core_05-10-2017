@@ -300,7 +300,7 @@ public class PcStatus extends PlayableStatus
 			setCurrentHp(value);
 		}
 		
-		if (getActiveChar().getCurrentHp() < 0.5)
+		if ((getActiveChar().getCurrentHp() < 0.5) && !isHPConsumption)
 		{
 			getActiveChar().abortAttack();
 			getActiveChar().abortCast();

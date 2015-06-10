@@ -18,7 +18,9 @@
  */
 package l2r.gameserver.model;
 
-import javolution.util.FastList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.RadarControl;
 
@@ -28,12 +30,11 @@ import l2r.gameserver.network.serverpackets.RadarControl;
 public final class L2Radar
 {
 	private final L2PcInstance _player;
-	private final FastList<RadarMarker> _markers;
+	private final List<RadarMarker> _markers = new CopyOnWriteArrayList<>();
 	
 	public L2Radar(L2PcInstance player)
 	{
 		_player = player;
-		_markers = new FastList<>();
 	}
 	
 	// Add a marker to player's radar
@@ -57,12 +58,9 @@ public final class L2Radar
 	
 	public void removeAllMarkers()
 	{
-		if (_markers != null)
+		for (RadarMarker tempMarker : _markers)
 		{
-			for (RadarMarker tempMarker : _markers)
-			{
-				_player.sendPacket(new RadarControl(2, 2, tempMarker._x, tempMarker._y, tempMarker._z));
-			}
+			_player.sendPacket(new RadarControl(2, 2, tempMarker._x, tempMarker._y, tempMarker._z));
 		}
 		
 		_markers.clear();
