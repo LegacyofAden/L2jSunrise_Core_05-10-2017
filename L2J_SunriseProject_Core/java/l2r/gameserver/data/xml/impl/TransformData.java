@@ -21,7 +21,6 @@ package l2r.gameserver.data.xml.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.transform.Transform;
@@ -31,6 +30,7 @@ import l2r.gameserver.model.holders.AdditionalItemHolder;
 import l2r.gameserver.model.holders.AdditionalSkillHolder;
 import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.network.serverpackets.ExBasicActionList;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -52,16 +52,13 @@ public final class TransformData implements IXmlReader
 	public synchronized void load()
 	{
 		_transformData.clear();
-		parseDirectory("data/xml/stats/transformations", false);
+		parseDatapackDirectory("data/xml/stats/transformations", false);
 		LOGGER.info(getClass().getSimpleName() + ": Loaded: " + _transformData.size() + " transform templates.");
 	}
 	
 	@Override
 	public void parseDocument(Document doc)
 	{
-		NamedNodeMap attrs;
-		Node att;
-		StatsSet set;
 		for (Node n = doc.getFirstChild(); n != null; n = n.getNextSibling())
 		{
 			if ("list".equalsIgnoreCase(n.getNodeName()))
@@ -70,11 +67,11 @@ public final class TransformData implements IXmlReader
 				{
 					if ("transform".equalsIgnoreCase(d.getNodeName()))
 					{
-						attrs = d.getAttributes();
-						set = new StatsSet();
+						NamedNodeMap attrs = d.getAttributes();
+						StatsSet set = new StatsSet();
 						for (int i = 0; i < attrs.getLength(); i++)
 						{
-							att = attrs.item(i);
+							Node att = attrs.item(i);
 							set.set(att.getNodeName(), att.getNodeValue());
 						}
 						final Transform transform = new Transform(set);
@@ -104,7 +101,7 @@ public final class TransformData implements IXmlReader
 														attrs = s.getAttributes();
 														for (int i = 0; i < attrs.getLength(); i++)
 														{
-															att = attrs.item(i);
+															Node att = attrs.item(i);
 															set.set(att.getNodeName(), att.getNodeValue());
 														}
 														break;
@@ -201,7 +198,7 @@ public final class TransformData implements IXmlReader
 													attrs = s.getAttributes();
 													for (int i = 0; i < attrs.getLength(); i++)
 													{
-														att = attrs.item(i);
+														Node att = attrs.item(i);
 														levelsSet.set(att.getNodeName(), att.getNodeValue());
 													}
 												}
