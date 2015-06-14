@@ -53,7 +53,7 @@ public class CharacterSelect extends L2GameClientPacket
 	protected static final Logger _logAccounting = Logger.getLogger("accounting");
 	
 	// cd
-	private int _charSlot;
+	private int _charSlot = -1;
 	
 	@SuppressWarnings("unused")
 	private int _unk1; // new in C4
@@ -92,7 +92,7 @@ public class CharacterSelect extends L2GameClientPacket
 				return;
 			}
 			
-			if (client.getSecondaryAuth().getTempCharSlotId() > -1)
+			if ((client.getSecondaryAuth().getTempCharSlotId() > -1) && (_charSlot <= 0))
 			{
 				_charSlot = client.getSecondaryAuth().getTempCharSlotId();
 			}
