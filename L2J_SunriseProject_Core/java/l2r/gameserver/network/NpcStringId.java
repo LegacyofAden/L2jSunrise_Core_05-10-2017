@@ -3400,13 +3400,13 @@ public final class NpcStringId
 	 * ID: 19607<br>
 	 * Message: Dear Shillien's offsprings! You are not capable of confronting us!
 	 */
-	public static final NpcStringId DEAR_SHILLIEN_S_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US;
+	public static final NpcStringId DEAR_SHILLIENS_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US;
 	
 	/**
 	 * ID: 19608<br>
 	 * Message: I'll show you the real power of Einhasad!
 	 */
-	public static final NpcStringId I_LL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD;
+	public static final NpcStringId ILL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD;
 	
 	/**
 	 * ID: 19609<br>
@@ -3424,7 +3424,7 @@ public final class NpcStringId
 	 * ID: 19611<br>
 	 * Message: My power's weakening.. Hurry and turn on the sealing device!!!
 	 */
-	public static final NpcStringId MY_POWER_S_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE;
+	public static final NpcStringId MY_POWERS_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE;
 	
 	/**
 	 * ID: 19612<br>
@@ -3436,7 +3436,7 @@ public final class NpcStringId
 	 * ID: 19613<br>
 	 * Message: Lilith's attack is getting stronger! Go ahead and turn it on!
 	 */
-	public static final NpcStringId LILITH_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON;
+	public static final NpcStringId LILITHS_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON;
 	
 	/**
 	 * ID: 19614<br>
@@ -3448,7 +3448,7 @@ public final class NpcStringId
 	 * ID: 19615<br>
 	 * Message: You, such a fool! The victory over this war belongs to Shilien!!!
 	 */
-	public static final NpcStringId YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILEN;
+	public static final NpcStringId YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILIEN;
 	
 	/**
 	 * ID: 19616<br>
@@ -3460,7 +3460,7 @@ public final class NpcStringId
 	 * ID: 19617<br>
 	 * Message: Anakim! In the name of Great Shilien, I will cut your throat!
 	 */
-	public static final NpcStringId ANAKIM_IN_THE_NAME_OF_GREAT_SHILEN_I_WILL_CUT_YOUR_THROAT;
+	public static final NpcStringId ANAKIM_IN_THE_NAME_OF_GREAT_SHILIEN_I_WILL_CUT_YOUR_THROAT;
 	
 	/**
 	 * ID: 19618<br>
@@ -22201,17 +22201,17 @@ public final class NpcStringId
 		WHO_DARES_SUMMON_THE_MERCHANT_OF_MAMMON = new NpcStringId(19604);
 		THE_ANCIENT_PROMISE_TO_THE_EMPEROR_HAS_BEEN_FULFILLED = new NpcStringId(19605);
 		FOR_THE_ETERNITY_OF_EINHASAD = new NpcStringId(19606);
-		DEAR_SHILLIEN_S_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US = new NpcStringId(19607);
-		I_LL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD = new NpcStringId(19608);
+		DEAR_SHILLIENS_OFFSPRINGS_YOU_ARE_NOT_CAPABLE_OF_CONFRONTING_US = new NpcStringId(19607);
+		ILL_SHOW_YOU_THE_REAL_POWER_OF_EINHASAD = new NpcStringId(19608);
 		DEAR_MILITARY_FORCE_OF_LIGHT_GO_DESTROY_THE_OFFSPRINGS_OF_SHILLIEN = new NpcStringId(19609);
 		EVERYTHING_IS_OWING_TO_S1_THANK_YOU = new NpcStringId(19610);
-		MY_POWER_S_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE = new NpcStringId(19611);
+		MY_POWERS_WEAKENING_HURRY_AND_TURN_ON_THE_SEALING_DEVICE = new NpcStringId(19611);
 		ALL_4_SEALING_DEVICES_MUST_BE_TURNED_ON = new NpcStringId(19612);
-		LILITH_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON = new NpcStringId(19613);
+		LILITHS_ATTACK_IS_GETTING_STRONGER_GO_AHEAD_AND_TURN_IT_ON = new NpcStringId(19613);
 		DEAR_S1_GIVE_ME_MORE_STRENGTH = new NpcStringId(19614);
-		YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILEN = new NpcStringId(19615);
+		YOU_SUCH_A_FOOL_THE_VICTORY_OVER_THIS_WAR_BELONGS_TO_SHILIEN = new NpcStringId(19615);
 		HOW_DARE_YOU_TRY_TO_CONTEND_AGAINST_ME_IN_STRENGTH_RIDICULOUS = new NpcStringId(19616);
-		ANAKIM_IN_THE_NAME_OF_GREAT_SHILEN_I_WILL_CUT_YOUR_THROAT = new NpcStringId(19617);
+		ANAKIM_IN_THE_NAME_OF_GREAT_SHILIEN_I_WILL_CUT_YOUR_THROAT = new NpcStringId(19617);
 		YOU_CANNOT_BE_THE_MATCH_OF_LILITH_I_LL_TEACH_YOU_A_LESSON = new NpcStringId(19618);
 		I_MUST_GO_BACK_TO_SHILIEN_JUST_LIKE_THIS_OUTRAGEOUS = new NpcStringId(19619);
 		DEATH_TO_THE_ENEMIES_OF_THE_LORDS_OF_DAWN = new NpcStringId(19804);
