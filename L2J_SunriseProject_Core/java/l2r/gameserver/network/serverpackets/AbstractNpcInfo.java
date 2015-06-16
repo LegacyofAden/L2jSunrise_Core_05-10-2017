@@ -350,7 +350,7 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 				writeC(_npc.isRunning() ? 1 : 0);
 				writeC(_npc.isInCombat() ? 1 : 0);
 				writeC(_npc.isAlikeDead() ? 1 : 0);
-				writeC(_isSummoned ? 2 : 0); // 0=teleported 1=default 2=summoned
+				writeC(_isSummoned ? 2 : 0); // invisible ?? 0=false 1=true 2=summoned (only works if model has a summon animation)
 				writeD(-1); // High Five NPCString ID
 				writeS(_name);
 				writeD(-1); // High Five NPCString ID
@@ -364,17 +364,18 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 				writeD(_clanCrest); // crest id
 				writeD(_allyId); // ally id
 				writeD(_allyCrest); // all crest
+				
 				writeC(_npc.isInsideZone(ZoneIdType.WATER) ? 1 : _npc.isFlying() ? 2 : 0); // C2
-				writeC(0x00); // title color 0=client
+				writeC(Config.L2JMOD_CHAMPION_ENABLE_AURA ? _npc.isChampion() && _npc.isAggressive() ? 2 : _npc.isChampion() && !_npc.isAggressive() ? 1 : _npc.getTeam().getId() : _npc.getTeam().getId());
 				
 				writeF(_collisionRadius);
 				writeF(_collisionHeight);
 				writeD(_enchantEffect); // C4
 				writeD(_npc.isFlying() ? 1 : 0); // C6
 				writeD(0x00);
-				writeD(_npc.getColorEffect());// CT1.5 Pet form and skills, Color effect
-				writeC(_npc.isShowName() ? 0x01 : 0x00);
+				writeD(_npc.getColorEffect()); // CT1.5 Pet form and skills, Color effect
 				writeC(_npc.isTargetable() ? 0x01 : 0x00);
+				writeC(_npc.isShowName() ? 0x01 : 0x00);
 				writeD(_npc.getSpecialEffect());
 				writeD(_displayEffect);
 			}

@@ -697,6 +697,7 @@ public final class Config
 	// Champion mobs Settings
 	// --------------------------------------------------
 	public static boolean L2JMOD_CHAMPION_ENABLE;
+	public static boolean L2JMOD_CHAMPION_ENABLE_AURA;
 	public static boolean L2JMOD_CHAMPION_PASSIVE;
 	public static int L2JMOD_CHAMPION_FREQUENCY;
 	public static String L2JMOD_CHAMP_TITLE;
@@ -2257,6 +2258,7 @@ public final class Config
 			final PropertiesParser champions = new PropertiesParser(CHAMPION_MOBS_CONFIG);
 			
 			L2JMOD_CHAMPION_ENABLE = champions.getBoolean("ChampionEnable", false);
+			L2JMOD_CHAMPION_ENABLE_AURA = champions.getBoolean("ChampionEnableAura", false);
 			L2JMOD_CHAMPION_PASSIVE = champions.getBoolean("ChampionPassive", false);
 			L2JMOD_CHAMPION_FREQUENCY = champions.getInt("ChampionFrequency", 0);
 			L2JMOD_CHAMP_TITLE = champions.getString("ChampionTitle", "Champion");
