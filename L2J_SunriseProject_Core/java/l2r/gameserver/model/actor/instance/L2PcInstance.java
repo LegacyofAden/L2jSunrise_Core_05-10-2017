@@ -15200,7 +15200,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			if (_customSkills == null)
 			{
-				_customSkills = new FastMap<Integer, L2Skill>().shared();
+				_customSkills = new ConcurrentHashMap<>();
 			}
 			_customSkills.put(skill.getDisplayId(), skill);
 		}

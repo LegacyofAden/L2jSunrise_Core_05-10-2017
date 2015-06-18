@@ -62,7 +62,11 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 			skill = activeChar.getCustomSkill(_magicId);
 			if (skill == null)
 			{
-				skill = activeChar.getTransformSkill(_magicId);
+				if (activeChar.hasTransformSkill(_magicId))
+				{
+					skill = activeChar.getTransformSkill(_magicId);
+				}
+				
 				if (skill == null)
 				{
 					activeChar.sendPacket(ActionFailed.STATIC_PACKET);

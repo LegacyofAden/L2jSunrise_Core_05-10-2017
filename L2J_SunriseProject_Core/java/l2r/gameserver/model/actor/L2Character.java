@@ -215,7 +215,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	/** Table of Calculators containing all used calculator */
 	private Calculator[] _calculators;
 	/** Map containing all skills of this character. */
-	private final FastMap<Integer, L2Skill> _skills = new FastMap<>();
+	private final Map<Integer, L2Skill> _skills = new ConcurrentHashMap<>();
 	/** Map containing the active chance skills on this character */
 	private volatile ChanceSkillList _chanceSkills;
 	/** Map containing the skill reuse time stamps. */
