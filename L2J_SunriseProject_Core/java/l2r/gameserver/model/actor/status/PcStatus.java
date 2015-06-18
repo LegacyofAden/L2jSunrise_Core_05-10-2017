@@ -317,7 +317,12 @@ public class PcStatus extends PlayableStatus
 				return;
 			}
 			
-			getActiveChar().doDie(attacker);
+			// TODO find better way?
+			synchronized (this)
+			{
+				getActiveChar().doDie(attacker);
+			}
+			
 			if (!Config.DISABLE_TUTORIAL)
 			{
 				QuestState qs = getActiveChar().getQuestState("255_Tutorial");

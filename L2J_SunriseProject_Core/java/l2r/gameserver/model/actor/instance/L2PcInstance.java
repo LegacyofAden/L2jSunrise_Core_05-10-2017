@@ -283,6 +283,7 @@ import l2r.gameserver.network.serverpackets.ExStartScenePlayer;
 import l2r.gameserver.network.serverpackets.ExStorageMaxCount;
 import l2r.gameserver.network.serverpackets.ExUseSharedGroupItem;
 import l2r.gameserver.network.serverpackets.ExVoteSystemInfo;
+import l2r.gameserver.network.serverpackets.FlyToLocation.FlyType;
 import l2r.gameserver.network.serverpackets.FriendStatusPacket;
 import l2r.gameserver.network.serverpackets.GameGuardQuery;
 import l2r.gameserver.network.serverpackets.GetOnVehicle;
@@ -9436,6 +9437,13 @@ public final class L2PcInstance extends L2Playable
 				return false;
 			}
 		}
+		
+		if ((skill.getFlyType() == FlyType.CHARGE) && (Config.PATHFINDING > 0) && !GeoData.getInstance().canMove(this, target))
+		{
+			sendPacket(SystemMessageId.THE_TARGET_IS_LOCATED_WHERE_YOU_CANNOT_CHARGE);
+			return false;
+		}
+		
 		// finally, after passing all conditions
 		return true;
 	}
