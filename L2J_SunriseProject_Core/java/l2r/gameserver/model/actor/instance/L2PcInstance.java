@@ -13375,11 +13375,31 @@ public final class L2PcInstance extends L2Playable
 	
 	public L2Skill getTransformSkill(int id)
 	{
+		if (_transformSkills == null)
+		{
+			synchronized (this)
+			{
+				if (_transformSkills == null)
+				{
+					_transformSkills = new HashMap<>();
+				}
+			}
+		}
 		return _transformSkills.get(id);
 	}
 	
 	public boolean hasTransformSkill(int id)
 	{
+		if (_transformSkills == null)
+		{
+			synchronized (this)
+			{
+				if (_transformSkills == null)
+				{
+					_transformSkills = new HashMap<>();
+				}
+			}
+		}
 		return _transformSkills.containsKey(id);
 	}
 	
