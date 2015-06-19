@@ -215,7 +215,7 @@ public class SevenSigns
 		int numHours = (int) Math.floor(countDown % 24);
 		int numDays = (int) Math.floor((countDown - numHours) / 24);
 		
-		_log.info("SevenSigns: Next period begins in " + numDays + " D. " + numHours + " H. and " + numMins + " M.");
+		_log.info("SevenSigns: Next period in " + numDays + " days, " + numHours + " hours and " + numMins + " mins.");
 	}
 	
 	private boolean isNextPeriodChangeInPast()
