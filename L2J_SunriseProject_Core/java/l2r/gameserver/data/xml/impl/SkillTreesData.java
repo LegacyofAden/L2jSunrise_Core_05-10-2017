@@ -734,7 +734,7 @@ public final class SkillTreesData implements IXmlReader
 				final L2Skill oldSkill = clan.getSkills().get(skill.getSkillId());
 				if (oldSkill != null)
 				{
-					if (oldSkill.getLevel() < skill.getSkillLevel())
+					if (oldSkill.getLevel() == (skill.getSkillLevel() - 1))
 					{
 						result.add(skill);
 					}
