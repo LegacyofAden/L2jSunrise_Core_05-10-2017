@@ -541,7 +541,7 @@ public final class L2PcInstance extends L2Playable
 	private long _offlineShopStart = 0;
 	
 	private Transform _transformation;
-	private volatile Map<Integer, L2Skill> _transformSkills;
+	private final Map<Integer, L2Skill> _transformSkills = new ConcurrentHashMap<>(0);
 	
 	/** The table containing all L2RecipeList of the L2PcInstance */
 	private final Map<Integer, L2RecipeList> _dwarvenRecipeBook = new FastMap<>();
@@ -13360,52 +13360,22 @@ public final class L2PcInstance extends L2Playable
 	
 	public void addTransformSkill(L2Skill sk)
 	{
-		if (_transformSkills == null)
-		{
-			synchronized (this)
-			{
-				if (_transformSkills == null)
-				{
-					_transformSkills = new HashMap<>();
-				}
-			}
-		}
 		_transformSkills.put(sk.getId(), sk);
 	}
 	
 	public L2Skill getTransformSkill(int id)
 	{
-		if (_transformSkills == null)
-		{
-			synchronized (this)
-			{
-				if (_transformSkills == null)
-				{
-					_transformSkills = new HashMap<>();
-				}
-			}
-		}
 		return _transformSkills.get(id);
 	}
 	
 	public boolean hasTransformSkill(int id)
 	{
-		if (_transformSkills == null)
-		{
-			synchronized (this)
-			{
-				if (_transformSkills == null)
-				{
-					_transformSkills = new HashMap<>();
-				}
-			}
-		}
 		return _transformSkills.containsKey(id);
 	}
 	
-	public synchronized void removeAllTransformSkills()
+	public void removeAllTransformSkills()
 	{
-		_transformSkills = null;
+		_transformSkills.clear();
 	}
 	
 	protected void startFeed(int npcId)

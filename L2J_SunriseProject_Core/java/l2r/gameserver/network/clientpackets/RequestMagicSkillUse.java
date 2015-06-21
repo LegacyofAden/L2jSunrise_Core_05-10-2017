@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
+\ * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -62,11 +62,7 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 			skill = activeChar.getCustomSkill(_magicId);
 			if (skill == null)
 			{
-				if (activeChar.hasTransformSkill(_magicId))
-				{
-					skill = activeChar.getTransformSkill(_magicId);
-				}
-				
+				skill = activeChar.getTransformSkill(_magicId);
 				if (skill == null)
 				{
 					activeChar.sendPacket(ActionFailed.STATIC_PACKET);
