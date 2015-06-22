@@ -100,13 +100,9 @@ public class PcStat extends PlayableStat
 				activeChar.sendPacket(msg);
 				
 				// vGodFather Fix
-				if (activeChar.getKarma() <= 0)
+				if ((activeChar.getKarma() <= 0) && hadKarma)
 				{
-					if (hadKarma)
-					{
-						activeChar.setPvpFlagLasts(System.currentTimeMillis() + Config.PVP_PVP_TIME);
-						activeChar.startPvPFlag();
-					}
+					activeChar.startFlag();
 				}
 			}
 		}

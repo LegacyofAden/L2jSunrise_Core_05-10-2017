@@ -921,6 +921,12 @@ public final class L2PcInstance extends L2Playable
 		_PvPRegTask = null;
 	}
 	
+	public void startFlag()
+	{
+		setPvpFlagLasts(System.currentTimeMillis() + Config.PVP_PVP_TIME);
+		startPvPFlag();
+	}
+	
 	// Character UI
 	private UIKeysSettings _uiKeySettings;
 	
