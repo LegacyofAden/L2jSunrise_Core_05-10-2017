@@ -13,6 +13,7 @@
 	<message id="registering_olympiad" text="You cannot register while you are in the olympiad." />
 	<message id="registering_karma" text="You cannot register if you have karma." />
 	<message id="registering_cursedWeapon" text="You cannot register with a cursed weapon." />
+	<message id="registering_storemode" text="You cannot register while in store mode." />
 	
 	<message id="registering_highLevel" text="Your level is higher than the max allowed level." />
 	<message id="registering_lowLevel" text="Your level is lower than the min required level." />

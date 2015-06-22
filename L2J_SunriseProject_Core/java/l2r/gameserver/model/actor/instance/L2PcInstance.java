@@ -4950,6 +4950,13 @@ public final class L2PcInstance extends L2Playable
 			}
 			return false;
 		}
+		
+		if (SunriseEvents.isRegistered(this) || SunriseEvents.isInEvent(this))
+		{
+			sendMessage("Cannot start shop while in event or registered.");
+			return false;
+		}
+		
 		return !isAlikeDead() && !isInOlympiadMode() && !isMounted() && !isProcessingRequest() && !isProcessingTransaction();
 	}
 	
