@@ -66,7 +66,8 @@ public class DateRange
 	
 	public boolean isWithinRange(Date date)
 	{
-		return date.after(_startDate) && date.before(_endDate);
+		return (date.equals(_startDate) || date.after(_startDate)) //
+			&& (date.equals(_endDate) || date.before(_endDate));
 	}
 	
 	public Date getEndDate()

@@ -261,17 +261,21 @@ public class LongTimeEvent extends Quest
 	 */
 	protected void startEvent()
 	{
+		long currentTime = System.currentTimeMillis();
 		// Add drop
 		if (_dropList != null)
 		{
-			for (L2DropData drop : _dropList)
+			if (currentTime < _dropPeriod.getEndDate().getTime())
 			{
-				EventDroplist.getInstance().addGlobalDrop(drop.getId(), drop.getMinDrop(), drop.getMaxDrop(), (int) drop.getChance(), _dropPeriod);
+				for (L2DropData drop : _dropList)
+				{
+					EventDroplist.getInstance().addGlobalDrop(drop.getId(), drop.getMinDrop(), drop.getMaxDrop(), (int) drop.getChance(), _dropPeriod);
+				}
 			}
 		}
 		
 		// Add spawns
-		Long millisToEventEnd = _eventPeriod.getEndDate().getTime() - System.currentTimeMillis();
+		Long millisToEventEnd = _eventPeriod.getEndDate().getTime() - currentTime;
 		if (_spawnList != null)
 		{
 			for (NpcSpawn spawn : _spawnList)
