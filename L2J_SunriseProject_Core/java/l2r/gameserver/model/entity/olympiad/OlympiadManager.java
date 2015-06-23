@@ -21,9 +21,9 @@ package l2r.gameserver.model.entity.olympiad;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.instancemanager.AntiFeedManager;
@@ -47,9 +47,9 @@ public class OlympiadManager
 	
 	protected OlympiadManager()
 	{
-		_nonClassBasedRegisters = new FastList<Integer>().shared();
-		_classBasedRegisters = new FastMap<Integer, List<Integer>>().shared();
-		_teamsBasedRegisters = new FastList<List<Integer>>().shared();
+		_nonClassBasedRegisters = new CopyOnWriteArrayList<>();
+		_classBasedRegisters = new ConcurrentHashMap<>();
+		_teamsBasedRegisters = new CopyOnWriteArrayList<>();
 	}
 	
 	public static final OlympiadManager getInstance()
@@ -81,7 +81,7 @@ public class OlympiadManager
 			{
 				if (result == null)
 				{
-					result = new FastList<>();
+					result = new CopyOnWriteArrayList<>();
 				}
 				
 				result.add(classList.getValue());
@@ -264,7 +264,7 @@ public class OlympiadManager
 				}
 				else
 				{
-					classed = new FastList<Integer>().shared();
+					classed = new CopyOnWriteArrayList<>();
 					classed.add(charId);
 					_classBasedRegisters.put(player.getBaseClass(), classed);
 				}
@@ -304,7 +304,7 @@ public class OlympiadManager
 				}
 				
 				int teamPoints = 0;
-				ArrayList<Integer> team = new ArrayList<>(party.getMemberCount());
+				List<Integer> team = new ArrayList<>(party.getMemberCount());
 				for (L2PcInstance noble : party.getMembers())
 				{
 					if (!checkNoble(noble, player))
@@ -398,7 +398,6 @@ public class OlympiadManager
 		final List<Integer> classed = _classBasedRegisters.get(noble.getBaseClass());
 		if ((classed != null) && classed.remove(objId))
 		{
-			_classBasedRegisters.remove(noble.getBaseClass());
 			_classBasedRegisters.put(noble.getBaseClass(), classed);
 			
 			if (Config.L2JMOD_DUALBOX_CHECK_MAX_OLYMPIAD_PARTICIPANTS_PER_IP > 0)
@@ -560,11 +559,10 @@ public class OlympiadManager
 		@Override
 		public final void run()
 		{
-			L2PcInstance teamMember;
 			final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
 			for (int objectId : _team)
 			{
-				teamMember = L2World.getInstance().getPlayer(objectId);
+				L2PcInstance teamMember = L2World.getInstance().getPlayer(objectId);
 				if (teamMember != null)
 				{
 					teamMember.sendPacket(sm);
@@ -574,7 +572,6 @@ public class OlympiadManager
 					}
 				}
 			}
-			teamMember = null;
 		}
 	}
 	
