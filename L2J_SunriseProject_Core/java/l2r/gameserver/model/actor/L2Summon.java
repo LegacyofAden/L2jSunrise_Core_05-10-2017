@@ -997,6 +997,12 @@ public abstract class L2Summon extends L2Playable
 			final L2Object target = getOwner().getTarget();
 			if (target != null)
 			{
+				if ((getOwner().getTarget() != null) && !getOwner().getTarget().canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
+				{
+					getOwner().sendPacket(ActionFailed.STATIC_PACKET);
+					return;
+				}
+				
 				setTarget(target);
 				getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
 			}
@@ -1079,6 +1085,12 @@ public abstract class L2Summon extends L2Playable
 		if (!getOwner().getAccessLevel().allowPeaceAttack() && getOwner().isInsidePeaceZone(this, target))
 		{
 			sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
+			return false;
+		}
+		
+		if ((getOwner().getTarget() != null) && !getOwner().getTarget().canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
+		{
+			getOwner().sendPacket(ActionFailed.STATIC_PACKET);
 			return false;
 		}
 		

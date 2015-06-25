@@ -9457,6 +9457,12 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
+		if ((skill.hasEffectType(L2EffectType.TELEPORT_TO_TARGET)) && (Config.PATHFINDING > 0) && !GeoData.getInstance().canMove(this, target))
+		{
+			sendMessage("The target is located where you cannot jump.");
+			return false;
+		}
+		
 		// finally, after passing all conditions
 		return true;
 	}
@@ -9537,79 +9543,10 @@ public final class L2PcInstance extends L2Playable
 					return false;
 				}
 				
-				// Duel
-				if (isInDuel() && targetPlayer.isInDuel())
-				{
-					if (getDuelId() == targetPlayer.getDuelId())
-					{
-						return true;
-					}
-				}
-				
-				// Party
-				if (isInSameParty(targetPlayer) || isInSameChannel(targetPlayer))
+				if (isFriend(targetPlayer))
 				{
 					return false;
 				}
-				
-				// You can debuff anyone except party members while in an arena...
-				if (isInsideZone(ZoneIdType.PVP) && targetPlayer.isInsideZone(ZoneIdType.PVP))
-				{
-					return true;
-				}
-				
-				if (isInsideZone(ZoneIdType.FLAG) && targetPlayer.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
-				{
-					return true;
-				}
-				
-				// Olympiad
-				if (isInOlympiadMode() && targetPlayer.isInOlympiadMode())
-				{
-					if (getOlympiadGameId() == targetPlayer.getOlympiadGameId())
-					{
-						return true;
-					}
-				}
-				
-				// Siege
-				final boolean isInsideSiegeZone = isInsideZone(ZoneIdType.SIEGE);
-				if (isInsideSiegeZone && isInSiege() && (getSiegeState() != 0) && (targetPlayer.getSiegeState() != 0))
-				{
-					final Siege siege = SiegeManager.getInstance().getSiege(getX(), getY(), getZ());
-					if (siege != null)
-					{
-						if ((siege.checkIsDefender(getClan()) && siege.checkIsDefender(targetPlayer.getClan())) || (siege.checkIsAttacker(getClan()) && siege.checkIsAttacker(targetPlayer.getClan())))
-						{
-							sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS));
-							return false;
-						}
-					}
-				}
-				
-				// Two side war
-				if (isInTwoSidedWar(targetPlayer))
-				{
-					return true;
-				}
-				
-				// Ally
-				if (isInSameClan(targetPlayer) || isInSameAlly(targetPlayer))
-				{
-					return false;
-				}
-				
-				// On retail, it is impossible to debuff a "peaceful" player.
-				if ((targetPlayer.getPvpFlag() == 0) && (targetPlayer.getKarma() == 0))
-				{
-					return false;
-				}
-				
-				// vGodFather fix
-				/**
-				 * if ((targetPlayer.getPvpFlag() > 0) || (targetPlayer.getKarma() > 0)) { if (!isCtrlPressed) { switch (skill.getTargetType()) { case AREA: case AURA: case BEHIND_AREA: case BEHIND_AURA: case FRONT_AREA: case FRONT_AURA: { if ((getPvpFlag() > 0) || (getKarma() > 0)) { return true; }
-				 * return false; } default: return true; } } return true; }
-				 */
 			}
 		}
 		
@@ -15480,8 +15417,19 @@ public final class L2PcInstance extends L2Playable
 			return true;
 		}
 		
+		// Sunrise Events
+		if (SunriseEvents.isInEvent(this) && SunriseEvents.isInEvent(target) && SunriseEvents.canAttack(this, target))
+		{
+			return false;
+		}
+		
 		// You can debuff anyone except party members while in an arena...
 		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP))
+		{
+			return false;
+		}
+		
+		if (isInsideZone(ZoneIdType.FLAG) && target.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
 		{
 			return false;
 		}

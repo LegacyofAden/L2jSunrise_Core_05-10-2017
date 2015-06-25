@@ -1662,11 +1662,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		{
 			L2PcInstance owner = getActingPlayer();
 			
-			if (SunriseEvents.isInEvent(owner) && (getTarget() instanceof L2Character))
+			if (SunriseEvents.isInEvent(owner) && (getTarget() instanceof L2Character) && (skill.getTargetType() != L2TargetType.SELF))
 			{
 				if (!SunriseEvents.isSkillNeutral(owner, skill))
 				{
-					if (SunriseEvents.isSkillOffensive(owner, skill) && !SunriseEvents.canAttack(owner, (L2Character) getTarget()) && (owner != getTarget()))
+					if (owner.hasSummon() && (getTarget() == owner.getSummon()))
+					{
+						abort = false;
+					}
+					else if (SunriseEvents.isSkillOffensive(owner, skill) && !SunriseEvents.canAttack(owner, (L2Character) getTarget()) && (owner != getTarget()))
 					{
 						abort = true;
 					}

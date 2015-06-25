@@ -32,7 +32,7 @@ import l2r.gameserver.network.serverpackets.ExStopMoveAirShip;
 
 /**
  * Flying airships. Very similar to Maktakien boats (see L2BoatInstance) but these do fly :P
- * @author DrHouse, reworked by DS
+ * @author DrHouse, DS
  */
 public class L2AirShipInstance extends L2Vehicle
 {
@@ -165,9 +165,9 @@ public class L2AirShipInstance extends L2Vehicle
 	}
 	
 	@Override
-	public void stopMove(Location pos, boolean updateKnownObjects)
+	public void stopMove(Location loc, boolean updateKnownObjects)
 	{
-		super.stopMove(pos, updateKnownObjects);
+		super.stopMove(loc, updateKnownObjects);
 		
 		broadcastPacket(new ExStopMoveAirShip(this));
 	}
