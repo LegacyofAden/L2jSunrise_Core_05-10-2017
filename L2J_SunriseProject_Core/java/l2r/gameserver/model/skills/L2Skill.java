@@ -20,10 +20,10 @@ package l2r.gameserver.model.skills;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.data.xml.impl.SkillData;
@@ -316,7 +316,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		String negateAbnormals = set.getString("negateAbnormals", null);
 		if ((negateAbnormals != null) && !negateAbnormals.isEmpty())
 		{
-			_negateAbnormals = new FastMap<>();
+			_negateAbnormals = new HashMap<>();
 			for (String ngtStack : negateAbnormals.split(";"))
 			{
 				String[] ngt = ngtStack.split(",");
@@ -1171,38 +1171,25 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return _stayOnSubclassChange;
 	}
 	
-	public boolean checkCondition(L2Character activeChar, L2Object target, boolean itemOrWeapon)
+	public boolean checkCondition(L2Character activeChar, L2Object object, boolean itemOrWeapon)
 	{
 		if (activeChar.canOverrideCond(PcCondOverride.SKILL_CONDITIONS) && !Config.GM_SKILL_RESTRICTION)
 		{
 			return true;
 		}
-		if ((getCondition() & L2Skill.COND_SHIELD) != 0)
-		{
-			// L2ItemInstance dummy = activeChar.getInventory().getPaperdollItem(Inventory.PAPERDOLL_RHAND);
-			// L2Armor armorPiece = (L2Armor) dummy.getItem();
-			// TODO add checks for shield here.
-		}
 		
-		List<Condition> preCondition = _preCondition;
-		if (itemOrWeapon)
-		{
-			preCondition = _itemPreCondition;
-		}
-		
+		final List<Condition> preCondition = itemOrWeapon ? _itemPreCondition : _preCondition;
 		if ((preCondition == null) || preCondition.isEmpty())
 		{
 			return true;
 		}
 		
+		final L2Character target = (object instanceof L2Character) ? (L2Character) object : null;
 		for (Condition cond : preCondition)
 		{
 			Env env = new Env();
 			env.setCharacter(activeChar);
-			if (target instanceof L2Character)
-			{
-				env.setTarget((L2Character) target);
-			}
+			env.setTarget(target);
 			env.setSkill(this);
 			
 			if (!cond.test(env))
@@ -1211,7 +1198,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 				int msgId = cond.getMessageId();
 				if (msgId != 0)
 				{
-					SystemMessage sm = SystemMessage.getSystemMessage(msgId);
+					final SystemMessage sm = SystemMessage.getSystemMessage(msgId);
 					if (cond.isAddName())
 					{
 						sm.addSkillName(_id);

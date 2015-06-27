@@ -18,9 +18,10 @@
  */
 package l2r.gameserver.model.zone.type;
 
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.enums.InstanceType;
@@ -46,7 +47,7 @@ public class L2EffectZone extends L2ZoneType
 	private int _reuse;
 	protected boolean _bypassConditions;
 	private boolean _isShowDangerIcon;
-	protected volatile FastMap<Integer, Integer> _skills;
+	protected volatile Map<Integer, Integer> _skills;
 	
 	public L2EffectZone(int id)
 	{
@@ -92,12 +93,12 @@ public class L2EffectZone extends L2ZoneType
 		}
 		else if (name.equals("maxDynamicSkillCount"))
 		{
-			_skills = new FastMap<Integer, Integer>(Integer.parseInt(value)).shared();
+			_skills = new ConcurrentHashMap<>(Integer.parseInt(value));
 		}
 		else if (name.equals("skillIdLvl"))
 		{
 			String[] propertySplit = value.split(";");
-			_skills = new FastMap<>(propertySplit.length);
+			_skills = new ConcurrentHashMap<>(propertySplit.length);
 			for (String skill : propertySplit)
 			{
 				String[] skillSplit = skill.split("-");
@@ -149,6 +150,21 @@ public class L2EffectZone extends L2ZoneType
 		}
 		if (character.isPlayer())
 		{
+			if (_skills != null)
+			{
+				for (Entry<Integer, Integer> e : _skills.entrySet())
+				{
+					L2Skill skill = getSkill(e.getKey(), e.getValue());
+					if ((skill != null))
+					{
+						if (character.isAffectedBySkill(skill.getId()))
+						{
+							character.stopSkillEffects(skill.getId());
+						}
+					}
+				}
+			}
+			
 			character.setInsideZone(ZoneIdType.ALTERED, true);
 			if (_isShowDangerIcon)
 			{
@@ -203,7 +219,7 @@ public class L2EffectZone extends L2ZoneType
 			{
 				if (_skills == null)
 				{
-					_skills = new FastMap<Integer, Integer>(3).shared();
+					_skills = new ConcurrentHashMap<>(3);
 				}
 			}
 		}
@@ -261,7 +277,7 @@ public class L2EffectZone extends L2ZoneType
 								L2Skill skill = getSkill(e.getKey(), e.getValue());
 								if ((skill != null) && (_bypassConditions || skill.checkCondition(temp, temp, false)))
 								{
-									if (temp.getFirstEffect(e.getKey()) == null)
+									if (!temp.isAffectedBySkill(e.getKey()))
 									{
 										skill.getEffects(temp, temp);
 									}
@@ -272,15 +288,5 @@ public class L2EffectZone extends L2ZoneType
 				}
 			}
 		}
-	}
-	
-	@Override
-	public void onDieInside(L2Character character)
-	{
-	}
-	
-	@Override
-	public void onReviveInside(L2Character character)
-	{
 	}
 }
