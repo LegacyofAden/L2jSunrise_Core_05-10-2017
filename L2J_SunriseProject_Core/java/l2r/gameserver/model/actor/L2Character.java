@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.GeoData;
@@ -6125,7 +6126,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			int skipRange = 0;
 			int skipLOS = 0;
 			int skipPeaceZone = 0;
-			final List<L2Object> targetList = new ArrayList<>();
+			List<L2Character> targetList = new FastList<>(targets.length);
 			for (L2Object target : targets)
 			{
 				if (target instanceof L2Character)
@@ -6164,7 +6165,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 							}
 						}
 					}
-					targetList.add(target);
+					targetList.add((L2Character) target);
 				}
 			}
 			if (targetList.isEmpty())
@@ -6187,7 +6188,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				abortCast();
 				return;
 			}
-			mut.setTargets(targetList.toArray(new L2Object[targetList.size()]));
+			mut.setTargets(targetList.toArray(new L2Character[targetList.size()]));
 		}
 		
 		// Ensure that a cast is in progress
