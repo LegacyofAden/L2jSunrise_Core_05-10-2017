@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import l2r.Config;
 import l2r.gameserver.GeoData;
@@ -35,12 +33,15 @@ import l2r.gameserver.pathfinding.AbstractNodeLoc;
 import l2r.gameserver.pathfinding.PathFinding;
 import l2r.util.StringUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Sami, DS Credits to Diamond
  */
 public class CellPathFinding extends PathFinding
 {
-	private static final Logger _log = Logger.getLogger(CellPathFinding.class.getName());
+	private static final Logger _log = LoggerFactory.getLogger(CellPathFinding.class);
 	private BufferInfo[] _allBuffers;
 	private int _findSuccess = 0;
 	private int _findFails = 0;
@@ -80,7 +81,7 @@ public class CellPathFinding extends PathFinding
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "CellPathFinding: Problem during buffer init: " + e.getMessage(), e);
+			_log.warn(getClass() + ": Problem during buffer init: " + e.getMessage(), e);
 			throw new Error("CellPathFinding: load aborted");
 		}
 	}
@@ -164,7 +165,7 @@ public class CellPathFinding extends PathFinding
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "", e);
+			_log.warn("", e);
 			return null;
 		}
 		finally
