@@ -21,10 +21,10 @@ package l2r.gameserver.ai;
 import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_ACTIVE;
 import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_ATTACK;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.model.L2Object;
@@ -453,16 +453,9 @@ public class L2ControllableMobAI extends L2AttackableAI
 		double dy, dx;
 		double dblAggroRange = aggroRange * aggroRange;
 		
-		List<L2Character> potentialTarget = new FastList<>();
-		
-		Collection<L2Object> objs = npc.getKnownList().getKnownObjects().values();
-		for (L2Object obj : objs)
+		final List<L2Character> potentialTarget = new ArrayList<>();
+		for (L2Character obj : npc.getKnownList().getKnownCharacters())
 		{
-			if (!(obj instanceof L2Character))
-			{
-				continue;
-			}
-			
 			npcX = npc.getX();
 			npcY = npc.getY();
 			targetX = obj.getX();
@@ -476,8 +469,7 @@ public class L2ControllableMobAI extends L2AttackableAI
 				continue;
 			}
 			
-			L2Character target = (L2Character) obj;
-			
+			L2Character target = obj;
 			if (autoAttackCondition(target))
 			{
 				potentialTarget.add(target);

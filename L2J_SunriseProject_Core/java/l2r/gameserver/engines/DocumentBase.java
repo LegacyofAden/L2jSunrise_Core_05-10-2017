@@ -20,6 +20,7 @@ package l2r.gameserver.engines;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.CategoryType;
@@ -147,12 +147,11 @@ public abstract class DocumentBase
 	protected final Logger _log = LoggerFactory.getLogger(getClass().getName());
 	
 	private final File _file;
-	protected Map<String, String[]> _tables;
+	protected final Map<String, String[]> _tables = new HashMap<>();
 	
 	protected DocumentBase(File pFile)
 	{
 		_file = pFile;
-		_tables = new FastMap<>();
 	}
 	
 	public Document parse()
@@ -192,7 +191,7 @@ public abstract class DocumentBase
 	
 	protected void resetTable()
 	{
-		_tables = new FastMap<>();
+		_tables.clear();
 	}
 	
 	protected void setTable(String name, String[] table)
@@ -1302,9 +1301,9 @@ public abstract class DocumentBase
 					{
 						int old = mask;
 						String item = st.nextToken().trim();
-						if (ItemData._slots.containsKey(item))
+						if (ItemData.SLOTS.containsKey(item))
 						{
-							mask |= ItemData._slots.get(item);
+							mask |= ItemData.SLOTS.get(item);
 						}
 						
 						if (old == mask)

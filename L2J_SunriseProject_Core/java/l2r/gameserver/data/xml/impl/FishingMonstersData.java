@@ -21,9 +21,9 @@ package l2r.gameserver.data.xml.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.fishing.L2FishingMonster;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

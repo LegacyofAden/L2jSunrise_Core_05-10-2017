@@ -23,13 +23,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Instance;
 import l2r.gameserver.model.instancezone.InstanceWorld;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -40,12 +40,12 @@ import org.w3c.dom.Node;
  */
 public class InstanceManager implements IXmlReader
 {
-	private static final Map<Integer, Instance> _instanceList = new FastMap<>();
-	private final Map<Integer, InstanceWorld> _instanceWorlds = new FastMap<>();
+	private static final Map<Integer, Instance> INSTANCES = new ConcurrentHashMap<>();
+	private final Map<Integer, InstanceWorld> _instanceWorlds = new ConcurrentHashMap<>();
 	private int _dynamic = 300000;
 	// InstanceId Names
 	private static final Map<Integer, String> _instanceIdNames = new HashMap<>();
-	private final Map<Integer, Map<Integer, Long>> _playerInstanceTimes = new FastMap<>();
+	private final Map<Integer, Map<Integer, Long>> _playerInstanceTimes = new ConcurrentHashMap<>();
 	// SQL Queries
 	private static final String ADD_INSTANCE_TIME = "INSERT INTO character_instance_time (charId,instanceId,time) values (?,?,?) ON DUPLICATE KEY UPDATE time=?";
 	private static final String RESTORE_INSTANCE_TIMES = "SELECT instanceId,time FROM character_instance_time WHERE charId=?";
@@ -54,10 +54,10 @@ public class InstanceManager implements IXmlReader
 	protected InstanceManager()
 	{
 		// Creates the multiverse.
-		_instanceList.put(-1, new Instance(-1, "multiverse"));
+		INSTANCES.put(-1, new Instance(-1, "multiverse"));
 		LOGGER.info(getClass().getSimpleName() + ": Multiverse Instance created.");
 		// Creates the universe.
-		_instanceList.put(0, new Instance(0, "universe"));
+		INSTANCES.put(0, new Instance(0, "universe"));
 		LOGGER.info(getClass().getSimpleName() + ": Universe Instance created.");
 		load();
 	}
@@ -158,7 +158,7 @@ public class InstanceManager implements IXmlReader
 		{
 			return; // already restored
 		}
-		_playerInstanceTimes.put(playerObjId, new FastMap<Integer, Long>());
+		_playerInstanceTimes.put(playerObjId, new ConcurrentHashMap<>());
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement ps = con.prepareStatement(RESTORE_INSTANCE_TIMES))
 		{
@@ -262,18 +262,15 @@ public class InstanceManager implements IXmlReader
 		{
 			return;
 		}
-		Instance temp = _instanceList.get(instanceid);
+		final Instance temp = INSTANCES.get(instanceid);
 		if (temp != null)
 		{
 			temp.removeNpcs();
 			temp.removePlayers();
 			temp.removeDoors();
 			temp.cancelTimer();
-			_instanceList.remove(instanceid);
-			if (_instanceWorlds.containsKey(instanceid))
-			{
-				_instanceWorlds.remove(instanceid);
-			}
+			INSTANCES.remove(instanceid);
+			_instanceWorlds.remove(instanceid);
 		}
 	}
 	
@@ -283,7 +280,7 @@ public class InstanceManager implements IXmlReader
 	 */
 	public Instance getInstance(int instanceid)
 	{
-		return _instanceList.get(instanceid);
+		return INSTANCES.get(instanceid);
 	}
 	
 	/**
@@ -291,7 +288,7 @@ public class InstanceManager implements IXmlReader
 	 */
 	public Map<Integer, Instance> getInstances()
 	{
-		return _instanceList;
+		return INSTANCES;
 	}
 	
 	/**
@@ -300,7 +297,7 @@ public class InstanceManager implements IXmlReader
 	 */
 	public int getPlayerInstance(int objectId)
 	{
-		for (Instance temp : _instanceList.values())
+		for (Instance temp : INSTANCES.values())
 		{
 			if (temp == null)
 			{
@@ -328,7 +325,7 @@ public class InstanceManager implements IXmlReader
 		}
 		
 		Instance instance = new Instance(id);
-		_instanceList.put(id, instance);
+		INSTANCES.put(id, instance);
 		return true;
 	}
 	
@@ -345,7 +342,7 @@ public class InstanceManager implements IXmlReader
 		}
 		
 		Instance instance = new Instance(id);
-		_instanceList.put(id, instance);
+		INSTANCES.put(id, instance);
 		instance.loadInstanceTemplate(template);
 		return true;
 	}
@@ -367,7 +364,7 @@ public class InstanceManager implements IXmlReader
 			}
 		}
 		Instance instance = new Instance(_dynamic);
-		_instanceList.put(_dynamic, instance);
+		INSTANCES.put(_dynamic, instance);
 		if (template != null)
 		{
 			instance.loadInstanceTemplate(template);

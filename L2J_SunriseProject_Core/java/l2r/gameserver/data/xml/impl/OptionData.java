@@ -21,7 +21,6 @@ package l2r.gameserver.data.xml.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.options.Options;
 import l2r.gameserver.model.options.OptionsSkillHolder;
@@ -29,6 +28,7 @@ import l2r.gameserver.model.options.OptionsSkillType;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.model.stats.functions.FuncTemplate;
 import l2r.gameserver.model.stats.functions.LambdaConst;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

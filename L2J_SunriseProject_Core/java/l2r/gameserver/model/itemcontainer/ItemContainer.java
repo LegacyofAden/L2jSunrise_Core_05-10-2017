@@ -21,10 +21,10 @@ package l2r.gameserver.model.itemcontainer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.GameTimeController;
@@ -48,7 +48,7 @@ public abstract class ItemContainer
 {
 	protected static final Logger _log = LoggerFactory.getLogger(ItemContainer.class);
 	
-	protected final List<L2ItemInstance> _items = new FastList<L2ItemInstance>().shared();
+	protected final List<L2ItemInstance> _items = new CopyOnWriteArrayList<>();
 	
 	protected ItemContainer()
 	{
@@ -109,7 +109,7 @@ public abstract class ItemContainer
 	 */
 	public List<L2ItemInstance> getItemsByItemId(int itemId)
 	{
-		final List<L2ItemInstance> returnList = new ArrayList<>();
+		final List<L2ItemInstance> returnList = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if ((item != null) && (item.getId() == itemId))

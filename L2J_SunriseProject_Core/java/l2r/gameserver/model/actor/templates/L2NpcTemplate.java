@@ -21,8 +21,8 @@ package l2r.gameserver.model.actor.templates;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.gameserver.data.xml.impl.HerbDropData;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.L2DropCategory;
@@ -108,7 +108,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	
 	private final List<ClassId> _teachInfo = new ArrayList<>();
 	
-	private final Map<Integer, L2Skill> _skills = new FastMap<Integer, L2Skill>().shared();
+	private final Map<Integer, L2Skill> _skills = new ConcurrentHashMap<>();
 	
 	private StatsSet _parameters;
 	

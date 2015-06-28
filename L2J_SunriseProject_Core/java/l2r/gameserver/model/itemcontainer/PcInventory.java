@@ -21,9 +21,9 @@ package l2r.gameserver.model.itemcontainer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.LinkedList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.xml.impl.ItemData;
@@ -140,7 +140,7 @@ public class PcInventory extends Inventory
 	
 	public L2ItemInstance[] getUniqueItems(boolean allowAdena, boolean allowAncientAdena, boolean onlyAvailable)
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if (item == null)
@@ -169,11 +169,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -189,7 +185,7 @@ public class PcInventory extends Inventory
 	
 	public L2ItemInstance[] getUniqueItemsByEnchantLevel(boolean allowAdena, boolean allowAncientAdena, boolean onlyAvailable)
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if (item == null)
@@ -220,11 +216,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -244,7 +236,7 @@ public class PcInventory extends Inventory
 	 */
 	public L2ItemInstance[] getAllItemsByItemId(int itemId, boolean includeEquipped)
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if (item == null)
@@ -257,11 +249,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -283,7 +271,7 @@ public class PcInventory extends Inventory
 	 */
 	public L2ItemInstance[] getAllItemsByItemId(int itemId, int enchantment, boolean includeEquipped)
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if (item == null)
@@ -296,11 +284,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -311,7 +295,7 @@ public class PcInventory extends Inventory
 	 */
 	public L2ItemInstance[] getAvailableItems(boolean allowAdena, boolean allowNonTradeable, boolean feightable)
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if ((item == null) || !item.isAvailable(getOwner(), allowAdena, allowNonTradeable) || !canManipulateWithItemId(item.getId()))
@@ -330,11 +314,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -343,7 +323,7 @@ public class PcInventory extends Inventory
 	 */
 	public L2ItemInstance[] getAugmentedItems()
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if ((item != null) && item.isAugmented())
@@ -351,11 +331,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -364,7 +340,7 @@ public class PcInventory extends Inventory
 	 */
 	public L2ItemInstance[] getElementItems()
 	{
-		FastList<L2ItemInstance> list = FastList.newInstance();
+		List<L2ItemInstance> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if ((item != null) && (item.getElementals() != null))
@@ -372,11 +348,7 @@ public class PcInventory extends Inventory
 				list.add(item);
 			}
 		}
-		
-		L2ItemInstance[] result = list.toArray(new L2ItemInstance[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new L2ItemInstance[list.size()]);
 	}
 	
 	/**
@@ -386,7 +358,7 @@ public class PcInventory extends Inventory
 	 */
 	public TradeItem[] getAvailableItems(TradeList tradeList)
 	{
-		FastList<TradeItem> list = FastList.newInstance();
+		List<TradeItem> list = new LinkedList<>();
 		for (L2ItemInstance item : _items)
 		{
 			if ((item != null) && item.isAvailable(getOwner(), false, false))
@@ -398,11 +370,7 @@ public class PcInventory extends Inventory
 				}
 			}
 		}
-		
-		TradeItem[] result = list.toArray(new TradeItem[list.size()]);
-		FastList.recycle(list);
-		
-		return result;
+		return list.toArray(new TradeItem[list.size()]);
 	}
 	
 	/**

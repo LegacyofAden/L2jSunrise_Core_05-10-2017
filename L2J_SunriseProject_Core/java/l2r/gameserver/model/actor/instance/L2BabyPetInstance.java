@@ -18,11 +18,11 @@
  */
 package l2r.gameserver.model.actor.instance;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import javolution.util.FastList;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.PetData;
 import l2r.gameserver.data.xml.impl.SkillData;
@@ -72,7 +72,6 @@ public final class L2BabyPetInstance extends L2PetInstance
 	{
 		super.onSpawn();
 		
-		L2Skill skill;
 		double healPower = 0;
 		for (L2PetSkillLearn psl : PetData.getInstance().getPetData(getId()).getAvailableSkills())
 		{
@@ -82,7 +81,8 @@ public final class L2BabyPetInstance extends L2PetInstance
 			{
 				continue;
 			}
-			skill = SkillData.getInstance().getInfo(id, lvl);
+			
+			final L2Skill skill = SkillData.getInstance().getInfo(id, lvl);
 			if (skill != null)
 			{
 				if ((skill.getId() == BUFF_CONTROL) || (skill.getId() == AWAKENING))
@@ -95,7 +95,7 @@ public final class L2BabyPetInstance extends L2PetInstance
 					case BUFF:
 						if (_buffs == null)
 						{
-							_buffs = new FastList<>();
+							_buffs = new ArrayList<>();
 						}
 						_buffs.add(new SkillHolder(skill));
 						break;
@@ -173,9 +173,9 @@ public final class L2BabyPetInstance extends L2PetInstance
 	
 	private final void startCastTask()
 	{
-		if (((_majorHeal != null) || (_buffs != null) || (_recharge != null)) && (_castTask == null) && !isDead())
+		if ((_majorHeal != null) || (_buffs != null) || ((_recharge != null) && (_castTask == null) && !isDead()))
 		{
-			_castTask = ThreadPoolManager.getInstance().scheduleEffectAtFixedRate(new CastTask(this), 3000, 1000);
+			_castTask = ThreadPoolManager.getInstance().scheduleEffectAtFixedRate(new CastTask(this), 3000, 2000);
 		}
 	}
 	
@@ -186,6 +186,7 @@ public final class L2BabyPetInstance extends L2PetInstance
 	}
 	
 	/**
+	 * Verify if this pet is in support mode.
 	 * @return {@code true} if this baby pet is in support mode, {@code false} otherwise
 	 */
 	public boolean isInSupportMode()
@@ -238,7 +239,7 @@ public final class L2BabyPetInstance extends L2PetInstance
 	private class CastTask implements Runnable
 	{
 		private final L2BabyPetInstance _baby;
-		private final List<L2Skill> _currentBuffs = new FastList<>();
+		private final List<L2Skill> _currentBuffs = new ArrayList<>();
 		
 		public CastTask(L2BabyPetInstance baby)
 		{

@@ -21,8 +21,8 @@ package l2r.gameserver.taskmanager;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.actor.L2Attackable;
@@ -38,7 +38,7 @@ public class DecayTaskManager
 {
 	protected static final Logger _log = LoggerFactory.getLogger(DecayTaskManager.class);
 	
-	protected final Map<L2Character, Long> _decayTasks = new FastMap<L2Character, Long>().shared();
+	protected final Map<L2Character, Long> _decayTasks = new ConcurrentHashMap<>();
 	
 	protected DecayTaskManager()
 	{

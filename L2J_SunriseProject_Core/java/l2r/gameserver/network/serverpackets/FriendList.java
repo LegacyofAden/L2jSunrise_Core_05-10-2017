@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -50,7 +50,7 @@ public class FriendList extends L2GameServerPacket
 	
 	public FriendList(L2PcInstance player)
 	{
-		_info = new FastList<>(player.getFriendList().size());
+		_info = new ArrayList<>(player.getFriendList().size());
 		for (int objId : player.getFriendList())
 		{
 			String name = CharNameTable.getInstance().getNameById(objId);

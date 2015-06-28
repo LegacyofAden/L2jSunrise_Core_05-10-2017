@@ -21,11 +21,11 @@ package l2r.gameserver.model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -35,14 +35,10 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This class ...
- * @version $Revision: 1.2 $ $Date: 2004/06/27 08:12:59 $
- */
 public class BlockList
 {
 	private static Logger _log = LoggerFactory.getLogger(BlockList.class);
-	private static Map<Integer, List<Integer>> _offlineList = new FastMap<Integer, List<Integer>>().shared();
+	private static final Map<Integer, List<Integer>> OFFLINE_LIST = new ConcurrentHashMap<>();
 	
 	private final L2PcInstance _owner;
 	private List<Integer> _blockList;
@@ -50,7 +46,7 @@ public class BlockList
 	public BlockList(L2PcInstance owner)
 	{
 		_owner = owner;
-		_blockList = _offlineList.get(owner.getObjectId());
+		_blockList = OFFLINE_LIST.get(owner.getObjectId());
 		if (_blockList == null)
 		{
 			_blockList = loadList(_owner.getObjectId());
@@ -71,32 +67,29 @@ public class BlockList
 	
 	public void playerLogout()
 	{
-		_offlineList.put(_owner.getObjectId(), _blockList);
+		OFFLINE_LIST.put(_owner.getObjectId(), _blockList);
 	}
 	
 	private static List<Integer> loadList(int ObjId)
 	{
-		List<Integer> list = new FastList<>();
-		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		List<Integer> list = new ArrayList<>();
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement("SELECT friendId FROM character_friends WHERE charId=? AND relation=1"))
 		{
-			PreparedStatement statement = con.prepareStatement("SELECT friendId FROM character_friends WHERE charId=? AND relation=1");
 			statement.setInt(1, ObjId);
-			ResultSet rset = statement.executeQuery();
-			
-			int friendId;
-			while (rset.next())
+			try (ResultSet rset = statement.executeQuery())
 			{
-				friendId = rset.getInt("friendId");
-				if (friendId == ObjId)
+				int friendId;
+				while (rset.next())
 				{
-					continue;
+					friendId = rset.getInt("friendId");
+					if (friendId == ObjId)
+					{
+						continue;
+					}
+					list.add(friendId);
 				}
-				list.add(friendId);
 			}
-			
-			rset.close();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -274,10 +267,10 @@ public class BlockList
 		{
 			return BlockList.isBlocked(player, targetId);
 		}
-		if (!_offlineList.containsKey(ownerId))
+		if (!OFFLINE_LIST.containsKey(ownerId))
 		{
-			_offlineList.put(ownerId, loadList(ownerId));
+			OFFLINE_LIST.put(ownerId, loadList(ownerId));
 		}
-		return _offlineList.get(ownerId).contains(targetId);
+		return OFFLINE_LIST.get(ownerId).contains(targetId);
 	}
 }

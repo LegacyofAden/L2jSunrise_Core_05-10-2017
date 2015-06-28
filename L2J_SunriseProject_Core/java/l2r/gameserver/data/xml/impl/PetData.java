@@ -21,11 +21,11 @@ package l2r.gameserver.data.xml.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.MountType;
 import l2r.gameserver.model.L2PetData;
 import l2r.gameserver.model.L2PetLevelData;
 import l2r.gameserver.model.StatsSet;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

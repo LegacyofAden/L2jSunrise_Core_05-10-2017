@@ -23,8 +23,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
 
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public abstract class FloodProtectedListener extends Thread
 {
 	private final Logger _log = LoggerFactory.getLogger(FloodProtectedListener.class);
-	private final Map<String, ForeignConnection> _floodProtection = new FastMap<>();
+	private final Map<String, ForeignConnection> _floodProtection = new ConcurrentHashMap<>();
 	private final String _listenIp;
 	private final int _port;
 	private ServerSocket _serverSocket;

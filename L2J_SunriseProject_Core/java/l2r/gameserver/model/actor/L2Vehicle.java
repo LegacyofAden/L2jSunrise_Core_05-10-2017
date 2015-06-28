@@ -19,10 +19,9 @@
 package l2r.gameserver.model.actor;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.ThreadPoolManager;
@@ -52,7 +51,7 @@ import l2r.gameserver.util.Util;
 public abstract class L2Vehicle extends L2Character
 {
 	protected int _dockId = 0;
-	protected final FastList<L2PcInstance> _passengers = new FastList<>();
+	protected final List<L2PcInstance> _passengers = new CopyOnWriteArrayList<>();
 	protected Location _oustLoc = null;
 	private Runnable _engine = null;
 	
@@ -225,19 +224,8 @@ public abstract class L2Vehicle extends L2Character
 	
 	public void oustPlayers()
 	{
-		L2PcInstance player;
-		
-		// Use iterator because oustPlayer will try to remove player from _passengers
-		final Iterator<L2PcInstance> iter = _passengers.iterator();
-		while (iter.hasNext())
-		{
-			player = iter.next();
-			iter.remove();
-			if (player != null)
-			{
-				oustPlayer(player);
-			}
-		}
+		_passengers.forEach(p -> oustPlayer(p));
+		_passengers.clear();
 	}
 	
 	public void oustPlayer(L2PcInstance player)

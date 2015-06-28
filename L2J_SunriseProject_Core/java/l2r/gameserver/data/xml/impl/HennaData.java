@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.base.ClassId;
 import l2r.gameserver.model.items.L2Henna;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

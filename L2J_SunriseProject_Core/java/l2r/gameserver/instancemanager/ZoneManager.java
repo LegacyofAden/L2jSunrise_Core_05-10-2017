@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
@@ -44,6 +43,7 @@ import l2r.gameserver.model.zone.type.L2ArenaZone;
 import l2r.gameserver.model.zone.type.L2OlympiadStadiumZone;
 import l2r.gameserver.model.zone.type.L2RespawnZone;
 import l2r.gameserver.model.zone.type.NpcSpawnTerritory;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

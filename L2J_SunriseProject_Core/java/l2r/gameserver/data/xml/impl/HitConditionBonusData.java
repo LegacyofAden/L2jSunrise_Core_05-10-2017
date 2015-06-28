@@ -20,8 +20,8 @@ package l2r.gameserver.data.xml.impl;
 
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.actor.L2Character;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

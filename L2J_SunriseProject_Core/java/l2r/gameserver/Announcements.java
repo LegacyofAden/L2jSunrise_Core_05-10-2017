@@ -24,10 +24,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.cache.HtmCache;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -47,9 +48,9 @@ public final class Announcements
 {
 	private static final Logger _log = LoggerFactory.getLogger(Announcements.class);
 	
-	private final List<String> _announcements = new FastList<>();
-	private final List<String> _critAnnouncements = new FastList<>();
-	private final List<List<Object>> _eventAnnouncements = new FastList<>();
+	private final List<String> _announcements = new CopyOnWriteArrayList<>();
+	private final List<String> _critAnnouncements = new CopyOnWriteArrayList<>();
+	private final List<List<Object>> _eventAnnouncements = new CopyOnWriteArrayList<>();
 	
 	protected Announcements()
 	{
@@ -111,7 +112,7 @@ public final class Announcements
 	
 	public void addEventAnnouncement(DateRange validDateRange, String... msg)
 	{
-		List<Object> entry = new FastList<>();
+		List<Object> entry = new LinkedList<>();
 		entry.add(validDateRange);
 		entry.add(msg);
 		_eventAnnouncements.add(entry);

@@ -18,7 +18,8 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import javolution.util.FastList;
+import java.util.List;
+
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager.Territory;
@@ -39,7 +40,7 @@ public class ExReplyDominionInfo extends L2GameServerPacket
 	{
 		writeC(0xfe);
 		writeH(0x92);
-		FastList<Territory> territoryList = TerritoryWarManager.getInstance().getAllTerritories();
+		List<Territory> territoryList = TerritoryWarManager.getInstance().getAllTerritories();
 		writeD(territoryList.size()); // Territory Count
 		for (Territory t : territoryList)
 		{

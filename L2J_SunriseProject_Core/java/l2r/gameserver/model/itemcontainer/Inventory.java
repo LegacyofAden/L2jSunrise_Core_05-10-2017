@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.xml.impl.ArmorSetsData;
@@ -126,7 +125,7 @@ public abstract class Inventory extends ItemContainer
 		ChangeRecorder(Inventory inventory)
 		{
 			_inventory = inventory;
-			_changed = new FastList<>();
+			_changed = new ArrayList<>();
 			_inventory.addPaperdollListener(this);
 		}
 		

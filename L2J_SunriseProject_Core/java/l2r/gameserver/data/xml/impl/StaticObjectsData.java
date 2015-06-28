@@ -22,11 +22,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.instance.L2StaticObjectInstance;
 import l2r.gameserver.model.actor.templates.L2CharTemplate;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

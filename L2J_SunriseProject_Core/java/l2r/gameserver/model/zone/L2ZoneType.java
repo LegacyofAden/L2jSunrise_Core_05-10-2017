@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.model.L2Object;
@@ -49,7 +49,7 @@ public abstract class L2ZoneType extends ListenersContainer
 	
 	private final int _id;
 	protected L2ZoneForm _zone;
-	protected FastMap<Integer, L2Character> _characterList;
+	protected Map<Integer, L2Character> _characterList;
 	
 	/** Parameters to affect specific characters */
 	private boolean _checkAffected = false;
@@ -69,8 +69,7 @@ public abstract class L2ZoneType extends ListenersContainer
 	protected L2ZoneType(int id)
 	{
 		_id = id;
-		_characterList = new FastMap<>();
-		_characterList.shared();
+		_characterList = new ConcurrentHashMap<>();
 		
 		_minLvl = 0;
 		_maxLvl = 0xFF;

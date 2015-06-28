@@ -32,9 +32,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
-import javolution.util.FastList;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.taskmanager.tasks.SoIStageUpdater;
@@ -64,7 +64,7 @@ public final class TaskManager
 	protected static final Logger _log = LoggerFactory.getLogger(TaskManager.class);
 	
 	private final Map<Integer, Task> _tasks = new ConcurrentHashMap<>();
-	protected final List<ExecutedTask> _currentTasks = new FastList<ExecutedTask>().shared();
+	protected final List<ExecutedTask> _currentTasks = new CopyOnWriteArrayList<>();
 	
 	protected static final String[] SQL_STATEMENTS =
 	{

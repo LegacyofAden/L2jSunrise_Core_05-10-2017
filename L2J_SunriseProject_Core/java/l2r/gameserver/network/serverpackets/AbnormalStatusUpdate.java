@@ -18,13 +18,12 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import javolution.util.FastList;
 
 public class AbnormalStatusUpdate extends L2GameServerPacket
 {
-	private final List<Effect> _effects;
+	private final List<Effect> _effects = new ArrayList<>();
 	
 	private static class Effect
 	{
@@ -38,11 +37,6 @@ public class AbnormalStatusUpdate extends L2GameServerPacket
 			_level = pLevel;
 			_duration = pDuration;
 		}
-	}
-	
-	public AbnormalStatusUpdate()
-	{
-		_effects = new FastList<>();
 	}
 	
 	/**
@@ -63,9 +57,7 @@ public class AbnormalStatusUpdate extends L2GameServerPacket
 	protected final void writeImpl()
 	{
 		writeC(0x85);
-		
 		writeH(_effects.size());
-		
 		for (Effect temp : _effects)
 		{
 			writeD(temp._skillId);

@@ -19,9 +19,9 @@
 package l2r.gameserver.model;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javolution.util.FastMap;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.enums.ShotType;
@@ -551,12 +551,11 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	{
 		if (_scripts == null)
 		{
-			// Double-checked locking
 			synchronized (this)
 			{
 				if (_scripts == null)
 				{
-					_scripts = new FastMap<String, Object>().shared();
+					_scripts = new ConcurrentHashMap<>();
 				}
 			}
 		}

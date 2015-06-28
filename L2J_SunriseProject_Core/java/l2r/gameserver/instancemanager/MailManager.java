@@ -23,12 +23,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastList;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.idfactory.IdFactory;
@@ -143,7 +143,7 @@ public class MailManager
 	
 	public final List<Message> getInbox(int objectId)
 	{
-		List<Message> inbox = new FastList<>();
+		final List<Message> inbox = new ArrayList<>();
 		for (Message msg : getMessages())
 		{
 			if ((msg != null) && (msg.getReceiverId() == objectId) && !msg.isDeletedByReceiver())
@@ -156,7 +156,7 @@ public class MailManager
 	
 	public final List<Message> getOutbox(int objectId)
 	{
-		List<Message> outbox = new FastList<>();
+		final List<Message> outbox = new ArrayList<>();
 		for (Message msg : getMessages())
 		{
 			if ((msg != null) && (msg.getSenderId() == objectId) && !msg.isDeletedBySender())

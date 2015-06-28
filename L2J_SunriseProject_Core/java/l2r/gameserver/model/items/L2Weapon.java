@@ -18,10 +18,10 @@
  */
 package l2r.gameserver.model.items;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import javolution.util.FastList;
 import l2r.gameserver.handler.ISkillHandler;
 import l2r.gameserver.handler.SkillHandler;
 import l2r.gameserver.model.StatsSet;
@@ -355,7 +355,7 @@ public final class L2Weapon extends L2Item
 			return _emptyEffectSet;
 		}
 		
-		final List<L2Effect> effects = new FastList<>();
+		final List<L2Effect> effects = new LinkedList<>();
 		final L2Skill onCritSkill = _skillsOnCrit.getSkill();
 		if (_skillsOnCritCondition != null)
 		{

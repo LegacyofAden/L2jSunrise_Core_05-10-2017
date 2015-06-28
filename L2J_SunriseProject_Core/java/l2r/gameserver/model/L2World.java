@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -415,15 +416,12 @@ public final class L2World
 			return null;
 		}
 		
-		// Create an FastList in order to contain all visible L2Object
-		List<L2Object> result = new ArrayList<>();
-		
-		// Go through the FastList of region
+		// Create a list in order to contain all visible objects.
+		final List<L2Object> result = new LinkedList<>();
 		for (L2WorldRegion regi : reg.getSurroundingRegions())
 		{
 			// Go through visible objects of the selected region
-			Collection<L2Object> vObj = regi.getVisibleObjects().values();
-			for (L2Object _object : vObj)
+			for (L2Object _object : regi.getVisibleObjects().values())
 			{
 				if ((_object == null) || _object.equals(object))
 				{
@@ -455,32 +453,21 @@ public final class L2World
 			return new ArrayList<>();
 		}
 		
-		int x = object.getX();
-		int y = object.getY();
-		int sqRadius = radius * radius;
+		final int sqRadius = radius * radius;
 		
-		// Create an FastList in order to contain all visible L2Object
-		List<L2Object> result = new ArrayList<>();
-		
-		// Go through the FastList of region
+		// Create a list in order to contain all visible objects.
+		final List<L2Object> result = new LinkedList<>();
 		for (L2WorldRegion regi : object.getWorldRegion().getSurroundingRegions())
 		{
 			// Go through visible objects of the selected region
-			Collection<L2Object> vObj = regi.getVisibleObjects().values();
-			for (L2Object _object : vObj)
+			for (L2Object _object : regi.getVisibleObjects().values())
 			{
 				if ((_object == null) || _object.equals(object))
 				{
 					continue; // skip our own character
 				}
 				
-				int x1 = _object.getX();
-				int y1 = _object.getY();
-				
-				double dx = x1 - x;
-				double dy = y1 - y;
-				
-				if (((dx * dx) + (dy * dy)) < sqRadius)
+				if (sqRadius > object.calculateDistance(_object, false, true))
 				{
 					result.add(_object);
 				}
@@ -504,34 +491,20 @@ public final class L2World
 			return new ArrayList<>();
 		}
 		
-		int x = object.getX();
-		int y = object.getY();
-		int z = object.getZ();
-		int sqRadius = radius * radius;
+		final int sqRadius = radius * radius;
 		
-		// Create an FastList in order to contain all visible L2Object
-		List<L2Object> result = new ArrayList<>();
-		
-		// Go through visible object of the selected region
+		// Create a list in order to contain all visible objects.
+		final List<L2Object> result = new LinkedList<>();
 		for (L2WorldRegion regi : object.getWorldRegion().getSurroundingRegions())
 		{
-			Collection<L2Object> vObj = regi.getVisibleObjects().values();
-			for (L2Object _object : vObj)
+			for (L2Object _object : regi.getVisibleObjects().values())
 			{
 				if ((_object == null) || _object.equals(object))
 				{
 					continue; // skip our own character
 				}
 				
-				int x1 = _object.getX();
-				int y1 = _object.getY();
-				int z1 = _object.getZ();
-				
-				long dx = x1 - x;
-				long dy = y1 - y;
-				long dz = z1 - z;
-				
-				if (((dx * dx) + (dy * dy) + (dz * dz)) < sqRadius)
+				if (sqRadius > object.calculateDistance(_object, true, true))
 				{
 					result.add(_object);
 				}

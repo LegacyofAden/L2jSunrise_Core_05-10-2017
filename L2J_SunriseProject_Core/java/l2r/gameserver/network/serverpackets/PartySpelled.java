@@ -18,16 +18,16 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
 import l2r.gameserver.model.actor.instance.L2ServitorInstance;
 
 public class PartySpelled extends L2GameServerPacket
 {
-	private final List<Effect> _effects;
+	private final List<Effect> _effects = new ArrayList<>();
 	private final L2Character _activeChar;
 	
 	private static class Effect
@@ -46,7 +46,6 @@ public class PartySpelled extends L2GameServerPacket
 	
 	public PartySpelled(L2Character cha)
 	{
-		_effects = new FastList<>();
 		_activeChar = cha;
 	}
 	

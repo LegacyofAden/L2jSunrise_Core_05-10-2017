@@ -36,9 +36,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -46,9 +49,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
-import javolution.util.FastSet;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.Announcements;
@@ -147,6 +147,7 @@ import l2r.gameserver.model.PartyMatchRoom;
 import l2r.gameserver.model.PartyMatchRoomList;
 import l2r.gameserver.model.PartyMatchWaitingList;
 import l2r.gameserver.model.ShortCuts;
+import l2r.gameserver.model.TeleportBookmark;
 import l2r.gameserver.model.TerritoryWard;
 import l2r.gameserver.model.TimeStamp;
 import l2r.gameserver.model.TradeList;
@@ -423,7 +424,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public static final int REQUEST_TIMEOUT = 15;
 	
-	private final List<EventListener> _eventListeners = new FastList<EventListener>().shared();
+	private final Queue<EventListener> _eventListeners = new ConcurrentLinkedQueue<>();
 	
 	private L2GameClient _client;
 	
@@ -502,7 +503,7 @@ public final class L2PcInstance extends L2Playable
 	
 	private int _bookmarkslot = 0; // The Teleport Bookmark Slot
 	
-	private List<TeleportBookmark> tpbookmark = new FastList<>();
+	private final Map<Integer, TeleportBookmark> _tpbookmarks = new ConcurrentHashMap<>();
 	
 	private boolean _canFeed;
 	private boolean _isInSiege;
@@ -544,8 +545,8 @@ public final class L2PcInstance extends L2Playable
 	private final Map<Integer, L2Skill> _transformSkills = new ConcurrentHashMap<>(0);
 	
 	/** The table containing all L2RecipeList of the L2PcInstance */
-	private final Map<Integer, L2RecipeList> _dwarvenRecipeBook = new FastMap<>();
-	private final Map<Integer, L2RecipeList> _commonRecipeBook = new FastMap<>();
+	private final Map<Integer, L2RecipeList> _dwarvenRecipeBook = new ConcurrentHashMap<>();
+	private final Map<Integer, L2RecipeList> _commonRecipeBook = new ConcurrentHashMap<>();
 	
 	/** Spree System */
 	private int spreeKills = 0;
@@ -590,7 +591,7 @@ public final class L2PcInstance extends L2Playable
 	public Map<String, List<Integer>> _profileBuffs = new ConcurrentHashMap<>();
 	
 	/** Premium Items */
-	private final Map<Integer, L2PremiumItem> _premiumItems = new FastMap<>();
+	private final Map<Integer, L2PremiumItem> _premiumItems = new ConcurrentHashMap<>();
 	
 	/** True if the L2PcInstance is sitting */
 	private boolean _waitTypeSitting;
@@ -655,8 +656,8 @@ public final class L2PcInstance extends L2Playable
 	 */
 	private final MacroList _macros = new MacroList(this);
 	
-	private final List<L2PcInstance> _snoopListener = new FastList<>();
-	private final List<L2PcInstance> _snoopedPlayer = new FastList<>();
+	private final Set<L2PcInstance> _snoopListener = ConcurrentHashMap.newKeySet(1);
+	private final Set<L2PcInstance> _snoopedPlayer = ConcurrentHashMap.newKeySet(1);
 	
 	// hennas
 	private final L2Henna[] _henna = new L2Henna[3];
@@ -672,7 +673,7 @@ public final class L2PcInstance extends L2Playable
 	/** The L2Decoy of the L2PcInstance */
 	private L2Decoy _decoy = null;
 	/** The L2Trap of the L2PcInstance */
-	private final FastMap<Integer, L2TrapInstance> _traps = new FastMap<>();
+	private final Map<Integer, L2TrapInstance> _traps = new ConcurrentHashMap<>();
 	/** The L2Agathion of the L2PcInstance */
 	private int _agathionId = 0;
 	// apparently, a L2PcInstance CAN have both a summon AND a tamed beast at the same time!!
@@ -775,7 +776,7 @@ public final class L2PcInstance extends L2Playable
 	/** The fists L2Weapon of the L2PcInstance (used when no weapon is equipped) */
 	private L2Weapon _fistsWeaponItem;
 	
-	private final Map<Integer, String> _chars = new FastMap<>();
+	private final Map<Integer, String> _chars = new LinkedHashMap<>();
 	
 	// private byte _updateKnownCounter = 0;
 	
@@ -791,10 +792,10 @@ public final class L2PcInstance extends L2Playable
 	
 	public boolean _inventoryDisable = false;
 	
-	private final FastMap<Integer, L2CubicInstance> _cubics = new FastMap<>();
+	private final Map<Integer, L2CubicInstance> _cubics = new ConcurrentSkipListMap<>();
 	
 	/** Active shots. */
-	protected FastSet<Integer> _activeSoulShots = new FastSet<Integer>().shared();
+	protected Set<Integer> _activeSoulShots = ConcurrentHashMap.newKeySet(1);
 	
 	public final ReentrantLock soulShotLock = new ReentrantLock();
 	
@@ -1181,8 +1182,6 @@ public final class L2PcInstance extends L2Playable
 		_radar = new L2Radar(this);
 		
 		startVitalityTask();
-		
-		_cubics.shared();
 	}
 	
 	private L2PcInstance(int objectId)
@@ -1618,7 +1617,7 @@ public final class L2PcInstance extends L2Playable
 			{
 				if (_notifyQuestOfDeathList == null)
 				{
-					_notifyQuestOfDeathList = new FastList<>();
+					_notifyQuestOfDeathList = new CopyOnWriteArrayList<>();
 				}
 			}
 		}
@@ -6226,7 +6225,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (_tamedBeast == null)
 		{
-			_tamedBeast = new FastList<>();
+			_tamedBeast = new CopyOnWriteArrayList<>();
 		}
 		_tamedBeast.add(tamedBeast);
 	}
@@ -7158,8 +7157,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		sendPacket(new UserInfo(this));
 		sendPacket(new ExBrExtraUserInfo(this));
-		Collection<L2PcInstance> plrs = getKnownList().getKnownPlayers().values();
-		for (L2PcInstance player : plrs)
+		for (L2PcInstance player : getKnownList().getKnownPlayers().values())
 		{
 			player.sendPacket(new RelationChanged(this, getRelation(player), isAutoAttackable(player)));
 			if (hasSummon())
@@ -10798,7 +10796,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (_subClasses == null)
 		{
-			_subClasses = new FastMap<>();
+			_subClasses = new ConcurrentSkipListMap<>();
 		}
 		
 		return _subClasses;
@@ -11567,10 +11565,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void addSnooper(L2PcInstance pci)
 	{
-		if (!_snoopListener.contains(pci))
-		{
-			_snoopListener.add(pci);
-		}
+		_snoopListener.add(pci);
 	}
 	
 	public void removeSnooper(L2PcInstance pci)
@@ -11580,10 +11575,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void addSnooped(L2PcInstance pci)
 	{
-		if (!_snoopedPlayer.contains(pci))
-		{
-			_snoopedPlayer.add(pci);
-		}
+		_snoopedPlayer.add(pci);
 	}
 	
 	public void removeSnooped(L2PcInstance pci)
@@ -13590,89 +13582,55 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	public static class TeleportBookmark
+	public void teleportBookmarkModify(int id, int icon, String tag, String name)
 	{
-		public int _id, _x, _y, _z, _icon;
-		public String _name, _tag;
-		
-		TeleportBookmark(int id, int x, int y, int z, int icon, String tag, String name)
+		final TeleportBookmark bookmark = _tpbookmarks.get(id);
+		if (bookmark != null)
 		{
-			_id = id;
-			_x = x;
-			_y = y;
-			_z = z;
-			_icon = icon;
-			_name = name;
-			_tag = tag;
-		}
-		
-	}
-	
-	public void teleportBookmarkModify(int Id, int icon, String tag, String name)
-	{
-		int count = 0;
-		int size = tpbookmark.size();
-		while (size > count)
-		{
-			if (tpbookmark.get(count)._id == Id)
+			bookmark.setIcon(icon);
+			bookmark.setTag(tag);
+			bookmark.setName(name);
+			
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+				PreparedStatement statement = con.prepareStatement(UPDATE_TP_BOOKMARK))
 			{
-				tpbookmark.get(count)._icon = icon;
-				tpbookmark.get(count)._tag = tag;
-				tpbookmark.get(count)._name = name;
-				
-				try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-					PreparedStatement statement = con.prepareStatement(UPDATE_TP_BOOKMARK))
-				{
-					statement.setInt(1, icon);
-					statement.setString(2, tag);
-					statement.setString(3, name);
-					statement.setInt(4, getObjectId());
-					statement.setInt(5, Id);
-					statement.execute();
-				}
-				catch (Exception e)
-				{
-					_log.warn("Could not update character teleport bookmark data: " + e.getMessage(), e);
-				}
+				statement.setInt(1, icon);
+				statement.setString(2, tag);
+				statement.setString(3, name);
+				statement.setInt(4, getObjectId());
+				statement.setInt(5, id);
+				statement.execute();
 			}
-			count++;
-		}
-		
-		sendPacket(new ExGetBookMarkInfoPacket(this));
-		
-	}
-	
-	public void teleportBookmarkDelete(int Id)
-	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(DELETE_TP_BOOKMARK))
-		{
-			statement.setInt(1, getObjectId());
-			statement.setInt(2, Id);
-			statement.execute();
-		}
-		catch (Exception e)
-		{
-			_log.warn("Could not delete character teleport bookmark data: " + e.getMessage(), e);
-		}
-		
-		int count = 0;
-		int size = tpbookmark.size();
-		
-		while (size > count)
-		{
-			if (tpbookmark.get(count)._id == Id)
+			catch (Exception e)
 			{
-				tpbookmark.remove(count);
-				break;
+				_log.warn("Could not update character teleport bookmark data: " + e.getMessage(), e);
 			}
-			count++;
 		}
 		
 		sendPacket(new ExGetBookMarkInfoPacket(this));
 	}
 	
-	public void teleportBookmarkGo(int Id)
+	public void teleportBookmarkDelete(int id)
+	{
+		if (_tpbookmarks.remove(id) != null)
+		{
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+				PreparedStatement statement = con.prepareStatement(DELETE_TP_BOOKMARK))
+			{
+				statement.setInt(1, getObjectId());
+				statement.setInt(2, id);
+				statement.execute();
+			}
+			catch (Exception e)
+			{
+				_log.warn("Could not delete character teleport bookmark data: " + e.getMessage(), e);
+			}
+			
+			sendPacket(new ExGetBookMarkInfoPacket(this));
+		}
+	}
+	
+	public void teleportBookmarkGo(int id)
 	{
 		if (!teleportBookmarkCondition(0))
 		{
@@ -13686,17 +13644,12 @@ public final class L2PcInstance extends L2Playable
 		SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED);
 		sm.addItemName(13016);
 		sendPacket(sm);
-		int count = 0;
-		int size = tpbookmark.size();
-		while (size > count)
+		
+		final TeleportBookmark bookmark = _tpbookmarks.get(id);
+		if (bookmark != null)
 		{
-			if (tpbookmark.get(count)._id == Id)
-			{
-				destroyItem("Consume", getInventory().getItemByItemId(13016).getObjectId(), 1, null, false);
-				teleToLocation(tpbookmark.get(count)._x, tpbookmark.get(count)._y, tpbookmark.get(count)._z);
-				break;
-			}
-			count++;
+			destroyItem("Consume", getInventory().getItemByItemId(13016).getObjectId(), 1, null, false);
+			teleToLocation(bookmark, false);
 		}
 		sendPacket(new ExGetBookMarkInfoPacket(this));
 	}
@@ -13781,7 +13734,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		if (tpbookmark.size() >= _bookmarkslot)
+		if (_tpbookmarks.size() >= _bookmarkslot)
 		{
 			sendPacket(SystemMessageId.YOU_HAVE_NO_SPACE_TO_SAVE_THE_TELEPORT_LOCATION);
 			return;
@@ -13793,28 +13746,15 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		int count = 0;
-		int id = 1;
-		FastList<Integer> idlist = new FastList<>();
-		
-		int size = tpbookmark.size();
-		
-		while (size > count)
+		int id;
+		for (id = 1; id <= _bookmarkslot; ++id)
 		{
-			idlist.add(tpbookmark.get(count)._id);
-			count++;
-		}
-		
-		for (int i = 1; i < 10; i++)
-		{
-			if (!idlist.contains(i))
+			if (!_tpbookmarks.containsKey(id))
 			{
-				id = i;
 				break;
 			}
 		}
-		
-		tpbookmark.add(new TeleportBookmark(id, x, y, z, icon, tag, name));
+		_tpbookmarks.put(id, new TeleportBookmark(id, x, y, z, icon, tag, name));
 		
 		destroyItem("Consume", getInventory().getItemByItemId(20033).getObjectId(), 1, null, false);
 		
@@ -13844,24 +13784,17 @@ public final class L2PcInstance extends L2Playable
 	
 	public void restoreTeleportBookmark()
 	{
-		if (tpbookmark == null)
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(RESTORE_TP_BOOKMARK))
 		{
-			tpbookmark = new FastList<>();
-		}
-		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
-		{
-			PreparedStatement statement = con.prepareStatement(RESTORE_TP_BOOKMARK);
 			statement.setInt(1, getObjectId());
-			ResultSet rset = statement.executeQuery();
-			
-			while (rset.next())
+			try (ResultSet rset = statement.executeQuery())
 			{
-				tpbookmark.add(new TeleportBookmark(rset.getInt("Id"), rset.getInt("x"), rset.getInt("y"), rset.getInt("z"), rset.getInt("icon"), rset.getString("tag"), rset.getString("name")));
+				while (rset.next())
+				{
+					_tpbookmarks.put(rset.getInt("Id"), new TeleportBookmark(rset.getInt("Id"), rset.getInt("x"), rset.getInt("y"), rset.getInt("z"), rset.getInt("icon"), rset.getString("tag"), rset.getString("name")));
+				}
 			}
-			
-			rset.close();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -14059,10 +13992,8 @@ public final class L2PcInstance extends L2Playable
 		return -1;
 	}
 	
-	/**
-	 * list of character friends
-	 */
-	private final List<Integer> _friendList = new FastList<>();
+	/** Friend list. */
+	private final List<Integer> _friendList = new CopyOnWriteArrayList<>();
 	
 	public List<Integer> getFriendList()
 	{
@@ -14750,9 +14681,9 @@ public final class L2PcInstance extends L2Playable
 		return _multiSocialTarget;
 	}
 	
-	public List<TeleportBookmark> getTpbookmark()
+	public Collection<TeleportBookmark> getTeleportBookmarks()
 	{
-		return tpbookmark;
+		return _tpbookmarks.values();
 	}
 	
 	public int getBookmarkslot()
@@ -15178,16 +15109,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void removeEventListener(Class<? extends EventListener> clazz)
 	{
-		final Iterator<EventListener> it = _eventListeners.iterator();
-		EventListener event;
-		while (it.hasNext())
-		{
-			event = it.next();
-			if (event.getClass() == clazz)
-			{
-				it.remove();
-			}
-		}
+		_eventListeners.removeIf(e -> e.getClass() == clazz);
 	}
 	
 	public Collection<EventListener> getEventListeners()
@@ -15524,7 +15446,7 @@ public final class L2PcInstance extends L2Playable
 	// Achievements Engine By L][Sunrise Team //
 	// ============================================== //
 	private boolean _killedSpecificMob = false;
-	public final List<Integer> _completedAchievements = new FastList<>();
+	public final List<Integer> _completedAchievements = new CopyOnWriteArrayList<>();
 	
 	public boolean isKilledSpecificMob()
 	{

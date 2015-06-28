@@ -19,8 +19,8 @@
 package l2r.gameserver.network.serverpackets;
 
 import java.util.Calendar;
+import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager.Territory;
 import l2r.gameserver.model.L2Clan;
@@ -96,7 +96,7 @@ public class ExShowDominionRegistry extends L2GameServerPacket
 		writeD(_isClanRegistered); // is Cancel clan registration
 		writeD(_isMercRegistered); // is Cancel mercenaries registration
 		writeD(0x01); // unknown
-		FastList<Territory> territoryList = TerritoryWarManager.getInstance().getAllTerritories();
+		List<Territory> territoryList = TerritoryWarManager.getInstance().getAllTerritories();
 		writeD(territoryList.size()); // Territory Count
 		for (Territory t : territoryList)
 		{

@@ -19,9 +19,9 @@
 package l2r.gameserver.model.actor.status;
 
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
-import javolution.util.FastSet;
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.actor.L2Character;
@@ -45,7 +45,7 @@ public class CharStatus
 	private double _currentMp = 0; // Current MP of the L2Character
 	
 	/** Array containing all clients that need to be notified about hp/mp updates of the L2Character */
-	private Set<L2Character> _StatusListener;
+	private Set<L2Character> _statusListener;
 	
 	private Future<?> _regTask;
 	
@@ -109,11 +109,11 @@ public class CharStatus
 	 */
 	public final Set<L2Character> getStatusListener()
 	{
-		if (_StatusListener == null)
+		if (_statusListener == null)
 		{
-			_StatusListener = new FastSet<L2Character>().shared();
+			_statusListener = ConcurrentHashMap.newKeySet();
 		}
-		return _StatusListener;
+		return _statusListener;
 	}
 	
 	// place holder, only PcStatus has CP

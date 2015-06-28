@@ -29,9 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.Announcements;
 import l2r.gameserver.data.sql.NpcTable;
@@ -61,13 +61,13 @@ public class GrandBossManager
 	
 	protected static Logger _log = LoggerFactory.getLogger(GrandBossManager.class);
 	
-	protected static Map<Integer, L2GrandBossInstance> _bosses = new FastMap<>();
+	protected static final Map<Integer, L2GrandBossInstance> BOSSES = new ConcurrentHashMap<>();
 	
 	protected static Map<Integer, StatsSet> _storedInfo = new HashMap<>();
 	
 	private final Map<Integer, Integer> _bossStatus = new HashMap<>();
 	
-	private final List<L2BossZone> _zones = new FastList<>();
+	private final List<L2BossZone> _zones = new CopyOnWriteArrayList<>();
 	
 	protected GrandBossManager()
 	{
@@ -282,13 +282,13 @@ public class GrandBossManager
 	{
 		if (boss != null)
 		{
-			_bosses.put(boss.getId(), boss);
+			BOSSES.put(boss.getId(), boss);
 		}
 	}
 	
 	public L2GrandBossInstance getBoss(int bossId)
 	{
-		return _bosses.get(bossId);
+		return BOSSES.get(bossId);
 	}
 	
 	public StatsSet getStatsSet(int bossId)
@@ -334,7 +334,7 @@ public class GrandBossManager
 			}
 			for (Entry<Integer, StatsSet> e : _storedInfo.entrySet())
 			{
-				final L2GrandBossInstance boss = _bosses.get(e.getKey());
+				final L2GrandBossInstance boss = BOSSES.get(e.getKey());
 				StatsSet info = e.getValue();
 				if ((boss == null) || (info == null))
 				{
@@ -382,7 +382,7 @@ public class GrandBossManager
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			L2GrandBossInstance boss = _bosses.get(bossId);
+			L2GrandBossInstance boss = BOSSES.get(bossId);
 			StatsSet info = _storedInfo.get(bossId);
 			
 			if (statusOnly || (boss == null) || (info == null))
@@ -431,7 +431,7 @@ public class GrandBossManager
 	{
 		storeToDb();
 		
-		_bosses.clear();
+		BOSSES.clear();
 		_storedInfo.clear();
 		_bossStatus.clear();
 		_zones.clear();

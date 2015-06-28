@@ -21,9 +21,11 @@ package l2r.gameserver.instancemanager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.L2Spawn;
 import l2r.gameserver.model.entity.Fort;
@@ -36,8 +38,7 @@ public class FortSiegeGuardManager
 	private static final Logger _log = LoggerFactory.getLogger(FortSiegeGuardManager.class);
 	
 	private final Fort _fort;
-	protected FastMap<Integer, FastList<L2Spawn>> _siegeGuards = new FastMap<>();
-	protected FastList<L2Spawn> _siegeGuardsSpawns;
+	private final Map<Integer, List<L2Spawn>> _siegeGuards = new HashMap<>();
 	
 	public FortSiegeGuardManager(Fort fort)
 	{
@@ -51,7 +52,7 @@ public class FortSiegeGuardManager
 	{
 		try
 		{
-			FastList<L2Spawn> monsterList = getSiegeGuardSpawn().get(getFort().getResidenceId());
+			final List<L2Spawn> monsterList = _siegeGuards.get(getFort().getResidenceId());
 			if (monsterList != null)
 			{
 				for (L2Spawn spawnDat : monsterList)
@@ -81,8 +82,7 @@ public class FortSiegeGuardManager
 	{
 		try
 		{
-			FastList<L2Spawn> monsterList = getSiegeGuardSpawn().get(getFort().getResidenceId());
-			
+			final List<L2Spawn> monsterList = _siegeGuards.get(getFort().getResidenceId());
 			if (monsterList != null)
 			{
 				for (L2Spawn spawnDat : monsterList)
@@ -114,7 +114,7 @@ public class FortSiegeGuardManager
 			ps.setInt(1, fortId);
 			try (ResultSet rs = ps.executeQuery())
 			{
-				FastList<L2Spawn> siegeGuardSpawns = new FastList<>();
+				final List<L2Spawn> siegeGuardSpawns = new ArrayList<>();
 				while (rs.next())
 				{
 					final L2Spawn spawn = new L2Spawn(rs.getInt("npcId"));
@@ -142,7 +142,7 @@ public class FortSiegeGuardManager
 		return _fort;
 	}
 	
-	public final FastMap<Integer, FastList<L2Spawn>> getSiegeGuardSpawn()
+	public final Map<Integer, List<L2Spawn>> getSiegeGuardSpawn()
 	{
 		return _siegeGuards;
 	}

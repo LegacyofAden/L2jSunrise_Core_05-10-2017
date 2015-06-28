@@ -23,10 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.L2AccessLevel;
 import l2r.gameserver.model.L2AdminCommandAccessRight;
 import l2r.gameserver.model.StatsSet;
@@ -34,6 +33,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -46,7 +46,7 @@ public class AdminData implements IXmlReader
 {
 	private final Map<Integer, L2AccessLevel> _accessLevels = new HashMap<>();
 	private final Map<String, L2AdminCommandAccessRight> _adminCommandAccessRights = new HashMap<>();
-	private final Map<L2PcInstance, Boolean> _gmList = new FastMap<L2PcInstance, Boolean>().shared();
+	private final Map<L2PcInstance, Boolean> _gmList = new ConcurrentHashMap<>();
 	private int _highestLevel = 0;
 	
 	/**

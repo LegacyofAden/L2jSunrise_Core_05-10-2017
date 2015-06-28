@@ -19,11 +19,13 @@
 package l2r.gameserver.model;
 
 import java.lang.reflect.Constructor;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.ThreadPoolManager;
@@ -83,8 +85,8 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 	private boolean _doRespawn;
 	/** If true then spawn is custom */
 	private boolean _customSpawn;
-	private static List<SpawnListener> _spawnListeners = new FastList<>();
-	private final FastList<L2Npc> _spawnedNpcs = new FastList<>();
+	private static List<SpawnListener> _spawnListeners = new CopyOnWriteArrayList<>();
+	private final Deque<L2Npc> _spawnedNpcs = new ConcurrentLinkedDeque<>();
 	private Map<Integer, Location> _lastSpawnPoints;
 	private boolean _isNoRndWalk = false; // Is no random walk
 	public int _onKillDelay = 5000; // Support for CryptsOfDisgrace
@@ -437,6 +439,15 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 		// Decrease the current number of L2NpcInstance of this L2Spawn
 		_currentCount--;
 		
+		// Remove this NPC from list of spawned
+		_spawnedNpcs.remove(oldNpc);
+		
+		// Remove spawn point for old NPC
+		if (_lastSpawnPoints != null)
+		{
+			_lastSpawnPoints.remove(oldNpc.getObjectId());
+		}
+		
 		// Check if respawn is possible to prevent multiple respawning caused by lag
 		if (_doRespawn && ((_scheduledCount + _currentCount) < _maximumCount))
 		{
@@ -673,6 +684,10 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 		notifyNpcSpawned(mob);
 		
 		_spawnedNpcs.add(mob);
+		if (_lastSpawnPoints != null)
+		{
+			_lastSpawnPoints.put(mob.getObjectId(), new Location(newlocx, newlocy, newlocz));
+		}
 		
 		if (Config.DEBUG)
 		{
@@ -685,28 +700,19 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 	
 	public static void addSpawnListener(SpawnListener listener)
 	{
-		synchronized (_spawnListeners)
-		{
-			_spawnListeners.add(listener);
-		}
+		_spawnListeners.add(listener);
 	}
 	
 	public static void removeSpawnListener(SpawnListener listener)
 	{
-		synchronized (_spawnListeners)
-		{
-			_spawnListeners.remove(listener);
-		}
+		_spawnListeners.remove(listener);
 	}
 	
 	public static void notifyNpcSpawned(L2Npc npc)
 	{
-		synchronized (_spawnListeners)
+		for (SpawnListener listener : _spawnListeners)
 		{
-			for (SpawnListener listener : _spawnListeners)
-			{
-				listener.npcSpawned(npc);
-			}
+			listener.npcSpawned(npc);
 		}
 	}
 	
@@ -730,7 +736,6 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 			_respawnMinDelay = Math.max(10, minDelay) * 1000;
 			_respawnMaxDelay = Math.max(10, maxDelay) * 1000;
 		}
-		
 		else
 		{
 			_respawnMinDelay = 0;
@@ -771,15 +776,10 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 	
 	public L2Npc getLastSpawn()
 	{
-		if (!_spawnedNpcs.isEmpty())
-		{
-			return _spawnedNpcs.getLast();
-		}
-		
-		return null;
+		return _spawnedNpcs.peekLast();
 	}
 	
-	public final FastList<L2Npc> getSpawnedNpcs()
+	public final Deque<L2Npc> getSpawnedNpcs()
 	{
 		return _spawnedNpcs;
 	}

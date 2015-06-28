@@ -23,8 +23,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.sql.ClanTable;
@@ -214,7 +214,7 @@ public abstract class ClanHall
 		_ownerId = set.getInt("ownerId");
 		_desc = set.getString("desc");
 		_location = set.getString("location");
-		_functions = new FastMap<>();
+		_functions = new ConcurrentHashMap<>();
 		
 		if (_ownerId > 0)
 		{
@@ -308,11 +308,7 @@ public abstract class ClanHall
 	 */
 	public ClanHallFunction getFunction(int type)
 	{
-		if (_functions.get(type) != null)
-		{
-			return _functions.get(type);
-		}
-		return null;
+		return _functions.get(type);
 	}
 	
 	/**

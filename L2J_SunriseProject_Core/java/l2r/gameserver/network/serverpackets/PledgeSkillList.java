@@ -18,6 +18,8 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.List;
+
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.skills.L2Skill;
 
@@ -27,7 +29,7 @@ import l2r.gameserver.model.skills.L2Skill;
 public class PledgeSkillList extends L2GameServerPacket
 {
 	private final L2Skill[] _skills;
-	private final SubPledgeSkill[] _subSkills;
+	private final List<SubPledgeSkill> _subSkills;
 	
 	public static class SubPledgeSkill
 	{
@@ -56,7 +58,7 @@ public class PledgeSkillList extends L2GameServerPacket
 		writeC(0xfE);
 		writeH(0x3A);
 		writeD(_skills.length);
-		writeD(_subSkills.length); // Squad skill length
+		writeD(_subSkills.size()); // Squad skill length
 		for (L2Skill sk : _skills)
 		{
 			writeD(sk.getDisplayId());

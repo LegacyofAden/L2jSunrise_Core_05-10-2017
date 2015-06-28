@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
@@ -240,7 +240,7 @@ public final class Castle extends AbstractResidence
 		/*
 		 * if (getResidenceId() == 7 || castleId == 9) // Goddard and Schuttgart _nbArtifact = 2;
 		 */
-		_function = new FastMap<>();
+		_function = new ConcurrentHashMap<>();
 		initResidenceZone();
 		if (getOwnerId() != 0)
 		{
@@ -256,11 +256,7 @@ public final class Castle extends AbstractResidence
 	 */
 	public CastleFunction getFunction(int type)
 	{
-		if (_function.containsKey(type))
-		{
-			return _function.get(type);
-		}
-		return null;
+		return _function.get(type);
 	}
 	
 	public synchronized void engrave(L2Clan clan, L2Object target)

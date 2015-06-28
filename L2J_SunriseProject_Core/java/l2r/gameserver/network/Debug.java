@@ -101,7 +101,7 @@ public class Debug
 	
 	private static String getBodyPart(int bodyPart)
 	{
-		for (Entry<String, Integer> entry : ItemData._slots.entrySet())
+		for (Entry<String, Integer> entry : ItemData.SLOTS.entrySet())
 		{
 			if ((entry.getValue() & bodyPart) == bodyPart)
 			{

@@ -19,10 +19,10 @@
 package l2r.gameserver.engines;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.engines.items.DocumentItem;
@@ -41,8 +41,8 @@ public class DocumentEngine
 {
 	private static final Logger _log = LoggerFactory.getLogger(DocumentEngine.class);
 	
-	private final List<File> _itemFiles = new FastList<>();
-	private final List<File> _skillFiles = new FastList<>();
+	private final List<File> _itemFiles = new ArrayList<>();
+	private final List<File> _skillFiles = new ArrayList<>();
 	
 	public static DocumentEngine getInstance()
 	{
@@ -71,10 +71,14 @@ public class DocumentEngine
 			_log.warn("Dir " + dir.getAbsolutePath() + " not exists");
 			return;
 		}
-		File[] files = dir.listFiles(new XMLFilter());
-		for (File f : files)
+		
+		final File[] files = dir.listFiles(new XMLFilter());
+		if (files != null)
 		{
-			hash.add(f);
+			for (File f : files)
+			{
+				hash.add(f);
+			}
 		}
 	}
 	
@@ -115,7 +119,7 @@ public class DocumentEngine
 	 */
 	public List<L2Item> loadItems()
 	{
-		List<L2Item> list = new FastList<>();
+		List<L2Item> list = new ArrayList<>();
 		for (File f : _itemFiles)
 		{
 			DocumentItem document = new DocumentItem(f);

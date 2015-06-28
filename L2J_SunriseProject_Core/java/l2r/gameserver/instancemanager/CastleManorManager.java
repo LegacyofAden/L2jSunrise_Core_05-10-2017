@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.ManorMode;
 import l2r.gameserver.model.CropProcure;
 import l2r.gameserver.model.L2Clan;
@@ -49,6 +48,7 @@ import l2r.gameserver.model.interfaces.IStorable;
 import l2r.gameserver.model.itemcontainer.ItemContainer;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.util.Rnd;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

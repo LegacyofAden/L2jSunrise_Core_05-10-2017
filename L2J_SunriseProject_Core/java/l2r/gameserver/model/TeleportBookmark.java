@@ -16,53 +16,58 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.network.serverpackets;
-
-import l2r.gameserver.network.SystemMessageId;
+package l2r.gameserver.model;
 
 /**
- * ConfirmDlg server packet implementation.
- * @author kombat, UnAfraid
+ * @author UnAfraid
  */
-public class ConfirmDlg extends AbstractMessagePacket<ConfirmDlg>
+public class TeleportBookmark extends Location
 {
-	private int _time;
-	private int _requesterId;
+	private final int _id;
+	private int _icon;
+	private String _name, _tag;
 	
-	public ConfirmDlg(SystemMessageId smId)
+	public TeleportBookmark(int id, int x, int y, int z, int icon, String tag, String name)
 	{
-		super(smId);
+		super(x, y, z);
+		_id = id;
+		_icon = icon;
+		_name = name;
+		_tag = tag;
 	}
 	
-	public ConfirmDlg(int id)
+	public String getName()
 	{
-		this(SystemMessageId.getSystemMessageId(id));
+		return _name;
 	}
 	
-	public ConfirmDlg(String text)
+	public void setName(String name)
 	{
-		this(SystemMessageId.S1);
-		addString(text);
+		_name = name;
 	}
 	
-	public ConfirmDlg addTime(int time)
+	public int getId()
 	{
-		_time = time;
-		return this;
+		return _id;
 	}
 	
-	public ConfirmDlg addRequesterId(int id)
+	public int getIcon()
 	{
-		_requesterId = id;
-		return this;
+		return _icon;
 	}
 	
-	@Override
-	protected final void writeImpl()
+	public void setIcon(int icon)
 	{
-		writeC(0xF3);
-		writeMe();
-		writeD(_time);
-		writeD(_requesterId);
+		_icon = icon;
+	}
+	
+	public String getTag()
+	{
+		return _tag;
+	}
+	
+	public void setTag(String tag)
+	{
+		_tag = tag;
 	}
 }

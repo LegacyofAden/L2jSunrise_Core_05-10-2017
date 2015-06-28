@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import l2r.gameserver.data.xml.IXmlReader;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

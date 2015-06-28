@@ -21,13 +21,18 @@ package l2r.gameserver.model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.Announcements;
@@ -66,16 +71,13 @@ public class AutoSpawnHandler
 	private static final int DEFAULT_RESPAWN = 3600000; // 1 hour in millisecs
 	private static final int DEFAULT_DESPAWN = 3600000; // 1 hour in millisecs
 	
-	protected Map<Integer, AutoSpawnInstance> _registeredSpawns;
-	protected Map<Integer, ScheduledFuture<?>> _runningSpawns;
+	protected Map<Integer, AutoSpawnInstance> _registeredSpawns = new ConcurrentHashMap<>();
+	protected Map<Integer, ScheduledFuture<?>> _runningSpawns = new ConcurrentHashMap<>();
 	
 	protected boolean _activeState = true;
 	
 	protected AutoSpawnHandler()
 	{
-		_registeredSpawns = new FastMap<>();
-		_runningSpawns = new FastMap<>();
-		
 		restoreSpawnData();
 	}
 	
@@ -109,8 +111,8 @@ public class AutoSpawnHandler
 		}
 		
 		// create clean list
-		_registeredSpawns = new FastMap<>();
-		_runningSpawns = new FastMap<>();
+		_registeredSpawns.clear();
+		_runningSpawns.clear();
 		
 		// load
 		restoreSpawnData();
@@ -118,12 +120,12 @@ public class AutoSpawnHandler
 	
 	private void restoreSpawnData()
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			Statement s = con.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM random_spawn ORDER BY groupId ASC");
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM random_spawn_loc WHERE groupId=?"))
 		{
 			// Restore spawn group data, then the location data.
-			PreparedStatement statement = con.prepareStatement("SELECT * FROM random_spawn ORDER BY groupId ASC");
-			ResultSet rs = statement.executeQuery();
-			PreparedStatement statement2 = con.prepareStatement("SELECT * FROM random_spawn_loc WHERE groupId=?");
 			while (rs.next())
 			{
 				// Register random spawn group, set various options on the
@@ -135,20 +137,18 @@ public class AutoSpawnHandler
 				spawnInst.setRandomSpawn(rs.getBoolean("randomSpawn"));
 				
 				// Restore the spawn locations for this spawn group/instance.
-				statement2.setInt(1, rs.getInt("groupId"));
-				ResultSet rs2 = statement2.executeQuery();
-				statement2.clearParameters();
-				
-				while (rs2.next())
+				ps.setInt(1, rs.getInt("groupId"));
+				try (ResultSet rs2 = ps.executeQuery())
 				{
-					// Add each location to the spawn group/instance.
-					spawnInst.addSpawnLocation(rs2.getInt("x"), rs2.getInt("y"), rs2.getInt("z"), rs2.getInt("heading"));
+					ps.clearParameters();
+					
+					while (rs2.next())
+					{
+						// Add each location to the spawn group/instance.
+						spawnInst.addSpawnLocation(rs2.getInt("x"), rs2.getInt("y"), rs2.getInt("z"), rs2.getInt("heading"));
+					}
 				}
-				rs2.close();
 			}
-			statement2.close();
-			rs.close();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -341,12 +341,7 @@ public class AutoSpawnHandler
 			return -1;
 		}
 		
-		if (_runningSpawns.get(objectId) != null)
-		{
-			return (_runningSpawns.containsKey(objectId)) ? _runningSpawns.get(objectId).getDelay(TimeUnit.MILLISECONDS) : 0;
-		}
-		
-		return 0;
+		return (_runningSpawns.containsKey(objectId)) ? _runningSpawns.get(objectId).getDelay(TimeUnit.MILLISECONDS) : 0;
 	}
 	
 	/**
@@ -378,19 +373,17 @@ public class AutoSpawnHandler
 		return null;
 	}
 	
-	public Map<Integer, AutoSpawnInstance> getAutoSpawnInstances(int npcId)
+	public List<AutoSpawnInstance> getAutoSpawnInstances(int npcId)
 	{
-		Map<Integer, AutoSpawnInstance> spawnInstList = new FastMap<>();
-		
+		final List<AutoSpawnInstance> result = new LinkedList<>();
 		for (AutoSpawnInstance spawnInst : _registeredSpawns.values())
 		{
 			if (spawnInst.getId() == npcId)
 			{
-				spawnInstList.put(spawnInst.getObjectId(), spawnInst);
+				result.add(spawnInst);
 			}
 		}
-		
-		return spawnInstList;
+		return result;
 	}
 	
 	/**
@@ -566,11 +559,6 @@ public class AutoSpawnHandler
 				
 				for (L2Npc npcInst : spawnInst.getNPCInstanceList())
 				{
-					if (npcInst == null)
-					{
-						continue;
-					}
-					
 					npcInst.deleteMe();
 					SpawnTable.getInstance().deleteSpawn(npcInst.getSpawn(), false);
 					spawnInst.removeNpcInstance(npcInst);
@@ -606,9 +594,9 @@ public class AutoSpawnHandler
 		
 		protected int _lastLocIndex = -1;
 		
-		private final List<L2Npc> _npcList = new FastList<>();
+		private final Queue<L2Npc> _npcList = new ConcurrentLinkedQueue<>();
 		
-		private final List<Location> _locList = new FastList<>();
+		private final List<Location> _locList = new CopyOnWriteArrayList<>();
 		
 		private boolean _spawnActive;
 		
@@ -679,28 +667,19 @@ public class AutoSpawnHandler
 			return _locList.toArray(new Location[_locList.size()]);
 		}
 		
-		public L2Npc[] getNPCInstanceList()
+		public Queue<L2Npc> getNPCInstanceList()
 		{
-			L2Npc[] ret;
-			synchronized (_npcList)
-			{
-				ret = new L2Npc[_npcList.size()];
-				_npcList.toArray(ret);
-			}
-			
-			return ret;
+			return _npcList;
 		}
 		
-		public L2Spawn[] getSpawns()
+		public List<L2Spawn> getSpawns()
 		{
-			List<L2Spawn> npcSpawns = new FastList<>();
-			
+			final List<L2Spawn> npcSpawns = new ArrayList<>();
 			for (L2Npc npcInst : _npcList)
 			{
 				npcSpawns.add(npcInst.getSpawn());
 			}
-			
-			return npcSpawns.toArray(new L2Spawn[npcSpawns.size()]);
+			return npcSpawns;
 		}
 		
 		public void setSpawnCount(int spawnCount)

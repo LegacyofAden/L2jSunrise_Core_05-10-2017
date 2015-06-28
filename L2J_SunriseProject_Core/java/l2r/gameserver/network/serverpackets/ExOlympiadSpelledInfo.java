@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 
 /**
@@ -29,7 +29,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 public class ExOlympiadSpelledInfo extends L2GameServerPacket
 {
 	private final int _playerID;
-	private final List<Effect> _effects;
+	private final List<Effect> _effects = new ArrayList<>();
 	
 	private static class Effect
 	{
@@ -47,7 +47,6 @@ public class ExOlympiadSpelledInfo extends L2GameServerPacket
 	
 	public ExOlympiadSpelledInfo(L2PcInstance player)
 	{
-		_effects = new FastList<>();
 		_playerID = player.getObjectId();
 	}
 	

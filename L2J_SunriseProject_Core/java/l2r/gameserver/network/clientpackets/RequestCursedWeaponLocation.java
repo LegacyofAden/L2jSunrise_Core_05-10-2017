@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.network.clientpackets;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.instancemanager.CursedWeaponsManager;
 import l2r.gameserver.model.CursedWeapon;
 import l2r.gameserver.model.Location;
@@ -51,7 +51,7 @@ public final class RequestCursedWeaponLocation extends L2GameClientPacket
 			return;
 		}
 		
-		List<CursedWeaponInfo> list = new FastList<>();
+		List<CursedWeaponInfo> list = new ArrayList<>();
 		for (CursedWeapon cw : CursedWeaponsManager.getInstance().getCursedWeapons())
 		{
 			if (!cw.isActive())

@@ -24,9 +24,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.Announcements;
@@ -228,9 +228,9 @@ public class Siege implements Siegable
 	}
 	
 	// must support Concurrent Modifications
-	private final List<L2SiegeClan> _attackerClans = new FastList<>();
-	private final List<L2SiegeClan> _defenderClans = new FastList<>();
-	private final List<L2SiegeClan> _defenderWaitingClans = new FastList<>();
+	private final List<L2SiegeClan> _attackerClans = new CopyOnWriteArrayList<>();
+	private final List<L2SiegeClan> _defenderClans = new CopyOnWriteArrayList<>();
+	private final List<L2SiegeClan> _defenderWaitingClans = new CopyOnWriteArrayList<>();
 	
 	// Castle setting
 	private final List<L2ControlTowerInstance> _controlTowers = new ArrayList<>();
@@ -551,10 +551,7 @@ public class Siege implements Siegable
 			L2Clan clan = ClanTable.getInstance().getClan(siegeClans.getClanId());
 			for (L2PcInstance member : clan.getOnlineMembers(0))
 			{
-				if (member != null)
-				{
-					member.sendPacket(message);
-				}
+				member.sendPacket(message);
 			}
 		}
 		
@@ -565,10 +562,7 @@ public class Siege implements Siegable
 				L2Clan clan = ClanTable.getInstance().getClan(siegeClans.getClanId());
 				for (L2PcInstance member : clan.getOnlineMembers(0))
 				{
-					if (member != null)
-					{
-						member.sendPacket(message);
-					}
+					member.sendPacket(message);
 				}
 			}
 		}
@@ -587,11 +581,6 @@ public class Siege implements Siegable
 			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
 			for (L2PcInstance member : clan.getOnlineMembers(0))
 			{
-				if (member == null)
-				{
-					continue;
-				}
-				
 				if (clear)
 				{
 					member.setSiegeState((byte) 0);
@@ -636,11 +625,6 @@ public class Siege implements Siegable
 			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
 			for (L2PcInstance member : clan.getOnlineMembers(0))
 			{
-				if (member == null)
-				{
-					continue;
-				}
-				
 				if (clear)
 				{
 					member.setSiegeState((byte) 0);
@@ -799,11 +783,6 @@ public class Siege implements Siegable
 			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
 			for (L2PcInstance player : clan.getOnlineMembers(0))
 			{
-				if (player == null)
-				{
-					continue;
-				}
-				
 				if (player.isInSiege())
 				{
 					players.add(player);
@@ -1573,45 +1552,34 @@ public class Siege implements Siegable
 		
 		// Register guard to the closest Control Tower
 		// When CT dies, so do all the guards that it controls
-		if (!getSiegeGuardManager().getSiegeGuardSpawn().isEmpty())
+		for (L2Spawn spawn : getSiegeGuardManager().getSiegeGuardSpawn())
 		{
-			L2ControlTowerInstance closestCt;
-			int x, y, z;
-			double distance;
-			double distanceClosest = 0;
-			for (L2Spawn spawn : getSiegeGuardManager().getSiegeGuardSpawn())
+			if (spawn == null)
 			{
-				if (spawn == null)
+				continue;
+			}
+			
+			L2ControlTowerInstance closestCt = null;
+			double distanceClosest = Integer.MAX_VALUE;
+			
+			for (L2ControlTowerInstance ct : _controlTowers)
+			{
+				if (ct == null)
 				{
 					continue;
 				}
 				
-				closestCt = null;
-				distanceClosest = Integer.MAX_VALUE;
+				double distance = ct.calculateDistance(spawn, true, true);
 				
-				x = spawn.getX();
-				y = spawn.getY();
-				z = spawn.getZ();
-				
-				for (L2ControlTowerInstance ct : _controlTowers)
+				if (distance < distanceClosest)
 				{
-					if (ct == null)
-					{
-						continue;
-					}
-					
-					distance = ct.getDistanceSq(x, y, z);
-					
-					if (distance < distanceClosest)
-					{
-						closestCt = ct;
-						distanceClosest = distance;
-					}
+					closestCt = ct;
+					distanceClosest = distance;
 				}
-				if (closestCt != null)
-				{
-					closestCt.registerGuard(spawn);
-				}
+			}
+			if (closestCt != null)
+			{
+				closestCt.registerGuard(spawn);
 			}
 		}
 	}

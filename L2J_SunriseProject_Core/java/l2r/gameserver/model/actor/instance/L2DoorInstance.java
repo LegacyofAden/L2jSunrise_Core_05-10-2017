@@ -18,11 +18,12 @@
  */
 package l2r.gameserver.model.actor.instance;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import javolution.util.FastList;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.ai.L2CharacterAI;
 import l2r.gameserver.ai.L2DoorAI;
@@ -587,19 +588,16 @@ public class L2DoorInstance extends L2Character
 		return getTemplate().getNodeZ() + getTemplate().getHeight();
 	}
 	
-	public Collection<L2DefenderInstance> getKnownDefenders()
+	public List<L2DefenderInstance> getKnownDefenders()
 	{
-		FastList<L2DefenderInstance> result = new FastList<>();
-		
-		Collection<L2Object> objs = getKnownList().getKnownObjects().values();
-		for (L2Object obj : objs)
+		final List<L2DefenderInstance> result = new ArrayList<>();
+		for (L2Object obj : getKnownList().getKnownObjects().values())
 		{
 			if (obj instanceof L2DefenderInstance)
 			{
 				result.add((L2DefenderInstance) obj);
 			}
 		}
-		
 		return result;
 	}
 	

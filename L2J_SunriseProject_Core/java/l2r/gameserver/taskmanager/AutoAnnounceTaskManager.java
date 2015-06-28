@@ -22,9 +22,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
@@ -40,7 +40,7 @@ public class AutoAnnounceTaskManager
 {
 	private static final Logger _log = LoggerFactory.getLogger(AutoAnnounceTaskManager.class);
 	
-	protected final List<AutoAnnouncement> _announces = new FastList<>();
+	protected final List<AutoAnnouncement> _announces = new ArrayList<>();
 	private int _nextId = 1;
 	
 	protected AutoAnnounceTaskManager()

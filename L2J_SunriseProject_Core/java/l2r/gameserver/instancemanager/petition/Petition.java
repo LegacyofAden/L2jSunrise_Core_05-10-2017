@@ -19,8 +19,8 @@
 package l2r.gameserver.instancemanager.petition;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.SystemMessageId;
@@ -43,7 +43,7 @@ public class Petition
 	private PetitionState _state = PetitionState.PENDING;
 	private final String _content;
 	
-	private final List<CreatureSay> _messageLog = new FastList<>();
+	private final List<CreatureSay> _messageLog = new CopyOnWriteArrayList<>();
 	
 	private final L2PcInstance _petitioner;
 	private L2PcInstance _responder;

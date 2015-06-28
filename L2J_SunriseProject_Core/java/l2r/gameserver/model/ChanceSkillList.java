@@ -136,7 +136,7 @@ public class ChanceSkillList extends FastMap<IChanceSkillTrigger, ChanceConditio
 		}
 		
 		final boolean playable = target instanceof L2Playable;
-		for (FastMap.Entry<IChanceSkillTrigger, ChanceCondition> e = head(), end = tail(); (e = e.getNext()) != end;)
+		for (Entry<IChanceSkillTrigger, ChanceCondition> e = head(), end = tail(); (e = e.getNext()) != end;)
 		{
 			if ((e.getValue() != null) && e.getValue().trigger(event, damage, element, playable, skill))
 			{

@@ -18,7 +18,9 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import javolution.util.FastList;
+import java.util.ArrayList;
+import java.util.List;
+
 import l2r.gameserver.model.itemcontainer.PcInventory;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 
@@ -27,10 +29,10 @@ import l2r.gameserver.model.items.instance.L2ItemInstance;
  */
 public class ExQuestItemList extends L2GameServerPacket
 {
-	private final FastList<L2ItemInstance> _items;
+	private List<L2ItemInstance> _items = new ArrayList<>();
 	private final PcInventory _inventory;
 	
-	public ExQuestItemList(FastList<L2ItemInstance> items, PcInventory inv)
+	public ExQuestItemList(List<L2ItemInstance> items, PcInventory inv)
 	{
 		_items = items;
 		_inventory = inv;
@@ -89,6 +91,5 @@ public class ExQuestItemList extends L2GameServerPacket
 		{
 			writeH(0x00);
 		}
-		FastList.recycle(_items);
 	}
 }

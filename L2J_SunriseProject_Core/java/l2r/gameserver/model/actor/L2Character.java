@@ -32,9 +32,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
-import javolution.util.WeakFastSet;
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.GeoData;
@@ -2725,7 +2722,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				if (_attackByList == null)
 				{
-					_attackByList = new WeakFastSet<>(true);
+					_attackByList = ConcurrentHashMap.newKeySet();
 				}
 			}
 		}
@@ -6128,7 +6125,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			int skipRange = 0;
 			int skipLOS = 0;
 			int skipPeaceZone = 0;
-			List<L2Character> targetList = new FastList<>(targets.length);
+			final List<L2Object> targetList = new ArrayList<>();
 			for (L2Object target : targets)
 			{
 				if (target instanceof L2Character)
@@ -6167,7 +6164,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 							}
 						}
 					}
-					targetList.add((L2Character) target);
+					targetList.add(target);
 				}
 			}
 			if (targetList.isEmpty())
@@ -6190,7 +6187,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				abortCast();
 				return;
 			}
-			mut.setTargets(targetList.toArray(new L2Character[targetList.size()]));
+			mut.setTargets(targetList.toArray(new L2Object[targetList.size()]));
 		}
 		
 		// Ensure that a cast is in progress
@@ -7529,7 +7526,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				if (_triggerSkills == null)
 				{
-					_triggerSkills = new FastMap<Integer, OptionsSkillHolder>().shared();
+					_triggerSkills = new ConcurrentHashMap<>();
 				}
 			}
 		}

@@ -19,8 +19,9 @@
 package l2r.gameserver.model.entity;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.Team;
@@ -61,7 +62,7 @@ public class Duel
 	private int _countdown = 4;
 	private boolean _finished = false;
 	
-	private FastList<PlayerCondition> _playerConditions;
+	private final List<PlayerCondition> _playerConditions = new CopyOnWriteArrayList<>();
 	
 	public static enum DuelResultEnum
 	{
@@ -91,8 +92,6 @@ public class Duel
 			_duelEndTime.add(Calendar.SECOND, 120);
 		}
 		
-		_playerConditions = new FastList<>();
-		
 		setFinished(false);
 		
 		if (_partyDuel)
@@ -116,7 +115,7 @@ public class Duel
 		private double _cp;
 		private boolean _paDuel;
 		private int _x, _y, _z;
-		private FastList<L2Effect> _debuffs;
+		private List<L2Effect> _debuffs;
 		
 		public PlayerCondition(L2PcInstance player, boolean partyDuel)
 		{
@@ -168,7 +167,7 @@ public class Duel
 		{
 			if (_debuffs == null)
 			{
-				_debuffs = new FastList<>();
+				_debuffs = new CopyOnWriteArrayList<>();
 			}
 			
 			_debuffs.add(debuff);
@@ -369,7 +368,6 @@ public class Duel
 		{
 			// clean up
 			_playerConditions.clear();
-			_playerConditions = null;
 			DuelManager.getInstance().removeDuel(this);
 			return;
 		}
@@ -444,13 +442,13 @@ public class Duel
 	{
 		if (_partyDuel)
 		{
-			for (L2PcInstance temp : _playerA.getParty().getMembers())
+			for (L2PcInstance player : _playerA.getParty().getMembers())
 			{
-				_playerConditions.add(new PlayerCondition(temp, _partyDuel));
+				_playerConditions.add(new PlayerCondition(player, _partyDuel));
 			}
-			for (L2PcInstance temp : _playerB.getParty().getMembers())
+			for (L2PcInstance player : _playerB.getParty().getMembers())
 			{
-				_playerConditions.add(new PlayerCondition(temp, _partyDuel));
+				_playerConditions.add(new PlayerCondition(player, _partyDuel));
 			}
 		}
 		else
@@ -499,10 +497,7 @@ public class Duel
 		}
 		
 		// restore player conditions
-		for (FastList.Node<PlayerCondition> e = _playerConditions.head(), end = _playerConditions.tail(); (e = e.getNext()) != end;)
-		{
-			e.getValue().restoreCondition();
-		}
+		_playerConditions.forEach(c -> c.restoreCondition());
 	}
 	
 	/**
@@ -744,7 +739,6 @@ public class Duel
 		{
 			// clean up
 			_playerConditions.clear();
-			_playerConditions = null;
 			DuelManager.getInstance().removeDuel(this);
 			return;
 		}
@@ -826,7 +820,6 @@ public class Duel
 		
 		// clean up
 		_playerConditions.clear();
-		_playerConditions = null;
 		DuelManager.getInstance().removeDuel(this);
 	}
 	
@@ -1020,21 +1013,20 @@ public class Duel
 	 * @param player the player quitting.
 	 */
 	public void onRemoveFromParty(L2PcInstance player)
-	{
-		// if it isnt a party duel ignore this
+	{// if it isn't a party duel ignore this
 		if (!_partyDuel)
 		{
 			return;
 		}
 		
 		// this player is leaving his party during party duel
-		// if hes either playerA or playerB cancel the duel and port the players back
+		// if he's either playerA or playerB cancel the duel and port the players back
 		if ((player == _playerA) || (player == _playerB))
 		{
-			for (FastList.Node<PlayerCondition> e = _playerConditions.head(), end = _playerConditions.tail(); (e = e.getNext()) != end;)
+			for (PlayerCondition cond : _playerConditions)
 			{
-				e.getValue().teleportBack();
-				e.getValue().getPlayer().setIsInDuel(0);
+				cond.teleportBack();
+				cond.getPlayer().setIsInDuel(0);
 			}
 			
 			_playerA = null;
@@ -1043,14 +1035,11 @@ public class Duel
 		else
 		// teleport the player back & delete his PlayerCondition record
 		{
-			for (FastList.Node<PlayerCondition> e = _playerConditions.head(), end = _playerConditions.tail(); (e = e.getNext()) != end;)
+			final PlayerCondition cond = _playerConditions.stream().filter(c -> c.getPlayer() == player).findFirst().orElse(null);
+			if (cond != null)
 			{
-				if (e.getValue().getPlayer() == player)
-				{
-					e.getValue().teleportBack();
-					_playerConditions.remove(e.getValue());
-					break;
-				}
+				cond.teleportBack();
+				_playerConditions.remove(cond);
 			}
 			player.setIsInDuel(0);
 		}
@@ -1058,13 +1047,10 @@ public class Duel
 	
 	public void onBuff(L2PcInstance player, L2Effect debuff)
 	{
-		for (FastList.Node<PlayerCondition> e = _playerConditions.head(), end = _playerConditions.tail(); (e = e.getNext()) != end;)
+		final PlayerCondition cond = _playerConditions.stream().filter(c -> c.getPlayer() == player).findFirst().orElse(null);
+		if (cond != null)
 		{
-			if (e.getValue().getPlayer() == player)
-			{
-				e.getValue().registerDebuff(debuff);
-				return;
-			}
+			cond.registerDebuff(debuff);
 		}
 	}
 }

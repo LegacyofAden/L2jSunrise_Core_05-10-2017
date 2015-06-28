@@ -21,8 +21,9 @@ package l2r.gameserver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.data.xml.impl.RecipeData;
@@ -60,11 +61,11 @@ import gr.sr.leaderboards.CraftLeaderboard;
 
 public class RecipeController
 {
-	protected static final FastMap<Integer, RecipeItemMaker> _activeMakers = new FastMap<>();
+	protected static final Map<Integer, RecipeItemMaker> _activeMakers = new ConcurrentHashMap<>();
 	
 	protected RecipeController()
 	{
-		_activeMakers.shared();
+		// Prevent external initialization.
 	}
 	
 	public void requestBookOpen(L2PcInstance player, boolean isDwarvenCraft)

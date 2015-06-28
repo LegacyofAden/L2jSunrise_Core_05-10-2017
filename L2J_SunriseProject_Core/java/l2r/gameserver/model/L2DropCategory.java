@@ -18,7 +18,10 @@
  */
 package l2r.gameserver.model;
 
-import javolution.util.FastList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import l2r.Config;
 import l2r.gameserver.SevenSigns;
 import l2r.gameserver.model.itemcontainer.Inventory;
@@ -30,7 +33,7 @@ import l2r.util.Rnd;
  */
 public class L2DropCategory
 {
-	private final FastList<L2DropData> _drops;
+	private final List<L2DropData> _drops = new CopyOnWriteArrayList<>();
 	private int _categoryChance; // a sum of chances for calculating if an item will be dropped from this category
 	private int _categoryBalancedChance; // sum for balancing drop selection inside categories in high rate servers
 	private final int _categoryType;
@@ -38,7 +41,6 @@ public class L2DropCategory
 	public L2DropCategory(int categoryType)
 	{
 		_categoryType = categoryType;
-		_drops = new FastList<>(0);
 		_categoryChance = 0;
 		_categoryBalancedChance = 0;
 	}
@@ -50,7 +52,7 @@ public class L2DropCategory
 		if (drop.isQuestDrop())
 		{
 			// if (_questDrops == null)
-			// _questDrops = new FastList<>(0);
+			// _questDrops = new LinkedList<>();
 			// _questDrops.add(drop);
 		}
 		else
@@ -89,7 +91,7 @@ public class L2DropCategory
 		}
 	}
 	
-	public FastList<L2DropData> getAllDrops()
+	public List<L2DropData> getAllDrops()
 	{
 		return _drops;
 	}
@@ -139,7 +141,7 @@ public class L2DropCategory
 	 */
 	public synchronized L2DropData dropSeedAllowedDropsOnly()
 	{
-		FastList<L2DropData> drops = new FastList<>();
+		List<L2DropData> drops = new LinkedList<>();
 		int subCatChance = 0;
 		for (L2DropData drop : getAllDrops())
 		{

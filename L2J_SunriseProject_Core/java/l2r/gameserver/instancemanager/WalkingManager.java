@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import l2r.gameserver.ThreadPoolManager;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.instancemanager.tasks.StartMovingTask;
 import l2r.gameserver.model.L2NpcWalkerNode;
@@ -41,6 +40,7 @@ import l2r.gameserver.network.NpcStringId;
 import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.NpcSay;
 import l2r.gameserver.util.Broadcast;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

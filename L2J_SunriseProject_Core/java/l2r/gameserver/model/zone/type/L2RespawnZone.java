@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.model.zone.type;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import javolution.util.FastMap;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -31,7 +31,7 @@ import l2r.gameserver.model.zone.L2ZoneType;
  */
 public class L2RespawnZone extends L2ZoneType
 {
-	private final Map<Race, String> _raceRespawnPoint = new FastMap<>();
+	private final Map<Race, String> _raceRespawnPoint = new HashMap<>();
 	
 	public L2RespawnZone(int id)
 	{

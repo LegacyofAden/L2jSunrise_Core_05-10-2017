@@ -32,13 +32,13 @@ import java.util.function.Function;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.sql.NpcTable;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.data.xml.impl.NpcPersonalAIData;
 import l2r.gameserver.instancemanager.DayNightSpawnManager;
 import l2r.gameserver.instancemanager.ZoneManager;
 import l2r.gameserver.model.L2Spawn;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

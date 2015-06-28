@@ -20,10 +20,10 @@ package l2r.gameserver.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javolution.util.FastMap;
 import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.interfaces.IParserAdvUtils;
 
@@ -45,7 +45,7 @@ public class StatsSet implements IParserAdvUtils
 	
 	public StatsSet()
 	{
-		this(new FastMap<String, Object>());
+		this(new LinkedHashMap<>());
 	}
 	
 	public StatsSet(Map<String, Object> map)

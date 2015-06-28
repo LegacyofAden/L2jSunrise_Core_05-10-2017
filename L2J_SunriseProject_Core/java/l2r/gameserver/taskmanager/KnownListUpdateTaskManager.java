@@ -19,8 +19,9 @@
 package l2r.gameserver.taskmanager;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastSet;
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.L2Object;
@@ -45,7 +46,7 @@ public class KnownListUpdateTaskManager
 	// Do full update every FULL_UPDATE_TIMER * KNOWNLIST_UPDATE_INTERVAL
 	public static int _fullUpdateTimer = FULL_UPDATE_TIMER;
 	
-	protected static final FastSet<L2WorldRegion> _failedRegions = new FastSet<>(1);
+	protected static final Set<L2WorldRegion> FAILED_REGIONS = ConcurrentHashMap.newKeySet(1);
 	
 	protected KnownListUpdateTaskManager()
 	{
@@ -71,20 +72,20 @@ public class KnownListUpdateTaskManager
 						// avoid stopping update if something went wrong in updateRegion()
 						try
 						{
-							failed = _failedRegions.contains(r); // failed on last pass
+							failed = FAILED_REGIONS.contains(r); // failed on last pass
 							if (r.isActive()) // and check only if the region is active
 							{
 								updateRegion(r, ((_fullUpdateTimer == FULL_UPDATE_TIMER) || failed), updatePass);
 							}
 							if (failed)
 							{
-								_failedRegions.remove(r); // if all ok, remove
+								FAILED_REGIONS.remove(r); // if all ok, remove
 							}
 						}
 						catch (Exception e)
 						{
 							_log.warn("KnownListUpdateTaskManager: updateRegion(" + _fullUpdateTimer + "," + updatePass + ") failed for region " + r.getName() + ". Full update scheduled. " + e.getMessage(), e);
-							_failedRegions.add(r);
+							FAILED_REGIONS.add(r);
 						}
 					}
 				}

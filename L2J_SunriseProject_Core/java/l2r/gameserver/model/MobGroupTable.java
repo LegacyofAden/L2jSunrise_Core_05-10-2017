@@ -19,8 +19,8 @@
 package l2r.gameserver.model;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.gameserver.model.actor.instance.L2ControllableMobInstance;
 
 /**
@@ -35,7 +35,7 @@ public class MobGroupTable
 	
 	protected MobGroupTable()
 	{
-		_groupMap = new FastMap<>();
+		_groupMap = new ConcurrentHashMap<>();
 	}
 	
 	public static MobGroupTable getInstance()

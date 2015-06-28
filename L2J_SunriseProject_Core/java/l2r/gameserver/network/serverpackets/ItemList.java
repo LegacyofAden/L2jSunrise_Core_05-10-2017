@@ -18,7 +18,9 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import javolution.util.FastList;
+import java.util.ArrayList;
+import java.util.List;
+
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.itemcontainer.PcInventory;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
@@ -29,14 +31,14 @@ public final class ItemList extends L2GameServerPacket
 	private final L2ItemInstance[] _items;
 	private final boolean _showWindow;
 	private int length;
-	private final FastList<L2ItemInstance> questItems;
+	private final List<L2ItemInstance> questItems = new ArrayList<>();
 	
 	public ItemList(L2PcInstance cha, boolean showWindow)
 	{
 		_inventory = cha.getInventory();
 		_items = cha.getInventory().getItems();
 		_showWindow = showWindow;
-		questItems = FastList.newInstance();
+		
 		for (int i = 0; i < _items.length; i++)
 		{
 			if ((_items[i] != null) && _items[i].isQuestItem())

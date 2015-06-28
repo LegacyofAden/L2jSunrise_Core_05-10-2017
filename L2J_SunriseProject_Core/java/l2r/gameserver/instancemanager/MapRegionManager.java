@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import l2r.gameserver.SevenSigns;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.TeleportWhereType;
 import l2r.gameserver.model.L2MapRegion;
 import l2r.gameserver.model.L2Object;
@@ -39,6 +38,7 @@ import l2r.gameserver.model.entity.Instance;
 import l2r.gameserver.model.entity.clanhall.SiegableHall;
 import l2r.gameserver.model.zone.type.L2ClanHallZone;
 import l2r.gameserver.model.zone.type.L2RespawnZone;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

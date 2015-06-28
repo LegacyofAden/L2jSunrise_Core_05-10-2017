@@ -1,14 +1,11 @@
-/*
- * 
- */
 package l2r.gameserver.instancemanager;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.enums.ItemLocation;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -28,7 +25,7 @@ import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 public class BonusExpManager
 {
 	private final Logger _log = LoggerFactory.getLogger(getClass().getName());
-	private final Map<Integer, BonusItem> _bonusItems = new FastMap<Integer, BonusItem>().shared();
+	private final Map<Integer, BonusItem> _bonusItems = new ConcurrentHashMap<>();
 	
 	public BonusExpManager()
 	{

@@ -19,8 +19,8 @@
 package l2r.gameserver.model.holders;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.gameserver.data.sql.ClanTable;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -50,7 +50,7 @@ public final class PlayerEventHolder
 	private final int _pkKills;
 	private final int _karma;
 	
-	private final List<L2PcInstance> _kills;
+	private final List<L2PcInstance> _kills = new CopyOnWriteArrayList<>();
 	private boolean _sitForced;
 	
 	public PlayerEventHolder(L2PcInstance player)
@@ -68,7 +68,7 @@ public final class PlayerEventHolder
 		_pvpKills = player.getPvpKills();
 		_pkKills = player.getPkKills();
 		_karma = player.getKarma();
-		_kills = new FastList<>();
+		
 		_sitForced = sitForced;
 	}
 	

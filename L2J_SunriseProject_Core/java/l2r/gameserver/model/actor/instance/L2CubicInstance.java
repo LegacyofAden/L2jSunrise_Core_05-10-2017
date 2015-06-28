@@ -18,10 +18,10 @@
  */
 package l2r.gameserver.model.actor.instance;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.SkillData;
@@ -92,7 +92,7 @@ public final class L2CubicInstance implements IIdentifiable
 	protected boolean _active;
 	private final boolean _givenByOther;
 	
-	protected List<L2Skill> _skills = new FastList<>();
+	private final List<L2Skill> _skills = new ArrayList<>();
 	
 	private Future<?> _disappearTask;
 	private Future<?> _actionTask;

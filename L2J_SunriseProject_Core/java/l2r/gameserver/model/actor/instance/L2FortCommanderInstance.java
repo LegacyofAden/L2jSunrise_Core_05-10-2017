@@ -18,7 +18,8 @@
  */
 package l2r.gameserver.model.actor.instance;
 
-import javolution.util.FastList;
+import java.util.List;
+
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlIntention;
@@ -124,7 +125,7 @@ public class L2FortCommanderInstance extends L2DefenderInstance
 		L2Spawn spawn = getSpawn();
 		if ((spawn != null) && canTalk())
 		{
-			FastList<FortSiegeSpawn> commanders = FortSiegeManager.getInstance().getCommanderSpawnList(getFort().getResidenceId());
+			List<FortSiegeSpawn> commanders = FortSiegeManager.getInstance().getCommanderSpawnList(getFort().getResidenceId());
 			for (FortSiegeSpawn spawn2 : commanders)
 			{
 				if (spawn2.getId() == spawn.getId())

@@ -24,7 +24,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.StatFunction;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
@@ -32,6 +31,7 @@ import l2r.gameserver.model.items.type.CrystalType;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.model.stats.functions.FuncTemplate;
 import l2r.gameserver.model.stats.functions.LambdaConst;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

@@ -21,9 +21,9 @@ package l2r.gameserver.engines.items;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.engines.DocumentBase;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.conditions.Condition;
@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
 public final class DocumentItem extends DocumentBase
 {
 	private Item _currentItem = null;
-	private final List<L2Item> _itemsInFile = new FastList<>();
+	private final List<L2Item> _itemsInFile = new ArrayList<>();
 	
 	/**
 	 * @param file
@@ -73,7 +73,6 @@ public final class DocumentItem extends DocumentBase
 		{
 			if ("list".equalsIgnoreCase(n.getNodeName()))
 			{
-				
 				for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling())
 				{
 					if ("item".equalsIgnoreCase(d.getNodeName()))
@@ -175,9 +174,6 @@ public final class DocumentItem extends DocumentBase
 		}
 	}
 	
-	/**
-	 * @return
-	 */
 	public List<L2Item> getItemList()
 	{
 		return _itemsInFile;

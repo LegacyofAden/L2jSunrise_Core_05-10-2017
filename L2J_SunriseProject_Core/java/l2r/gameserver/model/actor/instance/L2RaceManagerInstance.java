@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.model.actor.instance;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.MonsterRace;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.InstanceType;
@@ -100,8 +100,7 @@ public class L2RaceManagerInstance extends L2Npc
 		{
 			_notInitialized = false;
 			
-			// _history = new FastList<>();
-			_managers = new FastList<>();
+			_managers = new ArrayList<>();
 			
 			ThreadPoolManager s = ThreadPoolManager.getInstance();
 			s.scheduleGeneralAtFixedRate(new Announcement(SystemMessageId.MONSRACE_TICKETS_AVAILABLE_FOR_S1_RACE), 0, 10 * MINUTE);
@@ -124,7 +123,6 @@ public class L2RaceManagerInstance extends L2Npc
 			s.scheduleGeneralAtFixedRate(new Announcement(SystemMessageId.MONSRACE_BEGINS_IN_S1_SECONDS), (8 * MINUTE) + (58 * SECOND), 10 * MINUTE);
 			s.scheduleGeneralAtFixedRate(new Announcement(SystemMessageId.MONSRACE_BEGINS_IN_S1_SECONDS), (8 * MINUTE) + (59 * SECOND), 10 * MINUTE);
 			s.scheduleGeneralAtFixedRate(new Announcement(SystemMessageId.MONSRACE_RACE_START), 9 * MINUTE, 10 * MINUTE);
-			// */
 		}
 		_managers.add(this);
 	}

@@ -21,13 +21,13 @@ package l2r.gameserver.data.xml.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.holders.RangeChanceHolder;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.enchant.EnchantItemGroup;
 import l2r.gameserver.model.items.enchant.EnchantRateItem;
 import l2r.gameserver.model.items.enchant.EnchantScrollGroup;
 import l2r.gameserver.util.Util;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -115,7 +115,7 @@ public final class EnchantItemGroupsData implements IXmlReader
 										final NamedNodeMap attrs = z.getAttributes();
 										if (attrs.getNamedItem("slot") != null)
 										{
-											rateGroup.addSlot(ItemData._slots.get(parseString(attrs, "slot")));
+											rateGroup.addSlot(ItemData.SLOTS.get(parseString(attrs, "slot")));
 										}
 										if (attrs.getNamedItem("magicWeapon") != null)
 										{

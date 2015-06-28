@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.SiegeScheduleDate;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.util.Util;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

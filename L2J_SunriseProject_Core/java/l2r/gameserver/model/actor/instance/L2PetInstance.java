@@ -21,10 +21,10 @@ package l2r.gameserver.model.actor.instance;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
@@ -1024,7 +1024,7 @@ public class L2PetInstance extends L2Summon
 			
 			int buff_index = 0;
 			
-			final List<Integer> storedSkills = new FastList<>();
+			final List<Integer> storedSkills = new LinkedList<>();
 			
 			// Store all effect data along with calculated remaining
 			if (storeEffects)

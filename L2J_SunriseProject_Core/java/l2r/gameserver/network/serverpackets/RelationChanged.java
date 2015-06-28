@@ -18,9 +18,9 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.L2Playable;
 
 /**
@@ -67,7 +67,7 @@ public final class RelationChanged extends L2GameServerPacket
 	
 	public RelationChanged()
 	{
-		_multi = FastList.newInstance();
+		_multi = new ArrayList<>();
 	}
 	
 	public void addRelation(L2Playable activeChar, int relation, boolean autoattackable)
@@ -101,7 +101,6 @@ public final class RelationChanged extends L2GameServerPacket
 			{
 				writeRelation(r);
 			}
-			FastList.recycle((FastList<?>) _multi);
 		}
 	}
 	

@@ -21,8 +21,8 @@ package l2r.gameserver.instancemanager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.enums.RaidBossStatus;
 import l2r.gameserver.model.L2Spawn;
@@ -40,9 +40,9 @@ public class DayNightSpawnManager
 	
 	private static Logger _log = LoggerFactory.getLogger(DayNightSpawnManager.class);
 	
-	private final List<L2Spawn> _dayCreatures;
-	private final List<L2Spawn> _nightCreatures;
-	private final Map<L2Spawn, L2RaidBossInstance> _bosses;
+	private final List<L2Spawn> _dayCreatures = new ArrayList<>();
+	private final List<L2Spawn> _nightCreatures = new ArrayList<>();
+	private final Map<L2Spawn, L2RaidBossInstance> _bosses = new ConcurrentHashMap<>();
 	
 	// private static int _currentState; // 0 = Day, 1 = Night
 	
@@ -53,9 +53,7 @@ public class DayNightSpawnManager
 	
 	protected DayNightSpawnManager()
 	{
-		_dayCreatures = new ArrayList<>();
-		_nightCreatures = new ArrayList<>();
-		_bosses = new FastMap<>();
+		// Prevent external initialization.
 	}
 	
 	public void addDayCreature(L2Spawn spawnDat)
@@ -204,7 +202,6 @@ public class DayNightSpawnManager
 				{
 					boss = (L2RaidBossInstance) spawn.doSpawn();
 					RaidBossSpawnManager.getInstance().notifySpawnNightBoss(boss);
-					_bosses.remove(spawn);
 					_bosses.put(spawn, boss);
 					continue;
 				}
@@ -260,7 +257,6 @@ public class DayNightSpawnManager
 			return raidboss;
 		}
 		
-		_bosses.put(spawnDat, null);
 		return null;
 	}
 	

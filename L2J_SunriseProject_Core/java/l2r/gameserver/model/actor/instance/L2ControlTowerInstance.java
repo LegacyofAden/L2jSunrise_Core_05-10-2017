@@ -19,8 +19,8 @@
 package l2r.gameserver.model.actor.instance;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.model.L2Spawn;
 import l2r.gameserver.model.actor.L2Character;
@@ -51,10 +51,6 @@ public class L2ControlTowerInstance extends L2Tower
 			{
 				for (L2Spawn spawn : _guards)
 				{
-					if (spawn == null)
-					{
-						continue;
-					}
 					try
 					{
 						spawn.stopRespawn();
@@ -84,7 +80,7 @@ public class L2ControlTowerInstance extends L2Tower
 			{
 				if (_guards == null)
 				{
-					_guards = new FastList<>();
+					_guards = new CopyOnWriteArrayList<>();
 				}
 			}
 		}

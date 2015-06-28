@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.instancemanager.MapRegionManager;
@@ -34,6 +33,7 @@ import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.instance.L2DoorInstance;
 import l2r.gameserver.model.actor.templates.L2DoorTemplate;
 import l2r.gameserver.pathfinding.AbstractNodeLoc;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

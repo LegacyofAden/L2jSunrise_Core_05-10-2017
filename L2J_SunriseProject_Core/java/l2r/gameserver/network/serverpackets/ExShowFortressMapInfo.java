@@ -18,7 +18,8 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import javolution.util.FastList;
+import java.util.List;
+
 import l2r.gameserver.instancemanager.FortSiegeManager;
 import l2r.gameserver.model.FortSiegeSpawn;
 import l2r.gameserver.model.L2Spawn;
@@ -46,7 +47,7 @@ public class ExShowFortressMapInfo extends L2GameServerPacket
 		writeD(_fortress.getSiege().isInProgress() ? 1 : 0); // fortress siege status
 		writeD(_fortress.getFortSize()); // barracks count
 		
-		FastList<FortSiegeSpawn> commanders = FortSiegeManager.getInstance().getCommanderSpawnList(_fortress.getResidenceId());
+		List<FortSiegeSpawn> commanders = FortSiegeManager.getInstance().getCommanderSpawnList(_fortress.getResidenceId());
 		if ((commanders != null) && (commanders.size() != 0) && _fortress.getSiege().isInProgress())
 		{
 			switch (commanders.size())

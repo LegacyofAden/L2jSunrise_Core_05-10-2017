@@ -27,8 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.sql.ClanTable;
@@ -65,7 +65,7 @@ public class Auction
 	private long _currentBid = 0;
 	private long _startingBid = 0;
 	
-	private final Map<Integer, Bidder> _bidders = new FastMap<>();
+	private final Map<Integer, Bidder> _bidders = new ConcurrentHashMap<>();
 	
 	private static final String[] ItemTypeName =
 	{
@@ -379,7 +379,7 @@ public class Auction
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			if (getBidders().get(bidder.getClanId()) != null)
+			if (_bidders.get(bidder.getClanId()) != null)
 			{
 				try (PreparedStatement statement = con.prepareStatement("UPDATE auction_bid SET bidderId=?, bidderName=?, maxBid=?, time_bid=? WHERE auctionId=? AND bidderId=?"))
 				{

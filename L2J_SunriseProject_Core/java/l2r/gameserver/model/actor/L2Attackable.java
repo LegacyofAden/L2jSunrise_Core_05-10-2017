@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.SevenSigns;
 import l2r.gameserver.ThreadPoolManager;
@@ -87,7 +86,7 @@ public class L2Attackable extends L2Npc
 	private boolean _isRaidMinion = false;
 	//
 	private boolean _champion = false;
-	private final Map<L2Character, AggroInfo> _aggroList = new FastMap<L2Character, AggroInfo>().shared();
+	private final Map<L2Character, AggroInfo> _aggroList = new ConcurrentHashMap<>();
 	private boolean _isReturningToSpawnPoint = false;
 	private boolean _canReturnToSpawnPoint = true;
 	private boolean _seeThroughSilentMove = false;
@@ -1666,7 +1665,7 @@ public class L2Attackable extends L2Npc
 		{
 			if (Rnd.get(L2DropData.MAX_CHANCE) < drop.getEventDrop().getDropChance())
 			{
-				final int itemId = drop.getEventDrop().getIdList()[Rnd.get(drop.getEventDrop().getIdList().length)];
+				final int itemId = drop.getEventDrop().getItemIdList()[Rnd.get(drop.getEventDrop().getItemIdList().length)];
 				final long itemCount = Rnd.get(drop.getEventDrop().getMinCount(), drop.getEventDrop().getMaxCount());
 				
 				if (Config.AUTO_LOOT || isFlying())

@@ -24,11 +24,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.enums.TeleportWhereType;
@@ -127,21 +127,10 @@ public class SevenSigns
 	protected int _previousWinner;
 	protected Calendar _lastSave = Calendar.getInstance();
 	
-	protected Map<Integer, StatsSet> _signsPlayerData;
-	
-	private final Map<Integer, Integer> _signsSealOwners;
-	private final Map<Integer, Integer> _signsDuskSealTotals;
-	private final Map<Integer, Integer> _signsDawnSealTotals;
-	
-	private AutoSpawnInstance _merchantSpawn;
-	private AutoSpawnInstance _blacksmithSpawn;
-	private AutoSpawnInstance _lilithSpawn;
-	private AutoSpawnInstance _anakimSpawn;
-	private Map<Integer, AutoSpawnInstance> _crestofdawnspawns;
-	private Map<Integer, AutoSpawnInstance> _crestofduskspawns;
-	private Map<Integer, AutoSpawnInstance> _oratorSpawns;
-	private Map<Integer, AutoSpawnInstance> _preacherSpawns;
-	private Map<Integer, AutoSpawnInstance> _marketeerSpawns;
+	protected Map<Integer, StatsSet> _signsPlayerData = new LinkedHashMap<>();
+	private final Map<Integer, Integer> _signsSealOwners = new LinkedHashMap<>();
+	private final Map<Integer, Integer> _signsDuskSealTotals = new LinkedHashMap<>();
+	private final Map<Integer, Integer> _signsDawnSealTotals = new LinkedHashMap<>();
 	
 	private static final String LOAD_DATA = "SELECT charId, cabal, seal, red_stones, green_stones, blue_stones, " + "ancient_adena_amount, contribution_score FROM seven_signs";
 	
@@ -155,11 +144,6 @@ public class SevenSigns
 	
 	protected SevenSigns()
 	{
-		_signsPlayerData = new FastMap<>();
-		_signsSealOwners = new FastMap<>();
-		_signsDuskSealTotals = new FastMap<>();
-		_signsDawnSealTotals = new FastMap<>();
-		
 		try
 		{
 			restoreSevenSignsData();
@@ -215,7 +199,7 @@ public class SevenSigns
 		int numHours = (int) Math.floor(countDown % 24);
 		int numDays = (int) Math.floor((countDown - numHours) / 24);
 		
-		_log.info("SevenSigns: Next period in " + numDays + " days, " + numHours + " hours and " + numMins + " mins.");
+		_log.info("SevenSigns: Next period in " + numDays + " days " + numHours + " hours and " + numMins + " mins.");
 	}
 	
 	private boolean isNextPeriodChangeInPast()
@@ -255,19 +239,19 @@ public class SevenSigns
 	 */
 	public void spawnSevenSignsNPC()
 	{
-		_merchantSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(MAMMON_MERCHANT_ID, false);
-		_blacksmithSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(MAMMON_BLACKSMITH_ID, false);
-		_marketeerSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(MAMMON_MARKETEER_ID);
-		_lilithSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(LILITH_NPC_ID, false);
-		_anakimSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(ANAKIM_NPC_ID, false);
-		_crestofdawnspawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(CREST_OF_DAWN_ID);
-		_crestofduskspawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(CREST_OF_DUSK_ID);
-		_oratorSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(ORATOR_NPC_ID);
-		_preacherSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(PREACHER_NPC_ID);
+		final AutoSpawnInstance merchantSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(MAMMON_MERCHANT_ID, false);
+		final AutoSpawnInstance blacksmithSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(MAMMON_BLACKSMITH_ID, false);
+		final AutoSpawnInstance lilithSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(LILITH_NPC_ID, false);
+		final AutoSpawnInstance anakimSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(ANAKIM_NPC_ID, false);
+		final List<AutoSpawnInstance> crestOfDawnSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(CREST_OF_DAWN_ID);
+		final List<AutoSpawnInstance> crestOfDuskSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(CREST_OF_DUSK_ID);
+		final List<AutoSpawnInstance> oratorSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(ORATOR_NPC_ID);
+		final List<AutoSpawnInstance> preacherSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(PREACHER_NPC_ID);
+		final List<AutoSpawnInstance> marketeerSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(MAMMON_MARKETEER_ID);
 		
 		if (isSealValidationPeriod() || isCompResultsPeriod())
 		{
-			for (AutoSpawnInstance spawnInst : _marketeerSpawns.values())
+			for (AutoSpawnInstance spawnInst : marketeerSpawns)
 			{
 				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, true);
 			}
@@ -276,15 +260,15 @@ public class SevenSigns
 			{
 				if (!Config.ANNOUNCE_MAMMON_SPAWN)
 				{
-					_blacksmithSpawn.setBroadcast(false);
+					blacksmithSpawn.setBroadcast(false);
 				}
 				
-				if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_blacksmithSpawn.getObjectId(), true).isSpawnActive())
+				if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(blacksmithSpawn.getObjectId(), true).isSpawnActive())
 				{
-					AutoSpawnHandler.getInstance().setSpawnActive(_blacksmithSpawn, true);
+					AutoSpawnHandler.getInstance().setSpawnActive(blacksmithSpawn, true);
 				}
 				
-				for (AutoSpawnInstance spawnInst : _oratorSpawns.values())
+				for (AutoSpawnInstance spawnInst : oratorSpawns)
 				{
 					if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(spawnInst.getObjectId(), true).isSpawnActive())
 					{
@@ -292,7 +276,7 @@ public class SevenSigns
 					}
 				}
 				
-				for (AutoSpawnInstance spawnInst : _preacherSpawns.values())
+				for (AutoSpawnInstance spawnInst : preacherSpawns)
 				{
 					if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(spawnInst.getObjectId(), true).isSpawnActive())
 					{
@@ -302,14 +286,14 @@ public class SevenSigns
 			}
 			else
 			{
-				AutoSpawnHandler.getInstance().setSpawnActive(_blacksmithSpawn, false);
+				AutoSpawnHandler.getInstance().setSpawnActive(blacksmithSpawn, false);
 				
-				for (AutoSpawnInstance spawnInst : _oratorSpawns.values())
+				for (AutoSpawnInstance spawnInst : oratorSpawns)
 				{
 					AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
 				}
 				
-				for (AutoSpawnInstance spawnInst : _preacherSpawns.values())
+				for (AutoSpawnInstance spawnInst : preacherSpawns)
 				{
 					AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
 				}
@@ -319,25 +303,25 @@ public class SevenSigns
 			{
 				if (!Config.ANNOUNCE_MAMMON_SPAWN)
 				{
-					_merchantSpawn.setBroadcast(false);
+					merchantSpawn.setBroadcast(false);
 				}
 				
-				if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_merchantSpawn.getObjectId(), true).isSpawnActive())
+				if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(merchantSpawn.getObjectId(), true).isSpawnActive())
 				{
-					AutoSpawnHandler.getInstance().setSpawnActive(_merchantSpawn, true);
+					AutoSpawnHandler.getInstance().setSpawnActive(merchantSpawn, true);
 				}
 				
 				switch (getCabalHighestScore())
 				{
 					case CABAL_DAWN:
-						if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_lilithSpawn.getObjectId(), true).isSpawnActive())
+						if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(lilithSpawn.getObjectId(), true).isSpawnActive())
 						{
-							AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, true);
+							AutoSpawnHandler.getInstance().setSpawnActive(lilithSpawn, true);
 						}
 						
-						AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, false);
+						AutoSpawnHandler.getInstance().setSpawnActive(anakimSpawn, false);
 						
-						for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
+						for (AutoSpawnInstance dawnCrest : crestOfDawnSpawns)
 						{
 							if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(dawnCrest.getObjectId(), true).isSpawnActive())
 							{
@@ -345,21 +329,21 @@ public class SevenSigns
 							}
 						}
 						
-						for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
+						for (AutoSpawnInstance duskCrest : crestOfDuskSpawns)
 						{
 							AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, false);
 						}
 						break;
 					
 					case CABAL_DUSK:
-						if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_anakimSpawn.getObjectId(), true).isSpawnActive())
+						if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(anakimSpawn.getObjectId(), true).isSpawnActive())
 						{
-							AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, true);
+							AutoSpawnHandler.getInstance().setSpawnActive(anakimSpawn, true);
 						}
 						
-						AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, false);
+						AutoSpawnHandler.getInstance().setSpawnActive(lilithSpawn, false);
 						
-						for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
+						for (AutoSpawnInstance duskCrest : crestOfDuskSpawns)
 						{
 							if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(duskCrest.getObjectId(), true).isSpawnActive())
 							{
@@ -367,7 +351,7 @@ public class SevenSigns
 							}
 						}
 						
-						for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
+						for (AutoSpawnInstance dawnCrest : crestOfDawnSpawns)
 						{
 							AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, false);
 						}
@@ -376,14 +360,14 @@ public class SevenSigns
 			}
 			else
 			{
-				AutoSpawnHandler.getInstance().setSpawnActive(_merchantSpawn, false);
-				AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, false);
-				AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, false);
-				for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
+				AutoSpawnHandler.getInstance().setSpawnActive(merchantSpawn, false);
+				AutoSpawnHandler.getInstance().setSpawnActive(lilithSpawn, false);
+				AutoSpawnHandler.getInstance().setSpawnActive(anakimSpawn, false);
+				for (AutoSpawnInstance dawnCrest : crestOfDawnSpawns)
 				{
 					AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, false);
 				}
-				for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
+				for (AutoSpawnInstance duskCrest : crestOfDuskSpawns)
 				{
 					AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, false);
 				}
@@ -391,29 +375,29 @@ public class SevenSigns
 		}
 		else
 		{
-			AutoSpawnHandler.getInstance().setSpawnActive(_merchantSpawn, false);
-			AutoSpawnHandler.getInstance().setSpawnActive(_blacksmithSpawn, false);
-			AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, false);
-			AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, false);
-			for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
+			AutoSpawnHandler.getInstance().setSpawnActive(merchantSpawn, false);
+			AutoSpawnHandler.getInstance().setSpawnActive(blacksmithSpawn, false);
+			AutoSpawnHandler.getInstance().setSpawnActive(lilithSpawn, false);
+			AutoSpawnHandler.getInstance().setSpawnActive(anakimSpawn, false);
+			for (AutoSpawnInstance dawnCrest : crestOfDawnSpawns)
 			{
 				AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, false);
 			}
-			for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
+			for (AutoSpawnInstance duskCrest : crestOfDuskSpawns)
 			{
 				AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, false);
 			}
-			for (AutoSpawnInstance spawnInst : _oratorSpawns.values())
+			for (AutoSpawnInstance spawnInst : oratorSpawns)
 			{
 				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
 			}
 			
-			for (AutoSpawnInstance spawnInst : _preacherSpawns.values())
+			for (AutoSpawnInstance spawnInst : preacherSpawns)
 			{
 				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
 			}
 			
-			for (AutoSpawnInstance spawnInst : _marketeerSpawns.values())
+			for (AutoSpawnInstance spawnInst : marketeerSpawns)
 			{
 				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
 			}
@@ -550,7 +534,7 @@ public class SevenSigns
 				_nextPeriodChange.add(Calendar.MILLISECOND, PERIOD_MINOR_LENGTH);
 				break;
 		}
-		_log.info("SevenSigns: Next period changed: " + _nextPeriodChange.getTime());
+		_log.info("SevenSigns: Next period change set to " + _nextPeriodChange.getTime());
 	}
 	
 	public final String getCurrentPeriodName()
@@ -977,19 +961,13 @@ public class SevenSigns
 	 */
 	protected void resetPlayerData()
 	{
-		int charObjId;
-		
 		// Reset each player's contribution data as well as seal and cabal.
 		for (StatsSet sevenDat : _signsPlayerData.values())
 		{
-			charObjId = sevenDat.getInt("charId");
-			
 			// Reset the player's cabal and seal information
 			sevenDat.set("cabal", "");
 			sevenDat.set("seal", SEAL_NULL);
 			sevenDat.set("contribution_score", 0);
-			
-			_signsPlayerData.put(charObjId, sevenDat);
 		}
 	}
 	
@@ -1561,13 +1539,6 @@ public class SevenSigns
 			
 			setCalendarForNextPeriodChange();
 			
-			// make sure that all the scheduled siege dates are in the Seal Validation period
-			List<Castle> castles = CastleManager.getInstance().getCastles();
-			for (Castle castle : castles)
-			{
-				castle.getSiege().correctSiegeDateTime();
-			}
-			
 			SevenSignsPeriodChange sspc = new SevenSignsPeriodChange();
 			ThreadPoolManager.getInstance().scheduleGeneral(sspc, getMilliToPeriodChange());
 		}
@@ -1677,7 +1648,7 @@ public class SevenSigns
 			{
 				if (getPlayerCabal(activeChar.getObjectId()) == CABAL_DUSK)
 				{
-					activeChar.sendMessage("You cannot summon Siege Golem or Cannon while Seal of Strife posessed by Lords of Dawn.");
+					activeChar.sendPacket(SystemMessageId.SEAL_OF_STRIFE_FORBIDS_SUMMONING);
 					return true;
 				}
 			}

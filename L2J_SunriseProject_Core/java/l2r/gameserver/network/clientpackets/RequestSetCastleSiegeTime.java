@@ -62,7 +62,7 @@ public class RequestSetCastleSiegeTime extends L2GameClientPacket
 			_log.warn(getType() + ": activeChar: " + activeChar + " castle: " + castle + " castleId: " + _castleId + " is trying to change siege date but is not clan leader!");
 			return;
 		}
-		else if (!castle.getIsTimeRegistrationOver() && !castle.getIsTimeRegistrationOver())
+		else if (!castle.getIsTimeRegistrationOver())
 		{
 			if (isSiegeTimeValid(castle.getSiegeDate().getTimeInMillis(), _time))
 			{

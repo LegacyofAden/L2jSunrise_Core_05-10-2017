@@ -19,8 +19,8 @@
 package l2r.gameserver.instancemanager;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2World;
@@ -33,7 +33,7 @@ import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 
 public class BoatManager
 {
-	private final Map<Integer, L2BoatInstance> _boats = new FastMap<>();
+	private final Map<Integer, L2BoatInstance> _boats = new ConcurrentHashMap<>();
 	private final boolean[] _docksBusy = new boolean[3];
 	
 	public static final int TALKING_ISLAND = 1;
@@ -103,12 +103,13 @@ public class BoatManager
 		npcDat.set("baseMpReg", 3.e-3f);
 		npcDat.set("basePDef", 100);
 		npcDat.set("baseMDef", 100);
-		L2CharTemplate template = new L2CharTemplate(npcDat);
-		L2BoatInstance boat = new L2BoatInstance(IdFactory.getInstance().getNextId(), template);
-		_boats.put(boat.getObjectId(), boat);
+		
+		L2BoatInstance boat = new L2BoatInstance(IdFactory.getInstance().getNextId(), new L2CharTemplate(npcDat));
 		boat.setHeading(heading);
 		boat.setXYZInvisible(x, y, z);
 		boat.spawnMe();
+		
+		_boats.put(boat.getObjectId(), boat);
 		return boat;
 	}
 	

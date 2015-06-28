@@ -20,12 +20,12 @@ package l2r.gameserver.data.xml.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.InstanceListManager;
 import l2r.gameserver.instancemanager.CastleManager;
@@ -53,7 +53,7 @@ public class MerchantPriceConfigData implements InstanceListManager
 	
 	private static final String MPCS_FILE = "MerchantPriceConfig.xml";
 	
-	private final Map<Integer, MerchantPriceConfig> _mpcs = new FastMap<>();
+	private final Map<Integer, MerchantPriceConfig> _mpcs = new HashMap<>();
 	private MerchantPriceConfig _defaultMpc;
 	
 	public MerchantPriceConfig getMerchantPriceConfig(L2MerchantInstance npc)

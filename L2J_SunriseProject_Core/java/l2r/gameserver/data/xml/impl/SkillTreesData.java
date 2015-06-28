@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import l2r.Config;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.L2SkillLearn;
@@ -45,6 +44,7 @@ import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.interfaces.ISkillsHolder;
 import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

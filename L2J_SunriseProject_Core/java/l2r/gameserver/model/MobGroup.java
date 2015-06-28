@@ -18,9 +18,10 @@
  */
 package l2r.gameserver.model;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.gameserver.ai.L2ControllableMobAI;
 import l2r.gameserver.data.SpawnTable;
 import l2r.gameserver.enums.CtrlIntention;
@@ -67,7 +68,7 @@ public final class MobGroup
 	{
 		if (_mobs == null)
 		{
-			_mobs = new FastList<>();
+			_mobs = new CopyOnWriteArrayList<>();
 		}
 		
 		return _mobs;
@@ -369,8 +370,7 @@ public final class MobGroup
 	
 	protected void removeDead()
 	{
-		List<L2ControllableMobInstance> deadMobs = new FastList<>();
-		
+		List<L2ControllableMobInstance> deadMobs = new LinkedList<>();
 		for (L2ControllableMobInstance mobInst : getMobs())
 		{
 			if ((mobInst != null) && mobInst.isDead())

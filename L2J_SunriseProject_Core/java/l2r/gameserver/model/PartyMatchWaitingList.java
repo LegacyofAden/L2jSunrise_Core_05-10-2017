@@ -19,8 +19,8 @@
 package l2r.gameserver.model;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 
 /**
@@ -32,7 +32,7 @@ public class PartyMatchWaitingList
 	
 	protected PartyMatchWaitingList()
 	{
-		_members = new FastList<>();
+		_members = new CopyOnWriteArrayList<>();
 	}
 	
 	public void addPlayer(L2PcInstance player)

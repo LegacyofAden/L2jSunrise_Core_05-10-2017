@@ -28,10 +28,10 @@ import java.util.Map;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.data.xml.IXmlReader;
 import l2r.gameserver.model.buylist.L2BuyList;
 import l2r.gameserver.model.buylist.Product;
 import l2r.gameserver.model.items.L2Item;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 import l2r.util.file.filter.NumericNameFilter;
 
 import org.w3c.dom.Document;
