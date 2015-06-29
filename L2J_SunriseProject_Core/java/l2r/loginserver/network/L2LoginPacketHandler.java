@@ -26,10 +26,11 @@ import l2r.loginserver.network.clientpackets.RequestAuthLogin;
 import l2r.loginserver.network.clientpackets.RequestServerList;
 import l2r.loginserver.network.clientpackets.RequestServerLogin;
 
-import org.mmocore.network.IPacketHandler;
-import org.mmocore.network.ReceivablePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.l2jserver.mmocore.IPacketHandler;
+import com.l2jserver.mmocore.ReceivablePacket;
 
 /**
  * Handler for packets received by Login Server

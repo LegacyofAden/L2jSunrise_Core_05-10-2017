@@ -140,10 +140,11 @@ import l2r.status.Status;
 import l2r.util.DeadLockDetector;
 import l2r.util.IPv4Filter;
 
-import org.mmocore.network.SelectorConfig;
-import org.mmocore.network.SelectorThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.l2jserver.mmocore.SelectorConfig;
+import com.l2jserver.mmocore.SelectorThread;
 
 import gr.sr.configsEngine.ConfigsController;
 import gr.sr.interf.SunriseEvents;

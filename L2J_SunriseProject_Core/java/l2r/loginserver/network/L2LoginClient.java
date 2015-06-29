@@ -37,11 +37,12 @@ import l2r.util.Rnd;
 import l2r.util.crypt.LoginCrypt;
 import l2r.util.crypt.ScrambledKeyPair;
 
-import org.mmocore.network.MMOClient;
-import org.mmocore.network.MMOConnection;
-import org.mmocore.network.SendablePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.l2jserver.mmocore.MMOClient;
+import com.l2jserver.mmocore.MMOConnection;
+import com.l2jserver.mmocore.SendablePacket;
 
 /**
  * Represents a client connected into the LoginServer

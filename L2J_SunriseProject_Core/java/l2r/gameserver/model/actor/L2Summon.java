@@ -1042,6 +1042,13 @@ public abstract class L2Summon extends L2Playable
 			return false;
 		}
 		
+		if ((getOwner().getTarget() != null) && !getOwner().getTarget().canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
+		{
+			getAI().setIntention(CtrlIntention.AI_INTENTION_FOLLOW, target);
+			getOwner().sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
+		}
+		
 		if (isAttackingDisabled())
 		{
 			if (getAttackEndTime() <= GameTimeController.getInstance().getGameTicks())
@@ -1085,12 +1092,6 @@ public abstract class L2Summon extends L2Playable
 		if (!getOwner().getAccessLevel().allowPeaceAttack() && getOwner().isInsidePeaceZone(this, target))
 		{
 			sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
-			return false;
-		}
-		
-		if ((getOwner().getTarget() != null) && !getOwner().getTarget().canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
-		{
-			getOwner().sendPacket(ActionFailed.STATIC_PACKET);
 			return false;
 		}
 		

@@ -22,9 +22,10 @@ import l2r.gameserver.model.interfaces.IPositionable;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.network.L2GameClient;
 
-import org.mmocore.network.SendablePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.l2jserver.mmocore.SendablePacket;
 
 /**
  * @author KenM

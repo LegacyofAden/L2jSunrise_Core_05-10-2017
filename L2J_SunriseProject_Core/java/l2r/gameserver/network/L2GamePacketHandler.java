@@ -25,13 +25,14 @@ import l2r.gameserver.network.L2GameClient.GameClientState;
 import l2r.gameserver.network.clientpackets.*;
 import l2r.util.Util;
 
-import org.mmocore.network.IClientFactory;
-import org.mmocore.network.IMMOExecutor;
-import org.mmocore.network.IPacketHandler;
-import org.mmocore.network.MMOConnection;
-import org.mmocore.network.ReceivablePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.l2jserver.mmocore.IClientFactory;
+import com.l2jserver.mmocore.IMMOExecutor;
+import com.l2jserver.mmocore.IPacketHandler;
+import com.l2jserver.mmocore.MMOConnection;
+import com.l2jserver.mmocore.ReceivablePacket;
 
 /**
  * Stateful Packet Handler<BR>

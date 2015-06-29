@@ -20,7 +20,7 @@ package l2r.loginserver.network.serverpackets;
 
 import l2r.loginserver.network.L2LoginClient;
 
-import org.mmocore.network.SendablePacket;
+import com.l2jserver.mmocore.SendablePacket;
 
 /**
  * @author KenM

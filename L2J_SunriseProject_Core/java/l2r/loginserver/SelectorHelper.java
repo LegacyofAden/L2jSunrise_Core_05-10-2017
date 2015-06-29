@@ -27,11 +27,11 @@ import l2r.loginserver.network.L2LoginClient;
 import l2r.loginserver.network.serverpackets.Init;
 import l2r.util.IPv4Filter;
 
-import org.mmocore.network.IAcceptFilter;
-import org.mmocore.network.IClientFactory;
-import org.mmocore.network.IMMOExecutor;
-import org.mmocore.network.MMOConnection;
-import org.mmocore.network.ReceivablePacket;
+import com.l2jserver.mmocore.IAcceptFilter;
+import com.l2jserver.mmocore.IClientFactory;
+import com.l2jserver.mmocore.IMMOExecutor;
+import com.l2jserver.mmocore.MMOConnection;
+import com.l2jserver.mmocore.ReceivablePacket;
 
 /**
  * @author KenM

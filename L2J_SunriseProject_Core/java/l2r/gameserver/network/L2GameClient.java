@@ -56,11 +56,12 @@ import l2r.gameserver.security.SecondaryPasswordAuth;
 import l2r.gameserver.util.FloodProtectors;
 import l2r.gameserver.util.Util;
 
-import org.mmocore.network.MMOClient;
-import org.mmocore.network.MMOConnection;
-import org.mmocore.network.ReceivablePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.l2jserver.mmocore.MMOClient;
+import com.l2jserver.mmocore.MMOConnection;
+import com.l2jserver.mmocore.ReceivablePacket;
 
 import gr.sr.interf.SunriseEvents;
 import gr.sr.protection.Protection;
