@@ -18,9 +18,7 @@
  */
 package l2r.gameserver.instancemanager;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import javolution.util.FastList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.entity.Duel;
@@ -28,12 +26,12 @@ import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 
 public class DuelManager
 {
-	private final List<Duel> _duels = new CopyOnWriteArrayList<>();
+	private final FastList<Duel> _duels;
 	private int _currentDuelId = 0x90;
 	
 	protected DuelManager()
 	{
-		
+		_duels = new FastList<>();
 	}
 	
 	private int getNextDuelId()
@@ -48,7 +46,14 @@ public class DuelManager
 	
 	public Duel getDuel(int duelId)
 	{
-		return _duels.get(duelId);
+		for (FastList.Node<Duel> e = _duels.head(), end = _duels.tail(); (e = e.getNext()) != end;)
+		{
+			if (e.getValue().getId() == duelId)
+			{
+				return e.getValue();
+			}
+		}
+		return null;
 	}
 	
 	public void addDuel(L2PcInstance playerA, L2PcInstance playerB, int partyDuel)
