@@ -105,6 +105,11 @@ public class SkillData
 	
 	public final L2Skill getInfo(final int skillId, final int level)
 	{
+		return getSkill(skillId, level);
+	}
+	
+	public final L2Skill getSkill(final int skillId, final int level)
+	{
 		final L2Skill result = _skills.get(getSkillHashCode(skillId, level));
 		if (result != null)
 		{

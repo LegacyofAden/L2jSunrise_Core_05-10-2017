@@ -218,7 +218,7 @@ public class L2SkillDrain extends L2Skill
 				continue;
 			}
 			
-			boolean mcrit = Formulas.calcMCrit(activeCubic.getMCriticalHit(target, this));
+			boolean mcrit = Formulas.calcMCrit(activeCubic.getOwner().getMCriticalHit(target, this));
 			byte shld = Formulas.calcShldUse(activeCubic.getOwner(), target, this);
 			
 			int damage = (int) Formulas.calcMagicDam(activeCubic, target, this, mcrit, shld);
