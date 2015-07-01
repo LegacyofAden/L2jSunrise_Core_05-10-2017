@@ -4312,7 +4312,7 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
-		if (isInOlympiadMode() && skill.isBlockedInOlympiad())
+		if (isInOlympiadMode() && (skill.isBlockedInOlympiad() || skill.isBlockCertificationInOly()))
 		{
 			sendPacket(SystemMessageId.THIS_SKILL_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT);
 			return false;

@@ -180,6 +180,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final boolean _removedOnDamage;
 	
 	private final boolean _blockedInOlympiad;
+	private final boolean _blockCertificationInOly;
 	
 	private final byte _element;
 	private final int _elementPower;
@@ -444,6 +445,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_removedOnDamage = set.getBoolean("removedOnDamage", _skillType == L2SkillType.SLEEP);
 		
 		_blockedInOlympiad = set.getBoolean("blockedInOlympiad", false);
+		_blockCertificationInOly = set.getBoolean("blockCertificationInOly", false);
 		
 		_element = set.getByte("element", (byte) -1);
 		_elementPower = set.getInt("elementPower", 0);
@@ -701,6 +703,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public boolean isBlockedInOlympiad()
 	{
 		return _blockedInOlympiad;
+	}
+	
+	public boolean isBlockCertificationInOly()
+	{
+		return _blockCertificationInOly && Config.ALT_OLY_BLOCK_CERTIFICATION_IN_OLY;
 	}
 	
 	/**
