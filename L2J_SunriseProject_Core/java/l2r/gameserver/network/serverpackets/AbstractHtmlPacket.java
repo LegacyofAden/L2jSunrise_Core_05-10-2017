@@ -75,8 +75,8 @@ public abstract class AbstractHtmlPacket extends L2GameServerPacket
 	{
 		if (html.length() > 17200)
 		{
-			_log.warn("Html is too long! this will crash the client!", new Throwable());
-			_html = html.substring(0, 17200);
+			_log.warn("Html is too long! this will crash the client!");
+			_html = html.substring(0, 17199);
 		}
 		
 		if (!html.contains("<html"))

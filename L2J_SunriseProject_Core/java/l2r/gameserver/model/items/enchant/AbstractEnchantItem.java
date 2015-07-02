@@ -52,6 +52,7 @@ public abstract class AbstractEnchantItem
 	private final int _id;
 	private final CrystalType _grade;
 	private final int _maxEnchantLevel;
+	private final int _minEnchantLevel;
 	private final double _bonusRate;
 	
 	public AbstractEnchantItem(StatsSet set)
@@ -67,6 +68,7 @@ public abstract class AbstractEnchantItem
 		}
 		_grade = set.getEnum("targetGrade", CrystalType.class, CrystalType.NONE);
 		_maxEnchantLevel = set.getInt("maxEnchant", 65535);
+		_minEnchantLevel = set.getInt("minEnchant", 0);
 		_bonusRate = set.getDouble("bonusRate", 0);
 	}
 	
@@ -131,6 +133,10 @@ public abstract class AbstractEnchantItem
 			return false;
 		}
 		else if (!isValidItemType(itemToEnchant.getItem().getType2()))
+		{
+			return false;
+		}
+		else if ((_minEnchantLevel != 0) && (itemToEnchant.getEnchantLevel() < _minEnchantLevel))
 		{
 			return false;
 		}
