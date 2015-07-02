@@ -4269,14 +4269,7 @@ public final class L2PcInstance extends L2Playable
 			{
 				if (!client.getConnection().isClosed())
 				{
-					if (closeClient)
-					{
-						client.close(LeaveWorld.STATIC_PACKET);
-					}
-					else
-					{
-						client.close(ServerClose.STATIC_PACKET);
-					}
+					client.close(closeClient ? LeaveWorld.STATIC_PACKET : ServerClose.STATIC_PACKET);
 				}
 			}
 		}
