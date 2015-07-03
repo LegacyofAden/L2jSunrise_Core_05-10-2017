@@ -33,6 +33,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Castle;
 import l2r.gameserver.model.entity.Fort;
 import l2r.gameserver.model.entity.clanhall.SiegableHall;
+import l2r.gameserver.model.entity.olympiad.OlympiadManager;
 import gr.sr.configsEngine.configs.impl.ChaoticZoneConfigs;
 import gr.sr.configsEngine.configs.impl.FlagZoneConfigs;
 import gr.sr.interf.SunriseEvents;
@@ -46,6 +47,7 @@ public class Die extends L2GameServerPacket
 	private L2Clan _clan;
 	private final L2Character _activeChar;
 	private boolean _isJailed;
+	private boolean _staticRes = false;
 	
 	/**
 	 * @param cha
@@ -59,7 +61,6 @@ public class Die extends L2GameServerPacket
 			_access = player.getAccessLevel();
 			_clan = player.getClan();
 			_isJailed = player.isJailed();
-			
 		}
 		_charObjId = cha.getObjectId();
 		_canTeleport = !cha.isPendingRevive();
@@ -98,6 +99,17 @@ public class Die extends L2GameServerPacket
 		writeC(0x00);
 		writeD(_charObjId);
 		writeD(_canTeleport ? 0x01 : 0);
+		
+		if (_activeChar.isPlayer() && !OlympiadManager.getInstance().isRegistered(_activeChar.getActingPlayer()) && !_activeChar.isOnEvent())
+		{
+			_staticRes = _activeChar.getInventory().haveItemForSelfResurrection();
+		}
+		
+		if (_access.allowFixedRes())
+		{
+			_staticRes = true;
+		}
+		
 		if (_canTeleport && (_clan != null) && !_isJailed)
 		{
 			boolean isInCastleDefense = false;
@@ -130,7 +142,7 @@ public class Die extends L2GameServerPacket
 			writeD((_clan.getCastleId() > 0) || isInCastleDefense ? 0x01 : 0x00); // 6d 02 00 00 00 - to castle
 			writeD((TerritoryWarManager.getInstance().getHQForClan(_clan) != null) || ((siegeClan != null) && !isInCastleDefense && !isInFortDefense && !siegeClan.getFlag().isEmpty()) || ((hall != null) && hall.getSiege().checkIsAttacker(_clan)) ? 0x01 : 0x00); // 6d 03 00 00 00 - to siege HQ
 			writeD(_sweepable ? 0x01 : 0x00); // sweepable (blue glow)
-			writeD(_access.allowFixedRes() ? 0x01 : 0x00); // 6d 04 00 00 00 - to FIXED
+			writeD(_staticRes ? 0x01 : 0x00); // 6d 04 00 00 00 - to FIXED
 			writeD((_clan.getFortId() > 0) || isInFortDefense ? 0x01 : 0x00); // 6d 05 00 00 00 - to fortress
 		}
 		else
@@ -139,7 +151,7 @@ public class Die extends L2GameServerPacket
 			writeD(0x00); // 6d 02 00 00 00 - to castle
 			writeD(0x00); // 6d 03 00 00 00 - to siege HQ
 			writeD(_sweepable ? 0x01 : 0x00); // sweepable (blue glow)
-			writeD(_access.allowFixedRes() ? 0x01 : 0x00); // 6d 04 00 00 00 - to FIXED
+			writeD(_staticRes ? 0x01 : 0x00); // 6d 04 00 00 00 - to FIXED
 			writeD(0x00); // 6d 05 00 00 00 - to fortress
 		}
 		// TODO: protocol 152

@@ -227,11 +227,6 @@ public enum Stats
 	BOW_MP_CONSUME_RATE("BowMpConsumeRate"),
 	MP_CONSUME("MpConsume"),
 	
-	// T1 stats
-	transformId("transformId"),
-	TALISMAN_SLOTS("talisman"),
-	CLOAK_SLOT("cloak"),
-	
 	// Shield Stats
 	SHIELD_DEFENCE_ANGLE("shieldDefAngle"),
 	

@@ -217,15 +217,7 @@ public class CharInfo extends L2GameServerPacket
 			writeS(_activeChar.getAppearance().getVisibleName());
 			writeD(_activeChar.getRace().ordinal());
 			writeD(_activeChar.getAppearance().getSex() ? 1 : 0);
-			
-			if (_activeChar.getClassIndex() == 0)
-			{
-				writeD(_activeChar.getClassId().getId());
-			}
-			else
-			{
-				writeD(_activeChar.getBaseClass());
-			}
+			writeD(_activeChar.getBaseClass());
 			
 			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_UNDER));
 			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_HEAD));
@@ -279,9 +271,8 @@ public class CharInfo extends L2GameServerPacket
 			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO6));
 			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_BELT));
 			
-			writeD(0x00); // ?
-			writeD(0x01); // ?
-			// end of t1 new h's
+			writeD(_activeChar.getInventory().getTalismanSlots());
+			writeD(_activeChar.getInventory().canEquipCloak() ? 1 : 0);
 			
 			writeD(_activeChar.getPvpFlag());
 			writeD(_activeChar.getKarma());

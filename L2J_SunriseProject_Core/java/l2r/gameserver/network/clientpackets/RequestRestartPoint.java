@@ -227,12 +227,12 @@ public final class RequestRestartPoint extends L2GameClientPacket
 			}
 			case 5: // Fixed or Player is a festival participant
 			{
-				if (!activeChar.isGM() && !activeChar.isFestivalParticipant())
+				if (!activeChar.isGM() && !activeChar.isFestivalParticipant() && !activeChar.getInventory().haveItemForSelfResurrection())
 				{
 					_log.warn("Player [" + activeChar.getName() + "] called RestartPointPacket - Fixed and he isn't festival participant!");
 					return;
 				}
-				if (activeChar.isGM())
+				if (activeChar.isGM() || activeChar.destroyItemByItemId("Feather", 10649, 1, activeChar, false) || activeChar.destroyItemByItemId("Feather", 13300, 1, activeChar, false) || activeChar.destroyItemByItemId("Feather", 13128, 1, activeChar, false))
 				{
 					activeChar.doRevive(100.00);
 				}

@@ -18,6 +18,8 @@
  */
 package l2r.gameserver.model.actor.stat;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.ExperienceData;
 import l2r.gameserver.data.xml.impl.PetData;
@@ -56,6 +58,9 @@ public class PcStat extends PlayableStat
 	private float _vitalityPoints = 1;
 	private byte _vitalityLevel = 0;
 	private long _startingXp;
+	/** Player's maximum talisman count. */
+	private final AtomicInteger _talismanSlots = new AtomicInteger();
+	private boolean _cloakSlot = false;
 	
 	public static final int VITALITY_LEVELS[] =
 	{
@@ -426,6 +431,30 @@ public class PcStat extends PlayableStat
 	public long getStartingExp()
 	{
 		return _startingXp;
+	}
+	
+	/**
+	 * Gets the maximum talisman count.
+	 * @return the maximum talisman count
+	 */
+	public int getTalismanSlots()
+	{
+		return _talismanSlots.get();
+	}
+	
+	public void addTalismanSlots(int count)
+	{
+		_talismanSlots.addAndGet(count);
+	}
+	
+	public boolean canEquipCloak()
+	{
+		return _cloakSlot;
+	}
+	
+	public void setCloakSlotStatus(boolean cloakSlot)
+	{
+		_cloakSlot = cloakSlot;
 	}
 	
 	@Override

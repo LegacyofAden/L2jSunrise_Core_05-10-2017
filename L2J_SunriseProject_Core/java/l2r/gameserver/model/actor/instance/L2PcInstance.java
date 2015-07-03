@@ -5091,6 +5091,11 @@ public final class L2PcInstance extends L2Playable
 		return (isTransformed() ? getTransformation().getId() : 0);
 	}
 	
+	public int getTransformationDisplayId()
+	{
+		return (isTransformed() ? getTransformation().getDisplayId() : 0);
+	}
+	
 	/**
 	 * Set a target. <B><U> Actions</U> :</B> <li>Remove the L2PcInstance from the _statusListener of the old target if it was a L2Character</li> <li>Add the L2PcInstance to the _statusListener of the new target if it's a L2Character</li> <li>Target the new L2Object (add the target to the
 	 * L2PcInstance _target, _knownObject and L2PcInstance to _KnownObject of the L2Object)</li>
