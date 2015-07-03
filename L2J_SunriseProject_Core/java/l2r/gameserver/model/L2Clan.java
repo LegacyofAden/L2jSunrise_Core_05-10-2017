@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import l2r.Config;
@@ -138,8 +138,8 @@ public class L2Clan implements IIdentifiable, INamable
 	private int _bloodOathCount;
 	
 	private final ItemContainer _warehouse = new ClanWarehouse(this);
-	private final List<Integer> _atWarWith = new CopyOnWriteArrayList<>();
-	private final List<Integer> _atWarAttackers = new CopyOnWriteArrayList<>();
+	private final Set<Integer> _atWarWith = ConcurrentHashMap.newKeySet();
+	private final Set<Integer> _atWarAttackers = ConcurrentHashMap.newKeySet();
 	
 	private Forum _forum;
 	
@@ -1696,12 +1696,12 @@ public class L2Clan implements IIdentifiable, INamable
 		return (_atWarWith != null) && !_atWarWith.isEmpty();
 	}
 	
-	public List<Integer> getWarList()
+	public Set<Integer> getWarList()
 	{
 		return _atWarWith;
 	}
 	
-	public List<Integer> getAttackerList()
+	public Set<Integer> getAttackerList()
 	{
 		return _atWarAttackers;
 	}
