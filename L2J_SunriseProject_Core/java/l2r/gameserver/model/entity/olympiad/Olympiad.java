@@ -48,6 +48,7 @@ import l2r.gameserver.model.events.ListenersContainer;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Broadcast;
+import l2r.gameserver.util.TimeUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,7 +142,7 @@ public class Olympiad extends ListenersContainer
 	public static final String COMP_DONE_WEEK_NON_CLASSED = "competitions_done_week_non_classed";
 	public static final String COMP_DONE_WEEK_TEAM = "competitions_done_week_team";
 	
-	protected long _olympiadEnd;
+	protected long _olympiadEnd = 0;
 	protected long _validationEnd;
 	
 	/**
@@ -168,11 +169,6 @@ public class Olympiad extends ListenersContainer
 	{
 		load();
 		AntiFeedManager.getInstance().registerEvent(AntiFeedManager.OLYMPIAD_ID);
-		
-		if (_period == 0)
-		{
-			init();
-		}
 	}
 	
 	private void load()
@@ -205,7 +201,6 @@ public class Olympiad extends ListenersContainer
 			Properties OlympiadProperties = new Properties();
 			try (InputStream is = new FileInputStream(Config.OLYMPIAD_CONFIG_FILE))
 			{
-				
 				OlympiadProperties.load(is);
 			}
 			catch (Exception e)
@@ -216,9 +211,12 @@ public class Olympiad extends ListenersContainer
 			
 			_currentCycle = Integer.parseInt(OlympiadProperties.getProperty("CurrentCycle", "1"));
 			_period = Integer.parseInt(OlympiadProperties.getProperty("Period", "0"));
-			_olympiadEnd = Long.parseLong(OlympiadProperties.getProperty("OlympiadEnd", "0"));
 			_validationEnd = Long.parseLong(OlympiadProperties.getProperty("ValidationEnd", "0"));
 			_nextWeeklyChange = Long.parseLong(OlympiadProperties.getProperty("NextWeeklyChange", "0"));
+			if (Config.OLYMPIAD_PERIOD.equals("SUNRISE"))
+			{
+				reloadOlympiadEnd();
+			}
 		}
 		
 		switch (_period)
@@ -281,40 +279,57 @@ public class Olympiad extends ListenersContainer
 			_log.warn("Olympiad System: Error loading noblesse data from database: ", e);
 		}
 		
-		synchronized (this)
+		_log.info("Olympiad System: Loading Olympiad System....");
+		if (_period == 0)
 		{
-			_log.info("Olympiad System: Loading Olympiad System....");
-			if (_period == 0)
-			{
-				_log.info("Olympiad System: Currently in Olympiad Period");
-			}
-			else
-			{
-				_log.info("Olympiad System: Currently in Validation Period");
-			}
-			
-			long milliToEnd;
-			if (_period == 0)
-			{
-				milliToEnd = getMillisToOlympiadEnd();
-			}
-			else
-			{
-				milliToEnd = getMillisToValidationEnd();
-			}
-			
-			_log.info("Olympiad System: " + (milliToEnd / 60000) + " minutes until period ends");
-			
-			if (_period == 0)
-			{
-				milliToEnd = getMillisToWeekChange();
-				
-				_log.info("Olympiad System: Next weekly change is in " + (milliToEnd / 60000) + " minutes");
-			}
+			_log.info("Olympiad System: Currently in Olympiad Period");
+		}
+		else
+		{
+			_log.info("Olympiad System: Currently in Validation Period");
 		}
 		
-		_log.info("Olympiad System: Loaded " + NOBLES.size() + " Nobles");
+		long milliToEnd;
+		if (_period == 0)
+		{
+			milliToEnd = getMillisToOlympiadEnd();
+		}
+		else
+		{
+			milliToEnd = getMillisToValidationEnd();
+		}
 		
+		double numSecs = (milliToEnd / 1000) % 60;
+		double countDown = ((milliToEnd / 1000) - numSecs) / 60;
+		int numMins = (int) Math.floor(countDown % 60);
+		countDown = (countDown - numMins) / 60;
+		int numHours = (int) Math.floor(countDown % 24);
+		int numDays = (int) Math.floor((countDown - numHours) / 24);
+		
+		_log.info("Olympiad System: In " + numDays + " days, " + numHours + " hours and " + numMins + " mins.");
+		
+		if (_period == 0)
+		{
+			_log.info("Olympiad System: Next Weekly Change is in....");
+			
+			milliToEnd = getMillisToWeekChange();
+			
+			double numSecs2 = (milliToEnd / 1000) % 60;
+			double countDown2 = ((milliToEnd / 1000) - numSecs2) / 60;
+			int numMins2 = (int) Math.floor(countDown2 % 60);
+			countDown2 = (countDown2 - numMins2) / 60;
+			int numHours2 = (int) Math.floor(countDown2 % 24);
+			int numDays2 = (int) Math.floor((countDown2 - numHours2) / 24);
+			
+			_log.info("Olympiad System: In " + numDays2 + " days, " + numHours2 + " hours and " + numMins2 + " mins.");
+		}
+		
+		_log.info("Olympiad System: Loaded " + NOBLES.size() + " Noblesses");
+		
+		if (_period == 0)
+		{
+			init();
+		}
 	}
 	
 	public void loadNoblesRank()
@@ -547,9 +562,12 @@ public class Olympiad extends ListenersContainer
 	
 	private long getMillisToOlympiadEnd()
 	{
-		// if (_olympiadEnd > Calendar.getInstance().getTimeInMillis())
-		return (_olympiadEnd - Calendar.getInstance().getTimeInMillis());
-		// return 10L;
+		return (Config.OLYMPIAD_PERIOD.equals("SUNRISE") ? _olympiadEnd : _olympiadEnd - Calendar.getInstance().getTimeInMillis());
+	}
+	
+	protected void reloadOlympiadEnd()
+	{
+		_olympiadEnd = TimeUtils.getMilisecondsToNextDay(Config.ALT_OLY_END_DATE, 0, 1);
 	}
 	
 	public void manualSelectHeroes()
@@ -594,54 +612,27 @@ public class Olympiad extends ListenersContainer
 		{
 			case "MONTH": // retail
 				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
-				currentTime.add(Calendar.DAY_OF_MONTH, -1); // last day is for validation
-				
-				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
+				currentTime.set(Calendar.DAY_OF_MONTH, -1); // last day is for validation
 				break;
 			case "WEEK":
-				currentTime.add(Calendar.WEEK_OF_MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
-				currentTime.add(Calendar.DAY_OF_MONTH, -1); // last day is for validation
-				
-				if (Config.ALT_OLY_PERIOD_MULTIPLIER > 1)
-				{
-					_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
-				}
-				else
-				{
-					_nextWeeklyChange = nextChange.getTimeInMillis() + (WEEKLY_PERIOD / 2);
-				}
+				currentTime.add(Calendar.WEEK_OF_YEAR, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.set(Calendar.DAY_OF_WEEK, 1); // last day is for validation
 				break;
 			case "SUNRISE":
-				int nearest = 0;
-				Calendar[] cals = new Calendar[Config.ALT_OLY_END_DATE.length];
-				for (int i = 0; i < cals.length; i++)
-				{
-					cals[i] = Calendar.getInstance();
-					cals[i].set(Calendar.DAY_OF_MONTH, Config.ALT_OLY_END_DATE[i]);
-					if (cals[i].before(currentTime))
-					{
-						cals[i].add(Calendar.MONTH, 1);
-					}
-					
-					if (cals[i].before(cals[nearest]))
-					{
-						nearest = i;
-					}
-				}
-				
+				reloadOlympiadEnd();
 				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
-				break;
+				scheduleWeeklyChange();
+				return;
 			default:
 				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
-				currentTime.add(Calendar.DAY_OF_MONTH, -1); // last day is for validation
-				
-				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
+				currentTime.set(Calendar.DAY_OF_MONTH, -1); // last day is for validation
 				_log.warn("Wrong configuration in Olympiad pediod. Check again your Olympiad settings. Auto set to retail values.");
 				break;
 		}
 		
 		_olympiadEnd = currentTime.getTimeInMillis();
 		scheduleWeeklyChange();
+		_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
 	}
 	
 	public boolean inCompPeriod()
@@ -858,24 +849,6 @@ public class Olympiad extends ListenersContainer
 		{
 			_log.error("Olympiad System: Failed to save olympiad data to database: ", e);
 		}
-		//@formatter:off
-		/*
-		Properties OlympiadProperties = new Properties();
-		try (FileOutputStream fos = new FileOutputStream(new File("./" + OLYMPIAD_DATA_FILE)))
-		{
-			OlympiadProperties.setProperty("CurrentCycle", String.valueOf(_currentCycle));
-			OlympiadProperties.setProperty("Period", String.valueOf(_period));
-			OlympiadProperties.setProperty("OlympiadEnd", String.valueOf(_olympiadEnd));
-			OlympiadProperties.setProperty("ValdationEnd", String.valueOf(_validationEnd));
-			OlympiadProperties.setProperty("NextWeeklyChange", String.valueOf(_nextWeeklyChange));
-			OlympiadProperties.store(fos, "Olympiad Properties");
-		}
-		catch (Exception e)
-		{
-			_log.warn("Olympiad System: Unable to save olympiad properties to file: ", e);
-		}
-		*/
-		//@formatter:on
 	}
 	
 	protected void updateMonthlyData()
