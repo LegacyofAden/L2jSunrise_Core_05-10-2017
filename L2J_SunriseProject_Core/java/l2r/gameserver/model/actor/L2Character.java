@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.GeoData;
@@ -155,6 +154,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gr.sr.interf.SunriseEvents;
+import javolution.util.FastList;
 
 /**
  * Mother class of all character objects of the world (PC, NPC...)<br>

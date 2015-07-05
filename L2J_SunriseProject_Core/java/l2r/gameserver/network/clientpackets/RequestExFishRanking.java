@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
+
 import gr.sr.configsEngine.configs.impl.LeaderboardsConfigs;
 import gr.sr.leaderboards.FishermanLeaderboard;
 

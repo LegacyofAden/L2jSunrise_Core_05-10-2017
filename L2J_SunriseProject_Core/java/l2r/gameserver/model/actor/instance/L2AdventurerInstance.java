@@ -20,6 +20,7 @@ package l2r.gameserver.model.actor.instance;
 
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
+
 import gr.sr.configsEngine.configs.impl.PcBangConfigs;
 
 /**

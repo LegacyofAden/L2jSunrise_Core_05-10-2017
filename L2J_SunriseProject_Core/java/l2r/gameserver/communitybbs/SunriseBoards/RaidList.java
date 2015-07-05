@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import l2r.L2DatabaseFactory;
+
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 
 /**

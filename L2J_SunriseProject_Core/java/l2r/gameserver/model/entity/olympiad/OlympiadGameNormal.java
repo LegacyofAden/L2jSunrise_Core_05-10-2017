@@ -41,6 +41,7 @@ import l2r.gameserver.network.serverpackets.ExOlympiadUserInfo;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.util.Rnd;
+
 import gr.sr.utils.Tools;
 
 /**

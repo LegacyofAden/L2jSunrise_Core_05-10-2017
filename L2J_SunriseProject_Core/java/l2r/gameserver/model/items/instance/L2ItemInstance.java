@@ -77,7 +77,6 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.DropItem;
 import l2r.gameserver.network.serverpackets.GetItem;
 import l2r.gameserver.network.serverpackets.InventoryUpdate;
-import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import l2r.gameserver.network.serverpackets.SpawnItem;
 import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
@@ -242,18 +241,11 @@ public final class L2ItemInstance extends L2Object
 	 * <BR>
 	 * <B><U> Actions</U> :</B><BR>
 	 * <BR>
-	 * <li>Send a Server->Client Packet GetItem to player that pick up and its _knowPlayers member</li> <li>Remove the L2Object from the world</li><BR>
+	 * <li>Send a Server->Client Packet GetItem to player that pick up and its _knowPlayers member</li>
+	 * <li>Remove the L2Object from the world</li><BR>
 	 * <BR>
-	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T REMOVE the object from _allObjects of L2World </B></FONT><BR>
-	 * <BR>
-	 * <B><U> Assert </U> :</B><BR>
-	 * <BR>
-	 * <li>this instanceof L2ItemInstance</li> <li>_worldRegion != null <I>(L2Object is visible at the beginning)</I></li><BR>
-	 * <BR>
-	 * <B><U> Example of use </U> :</B><BR>
-	 * <BR>
-	 * <li>Do Pickup Item : PCInstance and Pet</li><BR>
-	 * <BR>
+	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T REMOVE the object from _allObjects of L2World </B></FONT><BR> <BR> <B><U> Assert </U> :</B><BR> <BR> <li>this instanceof L2ItemInstance</li> <li>_worldRegion != null <I>(L2Object is visible at the beginning)</I></li><BR> <BR> <B><U>
+	 * Example of use </U> :</B><BR> <BR> <li>Do Pickup Item : PCInstance and Pet</li><BR> <BR>
 	 * @param player Player that pick up the item
 	 */
 	public final void pickupMe(L2Character player)
@@ -565,7 +557,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	public int getLocationSlot()
 	{
-		assert (_loc == ItemLocation.PAPERDOLL) || (_loc == ItemLocation.PET_EQUIP) || (_loc == ItemLocation.INVENTORY) || (_loc == ItemLocation.MAIL) || (_loc == ItemLocation.FREIGHT);
+		assert(_loc == ItemLocation.PAPERDOLL) || (_loc == ItemLocation.PET_EQUIP) || (_loc == ItemLocation.INVENTORY) || (_loc == ItemLocation.MAIL) || (_loc == ItemLocation.FREIGHT);
 		return _locData;
 	}
 	
@@ -876,14 +868,14 @@ public final class L2ItemInstance extends L2Object
 	public boolean isAvailable(L2PcInstance player, boolean allowAdena, boolean allowNonTradeable)
 	{
 		return ((!isEquipped()) // Not equipped
-			&& (getItem().getType2() != L2Item.TYPE2_QUEST) // Not Quest Item
-			&& ((getItem().getType2() != L2Item.TYPE2_MONEY) || (getItem().getType1() != L2Item.TYPE1_SHIELD_ARMOR)) // not money, not shield
-			&& (!player.hasSummon() || (getObjectId() != player.getSummon().getControlObjectId())) // Not Control item of currently summoned pet
-			&& (player.getActiveEnchantItemId() != getObjectId()) // Not momentarily used enchant scroll
-			&& (player.getActiveEnchantSupportItemId() != getObjectId()) // Not momentarily used enchant support item
-			&& (player.getActiveEnchantAttrItemId() != getObjectId()) // Not momentarily used enchant attribute item
-			&& (allowAdena || (getId() != Inventory.ADENA_ID)) // Not Adena
-			&& ((player.getCurrentSkill() == null) || (player.getCurrentSkill().getSkill().getItemConsumeId() != getId())) && (!player.isCastingSimultaneouslyNow() || (player.getLastSimultaneousSkillCast() == null) || (player.getLastSimultaneousSkillCast().getItemConsumeId() != getId())) && (allowNonTradeable || (isTradeable() && (!((getItem().getItemType() == EtcItemType.PET_COLLAR) && player.havePetInvItems())))));
+		&& (getItem().getType2() != L2Item.TYPE2_QUEST) // Not Quest Item
+		&& ((getItem().getType2() != L2Item.TYPE2_MONEY) || (getItem().getType1() != L2Item.TYPE1_SHIELD_ARMOR)) // not money, not shield
+		&& (!player.hasSummon() || (getObjectId() != player.getSummon().getControlObjectId())) // Not Control item of currently summoned pet
+		&& (player.getActiveEnchantItemId() != getObjectId()) // Not momentarily used enchant scroll
+		&& (player.getActiveEnchantSupportItemId() != getObjectId()) // Not momentarily used enchant support item
+		&& (player.getActiveEnchantAttrItemId() != getObjectId()) // Not momentarily used enchant attribute item
+		&& (allowAdena || (getId() != Inventory.ADENA_ID)) // Not Adena
+		&& ((player.getCurrentSkill() == null) || (player.getCurrentSkill().getSkill().getItemConsumeId() != getId())) && (!player.isCastingSimultaneouslyNow() || (player.getLastSimultaneousSkillCast() == null) || (player.getLastSimultaneousSkillCast().getItemConsumeId() != getId())) && (allowNonTradeable || (isTradeable() && (!((getItem().getItemType() == EtcItemType.PET_COLLAR) && player.havePetInvItems())))));
 	}
 	
 	/**
@@ -1556,16 +1548,11 @@ public final class L2ItemInstance extends L2Object
 	 * <BR>
 	 * <B><U> Actions</U> :</B><BR>
 	 * <BR>
-	 * <li>Set the x,y,z position of the L2ItemInstance dropped and update its _worldregion</li> <li>Add the L2ItemInstance dropped to _visibleObjects of its L2WorldRegion</li> <li>Add the L2ItemInstance dropped in the world as a <B>visible</B> object</li><BR>
+	 * <li>Set the x,y,z position of the L2ItemInstance dropped and update its _worldregion</li>
+	 * <li>Add the L2ItemInstance dropped to _visibleObjects of its L2WorldRegion</li>
+	 * <li>Add the L2ItemInstance dropped in the world as a <B>visible</B> object</li><BR>
 	 * <BR>
-	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T ADD the object to _allObjects of L2World </B></FONT><BR>
-	 * <BR>
-	 * <B><U> Assert </U> :</B><BR>
-	 * <BR>
-	 * <li>_worldRegion == null <I>(L2Object is invisible at the beginning)</I></li><BR>
-	 * <BR>
-	 * <B><U> Example of use </U> :</B><BR>
-	 * <BR>
+	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T ADD the object to _allObjects of L2World </B></FONT><BR> <BR> <B><U> Assert </U> :</B><BR> <BR> <li>_worldRegion == null <I>(L2Object is invisible at the beginning)</I></li><BR> <BR> <B><U> Example of use </U> :</B><BR> <BR>
 	 * <li>Drop item</li> <li>Call Pet</li><BR>
 	 */
 	public class ItemDropTask implements Runnable
@@ -1689,7 +1676,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	private void insertIntoDb()
 	{
-		assert !_existsInDb && (getObjectId() != 0);
+		assert!_existsInDb && (getObjectId() != 0);
 		
 		if (_wear)
 		{
@@ -1726,7 +1713,10 @@ public final class L2ItemInstance extends L2Object
 		}
 		catch (Exception e)
 		{
-			_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
+			if (Config.DEBUG)
+			{
+				_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
+			}
 		}
 	}
 	
@@ -2161,18 +2151,6 @@ public final class L2ItemInstance extends L2Object
 		}
 	}
 	
-	/**
-	 * @param activeChar
-	 * @param content
-	 */
-	public void showChatWindow(L2PcInstance activeChar, String content)
-	{
-		NpcHtmlMessage html = new NpcHtmlMessage(0, getId());
-		html.setHtml(content);
-		html.replace("%itemId%", String.valueOf(getObjectId()));
-		activeChar.sendPacket(html);
-	}
-	
 	@Override
 	public boolean isChargedShot(ShotType type)
 	{
@@ -2254,6 +2232,11 @@ public final class L2ItemInstance extends L2Object
 				_log.info("applyEnchantStats: Couldn't find option: " + id);
 			}
 		}
+	}
+	
+	@Override
+	public void setHeading(int heading)
+	{
 	}
 	
 	public void deleteMe()

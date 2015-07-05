@@ -35,6 +35,7 @@ import l2r.gameserver.communitybbs.SunriseBoards.TopPvpPlayers;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.ShowBoard;
+
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 
 public class TopBBSManager extends BaseBBSManager

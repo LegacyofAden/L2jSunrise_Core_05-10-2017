@@ -42,6 +42,7 @@ import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Util;
+
 import gr.sr.antibotEngine.AntibotSystem;
 
 public final class RequestEnchantItem extends L2GameClientPacket

@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.model;
 
-import javolution.util.FastMap;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.handler.ISkillHandler;
 import l2r.gameserver.handler.SkillHandler;
@@ -34,6 +33,8 @@ import l2r.gameserver.network.serverpackets.MagicSkillUse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javolution.util.FastMap;
 
 /**
  * CT2.3: Added support for allowing effect as a chance skill trigger (DrHouse)

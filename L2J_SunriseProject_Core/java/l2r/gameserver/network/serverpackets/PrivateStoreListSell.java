@@ -20,6 +20,7 @@ package l2r.gameserver.network.serverpackets;
 
 import l2r.gameserver.model.TradeItem;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 public class PrivateStoreListSell extends L2GameServerPacket

@@ -32,12 +32,12 @@ import l2r.gameserver.util.GeoUtils;
 import l2r.gameserver.util.LinePointIterator;
 import l2r.gameserver.util.Util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.l2jserver.gameserver.geoengine.Direction;
 import com.l2jserver.gameserver.geoengine.NullDriver;
 import com.l2jserver.gameserver.geoengine.abstraction.IGeoDriver;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author -Nemesiss-, FBIagent

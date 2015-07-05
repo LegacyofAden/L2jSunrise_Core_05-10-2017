@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import static l2r.gameserver.model.actor.L2Npc.INTERACTION_DISTANCE;
+
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.BuyListData;
 import l2r.gameserver.model.L2Object;

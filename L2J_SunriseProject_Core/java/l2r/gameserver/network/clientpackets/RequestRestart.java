@@ -34,6 +34,7 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.CharSelectionInfo;
 import l2r.gameserver.network.serverpackets.RestartResponse;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
+
 import gr.sr.configsEngine.configs.impl.AntibotConfigs;
 import gr.sr.interf.SunriseEvents;
 import gr.sr.protection.Protection;

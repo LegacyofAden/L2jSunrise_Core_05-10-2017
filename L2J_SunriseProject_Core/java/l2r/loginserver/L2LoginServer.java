@@ -39,11 +39,11 @@ import l2r.loginserver.network.L2LoginClient;
 import l2r.loginserver.network.L2LoginPacketHandler;
 import l2r.status.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.l2jserver.mmocore.SelectorConfig;
 import com.l2jserver.mmocore.SelectorThread;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author KenM

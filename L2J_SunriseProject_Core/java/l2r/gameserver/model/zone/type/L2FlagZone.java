@@ -22,6 +22,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.zone.L2ZoneType;
 import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.util.Rnd;
+
 import gr.sr.configsEngine.configs.impl.FlagZoneConfigs;
 
 /**

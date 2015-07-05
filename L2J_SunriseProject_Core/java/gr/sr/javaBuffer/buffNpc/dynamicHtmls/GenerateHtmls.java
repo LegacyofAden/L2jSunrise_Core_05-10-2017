@@ -3,6 +3,7 @@ package gr.sr.javaBuffer.buffNpc.dynamicHtmls;
 import java.util.List;
 
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+
 import gr.sr.datatables.SunriseTable;
 import gr.sr.javaBuffer.BuffInstance;
 import gr.sr.javaBuffer.BufferMenuCategories;

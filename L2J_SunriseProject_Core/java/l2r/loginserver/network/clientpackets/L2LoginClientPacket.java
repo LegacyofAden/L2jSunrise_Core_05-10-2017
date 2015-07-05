@@ -20,10 +20,10 @@ package l2r.loginserver.network.clientpackets;
 
 import l2r.loginserver.network.L2LoginClient;
 
+import com.l2jserver.mmocore.ReceivablePacket;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.l2jserver.mmocore.ReceivablePacket;
 
 /**
  * @author KenM

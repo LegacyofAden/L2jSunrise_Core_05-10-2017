@@ -48,6 +48,7 @@ import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
+
 import gr.sr.configsEngine.configs.impl.FormulasConfigs;
 
 public class PcStat extends PlayableStat

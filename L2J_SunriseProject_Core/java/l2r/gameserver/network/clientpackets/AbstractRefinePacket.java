@@ -31,6 +31,7 @@ import l2r.gameserver.model.items.L2Weapon;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.items.type.CrystalType;
 import l2r.gameserver.network.SystemMessageId;
+
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 public abstract class AbstractRefinePacket extends L2GameClientPacket

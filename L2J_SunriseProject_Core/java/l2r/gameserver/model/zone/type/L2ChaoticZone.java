@@ -20,6 +20,7 @@ import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.util.Rnd;
+
 import gr.sr.configsEngine.configs.impl.ChaoticZoneConfigs;
 
 /**

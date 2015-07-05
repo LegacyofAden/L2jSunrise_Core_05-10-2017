@@ -20,6 +20,7 @@ package l2r.gameserver.network.clientpackets;
 
 import static l2r.gameserver.model.itemcontainer.Inventory.ADENA_ID;
 import static l2r.gameserver.model.itemcontainer.Inventory.MAX_ADENA;
+
 import l2r.Config;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.data.xml.impl.AdminData;

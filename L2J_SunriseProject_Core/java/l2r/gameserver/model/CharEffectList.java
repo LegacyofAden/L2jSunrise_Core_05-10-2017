@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import l2r.Config;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
@@ -47,6 +45,9 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javolution.util.FastList;
+import javolution.util.FastMap;
 
 public class CharEffectList
 {

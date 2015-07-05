@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import javolution.util.FastList;
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.SevenSignsFestival;
@@ -67,6 +66,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+import javolution.util.FastList;
 
 /**
  * This class serves as a container for player parties.

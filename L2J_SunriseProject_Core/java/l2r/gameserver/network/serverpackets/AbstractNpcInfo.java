@@ -39,6 +39,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2TrapInstance;
 import l2r.gameserver.model.actor.templates.L2PcTemplate;
 import l2r.gameserver.model.effects.AbnormalEffect;
+
 import gr.sr.datatables.FakePcsTable;
 
 public abstract class AbstractNpcInfo extends L2GameServerPacket

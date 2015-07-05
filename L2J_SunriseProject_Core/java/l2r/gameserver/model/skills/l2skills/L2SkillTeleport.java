@@ -32,6 +32,7 @@ import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+
 import gr.sr.interf.SunriseEvents;
 
 public class L2SkillTeleport extends L2Skill

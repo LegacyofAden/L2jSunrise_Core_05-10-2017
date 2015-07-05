@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import static l2r.gameserver.model.itemcontainer.Inventory.MAX_ADENA;
+
 import l2r.Config;
 import l2r.gameserver.enums.PrivateStoreType;
 import l2r.gameserver.model.TradeList;
@@ -28,6 +29,7 @@ import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.PrivateStoreManageListBuy;
 import l2r.gameserver.network.serverpackets.PrivateStoreMsgBuy;
 import l2r.gameserver.util.Util;
+
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 /**

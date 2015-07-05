@@ -29,6 +29,7 @@ import l2r.gameserver.model.actor.knownlist.MonsterKnownList;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.util.MinionList;
 import l2r.util.Rnd;
+
 import gr.sr.achievementEngine.AchievementsManager;
 
 /**

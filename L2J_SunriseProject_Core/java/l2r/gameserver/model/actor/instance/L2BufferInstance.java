@@ -8,6 +8,7 @@ import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
+
 import gr.sr.javaBuffer.AutoBuff;
 import gr.sr.javaBuffer.BufferPacketCategories;
 import gr.sr.javaBuffer.BufferPacketSender;

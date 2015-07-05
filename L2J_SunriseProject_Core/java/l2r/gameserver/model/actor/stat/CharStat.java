@@ -30,6 +30,7 @@ import l2r.gameserver.model.stats.Calculator;
 import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.model.stats.MoveType;
 import l2r.gameserver.model.stats.Stats;
+
 import gr.sr.configsEngine.configs.impl.FormulasConfigs;
 
 public class CharStat

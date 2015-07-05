@@ -28,10 +28,10 @@ import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
+import com.l2jserver.mmocore.ReceivablePacket;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.l2jserver.mmocore.ReceivablePacket;
 
 /**
  * Packets received by the game server from clients

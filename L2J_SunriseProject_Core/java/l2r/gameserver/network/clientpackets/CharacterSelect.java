@@ -41,6 +41,7 @@ import l2r.gameserver.network.serverpackets.CharSelected;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import l2r.gameserver.network.serverpackets.SSQInfo;
 import l2r.gameserver.network.serverpackets.ServerClose;
+
 import gr.sr.protection.Protection;
 
 /**

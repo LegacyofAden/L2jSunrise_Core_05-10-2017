@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import static l2r.gameserver.model.itemcontainer.Inventory.ADENA_ID;
+
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.ItemLocation;
@@ -36,6 +37,7 @@ import l2r.gameserver.network.serverpackets.ItemList;
 import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Util;
+
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 /**

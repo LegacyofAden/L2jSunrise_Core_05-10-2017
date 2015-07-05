@@ -18,11 +18,12 @@
  */
 package l2r.gameserver.instancemanager;
 
-import javolution.util.FastList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.entity.Duel;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
+
+import javolution.util.FastList;
 
 public class DuelManager
 {

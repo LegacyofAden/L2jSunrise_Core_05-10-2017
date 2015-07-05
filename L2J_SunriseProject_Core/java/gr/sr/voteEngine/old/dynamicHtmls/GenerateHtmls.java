@@ -4,6 +4,7 @@ import l2r.Config;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
+
 import gr.sr.configsEngine.configs.impl.IndividualVoteSystemConfigs;
 import gr.sr.imageGeneratorEngine.LogoType;
 import gr.sr.voteEngine.old.VoteHandler;

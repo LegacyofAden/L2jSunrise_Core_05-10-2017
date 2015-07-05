@@ -55,6 +55,7 @@ import l2r.gameserver.network.serverpackets.CharCreateFail;
 import l2r.gameserver.network.serverpackets.CharCreateOk;
 import l2r.gameserver.network.serverpackets.CharSelectionInfo;
 import l2r.gameserver.util.Util;
+
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 @SuppressWarnings("unused")

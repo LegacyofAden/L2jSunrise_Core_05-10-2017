@@ -26,6 +26,7 @@ import l2r.Config;
 import l2r.gameserver.network.L2GameClient;
 import l2r.gameserver.network.serverpackets.KeyPacket;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
+
 import gr.sr.protection.ConfigProtection;
 import gr.sr.protection.Protection;
 
