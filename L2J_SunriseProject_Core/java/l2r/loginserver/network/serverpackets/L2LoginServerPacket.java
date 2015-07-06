@@ -27,5 +27,5 @@ import com.l2jserver.mmocore.SendablePacket;
  */
 public abstract class L2LoginServerPacket extends SendablePacket<L2LoginClient>
 {
-	
+
 }

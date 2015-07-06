@@ -465,7 +465,7 @@ public final class GameServerTable implements IXmlReader
 			}
 			catch (Exception e)
 			{
-				
+			
 			}
 			return null;
 		}

@@ -423,7 +423,7 @@ public final class L2WorldRegion
 			return;
 		}
 		
-		assert (object.getWorldRegion() == this) || (object.getWorldRegion() == null);
+		assert(object.getWorldRegion() == this) || (object.getWorldRegion() == null);
 		
 		_visibleObjects.remove(object.getObjectId());
 		

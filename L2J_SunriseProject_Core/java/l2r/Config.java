@@ -2907,7 +2907,7 @@ public final class Config
 	{
 		switch (pName.trim().toLowerCase())
 		{
-		// rates.ini
+			// rates.ini
 			case "ratexp":
 				RATE_XP = Float.parseFloat(pValue);
 				break;

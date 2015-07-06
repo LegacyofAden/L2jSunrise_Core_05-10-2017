@@ -2687,7 +2687,7 @@ public class L2Clan implements IIdentifiable, INamable
 					increaseClanLevel = true;
 				}
 				break;
-			
+				
 			case 6:
 				// Upgrade to 7
 				if ((getReputationScore() >= Config.CLAN_LEVEL_7_COST) && (getMembersCount() >= Config.CLAN_LEVEL_7_REQUIREMENT))

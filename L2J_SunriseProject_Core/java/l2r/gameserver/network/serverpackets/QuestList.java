@@ -29,7 +29,7 @@ public class QuestList extends L2GameServerPacket
 	
 	public QuestList()
 	{
-		
+	
 	}
 	
 	@Override

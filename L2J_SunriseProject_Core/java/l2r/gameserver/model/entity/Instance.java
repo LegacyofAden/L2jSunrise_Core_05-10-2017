@@ -885,7 +885,7 @@ public final class Instance
 						player.teleToLocation(TeleportWhereType.TOWN);
 					}
 				}
-			}, _ejectTime));
+			} , _ejectTime));
 		}
 	}
 	

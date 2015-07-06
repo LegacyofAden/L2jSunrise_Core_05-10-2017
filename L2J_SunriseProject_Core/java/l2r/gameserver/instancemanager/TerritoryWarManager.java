@@ -1789,7 +1789,7 @@ public final class TerritoryWarManager implements Siegable
 	@Override
 	public void updateSiege()
 	{
-		
+	
 	}
 	
 	public static final TerritoryWarManager getInstance()

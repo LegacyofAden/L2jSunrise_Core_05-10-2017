@@ -278,7 +278,7 @@ public class GeoData implements IGeoDriver
 			case SOUTH_WEST:
 				can = canEnterNeighbors(prevX, prevY + 1, prevGeoZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevGeoZ, Direction.SOUTH);
 				break;
-		
+				
 		}
 		if (can && canEnterNeighbors(prevX, prevY, prevGeoZ, dir))
 		{

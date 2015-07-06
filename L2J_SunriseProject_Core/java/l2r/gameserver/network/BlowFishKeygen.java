@@ -56,7 +56,7 @@ public class BlowFishKeygen
 	// block instantiation
 	private BlowFishKeygen()
 	{
-		
+	
 	}
 	
 	/**

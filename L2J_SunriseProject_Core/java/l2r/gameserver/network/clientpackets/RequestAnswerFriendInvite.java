@@ -55,7 +55,7 @@ public final class RequestAnswerFriendInvite extends L2GameClientPacket
 		}
 		
 		if (player.getFriendList().contains(requestor.getObjectId()) //
-			|| requestor.getFriendList().contains(player.getObjectId()))
+		|| requestor.getFriendList().contains(player.getObjectId()))
 		{
 			final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_ALREADY_IN_FRIENDS_LIST);
 			sm.addCharName(player);

@@ -418,7 +418,10 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Weapon</li> <li>Arrow</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Weapon</li>
+	 * <li>Arrow</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -443,7 +446,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Armor</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Armor</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -468,7 +473,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Everything which is no Weapon/Armor</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Everything which is no Weapon/Armor</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -493,7 +500,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Materials</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Materials</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -518,7 +527,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Recipes</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Recipes</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -543,7 +554,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Amulett</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Amulett</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -568,7 +581,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Spellbook & Dwarven Drafts</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Spellbook & Dwarven Drafts</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -593,7 +608,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Consumables (Potions, Shots, ...)</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Consumables (Potions, Shots, ...)</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -618,7 +635,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Shots</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Shots</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -643,7 +662,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Scrolls/Potions</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Scrolls/Potions</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -668,7 +689,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Seeds</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Seeds</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -693,7 +716,9 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>Everything which is no Weapon/Armor, Material, Recipe, Spellbook, Scroll or Shot</li> <li>Money</li>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>Everything which is no Weapon/Armor, Material, Recipe, Spellbook, Scroll or Shot</li>
+	 * <li>Money</li>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */
@@ -718,7 +743,8 @@ public class SortedWareHouseWithdrawalList extends L2GameServerPacket
 	}
 	
 	/**
-	 * This method is used to limit the given Warehouse List to: <li>no limit</li> This may sound strange but we return the given Array as a List<L2WarehouseItem>
+	 * This method is used to limit the given Warehouse List to:
+	 * <li>no limit</li> This may sound strange but we return the given Array as a List<L2WarehouseItem>
 	 * @param _items complete Warehouse List
 	 * @return limited Item List
 	 */

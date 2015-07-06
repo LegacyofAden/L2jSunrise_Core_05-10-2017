@@ -86,7 +86,7 @@ public class L2JailZone extends L2ZoneType
 						ThreadPoolManager.getInstance().scheduleGeneral(new TeleportTask(player, JAIL_IN_LOC), 2000);
 						character.sendMessage("You cannot cheat your way out of here. You must wait until your jail time is over.");
 					}
-				}, 4000);
+				} , 4000);
 			}
 			if (Config.JAIL_DISABLE_TRANSACTION)
 			{

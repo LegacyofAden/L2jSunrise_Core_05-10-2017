@@ -136,7 +136,7 @@ public final class RequestExEnchantSkillRouteChange extends L2GameClientPacket
 			L2ItemInstance spb = player.getInventory().getItemByItemId(reqItemId);
 			if (Config.ES_SP_BOOK_NEEDED)
 			{
-				if (spb == null)// Haven't spellbook
+				if (spb == null) // Haven't spellbook
 				{
 					player.sendPacket(SystemMessageId.YOU_DONT_HAVE_ALL_ITENS_NEEDED_TO_CHANGE_SKILL_ENCHANT_ROUTE);
 					return;

@@ -728,7 +728,7 @@ public final class FourSepulchersManager
 		int npcId = npc.getId();
 		switch (npcId)
 		{
-		// ID ok
+			// ID ok
 			case 31921:
 			case 31922:
 			case 31923:
@@ -1286,7 +1286,7 @@ public final class FourSepulchersManager
 	
 	protected byte minuteSelect(byte min)
 	{
-		if (((double) min % 5) != 0)// if doesn't divides on 5 fully
+		if (((double) min % 5) != 0) // if doesn't divides on 5 fully
 		{
 			// mad table for selecting proper minutes...
 			// may be there is a better way to do this

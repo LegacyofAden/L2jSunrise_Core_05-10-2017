@@ -28,7 +28,7 @@ public class ExCubeGameCloseUI extends L2GameServerPacket
 	 */
 	public ExCubeGameCloseUI()
 	{
-		
+	
 	}
 	
 	@Override

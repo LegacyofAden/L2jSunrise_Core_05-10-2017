@@ -114,7 +114,7 @@ public final class RequestSellItem extends L2GameClientPacket
 		if (!player.isGM())
 		{
 			if ((target == null) || (!player.isInsideRadius(target, INTERACTION_DISTANCE, true, false)) // Distance is too far)
-				|| (player.getInstanceId() != target.getInstanceId()))
+			|| (player.getInstanceId() != target.getInstanceId()))
 			{
 				sendPacket(ActionFailed.STATIC_PACKET);
 				return;

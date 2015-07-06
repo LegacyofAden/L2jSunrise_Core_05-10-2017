@@ -82,7 +82,7 @@ public class RequestTempBan extends BaseRecievePacket
 		}
 		catch (UnknownHostException e)
 		{
-			
+		
 		}
 	}
 }

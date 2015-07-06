@@ -110,7 +110,7 @@ public class L2FlagZone extends L2ZoneType
 						int r = Rnd.get(FlagZoneConfigs.FLAG_ZONE_AUTO_RES_LOCS_COUNT);
 						activeChar.teleToLocation(FlagZoneConfigs.xCoords[r], FlagZoneConfigs.yCoords[r], FlagZoneConfigs.zCoords[r]);
 					}
-				}, FlagZoneConfigs.FLAG_ZONE_REVIVE_DELAY * 1000);
+				} , FlagZoneConfigs.FLAG_ZONE_REVIVE_DELAY * 1000);
 			}
 		}
 	}

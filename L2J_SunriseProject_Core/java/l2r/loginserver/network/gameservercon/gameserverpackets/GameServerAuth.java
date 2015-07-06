@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * d hexid size
  * b hexid
  * </pre>
+ * 
  * @author -Wooden-
  */
 public class GameServerAuth extends BaseRecievePacket

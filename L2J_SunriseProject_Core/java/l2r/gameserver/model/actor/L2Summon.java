@@ -616,7 +616,7 @@ public abstract class L2Summon extends L2Playable
 		L2Object target = null;
 		switch (skill.getTargetType())
 		{
-		// OWNER_PET should be cast even if no target has been found
+			// OWNER_PET should be cast even if no target has been found
 			case OWNER_PET:
 				target = getOwner();
 				break;

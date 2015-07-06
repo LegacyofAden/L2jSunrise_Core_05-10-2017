@@ -31,7 +31,7 @@ public class ExShowCastleInfo extends L2GameServerPacket
 {
 	public ExShowCastleInfo()
 	{
-		
+	
 	}
 	
 	@Override

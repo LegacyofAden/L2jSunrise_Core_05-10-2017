@@ -40,7 +40,7 @@ public class LanguageControl extends Control
 	 */
 	protected LanguageControl()
 	{
-		
+	
 	}
 	
 	@Override

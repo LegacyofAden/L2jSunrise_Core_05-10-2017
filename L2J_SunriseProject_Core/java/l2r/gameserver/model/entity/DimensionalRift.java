@@ -184,7 +184,7 @@ public class DimensionalRift
 						p.sendPacket(new Earthquake(p.getX(), p.getY(), p.getZ(), 65, 9));
 					}
 				}
-			}, jumpTime - 7000);
+			} , jumpTime - 7000);
 		}
 		else
 		{

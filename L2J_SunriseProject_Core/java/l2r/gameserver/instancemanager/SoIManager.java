@@ -123,7 +123,7 @@ public class SoIManager
 		{
 			closeSeed();
 			setCurrentStage(4);
-		}, time);
+		} , time);
 	}
 	
 	public static void closeSeed()

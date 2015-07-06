@@ -371,7 +371,7 @@ public class ClanTable
 			{
 				destroyClan(clanId);
 			}
-		}, Math.max(getClan(clanId).getDissolvingExpiryTime() - System.currentTimeMillis(), 300000));
+		} , Math.max(getClan(clanId).getDissolvingExpiryTime() - System.currentTimeMillis(), 300000));
 	}
 	
 	public boolean isAllyExists(String allyName)

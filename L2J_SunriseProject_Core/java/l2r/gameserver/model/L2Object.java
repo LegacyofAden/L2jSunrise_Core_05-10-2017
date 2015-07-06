@@ -55,7 +55,8 @@ import l2r.gameserver.util.Util;
  * <BR>
  * L2Object :<BR>
  * <BR>
- * <li>L2Character</li> <li>L2ItemInstance</li>
+ * <li>L2Character</li>
+ * <li>L2ItemInstance</li>
  */
 public abstract class L2Object extends ListenersContainer implements IIdentifiable, INamable, IUniqueId, IPositionable
 {
@@ -154,12 +155,13 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	 * <BR>
 	 * <B><U> Overridden in </U> :</B><BR>
 	 * <BR>
-	 * <li>L2GuardInstance : Set the home location of its L2GuardInstance</li> <li>L2Attackable : Reset the Spoiled flag</li><BR>
+	 * <li>L2GuardInstance : Set the home location of its L2GuardInstance</li>
+	 * <li>L2Attackable : Reset the Spoiled flag</li><BR>
 	 * <BR>
 	 */
 	public void onSpawn()
 	{
-		
+	
 	}
 	
 	public void decayMe()
@@ -190,7 +192,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public final boolean spawnMe()
 	{
-		assert (getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
+		assert(getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
 		
 		synchronized (this)
 		{

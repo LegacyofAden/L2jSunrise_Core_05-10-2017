@@ -113,7 +113,7 @@ public final class BotReportTable
 			}
 			catch (Exception e)
 			{
-				
+			
 			}
 			
 			while (rset.next())

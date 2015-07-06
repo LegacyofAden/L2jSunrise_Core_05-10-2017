@@ -29,7 +29,7 @@ public class ExCubeGameRequestReady extends L2GameServerPacket
 	 */
 	public ExCubeGameRequestReady()
 	{
-		
+	
 	}
 	
 	@Override

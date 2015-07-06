@@ -167,7 +167,7 @@ public class FortSiege implements Siegable
 					announceToPlayer(sm);
 					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(0), 1000); // Prepare task start siege.
 				}
-				else if (_time == 0)// start siege
+				else if (_time == 0) // start siege
 				{
 					_fortInst.getSiege().startSiege();
 				}

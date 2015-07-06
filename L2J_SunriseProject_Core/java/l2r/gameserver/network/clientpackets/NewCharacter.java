@@ -33,7 +33,7 @@ public final class NewCharacter extends L2GameClientPacket
 	@Override
 	protected void readImpl()
 	{
-		
+	
 	}
 	
 	@Override

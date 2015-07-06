@@ -556,8 +556,8 @@ public class Olympiad extends ListenersContainer
 				saveOlympiadStatus();
 				
 				init();
-			}, getMillisToCompEnd());
-		}, getMillisToCompBegin());
+			} , getMillisToCompEnd());
+		} , getMillisToCompBegin());
 	}
 	
 	private long getMillisToOlympiadEnd()
@@ -695,7 +695,7 @@ public class Olympiad extends ListenersContainer
 			
 			Calendar nextChange = Calendar.getInstance();
 			_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
-		}, getMillisToWeekChange(), WEEKLY_PERIOD);
+		} , getMillisToWeekChange(), WEEKLY_PERIOD);
 	}
 	
 	protected synchronized void addWeeklyPoints()

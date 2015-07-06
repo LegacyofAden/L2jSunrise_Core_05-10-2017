@@ -91,7 +91,7 @@ public final class L2FestivalGuideInstance extends L2Npc
 				_greenStonesNeeded = 3600;
 				_redStonesNeeded = 1800;
 				break;
-			
+				
 			case 31137:
 			case 31142:
 				_festivalType = SevenSignsFestival.FESTIVAL_LEVEL_MAX_31;

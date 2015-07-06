@@ -629,7 +629,7 @@ public class L2SiegeGuardAI extends L2CharacterAI implements Runnable
 				
 				// Check if the L2SiegeGuardInstance isn't too far from it's home location
 				if ((((dx * dx) + (dy * dy)) > 10000) && (((homeX * homeX) + (homeY * homeY)) > 3240000) // 1800 * 1800
-					&& (_actor.getKnownList().knowsObject(attackTarget)))
+				&& (_actor.getKnownList().knowsObject(attackTarget)))
 				{
 					// Cancel the target
 					_actor.getKnownList().removeKnownObject(attackTarget);

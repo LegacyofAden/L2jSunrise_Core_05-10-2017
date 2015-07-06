@@ -159,7 +159,7 @@ public class GameServerThread extends Thread
 			}
 			catch (Exception e)
 			{
-				
+			
 			}
 		}
 	}

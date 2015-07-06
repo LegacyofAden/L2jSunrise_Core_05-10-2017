@@ -260,7 +260,7 @@ public class L2ServitorInstance extends L2Summon
 	@Override
 	public void doPickupItem(L2Object object)
 	{
-		
+	
 	}
 	
 	/**

@@ -72,7 +72,7 @@ import gr.sr.securityEngine.SecurityType;
  * Represents a client connected on Game Server.
  * @author KenM
  */
-public final class L2GameClient extends MMOClient<MMOConnection<L2GameClient>> implements Runnable
+public final class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>implements Runnable
 {
 	protected static final Logger _log = LoggerFactory.getLogger(L2GameClient.class);
 	protected static final java.util.logging.Logger _logAccounting = java.util.logging.Logger.getLogger("accounting");
@@ -306,7 +306,11 @@ public final class L2GameClient extends MMOClient<MMOConnection<L2GameClient>> i
 	/**
 	 * Method to handle character deletion
 	 * @param charslot
-	 * @return a byte: <li>-1: Error: No char was found for such charslot, caught exception, etc... <li>0: character is not member of any clan, proceed with deletion <li>1: character is member of a clan, but not clan leader <li>2: character is clan leader
+	 * @return a byte:
+	 *         <li>-1: Error: No char was found for such charslot, caught exception, etc...
+	 *         <li>0: character is not member of any clan, proceed with deletion
+	 *         <li>1: character is member of a clan, but not clan leader
+	 *         <li>2: character is clan leader
 	 */
 	public byte markToDeleteChar(int charslot)
 	{

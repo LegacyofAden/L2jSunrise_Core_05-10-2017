@@ -53,14 +53,10 @@ import org.slf4j.LoggerFactory;
  * (From the official idea used for the Merchant and Blacksmith of Mammon)<br>
  * General Usage: - Call registerSpawn() with the parameters listed below.<br>
  * int npcId int[][] spawnPoints or specify NULL to add points later.<br>
- * int initialDelay (If < 0 = default value) int respawnDelay (If < 0 = default value)<br>
- * int despawnDelay (If < 0 = default value or if = 0, function disabled)<br>
- * spawnPoints is a standard two-dimensional int array containing X,Y and Z coordinates.<br>
- * The default respawn/despawn delays are currently every hour (as for Mammon on official servers).<br>
- * The resulting AutoSpawnInstance object represents the newly added spawn index.<br>
- * The internal methods of this object can be used to adjust random spawning, for instance a call to setRandomSpawn(1, true); would set the spawn at index 1 to be randomly rather than sequentially-based.<br>
- * Also they can be used to specify the number of NPC instances to spawn using setSpawnCount(), and broadcast a message to all users using setBroadcast().<br>
- * Random Spawning = OFF by default Broadcasting = OFF by default
+ * int initialDelay (If
+ * < 0 = default value) int respawnDelay (If < 0 = default value)<br> int despawnDelay (If < 0 = default value or if = 0, function disabled)<br> spawnPoints is a standard two-dimensional int array containing X,Y and Z coordinates.<br> The default respawn/despawn delays are currently every hour (as
+ * for Mammon on official servers).<br> The resulting AutoSpawnInstance object represents the newly added spawn index.<br> The internal methods of this object can be used to adjust random spawning, for instance a call to setRandomSpawn(1, true); would set the spawn at index 1 to be randomly rather
+ * than sequentially-based.<br> Also they can be used to specify the number of NPC instances to spawn using setSpawnCount(), and broadcast a message to all users using setBroadcast().<br> Random Spawning = OFF by default Broadcasting = OFF by default
  * @author Tempy
  */
 public class AutoSpawnHandler

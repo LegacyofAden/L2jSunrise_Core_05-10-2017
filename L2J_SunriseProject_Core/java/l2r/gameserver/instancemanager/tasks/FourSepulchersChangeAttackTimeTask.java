@@ -59,7 +59,7 @@ public final class FourSepulchersChangeAttackTimeTask implements Runnable
 			for (double min = Calendar.getInstance().get(Calendar.MINUTE); min < manager.getCycleMin(); min++)
 			{
 				// looking for next shout time....
-				if ((min % 5) == 0)// check if min can be divided by 5
+				if ((min % 5) == 0) // check if min can be divided by 5
 				{
 					final Calendar inter = Calendar.getInstance();
 					inter.set(Calendar.MINUTE, (int) min);

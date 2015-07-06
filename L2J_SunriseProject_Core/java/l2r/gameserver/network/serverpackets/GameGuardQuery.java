@@ -28,7 +28,7 @@ public class GameGuardQuery extends L2GameServerPacket
 	
 	private GameGuardQuery()
 	{
-		
+	
 	}
 	
 	@Override

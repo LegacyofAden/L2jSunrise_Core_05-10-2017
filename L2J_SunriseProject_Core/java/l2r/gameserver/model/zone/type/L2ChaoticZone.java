@@ -88,7 +88,7 @@ public class L2ChaoticZone extends L2RespawnZone
 					int r = Rnd.get(ChaoticZoneConfigs.CHAOTIC_ZONE_AUTO_RES_LOCS_COUNT);
 					activeChar.teleToLocation(ChaoticZoneConfigs.xCoords[r], ChaoticZoneConfigs.yCoords[r], ChaoticZoneConfigs.zCoords[r]);
 				}
-			}, ChaoticZoneConfigs.CHAOTIC_ZONE_REVIVE_DELAY * 1000);
+			} , ChaoticZoneConfigs.CHAOTIC_ZONE_REVIVE_DELAY * 1000);
 		}
 	}
 	

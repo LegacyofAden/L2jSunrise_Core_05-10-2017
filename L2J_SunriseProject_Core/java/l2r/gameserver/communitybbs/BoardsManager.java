@@ -93,7 +93,7 @@ public class BoardsManager
 		}
 		else if (command.startsWith("_friendlist_0_") || command.startsWith("_bbs_friends") || command.startsWith("_bbsfriends"))
 		{
-			
+		
 		}
 		else if (command.startsWith("_bbsloc"))
 		{

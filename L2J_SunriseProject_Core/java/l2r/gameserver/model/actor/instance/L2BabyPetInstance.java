@@ -366,7 +366,7 @@ public final class L2BabyPetInstance extends L2PetInstance
 				
 				// buffs/heal not casted, trying recharge, if exist
 				if ((_recharge != null) && owner.isInCombat() // recharge casted only if owner in combat stance
-					&& ((owner.getCurrentMp() / owner.getMaxMp()) < 0.6) && (Rnd.get(100) <= 60))
+				&& ((owner.getCurrentMp() / owner.getMaxMp()) < 0.6) && (Rnd.get(100) <= 60))
 				{
 					skill = _recharge.getSkill();
 					if (!_baby.isSkillDisabled(skill) && (_baby.getCurrentMp() >= skill.getMpConsume()))

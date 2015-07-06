@@ -34,7 +34,7 @@ public class RequestPVPMatchRecord extends L2GameClientPacket
 	@Override
 	protected void runImpl()
 	{
-		
+	
 	}
 	
 	@Override

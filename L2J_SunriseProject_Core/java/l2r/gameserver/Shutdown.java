@@ -286,7 +286,7 @@ public class Shutdown extends Thread
 			}
 			catch (Throwable t)
 			{
-				
+			
 			}
 			
 			if (BackupManagerConfigs.ENABLE_DATABASE_BACKUP_MANAGER)
@@ -519,7 +519,7 @@ public class Shutdown extends Thread
 			case GM_RESTART:
 				_log.info("GM restart received. Restarting NOW!");
 				break;
-		
+				
 		}
 		
 		/*

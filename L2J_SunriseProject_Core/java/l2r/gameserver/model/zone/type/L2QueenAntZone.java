@@ -59,13 +59,13 @@ public class L2QueenAntZone extends L2ZoneType
 	@Override
 	public void onDieInside(L2Character character)
 	{
-		
+	
 	}
 	
 	@Override
 	public void onReviveInside(L2Character character)
 	{
-		
+	
 	}
 	
 	private void checkCharacter(L2Character character, boolean isPet)

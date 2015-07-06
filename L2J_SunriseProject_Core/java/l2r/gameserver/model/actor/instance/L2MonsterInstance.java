@@ -159,7 +159,7 @@ public class L2MonsterInstance extends L2Attackable
 				{
 					getMinionList().spawnMinions();
 				}
-			}, getMaintenanceInterval() + Rnd.get(1000));
+			} , getMaintenanceInterval() + Rnd.get(1000));
 		}
 	}
 	
@@ -312,7 +312,7 @@ public class L2MonsterInstance extends L2Attackable
 				moveToLocation(spawnX, spawnY, spawnZ, 0);
 			}
 			setIsMoveToSpawn(false);
-		}, 15000);
+		} , 15000);
 	}
 	
 	public final boolean isMoveToSpawn()

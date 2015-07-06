@@ -127,7 +127,7 @@ public final class RequestExEnchantSkillSafe extends L2GameClientPacket
 		{
 			// No config option for safe enchant book consume
 			L2ItemInstance spb = player.getInventory().getItemByItemId(reqItemId);
-			if (spb == null)// Haven't spellbook
+			if (spb == null) // Haven't spellbook
 			{
 				player.sendPacket(SystemMessageId.YOU_DONT_HAVE_ALL_OF_THE_ITEMS_NEEDED_TO_ENCHANT_THAT_SKILL);
 				return;

@@ -25,13 +25,13 @@ public class RegionBBSManager extends BaseBBSManager
 	@Override
 	public void cbByPass(String command, L2PcInstance activeChar)
 	{
-		
+	
 	}
 	
 	@Override
 	public void parsewrite(String url, String ar1, String ar2, String ar3, String ar4, String ar5, L2PcInstance activeChar)
 	{
-		
+	
 	}
 	
 	public static RegionBBSManager getInstance()

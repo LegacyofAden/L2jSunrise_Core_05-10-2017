@@ -2388,7 +2388,7 @@ public final class Formulas
 		
 		switch (skill.getSkillType())
 		{
-		// vGodfather fixes
+			// vGodfather fixes
 			case FEAR:
 			case ROOT:
 			case STUN:
@@ -2635,7 +2635,8 @@ public final class Formulas
 	}
 	
 	/**
-	 * Calculates karma gain upon playable kill.</br> Updated to High Five on 10.09.2014 by Zealar tested in retail.
+	 * Calculates karma gain upon playable kill.</br>
+	 * Updated to High Five on 10.09.2014 by Zealar tested in retail.
 	 * @param pkCount
 	 * @param isSummon
 	 * @return karma points that will be added to the player.

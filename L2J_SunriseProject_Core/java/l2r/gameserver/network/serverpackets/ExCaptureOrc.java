@@ -24,6 +24,7 @@ package l2r.gameserver.network.serverpackets;
 public class ExCaptureOrc extends L2GameServerPacket
 {
 	private static final byte[] _test;
+	
 	static
 	{
 		// TODO: Verify the data

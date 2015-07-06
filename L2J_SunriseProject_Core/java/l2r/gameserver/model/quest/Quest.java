@@ -149,7 +149,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	protected void loadGlobalData()
 	{
-		
+	
 	}
 	
 	/**
@@ -160,7 +160,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void saveGlobalData()
 	{
-		
+	
 	}
 	
 	/**
@@ -1323,7 +1323,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onOlympiadMatchFinish(Participant winner, Participant looser, CompetitionType type)
 	{
-		
+	
 	}
 	
 	/**
@@ -1333,7 +1333,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onOlympiadLose(L2PcInstance loser, CompetitionType type)
 	{
-		
+	
 	}
 	
 	/**
@@ -1342,7 +1342,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onMoveFinished(L2Npc npc)
 	{
-		
+	
 	}
 	
 	/**
@@ -1351,7 +1351,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onNodeArrived(L2Npc npc)
 	{
-		
+	
 	}
 	
 	/**
@@ -1360,7 +1360,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onRouteFinished(L2Npc npc)
 	{
-		
+	
 	}
 	
 	/**
@@ -1379,7 +1379,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onSummonSpawn(L2Summon summon)
 	{
-		
+	
 	}
 	
 	/**
@@ -1387,7 +1387,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	 */
 	public void onSummonTalk(L2Summon summon)
 	{
-		
+	
 	}
 	
 	/**
@@ -1414,7 +1414,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 		}
 		catch (Exception e)
 		{
-			
+		
 		}
 		
 		_log.error(getClass().getSimpleName() + ": " + Util.getStackTrace(t));

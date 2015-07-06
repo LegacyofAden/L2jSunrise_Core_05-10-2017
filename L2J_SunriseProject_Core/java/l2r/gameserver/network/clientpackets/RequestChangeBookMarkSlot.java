@@ -34,7 +34,7 @@ public final class RequestChangeBookMarkSlot extends L2GameClientPacket
 	@Override
 	protected void runImpl()
 	{
-		
+	
 	}
 	
 	@Override

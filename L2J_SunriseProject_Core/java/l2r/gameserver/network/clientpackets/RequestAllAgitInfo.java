@@ -31,7 +31,7 @@ public class RequestAllAgitInfo extends L2GameClientPacket
 	@Override
 	protected void readImpl()
 	{
-		
+	
 	}
 	
 	@Override

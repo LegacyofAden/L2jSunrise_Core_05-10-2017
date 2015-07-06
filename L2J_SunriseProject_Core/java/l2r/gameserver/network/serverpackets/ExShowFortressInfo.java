@@ -33,7 +33,7 @@ public class ExShowFortressInfo extends L2GameServerPacket
 	
 	private ExShowFortressInfo()
 	{
-		
+	
 	}
 	
 	@Override

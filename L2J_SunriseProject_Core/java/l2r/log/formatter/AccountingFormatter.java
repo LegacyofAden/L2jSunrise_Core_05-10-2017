@@ -62,7 +62,7 @@ public class AccountingFormatter extends Formatter
 					}
 					catch (Exception e)
 					{
-						
+					
 					}
 					
 					switch (client.getState())

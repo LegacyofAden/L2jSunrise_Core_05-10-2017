@@ -24,7 +24,7 @@ public class PledgeShowMemberListDeleteAll extends L2GameServerPacket
 	
 	private PledgeShowMemberListDeleteAll()
 	{
-		
+	
 	}
 	
 	@Override

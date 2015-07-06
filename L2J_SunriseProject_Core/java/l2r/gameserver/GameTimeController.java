@@ -173,7 +173,7 @@ public final class GameTimeController extends Thread
 				}
 				catch (final InterruptedException e)
 				{
-					
+				
 				}
 			}
 			

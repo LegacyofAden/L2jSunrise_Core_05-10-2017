@@ -44,7 +44,7 @@ public class AdminForgePacket extends L2GameServerPacket
 	
 	public AdminForgePacket()
 	{
-		
+	
 	}
 	
 	@Override

@@ -100,7 +100,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 			case 18210:
 			case 18211:
 				break;
-			
+				
 			case 18231:
 			case 18232:
 			case 18233:
@@ -180,7 +180,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 				}
 				_onDeadEventTask = ThreadPoolManager.getInstance().scheduleEffect(new OnDeadEvent(this), 3500);
 				break;
-			
+				
 			case 18150:
 			case 18151:
 			case 18152:
@@ -205,7 +205,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 				}
 				_onDeadEventTask = ThreadPoolManager.getInstance().scheduleEffect(new OnDeadEvent(this), 3500);
 				break;
-			
+				
 			case 18141:
 			case 18142:
 			case 18143:
@@ -223,7 +223,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 					_onDeadEventTask = ThreadPoolManager.getInstance().scheduleEffect(new OnDeadEvent(this), 3500);
 				}
 				break;
-			
+				
 			case 18220:
 			case 18221:
 			case 18222:
@@ -254,7 +254,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 					_onDeadEventTask = ThreadPoolManager.getInstance().scheduleEffect(new OnDeadEvent(this), 3500);
 				}
 				break;
-			
+				
 			case 25339:
 			case 25342:
 			case 25346:
@@ -442,7 +442,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 				case 18219:
 					FourSepulchersManager.getInstance().spawnKeyBox(_activeChar);
 					break;
-				
+					
 				case 18150:
 				case 18151:
 				case 18152:
@@ -453,7 +453,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 				case 18157:
 					FourSepulchersManager.getInstance().spawnExecutionerOfHalisha(_activeChar);
 					break;
-				
+					
 				case 18141:
 				case 18142:
 				case 18143:
@@ -464,7 +464,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 				case 18148:
 					FourSepulchersManager.getInstance().spawnMonster(_activeChar.mysteriousBoxId);
 					break;
-				
+					
 				case 18220:
 				case 18221:
 				case 18222:
@@ -488,7 +488,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 				case 18240:
 					FourSepulchersManager.getInstance().spawnArchonOfHalisha(_activeChar.mysteriousBoxId);
 					break;
-				
+					
 				case 25339:
 				case 25342:
 				case 25346:

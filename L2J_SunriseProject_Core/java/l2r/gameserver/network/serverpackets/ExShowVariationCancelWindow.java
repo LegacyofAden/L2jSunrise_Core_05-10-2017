@@ -27,7 +27,7 @@ public class ExShowVariationCancelWindow extends L2GameServerPacket
 	
 	public ExShowVariationCancelWindow()
 	{
-		
+	
 	}
 	
 	@Override
