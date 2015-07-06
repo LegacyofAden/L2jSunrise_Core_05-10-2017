@@ -32,7 +32,6 @@ import l2r.gameserver.model.itemcontainer.Inventory;
 public class CharInfo extends L2GameServerPacket
 {
 	private final L2PcInstance _activeChar;
-	private final Inventory _inv;
 	private int _objId;
 	private int _x, _y, _z, _heading;
 	private final int _mAtkSpd, _pAtkSpd;
@@ -45,7 +44,32 @@ public class CharInfo extends L2GameServerPacket
 	private final double _moveMultiplier;
 	private final float _attackSpeedMultiplier;
 	
-	private int _vehicleId, _airShipHelm;
+	private int _vehicleId = 0;
+	
+	private static final int[] PAPERDOLL_ORDER = new int[]
+	{
+		Inventory.PAPERDOLL_UNDER,
+		Inventory.PAPERDOLL_HEAD,
+		Inventory.PAPERDOLL_RHAND,
+		Inventory.PAPERDOLL_LHAND,
+		Inventory.PAPERDOLL_GLOVES,
+		Inventory.PAPERDOLL_CHEST,
+		Inventory.PAPERDOLL_LEGS,
+		Inventory.PAPERDOLL_FEET,
+		Inventory.PAPERDOLL_CLOAK,
+		Inventory.PAPERDOLL_RHAND,
+		Inventory.PAPERDOLL_HAIR,
+		Inventory.PAPERDOLL_HAIR2,
+		Inventory.PAPERDOLL_RBRACELET,
+		Inventory.PAPERDOLL_LBRACELET,
+		Inventory.PAPERDOLL_DECO1,
+		Inventory.PAPERDOLL_DECO2,
+		Inventory.PAPERDOLL_DECO3,
+		Inventory.PAPERDOLL_DECO4,
+		Inventory.PAPERDOLL_DECO5,
+		Inventory.PAPERDOLL_DECO6,
+		Inventory.PAPERDOLL_BELT
+	};
 	
 	/**
 	 * @param cha
@@ -54,29 +78,18 @@ public class CharInfo extends L2GameServerPacket
 	{
 		_activeChar = cha;
 		_objId = cha.getObjectId();
-		_inv = cha.getInventory();
 		if ((_activeChar.getVehicle() != null) && (_activeChar.getInVehiclePosition() != null))
 		{
 			_x = _activeChar.getInVehiclePosition().getX();
 			_y = _activeChar.getInVehiclePosition().getY();
 			_z = _activeChar.getInVehiclePosition().getZ();
 			_vehicleId = _activeChar.getVehicle().getObjectId();
-			if (_activeChar.isInAirShip() && _activeChar.getAirShip().isCaptain(_activeChar))
-			{
-				_airShipHelm = _activeChar.getAirShip().getHelmItemId();
-			}
-			else
-			{
-				_airShipHelm = 0;
-			}
 		}
 		else
 		{
 			_x = _activeChar.getX();
 			_y = _activeChar.getY();
 			_z = _activeChar.getZ();
-			_vehicleId = 0;
-			_airShipHelm = 0;
 		}
 		_heading = _activeChar.getHeading();
 		_mAtkSpd = _activeChar.getMAtkSpd();
@@ -96,8 +109,6 @@ public class CharInfo extends L2GameServerPacket
 	public CharInfo(L2Decoy decoy)
 	{
 		this(decoy.getActingPlayer()); // init
-		_vehicleId = 0;
-		_airShipHelm = 0;
 		_objId = decoy.getObjectId();
 		_x = decoy.getX();
 		_y = decoy.getY();
@@ -219,57 +230,15 @@ public class CharInfo extends L2GameServerPacket
 			writeD(_activeChar.getAppearance().getSex() ? 1 : 0);
 			writeD(_activeChar.getBaseClass());
 			
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_UNDER));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_HEAD));
+			for (int slot : getPaperdollOrder())
+			{
+				writeD(_activeChar.getInventory().getPaperdollItemDisplayId(slot));
+			}
 			
-			writeD(_airShipHelm == 0 ? _inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_RHAND) : _airShipHelm);
-			writeD(_airShipHelm == 0 ? _inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_LHAND) : 0);
-			
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_GLOVES));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_CHEST));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_LEGS));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_FEET));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_CLOAK));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_RHAND));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_HAIR));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_HAIR2));
-			// T1 new d's
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_RBRACELET));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_LBRACELET));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_DECO1));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_DECO2));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_DECO3));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_DECO4));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_DECO5));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_DECO6));
-			writeD(_inv.getPaperdollItemDisplayId(Inventory.PAPERDOLL_BELT));
-			// end of t1 new d's
-			
-			// c6 new h's
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_UNDER));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_HEAD));
-			
-			writeD(_airShipHelm == 0 ? _inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_RHAND) : _airShipHelm);
-			writeD(_airShipHelm == 0 ? _inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_LHAND) : 0);
-			
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_GLOVES));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_CHEST));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_LEGS));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_FEET));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_CLOAK));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_RHAND));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_HAIR));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_HAIR2));
-			// T1 new h's
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_RBRACELET));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_LBRACELET));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO1));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO2));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO3));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO4));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO5));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_DECO6));
-			writeD(_inv.getPaperdollAugmentationId(Inventory.PAPERDOLL_BELT));
+			for (int slot : getPaperdollOrder())
+			{
+				writeD(_activeChar.getInventory().getPaperdollAugmentationId(slot));
+			}
 			
 			writeD(_activeChar.getInventory().getTalismanSlots());
 			writeD(_activeChar.getInventory().canEquipCloak() ? 1 : 0);
@@ -352,7 +321,7 @@ public class CharInfo extends L2GameServerPacket
 			
 			writeD(_activeChar.getClassId().getId());
 			writeD(0x00); // ?
-			writeC(_activeChar.isMounted() || (_airShipHelm != 0) ? 0 : _activeChar.getEnchantEffect());
+			writeC(_activeChar.isMounted() ? 0 : _activeChar.getEnchantEffect());
 			
 			writeC(_activeChar.getTeam().getId());
 			
@@ -411,5 +380,11 @@ public class CharInfo extends L2GameServerPacket
 			// T2.3
 			writeD(_activeChar.getSpecialEffect());
 		}
+	}
+	
+	@Override
+	protected int[] getPaperdollOrder()
+	{
+		return PAPERDOLL_ORDER;
 	}
 }
