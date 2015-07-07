@@ -6679,12 +6679,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				{
 					if ((activeWeapon != null) && !target.isDead())
 					{
-						if ((activeWeapon.getSkillEffects(this, target, skill).length > 0) && isPlayer())
-						{
-							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ACTIVATED);
-							sm.addSkillName(skill);
-							sendPacket(sm);
-						}
+						activeWeapon.castOnMagicSkill(this, target, skill);
 					}
 					
 					if (_chanceSkills != null)

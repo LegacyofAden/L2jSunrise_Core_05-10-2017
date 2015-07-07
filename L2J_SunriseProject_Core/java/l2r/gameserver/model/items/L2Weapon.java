@@ -401,25 +401,36 @@ public final class L2Weapon extends L2Item
 	 * @param caster the L2Character pointing out the caster
 	 * @param target the L2Character pointing out the target
 	 * @param trigger the L2Skill pointing out the skill triggering this action
-	 * @return the effects of skills associated with the item to be triggered onMagic.
 	 */
-	public L2Effect[] getSkillEffects(L2Character caster, L2Character target, L2Skill trigger)
+	public void castOnMagicSkill(L2Character caster, L2Character target, L2Skill trigger)
 	{
 		if (_skillsOnMagic == null)
 		{
-			return _emptyEffectSet;
+			return;
 		}
 		
 		final L2Skill onMagicSkill = _skillsOnMagic.getSkill();
-		// No Trigger if Offensive Skill
+		
+		// Trigger only if both are good or bad magic.
 		if (trigger.isOffensive() != onMagicSkill.isOffensive())
 		{
-			return _emptyEffectSet;
+			return;
 		}
+		
 		// No Trigger if not Magic Skill
 		if (!trigger.isMagic() && !onMagicSkill.isMagic())
 		{
-			return _emptyEffectSet;
+			return;
+		}
+		
+		if (trigger.isToggle())
+		{
+			return;
+		}
+		
+		if (caster.getAI().getCastTarget() != target)
+		{
+			return;
 		}
 		
 		if (_skillsOnMagicCondition != null)
@@ -431,20 +442,19 @@ public final class L2Weapon extends L2Item
 			if (!_skillsOnMagicCondition.test(env))
 			{
 				// Chance not met
-				return _emptyEffectSet;
+				return;
 			}
 		}
 		
 		if (!onMagicSkill.checkCondition(caster, target, false))
 		{
 			// Skill condition not met
-			return _emptyEffectSet;
+			return;
 		}
 		
-		final byte shld = Formulas.calcShldUse(caster, target, onMagicSkill);
-		if (onMagicSkill.isOffensive() && !Formulas.calcSkillSuccess(caster, target, onMagicSkill, shld, false, false, false))
+		if (onMagicSkill.isOffensive() && (Formulas.calcShldUse(caster, target, onMagicSkill) == Formulas.SHIELD_DEFENSE_PERFECT_BLOCK))
 		{
-			return _emptyEffectSet;
+			return;
 		}
 		
 		L2Character[] targets =
@@ -468,16 +478,15 @@ public final class L2Weapon extends L2Item
 		if (caster instanceof L2PcInstance)
 		{
 			//@formatter:off
-					caster.getKnownList().getKnownObjects().values().stream()
-						.filter(Objects::nonNull)
-						.filter(npc -> npc.isNpc())
-						.filter(npc -> Util.checkIfInRange(1000, npc, caster, false))
-						.forEach(npc -> 
-						{
-							EventDispatcher.getInstance().notifyEventAsync(new OnNpcSkillSee((L2Npc) npc, caster.getActingPlayer(), onMagicSkill, targets, false), npc);
-						});
-					//@formatter:on
+			caster.getKnownList().getKnownObjects().values().stream()
+				.filter(Objects::nonNull)
+				.filter(npc -> npc.isNpc())
+				.filter(npc -> Util.checkIfInRange(1000, npc, caster, false))
+				.forEach(npc -> 
+				{
+					EventDispatcher.getInstance().notifyEventAsync(new OnNpcSkillSee((L2Npc) npc, caster.getActingPlayer(), onMagicSkill, targets, false), npc);
+				});
+			//@formatter:on
 		}
-		return _emptyEffectSet;
 	}
 }
