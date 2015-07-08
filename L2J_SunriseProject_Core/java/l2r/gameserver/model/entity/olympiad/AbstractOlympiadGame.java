@@ -365,6 +365,7 @@ public abstract class AbstractOlympiadGame
 				player.untransform();
 			}
 			
+			player.setIsInOlympiad(false);
 			player.setIsInOlympiadMode(false);
 			player.setIsOlympiadStart(false);
 			player.setOlympiadSide(-1);
