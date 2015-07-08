@@ -44,9 +44,6 @@ import l2r.gameserver.network.serverpackets.ServerClose;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Broadcast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import gr.sr.backupManager.DatabaseBackupManager;
 import gr.sr.configsEngine.configs.impl.BackupManagerConfigs;
 import gr.sr.configsEngine.configs.impl.LeaderboardsConfigs;
@@ -55,6 +52,9 @@ import gr.sr.leaderboards.ArenaLeaderboard;
 import gr.sr.leaderboards.CraftLeaderboard;
 import gr.sr.leaderboards.FishermanLeaderboard;
 import gr.sr.leaderboards.TvTLeaderboard;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides the functions for shutting down and restarting the server.<br>

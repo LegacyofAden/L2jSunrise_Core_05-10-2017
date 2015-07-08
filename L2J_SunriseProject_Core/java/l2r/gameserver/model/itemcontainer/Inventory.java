@@ -44,10 +44,10 @@ import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.serverpackets.SkillCoolTime;
 import l2r.util.StringUtil;
 
+import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 /**
  * This class manages inventory

@@ -45,10 +45,10 @@ import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.util.Rnd;
 
+import gr.sr.interf.SunriseEvents;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.interf.SunriseEvents;
 
 public final class L2CubicInstance implements IIdentifiable
 {

@@ -62,10 +62,11 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
 
+import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import javolution.util.FastList;
 
 /**

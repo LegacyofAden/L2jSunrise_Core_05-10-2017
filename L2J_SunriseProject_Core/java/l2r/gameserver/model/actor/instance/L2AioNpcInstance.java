@@ -72,9 +72,6 @@ import l2r.gameserver.network.serverpackets.WareHouseWithdrawalList;
 import l2r.gameserver.util.Util;
 import l2r.util.StringUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import gr.sr.achievementEngine.AchievementsHandler;
 import gr.sr.achievementEngine.AchievementsManager;
 import gr.sr.achievementEngine.base.Achievement;
@@ -94,6 +91,9 @@ import gr.sr.leaderboards.TvTLeaderboard;
 import gr.sr.main.Conditions;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author -=DoctorNo=- Version 3.3 Last Edit: 19-10-2012

@@ -29,10 +29,10 @@ import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.CreatureSay;
 import l2r.gameserver.util.Util;
 
+import gr.sr.configsEngine.configs.impl.SecuritySystemConfigs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.configsEngine.configs.impl.SecuritySystemConfigs;
 
 public class PcAdmin
 {

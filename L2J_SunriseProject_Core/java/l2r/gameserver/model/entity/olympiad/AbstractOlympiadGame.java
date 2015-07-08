@@ -41,10 +41,10 @@ import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.SkillCoolTime;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
+import gr.sr.interf.SunriseEvents;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.interf.SunriseEvents;
 
 /**
  * @author godson, GodKratos, Pere, DS

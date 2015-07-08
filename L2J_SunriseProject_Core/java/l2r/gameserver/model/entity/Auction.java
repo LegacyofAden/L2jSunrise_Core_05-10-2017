@@ -41,10 +41,10 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.itemcontainer.ItemContainer;
 import l2r.gameserver.network.SystemMessageId;
 
+import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 public class Auction
 {

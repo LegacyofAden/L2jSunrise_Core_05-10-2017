@@ -56,17 +56,17 @@ import l2r.gameserver.security.SecondaryPasswordAuth;
 import l2r.gameserver.util.FloodProtectors;
 import l2r.gameserver.util.Util;
 
+import gr.sr.interf.SunriseEvents;
+import gr.sr.protection.Protection;
+import gr.sr.securityEngine.SecurityActions;
+import gr.sr.securityEngine.SecurityType;
+
 import com.l2jserver.mmocore.MMOClient;
 import com.l2jserver.mmocore.MMOConnection;
 import com.l2jserver.mmocore.ReceivablePacket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.interf.SunriseEvents;
-import gr.sr.protection.Protection;
-import gr.sr.securityEngine.SecurityActions;
-import gr.sr.securityEngine.SecurityType;
 
 /**
  * Represents a client connected on Game Server.

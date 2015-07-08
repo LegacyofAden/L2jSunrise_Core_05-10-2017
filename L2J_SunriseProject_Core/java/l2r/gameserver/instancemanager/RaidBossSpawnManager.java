@@ -38,10 +38,10 @@ import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
 import l2r.util.Rnd;
 
+import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 /**
  * Raid Boss spawn manager.
