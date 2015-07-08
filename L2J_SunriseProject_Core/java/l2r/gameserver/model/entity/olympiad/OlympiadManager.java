@@ -21,6 +21,7 @@ package l2r.gameserver.model.entity.olympiad;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import l2r.Config;
@@ -36,9 +37,6 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 
 import gr.sr.interf.SunriseEvents;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
-
 /**
  * @author DS
  */
@@ -50,9 +48,9 @@ public class OlympiadManager
 	
 	protected OlympiadManager()
 	{
-		_nonClassBasedRegisters = new FastList<Integer>().shared();
-		_classBasedRegisters = new FastMap<Integer, List<Integer>>().shared();
-		_teamsBasedRegisters = new FastList<List<Integer>>().shared();
+		_nonClassBasedRegisters = new CopyOnWriteArrayList<>();
+		_classBasedRegisters = new ConcurrentHashMap<>();
+		_teamsBasedRegisters = new CopyOnWriteArrayList<>();
 	}
 	
 	public static final OlympiadManager getInstance()
