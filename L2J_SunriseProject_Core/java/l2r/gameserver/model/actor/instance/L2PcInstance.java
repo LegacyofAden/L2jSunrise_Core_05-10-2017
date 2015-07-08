@@ -511,6 +511,7 @@ public final class L2PcInstance extends L2Playable
 	private boolean _isInHideoutSiege = false;
 	
 	/** Olympiad */
+	private boolean _isInOlympiad = false;
 	private boolean _inOlympiadMode = false;
 	private boolean _OlympiadStart = false;
 	private int _olympiadGameId = -1;
@@ -10337,6 +10338,11 @@ public final class L2PcInstance extends L2Playable
 		sendSkillList();
 	}
 	
+	public void setIsInOlympiad(boolean b)
+	{
+		_isInOlympiad = b;
+	}
+	
 	public void setIsInOlympiadMode(boolean b)
 	{
 		_inOlympiadMode = b;
@@ -10355,6 +10361,11 @@ public final class L2PcInstance extends L2Playable
 	public boolean isHero()
 	{
 		return _hero;
+	}
+	
+	public boolean isInOlympiad()
+	{
+		return _isInOlympiad;
 	}
 	
 	public boolean isInOlympiadMode()

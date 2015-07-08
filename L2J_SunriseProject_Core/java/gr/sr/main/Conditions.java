@@ -41,7 +41,7 @@ public class Conditions
 		}
 		
 		// Restrictions added here
-		if (player.isInOlympiadMode() || player.inObserverMode() || OlympiadManager.getInstance().isRegistered(player))
+		if (player.isInOlympiadMode() || player.isInOlympiad() || player.inObserverMode() || OlympiadManager.getInstance().isRegistered(player))
 		{
 			player.sendMessage("Cannot use while in Olympiad.");
 			return false;
@@ -105,7 +105,7 @@ public class Conditions
 		}
 		
 		// Restrictions added here
-		if (player.isInOlympiadMode() || player.inObserverMode() || OlympiadManager.getInstance().isRegistered(player))
+		if (player.isInOlympiadMode() || player.isInOlympiad() || player.inObserverMode() || OlympiadManager.getInstance().isRegistered(player))
 		{
 			player.sendMessage("Cannot use while in Olympiad.");
 			return false;
@@ -175,7 +175,7 @@ public class Conditions
 		}
 		
 		// Restrictions added here
-		if (player.isInOlympiadMode() || player.inObserverMode() || OlympiadManager.getInstance().isRegistered(player))
+		if (player.isInOlympiadMode() || player.isInOlympiad() || player.inObserverMode() || OlympiadManager.getInstance().isRegistered(player))
 		{
 			player.sendMessage("Cannot use while in Olympiad.");
 			return false;

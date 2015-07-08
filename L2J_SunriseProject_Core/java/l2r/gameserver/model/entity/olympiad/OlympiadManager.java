@@ -21,7 +21,6 @@ package l2r.gameserver.model.entity.olympiad;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import l2r.Config;
@@ -37,6 +36,9 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 
 import gr.sr.interf.SunriseEvents;
 
+import javolution.util.FastList;
+import javolution.util.FastMap;
+
 /**
  * @author DS
  */
@@ -48,9 +50,9 @@ public class OlympiadManager
 	
 	protected OlympiadManager()
 	{
-		_nonClassBasedRegisters = new CopyOnWriteArrayList<>();
-		_classBasedRegisters = new ConcurrentHashMap<>();
-		_teamsBasedRegisters = new CopyOnWriteArrayList<>();
+		_nonClassBasedRegisters = new FastList<Integer>().shared();
+		_classBasedRegisters = new FastMap<Integer, List<Integer>>().shared();
+		_teamsBasedRegisters = new FastList<List<Integer>>().shared();
 	}
 	
 	public static final OlympiadManager getInstance()
@@ -354,6 +356,8 @@ public class OlympiadManager
 				break;
 			}
 		}
+		
+		player.setIsInOlympiad(true);
 		return true;
 	}
 	
@@ -392,6 +396,7 @@ public class OlympiadManager
 				AntiFeedManager.getInstance().removePlayer(AntiFeedManager.OLYMPIAD_ID, noble);
 			}
 			
+			noble.setIsInOlympiad(false);
 			noble.sendPacket(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
 			return true;
 		}
@@ -406,6 +411,7 @@ public class OlympiadManager
 				AntiFeedManager.getInstance().removePlayer(AntiFeedManager.OLYMPIAD_ID, noble);
 			}
 			
+			noble.setIsInOlympiad(false);
 			noble.sendPacket(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
 			return true;
 		}
