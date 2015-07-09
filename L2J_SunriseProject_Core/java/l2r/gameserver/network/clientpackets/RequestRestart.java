@@ -128,7 +128,7 @@ public final class RequestRestart extends L2GameClientPacket
 			return;
 		}
 		
-		if (player.isInOlympiadMode())
+		if (player.isInOlympiadMode() || player.isInOlympiad())
 		{
 			player.sendMessage("You cannot restart while in Olympiad.");
 			player.sendPacket(RestartResponse.valueOf(false));
