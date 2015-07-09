@@ -209,7 +209,7 @@ public class Conditions
 	 * @param count
 	 * @return boolean
 	 */
-	public static boolean checkPlayerItemCount(L2PcInstance player, int itemId, int count)
+	public static boolean checkPlayerItemCount(L2PcInstance player, int itemId, long count)
 	{
 		if ((player.getInventory().getItemByItemId(itemId) == null) || (player.getInventory().getItemByItemId(itemId).getCount() < count))
 		{

@@ -334,6 +334,7 @@ import l2r.gameserver.network.serverpackets.ValidateLocation;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
 import l2r.gameserver.util.Broadcast;
 import l2r.gameserver.util.FloodProtectors;
+import l2r.gameserver.util.Strings;
 import l2r.gameserver.util.Util;
 import l2r.util.EnumIntBitmask;
 import l2r.util.Rnd;
@@ -7377,6 +7378,8 @@ public final class L2PcInstance extends L2Playable
 					player.setHopZoneDone(rset.getInt("hopzonedone") == 1);
 					player.setTopZoneDone(rset.getInt("topzonedone") == 1);
 					player.setKilledSpecificMob(rset.getInt("achievementmobkilled") == 1);
+					
+					player.loadVariables();
 					
 					player.setClanJoinExpiryTime(rset.getLong("clan_join_expiry_time"));
 					if (player.getClanJoinExpiryTime() < System.currentTimeMillis())
@@ -15858,5 +15861,108 @@ public final class L2PcInstance extends L2Playable
 	public boolean isProtected()
 	{
 		return _protected;
+	}
+	
+	// ============================================== //
+	// Sql Variables Engine By L][Sunrise Team //
+	// ============================================== //
+	
+	private final Map<String, String> user_variables = new ConcurrentHashMap<>();
+	
+	public void setVar(String name, String value)
+	{
+		user_variables.put(name, value);
+		
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("REPLACE INTO sunrise_variables (obj_id, type, name, value, expire_time) VALUES (?,'user-var',?,?,-1)");
+			statement.setInt(1, getObjectId());
+			statement.setString(2, name);
+			statement.setString(3, value);
+			statement.execute();
+			statement.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void unsetVar(String name)
+	{
+		if (name == null)
+		{
+			return;
+		}
+		
+		if (user_variables.remove(name) != null)
+		{
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+			{
+				PreparedStatement statement = con.prepareStatement("DELETE FROM `sunrise_variables` WHERE `obj_id`=? AND `type`='user-var' AND `name`=? LIMIT 1");
+				
+				statement.setInt(1, getObjectId());
+				statement.setString(2, name);
+				statement.execute();
+				statement.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public String getVar(String name, String defaultVal)
+	{
+		String var = user_variables.get(name);
+		if (var == null)
+		{
+			return defaultVal;
+		}
+		return user_variables.get(name);
+	}
+	
+	public boolean getVarB(String name, boolean defaultVal)
+	{
+		String var = user_variables.get(name);
+		if (var == null)
+		{
+			return defaultVal;
+		}
+		return !(var.equals("0") || var.equalsIgnoreCase("false"));
+	}
+	
+	public boolean getVarB(String name)
+	{
+		String var = user_variables.get(name);
+		return !((var == null) || var.equals("0") || var.equalsIgnoreCase("false"));
+	}
+	
+	public Map<String, String> getVars()
+	{
+		return user_variables;
+	}
+	
+	private void loadVariables()
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement offline = con.prepareStatement("SELECT * FROM sunrise_variables WHERE obj_id = ?");
+			offline.setInt(1, getObjectId());
+			ResultSet rs = offline.executeQuery();
+			while (rs.next())
+			{
+				String name = rs.getString("name");
+				String value = Strings.stripSlashes(rs.getString("value"));
+				user_variables.put(name, value);
+			}
+			rs.close();
+			offline.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
