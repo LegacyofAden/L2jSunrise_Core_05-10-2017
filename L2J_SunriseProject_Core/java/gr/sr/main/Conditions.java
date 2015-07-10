@@ -209,6 +209,23 @@ public class Conditions
 	 * @param count
 	 * @return boolean
 	 */
+	public static boolean checkPlayerItemCount(L2PcInstance player, int itemId, int count)
+	{
+		if ((player.getInventory().getItemByItemId(itemId) == null) || (player.getInventory().getItemByItemId(itemId).getCount() < count))
+		{
+			player.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check the item count in inventory
+	 * @param player [L2PcInstance]
+	 * @param itemId
+	 * @param count
+	 * @return boolean
+	 */
 	public static boolean checkPlayerItemCount(L2PcInstance player, int itemId, long count)
 	{
 		if ((player.getInventory().getItemByItemId(itemId) == null) || (player.getInventory().getItemByItemId(itemId).getCount() < count))
