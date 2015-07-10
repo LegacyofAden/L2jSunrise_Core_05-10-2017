@@ -4712,7 +4712,7 @@ public final class L2PcInstance extends L2Playable
 		getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
 		// Check if the L2Object to pick up is a L2ItemInstance
-		if (!(object instanceof L2ItemInstance))
+		if (!(object.isItem()))
 		{
 			// dont try to pickup anything that is not an item :)
 			_log.warn(this + " trying to pickup wrong target." + getTarget());
@@ -4721,12 +4721,7 @@ public final class L2PcInstance extends L2Playable
 		
 		L2ItemInstance target = (L2ItemInstance) object;
 		
-		// Send a Server->Client packet ActionFailed to this L2PcInstance
-		sendPacket(ActionFailed.STATIC_PACKET);
-		
-		// Send a Server->Client packet StopMove to this L2PcInstance
-		StopMove sm = new StopMove(this);
-		sendPacket(sm);
+		sendPacket(new StopMove(this));
 		
 		SystemMessage smsg = null;
 		synchronized (target)
@@ -4755,12 +4750,8 @@ public final class L2PcInstance extends L2Playable
 				return;
 			}
 			
-			if (isInvul() && !canOverrideCond(PcCondOverride.ITEM_CONDITIONS))
+			if (isInvisible() && !canOverrideCond(PcCondOverride.ITEM_CONDITIONS))
 			{
-				sendPacket(ActionFailed.STATIC_PACKET);
-				smsg = SystemMessage.getSystemMessage(SystemMessageId.FAILED_TO_PICKUP_S1);
-				smsg.addItemName(target);
-				sendPacket(smsg);
 				return;
 			}
 			

@@ -48,13 +48,14 @@ public class FuncAtkEvasion extends AbstractFunction
 		{
 			// [Square(DEX)] * 6 + lvl;
 			env.addValue((Math.sqrt(env.getCharacter().getDEX()) * 6) + level);
-			if (level > 77)
+			double diff = level - 69;
+			if (level >= 78)
 			{
-				env.addValue(level - 77);
+				diff *= 1.2;
 			}
-			if (level > 69)
+			if (level >= 70)
 			{
-				env.addValue(level - 69);
+				env.addValue(diff);
 			}
 		}
 		else
