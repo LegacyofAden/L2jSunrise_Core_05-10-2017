@@ -386,7 +386,7 @@ public final class L2PcInstance extends L2Playable
 	
 	// Character Character SQL String Definitions:
 	private static final String INSERT_CHARACTER = "INSERT INTO characters (account_name,charId,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,fame,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,title_color,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,newbie,nobless,power_grade,createDate) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,exp_activation=?,prefix_category=?,enchant_animation=?,hide_private_stores=?,load_soulshots=?,soulshot_animation=?,bad_buff_protection=?,enchant_bot=?,enchant_chance=?,tries=?,hopzonedone=?,topzonedone=?,achievementmobkilled=? WHERE charId=?";
+	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,exp_activation=?,prefix_category=?,enchant_animation=?,hide_private_stores=?,load_soulshots=?,soulshot_animation=?,bad_buff_protection=?,enchant_bot=?,enchant_chance=?,achievementmobkilled=? WHERE charId=?";
 	private static final String RESTORE_CHARACTER = "SELECT * FROM characters WHERE charId=?";
 	
 	// Character Teleport Bookmark:
@@ -564,11 +564,6 @@ public final class L2PcInstance extends L2Playable
 	/** Aio Item System */
 	private boolean _isAioMultisell = false;
 	private boolean _isUsingAioWh = false;
-	
-	/** Personal Vote panel */
-	public boolean _HopZoneDone = false;
-	public boolean _TopZoneDone = false;
-	private int _tries;
 	
 	/** Anti Bot System */
 	private String _botAnswer;
@@ -7365,9 +7360,6 @@ public final class L2PcInstance extends L2Playable
 					player.setEnchantBot(rset.getInt("enchant_bot") == 1);
 					player.setEnchantChance(rset.getDouble("enchant_chance"));
 					player.setNamePrefixCategory(rset.getInt("prefix_category"));
-					player.setVoteTries(rset.getInt("tries"));
-					player.setHopZoneDone(rset.getInt("hopzonedone") == 1);
-					player.setTopZoneDone(rset.getInt("topzonedone") == 1);
 					player.setKilledSpecificMob(rset.getInt("achievementmobkilled") == 1);
 					
 					player.loadVariables();
@@ -7972,11 +7964,8 @@ public final class L2PcInstance extends L2Playable
 			statement.setInt(57, isProtected() ? 1 : 0);
 			statement.setInt(58, isEnchantBot() ? 1 : 0);
 			statement.setDouble(59, getEnchantChance());
-			statement.setInt(60, getVoteTries());
-			statement.setInt(61, isHopZoneDone() ? 1 : 0);
-			statement.setInt(62, isTopZoneDone() ? 1 : 0);
-			statement.setInt(63, isKilledSpecificMob() ? 1 : 0);
-			statement.setInt(64, getObjectId());
+			statement.setInt(60, isKilledSpecificMob() ? 1 : 0);
+			statement.setInt(61, getObjectId());
 			
 			statement.execute();
 			statement.close();
@@ -15326,37 +15315,16 @@ public final class L2PcInstance extends L2Playable
 		return _isUsingAioWh;
 	}
 	
-	// ============================================== //
-	// Vote Engine By L][Sunrise Team //
-	// ============================================== //
-	public boolean isHopZoneDone()
+	private boolean _isVoting = false;
+	
+	public boolean isVoting()
 	{
-		return _HopZoneDone;
+		return _isVoting;
 	}
 	
-	public void setHopZoneDone(boolean hopZoneDone)
+	public void setIsVoting(boolean val)
 	{
-		_HopZoneDone = hopZoneDone;
-	}
-	
-	public boolean isTopZoneDone()
-	{
-		return _TopZoneDone;
-	}
-	
-	public void setTopZoneDone(boolean topZoneDone)
-	{
-		_TopZoneDone = topZoneDone;
-	}
-	
-	public int getVoteTries()
-	{
-		return _tries;
-	}
-	
-	public void setVoteTries(int tries)
-	{
-		_tries = tries;
+		_isVoting = val;
 	}
 	
 	public boolean isFriend(L2PcInstance target)

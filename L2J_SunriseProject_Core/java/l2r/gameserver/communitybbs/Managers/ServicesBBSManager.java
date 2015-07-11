@@ -59,6 +59,7 @@ import l2r.gameserver.util.Broadcast;
 import l2r.gameserver.util.Util;
 
 import gr.sr.configsEngine.configs.impl.CommunityServicesConfigs;
+import gr.sr.configsEngine.configs.impl.IndividualVoteSystemConfigs;
 import gr.sr.datatables.SunriseTable;
 import gr.sr.interf.SunriseEvents;
 import gr.sr.javaBuffer.AutoBuff;
@@ -71,6 +72,7 @@ import gr.sr.javaBuffer.runnable.BuffDeleter;
 import gr.sr.main.Conditions;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
+import gr.sr.voteEngine.old.VoteHandler;
 
 /**
  * @author L2jSunrise Team
@@ -399,6 +401,41 @@ public class ServicesBBSManager extends BaseBBSManager
 				}
 			}
 			separateAndSend(content, activeChar);
+		}
+		else if (command.startsWith(_servicesBBSCommand + "_vote"))
+		{
+			if (activeChar == null)
+			{
+				return;
+			}
+			
+			if (command.startsWith(_servicesBBSCommand + "_vote_main"))
+			{
+				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
+				content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
+				separateAndSend(content, activeChar);
+				return;
+			}
+			
+			if (command.contains(" "))
+			{
+				final String[] subCommand = command.split(" ");
+				String site = subCommand[1];
+				
+				if (!VoteHandler.voteChecks(activeChar, site))
+				{
+					content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
+					content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
+					separateAndSend(content, activeChar);
+					return;
+				}
+				
+				VoteHandler.preActivateVoting(activeChar, site);
+				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
+				content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
+				separateAndSend(content, activeChar);
+				return;
+			}
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_atrEnchant"))
 		{
@@ -946,6 +983,49 @@ public class ServicesBBSManager extends BaseBBSManager
 			acha.sendPacket(new ShowBoard(html.substring(8180, 8180 * 2), "102"));
 			acha.sendPacket(new ShowBoard(html.substring(8180 * 2, html.length()), "103"));
 		}
+	}
+	
+	public static String getVoteBanners(L2PcInstance activeChar)
+	{
+		String voteBanners = "";
+		
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_HOPZONE)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_orcish_talisman_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in Hopzone</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "HopZone") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote HopZone\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_TOPZONE)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_barka_badge_officer_i02\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in Topzone</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "TopZone") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote TopZone\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_TOPCO)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_jewel_white_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in Top.co</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "L2TopCo") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote L2TopCo\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_NETWORK)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_Symbol_of_dawn_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in L2NetWork</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "L2NetWork") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote L2NetWork\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_JBRASIL)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_nutrients_of_cupid_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in L2jBrasil</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "L2jBrasil") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote L2jBrasil\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_TOPGS00)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_badge_gold_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in TopGs200</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "TopGs200") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote TopGs200\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_TOPSERVERS200)
+		{
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.energy_condenser_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in TopServer200</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "TopServers200") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote TopServers200\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+		}
+		if (IndividualVoteSystemConfigs.ENABLE_TRIES)
+		{
+			if (Integer.parseInt(activeChar.getVar("vote_tries", "9999")) == 9999)
+			{
+				activeChar.setVar("vote_tries", String.valueOf(IndividualVoteSystemConfigs.TRIES_AMOUNT));
+			}
+			voteBanners += "<tr><td width=540 align=center valign=top><br>Tries: <font color=AE9977>" + activeChar.getVar("vote_tries", "0") + "</font></td></tr>";
+		}
+		return voteBanners;
 	}
 	
 	@Override
