@@ -7733,19 +7733,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return 0;
 	}
 	
-	// User panel system start
-	private boolean _ssAnimation = false;
-	
-	public boolean isSsAnimationBlocked()
-	{
-		return _ssAnimation;
-	}
-	
-	public void setSsAnimation(boolean ssAnimation)
-	{
-		_ssAnimation = ssAnimation;
-	}
-	
 	public void addInvulAgainst(SkillHolder holder)
 	{
 		final InvulSkillHolder invulHolder = getInvulAgainstSkills().get(holder.getSkillId());

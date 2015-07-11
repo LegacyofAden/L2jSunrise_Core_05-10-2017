@@ -155,7 +155,7 @@ public final class TradeRequest extends L2GameClientPacket
 			return;
 		}
 		
-		if (partner.getTradeRefusal())
+		if (partner.getVarB("noTrade"))
 		{
 			player.sendMessage("That person is in trade refusal mode.");
 			return;

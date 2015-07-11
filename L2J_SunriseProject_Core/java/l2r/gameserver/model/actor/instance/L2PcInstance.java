@@ -386,7 +386,7 @@ public final class L2PcInstance extends L2Playable
 	
 	// Character Character SQL String Definitions:
 	private static final String INSERT_CHARACTER = "INSERT INTO characters (account_name,charId,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,fame,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,title_color,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,newbie,nobless,power_grade,createDate) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,exp_activation=?,prefix_category=?,enchant_animation=?,hide_private_stores=?,load_soulshots=?,soulshot_animation=?,bad_buff_protection=?,enchant_bot=?,enchant_chance=?,achievementmobkilled=? WHERE charId=?";
+	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,prefix_category=?,enchant_bot=?,enchant_chance=?,achievementmobkilled=? WHERE charId=?";
 	private static final String RESTORE_CHARACTER = "SELECT * FROM characters WHERE charId=?";
 	
 	// Character Teleport Bookmark:
@@ -581,11 +581,6 @@ public final class L2PcInstance extends L2Playable
 	private String donateCode;
 	private boolean donateCodeRight = true;
 	
-	/** Custom User Panel System */
-	private boolean _expGainOn = true;
-	private boolean _enchantAnimation = false;
-	private boolean _onEnterLoadSS = false;
-	
 	public Map<String, List<Integer>> _profileBuffs = new ConcurrentHashMap<>();
 	
 	/** Premium Items */
@@ -736,7 +731,6 @@ public final class L2PcInstance extends L2Playable
 	private boolean _silenceMode = false; // silence mode
 	private List<Integer> _silenceModeExcluded; // silence mode
 	private boolean _dietMode = false; // ignore weight penalty
-	private boolean _tradeRefusal = false; // Trade refusal
 	private boolean _exchangeRefusal = false; // Exchange refusal
 	
 	private L2Party _party;
@@ -6073,7 +6067,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		retailLostExp = lostExp;
-		if (SunriseEvents.isInEvent(this) || !getExpOn())
+		if (SunriseEvents.isInEvent(this) || getVarB("noExp"))
 		{
 			lostExp = 0;
 		}
@@ -7351,12 +7345,6 @@ public final class L2PcInstance extends L2Playable
 					player.setOnlineTime(rset.getLong("onlinetime"));
 					player.setNewbie(rset.getInt("newbie"));
 					player.setNoble(rset.getInt("nobless") == 1);
-					player.setExpOn(rset.getInt("exp_activation") == 1);
-					player.setEnchantAnimation(rset.getInt("enchant_animation") == 1);
-					player.getAppearance().setHideStores(rset.getInt("hide_private_stores") == 1);
-					player.setOnEnterLoadSS(rset.getInt("load_soulshots") == 1);
-					player.setSsAnimation(rset.getInt("soulshot_animation") == 1);
-					player.setProtectedPlayer(rset.getInt("bad_buff_protection") == 1);
 					player.setEnchantBot(rset.getInt("enchant_bot") == 1);
 					player.setEnchantChance(rset.getDouble("enchant_chance"));
 					player.setNamePrefixCategory(rset.getInt("prefix_category"));
@@ -7955,17 +7943,11 @@ public final class L2PcInstance extends L2Playable
 			statement.setInt(48, getVitalityPoints());
 			statement.setInt(49, getPcBangPoints());
 			statement.setString(50, getLang());
-			statement.setInt(51, getExpOn() ? 1 : 0);
-			statement.setInt(52, getNamePrefixCategory());
-			statement.setInt(53, isEnchantAnimation() ? 1 : 0);
-			statement.setInt(54, isHideStores() ? 1 : 0);
-			statement.setInt(55, isOnEnterLoadSS() ? 1 : 0);
-			statement.setInt(56, isSsAnimationBlocked() ? 1 : 0);
-			statement.setInt(57, isProtected() ? 1 : 0);
-			statement.setInt(58, isEnchantBot() ? 1 : 0);
-			statement.setDouble(59, getEnchantChance());
-			statement.setInt(60, isKilledSpecificMob() ? 1 : 0);
-			statement.setInt(61, getObjectId());
+			statement.setInt(51, getNamePrefixCategory());
+			statement.setInt(52, isEnchantBot() ? 1 : 0);
+			statement.setDouble(53, getEnchantChance());
+			statement.setInt(54, isKilledSpecificMob() ? 1 : 0);
+			statement.setInt(55, getObjectId());
 			
 			statement.execute();
 			statement.close();
@@ -10275,16 +10257,6 @@ public final class L2PcInstance extends L2Playable
 		return _dietMode;
 	}
 	
-	public void setTradeRefusal(boolean mode)
-	{
-		_tradeRefusal = mode;
-	}
-	
-	public boolean getTradeRefusal()
-	{
-		return _tradeRefusal;
-	}
-	
 	public void setExchangeRefusal(boolean mode)
 	{
 		_exchangeRefusal = mode;
@@ -11524,7 +11496,7 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void addExpAndSp(long addToExp, int addToSp)
 	{
-		if (getExpOn())
+		if (!getVarB("noExp"))
 		{
 			getStat().addExpAndSp(addToExp, addToSp);
 		}
@@ -11536,7 +11508,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void addExpAndSp(long addToExp, int addToSp, boolean useVitality)
 	{
-		if (getExpOn())
+		if (!getVarB("noExp"))
 		{
 			getStat().addExpAndSp(addToExp, addToSp, useVitality);
 		}
@@ -15482,44 +15454,6 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	// ============================================== //
-	// Player Panel Engine By L][Sunrise Team //
-	// ============================================== //
-	public void setExpOn(boolean expOn)
-	{
-		_expGainOn = expOn;
-	}
-	
-	public boolean getExpOn()
-	{
-		return _expGainOn;
-	}
-	
-	public boolean isEnchantAnimation()
-	{
-		return _enchantAnimation;
-	}
-	
-	public void setEnchantAnimation(boolean enchantAnimation)
-	{
-		_enchantAnimation = enchantAnimation;
-	}
-	
-	public boolean isHideStores()
-	{
-		return getAppearance().isHideStores();
-	}
-	
-	public boolean isOnEnterLoadSS()
-	{
-		return _onEnterLoadSS;
-	}
-	
-	public void setOnEnterLoadSS(boolean onEnterLoadSS)
-	{
-		_onEnterLoadSS = onEnterLoadSS;
-	}
-	
-	// ============================================== //
 	// Name Prefix Engine By L][Sunrise Team //
 	// ============================================== //
 	public void loadNamePrefix()
@@ -15808,18 +15742,6 @@ public final class L2PcInstance extends L2Playable
 	public boolean isPremium()
 	{
 		return _premiumService;
-	}
-	
-	private boolean _protected = false;
-	
-	public void setProtectedPlayer(boolean prot)
-	{
-		_protected = prot;
-	}
-	
-	public boolean isProtected()
-	{
-		return _protected;
 	}
 	
 	// ============================================== //

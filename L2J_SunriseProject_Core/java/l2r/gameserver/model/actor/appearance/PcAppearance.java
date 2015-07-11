@@ -217,17 +217,4 @@ public class PcAppearance
 	{
 		return _owner;
 	}
-	
-	// Valanths
-	private boolean _showTraders = false;
-	
-	public boolean isHideStores()
-	{
-		return _showTraders;
-	}
-	
-	public void setHideStores(boolean value)
-	{
-		_showTraders = value;
-	}
 }

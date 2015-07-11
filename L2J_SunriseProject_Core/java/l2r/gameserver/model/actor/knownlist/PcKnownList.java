@@ -72,7 +72,7 @@ public class PcKnownList extends PlayableKnownList
 			return false;
 		}
 		
-		if (getActiveChar().isHideStores() && (object instanceof L2PcInstance))
+		if (getActiveChar().getVarB("hideStores") && (object.isPlayer()))
 		{
 			if (object.getActingPlayer().getClient().isDetached() || (object.getActingPlayer().isInStoreMode()))
 			{
