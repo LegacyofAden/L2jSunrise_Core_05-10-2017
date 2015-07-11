@@ -386,7 +386,7 @@ public final class L2PcInstance extends L2Playable
 	
 	// Character Character SQL String Definitions:
 	private static final String INSERT_CHARACTER = "INSERT INTO characters (account_name,charId,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,fame,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,title_color,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,newbie,nobless,power_grade,createDate) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,prefix_category=?,enchant_bot=?,enchant_chance=?,achievementmobkilled=? WHERE charId=?";
+	private static final String UPDATE_CHARACTER = "UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,fame=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,title_color=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,newbie=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,bookmarkslot=?,vitality_points=?,pccafe_points=?,language=?,enchant_bot=?,enchant_chance=?,achievementmobkilled=? WHERE charId=?";
 	private static final String RESTORE_CHARACTER = "SELECT * FROM characters WHERE charId=?";
 	
 	// Character Teleport Bookmark:
@@ -553,10 +553,6 @@ public final class L2PcInstance extends L2Playable
 	
 	/** Spree System */
 	private int spreeKills = 0;
-	
-	/** Masters Name Prefix System */
-	private int namePrefixCategory = 0;
-	private String namePrefix = "[GM]";
 	
 	/** PC Bang System */
 	private int _pcBangPoints = 0;
@@ -7347,7 +7343,6 @@ public final class L2PcInstance extends L2Playable
 					player.setNoble(rset.getInt("nobless") == 1);
 					player.setEnchantBot(rset.getInt("enchant_bot") == 1);
 					player.setEnchantChance(rset.getDouble("enchant_chance"));
-					player.setNamePrefixCategory(rset.getInt("prefix_category"));
 					player.setKilledSpecificMob(rset.getInt("achievementmobkilled") == 1);
 					
 					player.loadVariables();
@@ -7943,11 +7938,10 @@ public final class L2PcInstance extends L2Playable
 			statement.setInt(48, getVitalityPoints());
 			statement.setInt(49, getPcBangPoints());
 			statement.setString(50, getLang());
-			statement.setInt(51, getNamePrefixCategory());
-			statement.setInt(52, isEnchantBot() ? 1 : 0);
-			statement.setDouble(53, getEnchantChance());
-			statement.setInt(54, isKilledSpecificMob() ? 1 : 0);
-			statement.setInt(55, getObjectId());
+			statement.setInt(51, isEnchantBot() ? 1 : 0);
+			statement.setDouble(52, getEnchantChance());
+			statement.setInt(53, isKilledSpecificMob() ? 1 : 0);
+			statement.setInt(54, getObjectId());
 			
 			statement.execute();
 			statement.close();
@@ -11182,7 +11176,7 @@ public final class L2PcInstance extends L2Playable
 		AchievementsHandler.getAchievemntData(this);
 		
 		// Load Master Name Prefix
-		loadNamePrefix();
+		NamePrefix.namePrefixCategories(this, Integer.parseInt(getVar("namePrefixId", String.valueOf(0))));
 	}
 	
 	public long getLastAccess()
@@ -15451,34 +15445,6 @@ public final class L2PcInstance extends L2Playable
 	public List<Integer> getCompletedAchievements()
 	{
 		return _completedAchievements;
-	}
-	
-	// ============================================== //
-	// Name Prefix Engine By L][Sunrise Team //
-	// ============================================== //
-	public void loadNamePrefix()
-	{
-		NamePrefix.namePrefixCategories(this, getNamePrefixCategory());
-	}
-	
-	public int getNamePrefixCategory()
-	{
-		return namePrefixCategory;
-	}
-	
-	public void setNamePrefixCategory(int category)
-	{
-		namePrefixCategory = category;
-	}
-	
-	public String getNamePrefix()
-	{
-		return namePrefix;
-	}
-	
-	public void setNamePrefix(String prefix)
-	{
-		namePrefix = prefix;
 	}
 	
 	// ============================================== //
