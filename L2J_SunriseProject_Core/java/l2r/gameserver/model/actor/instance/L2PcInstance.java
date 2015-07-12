@@ -711,7 +711,7 @@ public final class L2PcInstance extends L2Playable
 	
 	// charges
 	private final AtomicInteger _charges = new AtomicInteger();
-	private ScheduledFuture<?> _chargeTask = null;
+	private volatile ScheduledFuture<?> _chargeTask = null;
 	
 	// Absorbed Souls
 	private int _souls = 0;
@@ -8134,11 +8134,23 @@ public final class L2PcInstance extends L2Playable
 	
 	public int isOnlineInt()
 	{
-		if (_isOnline && (getClient() != null))
+		if (_isOnline && (_client != null))
 		{
-			return getClient().isDetached() ? 2 : 1;
+			return _client.isDetached() ? 2 : 1;
 		}
 		return 0;
+	}
+	
+	/**
+	 * Verifies if the player is in offline mode.<br>
+	 * The offline mode may happen for different reasons:<br>
+	 * Abnormally: Player gets abrouptaly disconnected from server.<br>
+	 * Normally: The player gets into offline shop mode, only avaiable by enabling the offline shop mod.
+	 * @return {@code true} if the player is in offline mode, {@code false} otherwise
+	 */
+	public boolean isInOfflineMode()
+	{
+		return (_client == null) || _client.isDetached();
 	}
 	
 	public boolean isIn7sDungeon()
@@ -13561,8 +13573,13 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (_chargeTask != null)
 		{
-			_chargeTask.cancel(false);
-			_chargeTask = null;
+			synchronized (this)
+			{
+				if (_chargeTask != null)
+				{
+					_chargeTask.cancel(false);
+				}
+			}
 		}
 		_chargeTask = ThreadPoolManager.getInstance().scheduleGeneral(new ResetChargesTask(this), 600000);
 	}
@@ -14531,9 +14548,9 @@ public final class L2PcInstance extends L2Playable
 	{
 		try
 		{
-			for (L2BossZone _zone : GrandBossManager.getInstance().getZones())
+			for (L2BossZone zone : GrandBossManager.getInstance().getZones().values())
 			{
-				_zone.removePlayer(this);
+				zone.removePlayer(this);
 			}
 		}
 		catch (Exception e)

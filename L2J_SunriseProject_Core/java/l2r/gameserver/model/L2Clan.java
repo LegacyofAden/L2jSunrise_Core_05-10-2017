@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import l2r.Config;
@@ -357,13 +358,14 @@ public class L2Clan implements IIdentifiable, INamable
 	public void addClanMember(L2PcInstance player)
 	{
 		final L2ClanMember member = new L2ClanMember(this, player);
-		// store in memory
-		addClanMember(member);
 		member.setPlayerInstance(player);
+		addClanMember(member);
+		
 		player.setClan(this);
 		player.setPledgeClass(L2ClanMember.calculatePledgeClass(player));
 		player.sendPacket(new PledgeShowMemberListUpdate(player));
 		player.sendPacket(new PledgeSkillList(this));
+		
 		addSkillEffects(player);
 		
 		// Notify to scripts
@@ -470,9 +472,10 @@ public class L2Clan implements IIdentifiable, INamable
 		{
 			CastleManager.getInstance().removeCirclet(exMember, getCastleId());
 		}
-		if (exMember.isOnline())
+		
+		final L2PcInstance player = exMember.getPlayerInstance();
+		if (player != null)
 		{
-			L2PcInstance player = exMember.getPlayerInstance();
 			if (!player.isNoble())
 			{
 				player.setTitle("");
@@ -483,7 +486,7 @@ public class L2Clan implements IIdentifiable, INamable
 			if (player.isClanLeader())
 			{
 				SiegeManager.getInstance().removeSiegeSkills(player);
-				player.setClanCreateExpiryTime(System.currentTimeMillis() + (Config.ALT_CLAN_CREATE_DAYS * 86400000L)); // 24*60*60*1000 = 86400000
+				player.setClanCreateExpiryTime(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(Config.ALT_CLAN_CREATE_DAYS));
 			}
 			// remove Clan skills from Player
 			removeSkillEffects(player);
@@ -514,7 +517,7 @@ public class L2Clan implements IIdentifiable, INamable
 		}
 		else
 		{
-			removeMemberInDatabase(exMember, clanJoinExpiryTime, getLeaderId() == objectId ? System.currentTimeMillis() + (Config.ALT_CLAN_CREATE_DAYS * 86400000L) : 0);
+			removeMemberInDatabase(exMember.getObjectId(), clanJoinExpiryTime, getLeaderId() == objectId ? System.currentTimeMillis() + TimeUnit.DAYS.toMillis(Config.ALT_CLAN_CREATE_DAYS) : 0);
 		}
 		
 		// Notify to scripts
@@ -1021,35 +1024,30 @@ public class L2Clan implements IIdentifiable, INamable
 	}
 	
 	/**
-	 * @param member the clan member to be removed.
-	 * @param clanJoinExpiryTime
-	 * @param clanCreateExpiryTime
+	 * Removes a clan member from this clan.
+	 * @param playerId the clan member object ID to be removed
+	 * @param clanJoinExpiryTime the time penalty for the player to join a new clan
+	 * @param clanCreateExpiryTime the time penalty for the player to create a new clan
 	 */
-	private void removeMemberInDatabase(L2ClanMember member, long clanJoinExpiryTime, long clanCreateExpiryTime)
+	private void removeMemberInDatabase(int playerId, long clanJoinExpiryTime, long clanCreateExpiryTime)
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement ps1 = con.prepareStatement("UPDATE characters SET clanid=0, title=?, clan_join_expiry_time=?, clan_create_expiry_time=?, clan_privs=0, wantspeace=0, subpledge=0, lvl_joined_academy=0, apprentice=0, sponsor=0 WHERE charId=?");
+			PreparedStatement ps2 = con.prepareStatement("UPDATE characters SET apprentice=0 WHERE apprentice=?");
+			PreparedStatement ps3 = con.prepareStatement("UPDATE characters SET sponsor=0 WHERE sponsor=?"))
 		{
-			PreparedStatement statement = con.prepareStatement("UPDATE characters SET clanid=0, title=?, clan_join_expiry_time=?, clan_create_expiry_time=?, clan_privs=0, wantspeace=0, subpledge=0, lvl_joined_academy=0, apprentice=0, sponsor=0 WHERE charId=?");
-			statement.setString(1, "");
-			statement.setLong(2, clanJoinExpiryTime);
-			statement.setLong(3, clanCreateExpiryTime);
-			statement.setInt(4, member.getObjectId());
-			statement.execute();
-			statement.close();
-			if (Config.DEBUG)
-			{
-				_log.info("clan member removed in db: " + getId());
-			}
-			
-			statement = con.prepareStatement("UPDATE characters SET apprentice=0 WHERE apprentice=?");
-			statement.setInt(1, member.getObjectId());
-			statement.execute();
-			statement.close();
-			
-			statement = con.prepareStatement("UPDATE characters SET sponsor=0 WHERE sponsor=?");
-			statement.setInt(1, member.getObjectId());
-			statement.execute();
-			statement.close();
+			// Remove clan member.
+			ps1.setString(1, "");
+			ps1.setLong(2, clanJoinExpiryTime);
+			ps1.setLong(3, clanCreateExpiryTime);
+			ps1.setInt(4, playerId);
+			ps1.execute();
+			// Remove apprentice.
+			ps2.setInt(1, playerId);
+			ps2.execute();
+			// Remove sponsor.
+			ps3.setInt(1, playerId);
+			ps3.execute();
 		}
 		catch (Exception e)
 		{

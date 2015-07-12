@@ -159,11 +159,7 @@ public class L2ClanMember
 		{
 			return false;
 		}
-		if (_player.getClient() == null)
-		{
-			return false;
-		}
-		if (_player.getClient().isDetached())
+		if (_player.isInOfflineMode())
 		{
 			return false;
 		}
