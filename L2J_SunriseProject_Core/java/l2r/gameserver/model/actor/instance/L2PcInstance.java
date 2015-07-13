@@ -10610,6 +10610,11 @@ public final class L2PcInstance extends L2Playable
 				{
 					ts.put(holder.getSkillId(), holder.getSkillLvl());
 				}
+				
+				if (getSkillLevel(holder.getSkillId()) < holder.getSkillLvl())
+				{
+					addSkill(holder.getSkill(), false);
+				}
 				addTransformSkill(holder.getSkill());
 			}
 			
@@ -10621,6 +10626,11 @@ public final class L2PcInstance extends L2Playable
 					if (ts.get(holder.getSkillId()) < holder.getSkillLvl())
 					{
 						ts.put(holder.getSkillId(), holder.getSkillLvl());
+					}
+					
+					if (getSkillLevel(holder.getSkillId()) < holder.getSkillLvl())
+					{
+						addSkill(holder.getSkill(), false);
 					}
 					addTransformSkill(holder.getSkill());
 				}
