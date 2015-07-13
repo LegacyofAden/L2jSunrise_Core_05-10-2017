@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -219,10 +218,8 @@ import l2r.gameserver.model.events.impl.character.player.OnPlayerPvPKill;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerTransform;
 import l2r.gameserver.model.fishing.L2Fish;
 import l2r.gameserver.model.fishing.L2Fishing;
-import l2r.gameserver.model.holders.AdditionalSkillHolder;
 import l2r.gameserver.model.holders.ItemHolder;
 import l2r.gameserver.model.holders.PlayerEventHolder;
-import l2r.gameserver.model.holders.SkillHolder;
 import l2r.gameserver.model.holders.SkillUseHolder;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.itemcontainer.ItemContainer;
@@ -10598,58 +10595,17 @@ public final class L2PcInstance extends L2Playable
 			sl.addSkill(s.getDisplayId(), s.getDisplayLevel(), s.isPassive(), isDisabled, isEnchantable);
 		}
 		
-		if (_transformation != null)
+		if ((_transformation != null) && (_transformSkills != null) && !_transformSkills.isEmpty())
 		{
-			Map<Integer, Integer> ts = new TreeMap<>();
-			
-			for (SkillHolder holder : _transformation.getTemplate(this).getSkills())
+			for (L2Skill transformSkill : _transformSkills.values())
 			{
-				ts.putIfAbsent(holder.getSkillId(), holder.getSkillLvl());
-				
-				if (ts.get(holder.getSkillId()) < holder.getSkillLvl())
+				if (!transformSkill.isPassive())
 				{
-					ts.put(holder.getSkillId(), holder.getSkillLvl());
+					sl.addSkill(transformSkill.getId(), transformSkill.getLevel(), false, false, false);
 				}
-				
-				if (getSkillLevel(holder.getSkillId()) < holder.getSkillLvl())
-				{
-					addSkill(holder.getSkill(), false);
-				}
-				addTransformSkill(holder.getSkill());
-			}
-			
-			for (AdditionalSkillHolder holder : _transformation.getTemplate(this).getAdditionalSkills())
-			{
-				if (getLevel() >= holder.getMinLevel())
-				{
-					ts.putIfAbsent(holder.getSkillId(), holder.getSkillLvl());
-					if (ts.get(holder.getSkillId()) < holder.getSkillLvl())
-					{
-						ts.put(holder.getSkillId(), holder.getSkillLvl());
-					}
-					
-					if (getSkillLevel(holder.getSkillId()) < holder.getSkillLvl())
-					{
-						addSkill(holder.getSkill(), false);
-					}
-					addTransformSkill(holder.getSkill());
-				}
-			}
-			
-			// Add collection skills.
-			for (L2SkillLearn skill : SkillTreesData.getInstance().getCollectSkillTree().values())
-			{
-				if (getKnownSkill(skill.getSkillId()) != null)
-				{
-					addTransformSkill(SkillData.getInstance().getInfo(skill.getSkillId(), skill.getSkillLevel()));
-				}
-			}
-			
-			for (Entry<Integer, Integer> transformSkill : ts.entrySet())
-			{
-				sl.addSkill(transformSkill.getKey(), transformSkill.getValue(), false, false, false);
 			}
 		}
+		
 		sendPacket(sl);
 	}
 	
