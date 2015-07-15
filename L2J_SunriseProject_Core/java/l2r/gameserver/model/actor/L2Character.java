@@ -243,8 +243,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	
 	private boolean _lethalable = true;
 	
-	protected final String COND_EXCEPTIONS = "COND_EX_" + getObjectId();
-	
 	private volatile Map<Integer, OptionsSkillHolder> _triggerSkills;
 	
 	private volatile Map<Integer, InvulSkillHolder> _invulAgainst;
