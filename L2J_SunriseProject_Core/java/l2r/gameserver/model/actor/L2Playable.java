@@ -293,9 +293,9 @@ public abstract class L2Playable extends L2Character
 	}
 	
 	/**
-	 * @return True if the Silent Moving mode is active.
+	 * @return {@code true} if the Silent Moving mode is active, {@code false} otherwise
 	 */
-	public boolean isSilentMoving()
+	public boolean isSilentMovingAffected()
 	{
 		return isAffected(EffectFlag.SILENT_MOVE);
 	}

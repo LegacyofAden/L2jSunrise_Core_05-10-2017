@@ -82,7 +82,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 		_selfAnalysis.init();
 		_attackTimeout = Integer.MAX_VALUE;
 		_globalAggro = -10; // 10 seconds timeout of ATTACK after respawn
-		_attackRange = ((L2Attackable) _actor).getPhysicalAttackRange();
+		_attackRange = _actor.getPhysicalAttackRange();
 	}
 	
 	@Override
@@ -150,7 +150,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 		if ((target != null) && target.isInvul())
 		{
 			// However EffectInvincible requires to check GMs specially
-			if ((target instanceof L2PcInstance) && ((L2PcInstance) target).isGM())
+			if ((target instanceof L2PcInstance) && target.isGM())
 			{
 				return false;
 			}
@@ -174,7 +174,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 		if (target instanceof L2Playable)
 		{
 			// Check if the target isn't in silent move mode AND too far (>100)
-			if (((L2Playable) target).isSilentMoving() && !_actor.isInsideRadius(target, 250, false, false))
+			if (((L2Playable) target).isSilentMovingAffected() && !_actor.isInsideRadius(target, 250, false, false))
 			{
 				return false;
 			}
@@ -564,7 +564,7 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 		{
 			_actor.setTarget(attackTarget);
 			skills = _actor.getAllSkills();
-			dist_2 = _actor.getPlanDistanceSq(attackTarget.getX(), attackTarget.getY());
+			dist_2 = _actor.calculateDistance(attackTarget, false, true);
 			range = _actor.getPhysicalAttackRange() + _actor.getTemplate().getCollisionRadius() + attackTarget.getTemplate().getCollisionRadius();
 			if (attackTarget.isMoving())
 			{
