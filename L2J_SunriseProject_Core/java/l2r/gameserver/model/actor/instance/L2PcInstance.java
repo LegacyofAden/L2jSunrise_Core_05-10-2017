@@ -8353,14 +8353,27 @@ public final class L2PcInstance extends L2Playable
 				// Add the L2Skill object to the L2Character _skills and its Func objects to the calculator set of the L2Character
 				addSkill(skill);
 				
-				if (Config.SKILL_CHECK_ENABLE && (!canOverrideCond(PcCondOverride.SKILL_CONDITIONS) || Config.SKILL_CHECK_GM))
+				if (Config.SKILL_CHECK_ENABLE)
 				{
-					if (!SkillTreesData.getInstance().isSkillAllowed(this, skill))
+					boolean mustCheck = false;
+					if (!isGM())
 					{
-						Util.handleIllegalPlayerAction(this, "Player " + getName() + " has invalid skill " + skill.getName() + " (" + skill.getId() + "/" + skill.getLevel() + "), class:" + ClassListData.getInstance().getClass(getClassId()).getClassName(), IllegalActionPunishmentType.BROADCAST);
-						if (Config.SKILL_CHECK_REMOVE)
+						mustCheck = true;
+					}
+					else if (isGM() && Config.SKILL_CHECK_GM)
+					{
+						mustCheck = true;
+					}
+					
+					if (mustCheck)
+					{
+						if (!SkillTreesData.getInstance().isSkillAllowed(this, skill))
 						{
-							removeSkill(skill);
+							Util.handleIllegalPlayerAction(this, "Player " + getName() + " has invalid skill " + skill.getName() + " (" + skill.getId() + "/" + skill.getLevel() + "), class:" + ClassListData.getInstance().getClass(getClassId()).getClassName(), IllegalActionPunishmentType.BROADCAST);
+							if (Config.SKILL_CHECK_REMOVE)
+							{
+								removeSkill(skill);
+							}
 						}
 					}
 				}
