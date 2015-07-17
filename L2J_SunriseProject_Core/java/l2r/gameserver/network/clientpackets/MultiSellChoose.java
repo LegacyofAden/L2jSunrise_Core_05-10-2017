@@ -126,7 +126,7 @@ public class MultiSellChoose extends L2GameClientPacket
 			return;
 		}
 		
-		if (npc != null)
+		if ((npc != null) && !player.isAioMultisell())
 		{
 			if (!player.isInsideRadius(npc, INTERACTION_DISTANCE, true, false) || (player.getInstanceId() != npc.getInstanceId()))
 			{
@@ -388,7 +388,6 @@ public class MultiSellChoose extends L2GameClientPacket
 							}
 						}
 					}
-					
 				}
 				
 				// Generate the appropriate items

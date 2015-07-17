@@ -135,31 +135,41 @@ public class ServicesBBSManager extends BaseBBSManager
 				{
 					String multisell = commandSeperator(command);
 					int multi = Integer.valueOf(multisell);
-					activeChar.setIsUsingAioMultisell(true);
 					
-					if ((multi == 539) || (multi == 540) || (multi == 541))
+					switch (multi)
 					{
-						content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop.htm");
+						case 90525:
+							content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/symbolMaker.htm");
+							break;
+						case 90526:
+							content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
+							break;
+						case 90539:
+						case 90540:
+						case 90541:
+							content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop.htm");
+							break;
+						default:
+							content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gmshop.htm");
+							break;
 					}
-					else if ((multi == 527) || (multi == 528) || (multi == 529) || (multi == 530) || (multi == 531) || (multi == 532) || (multi == 533) || (multi == 534) || (multi == 535) || (multi == 536) || (multi == 537) || (multi == 538))
+					
+					if ((multi == 90527) || (multi == 90528) || (multi == 90529) || (multi == 90530) || (multi == 90531) || (multi == 90532) || (multi == 90533) || (multi == 90534) || (multi == 90535) || (multi == 90536) || (multi == 90537) || (multi == 90538))
 					{
 						content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/blacksmith.htm");
 					}
-					else if (multi == 525)
+					
+					separateAndSend(content, activeChar);
+					
+					if (CommunityServicesConfigs.MULTISELL_LIST.contains(multi))
 					{
-						content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/symbolMaker.htm");
-					}
-					else if (multi == 526)
-					{
-						content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
+						activeChar.setIsUsingAioMultisell(true);
+						MultisellData.getInstance().separateAndSend(multi, activeChar, null, false);
 					}
 					else
 					{
-						content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gmshop.htm");
+						SecurityActions.startSecurity(activeChar, SecurityType.COMMUNITY_SYSTEM);
 					}
-					
-					separateAndSend(content, activeChar);
-					MultisellData.getInstance().separateAndSend(multi, activeChar, null, false);
 				}
 				catch (Exception e)
 				{
