@@ -56,13 +56,13 @@ public class MultiSellChoose extends L2GameClientPacket
 	@SuppressWarnings("unused")
 	private int _unk3;
 	@SuppressWarnings("unused")
-	private int _unk7;
-	@SuppressWarnings("unused")
 	private int _unk4;
 	@SuppressWarnings("unused")
 	private int _unk5;
 	@SuppressWarnings("unused")
 	private int _unk6;
+	@SuppressWarnings("unused")
+	private int _unk7;
 	@SuppressWarnings("unused")
 	private int _unk8;
 	@SuppressWarnings("unused")
@@ -288,7 +288,6 @@ public class MultiSellChoose extends L2GameClientPacket
 									return;
 								}
 							}
-							
 							else
 							{
 								// for non-stackable items, one of two scenaria are possible:
@@ -449,27 +448,22 @@ public class MultiSellChoose extends L2GameClientPacket
 							{
 								sm = SystemMessage.getSystemMessage(SystemMessageId.EARNED_ITEM_S1);
 								sm.addItemName(e.getId());
-								player.sendPacket(sm);
 							}
 							player.sendPacket(sm);
 						}
 					}
-					player.sendPacket(new ItemList(player, false));
-					
-					StatusUpdate su = new StatusUpdate(player);
-					su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
-					player.sendPacket(su);
 				}
+				player.sendPacket(new ItemList(player, false));
+				
+				StatusUpdate su = new StatusUpdate(player);
+				su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+				player.sendPacket(su);
 				
 				// finally, give the tax to the castle...
-				if (entry.getTaxAmount() > 0)
+				if ((npc != null) && (entry.getTaxAmount() > 0))
 				{
-					if (npc != null)
-					{
-						npc.getCastle().addToTreasury(entry.getTaxAmount() * _amount);
-					}
+					npc.getCastle().addToTreasury(entry.getTaxAmount() * _amount);
 				}
-				
 				break;
 			}
 		}
