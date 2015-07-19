@@ -1726,6 +1726,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			case FRONT_AURA:
 			case BEHIND_AURA:
 			case GROUND:
+			case AURA_FRIENDLY:
 				target = this;
 				break;
 			case SELF:
@@ -6102,6 +6103,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				case FRONT_AURA:
 				case BEHIND_AURA:
 				case AURA_CORPSE_MOB:
+				case AURA_FRIENDLY:
 					break;
 				default:
 					abortCast();
@@ -6781,6 +6783,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						}
 						else
 						{
+							
+							// vGodFather
 							boolean flagAttacker = true; // This must be always true
 							switch (skill.getId())
 							{
