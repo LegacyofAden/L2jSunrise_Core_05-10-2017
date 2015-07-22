@@ -1547,7 +1547,15 @@ public class L2Attackable extends L2Npc
 					L2Item itemCheck = ItemData.getInstance().getTemplate(item.getId()); // used to check herbs
 					if (isFlying() || (!itemCheck.hasExImmediateEffect() && ((!isRaid() && Config.AUTO_LOOT) || (isRaid() && Config.AUTO_LOOT_RAIDS))) || (itemCheck.hasExImmediateEffect() && Config.AUTO_LOOT_HERBS))
 					{
-						player.doAutoLoot(this, item); // Give the item(s) to the L2PcInstance that has killed the L2Attackable
+						// vGodFather fix
+						if ((itemCheck.isStackable() && (player.getInventory().getItemByItemId(itemCheck.getId()) != null)) || (player.getInventory().getSize(false) < player.getInventoryLimit()))
+						{
+							player.doAutoLoot(this, item); // Give the item(s) to the L2PcInstance that has killed the L2Attackable
+						}
+						else
+						{
+							dropItem(player, item); // drop the item on the ground
+						}
 					}
 					else
 					{
@@ -1571,12 +1579,21 @@ public class L2Attackable extends L2Npc
 		{
 			int champqty = Rnd.get(Config.L2JMOD_CHAMPION_REWARD_QTY);
 			ItemHolder item = new ItemHolder(Config.L2JMOD_CHAMPION_REWARD_ID, ++champqty);
+			L2Item itemCheck = ItemData.getInstance().getTemplate(item.getId());
 			
 			if ((player.getLevel() <= getLevel()) && (Rnd.get(100) < Config.L2JMOD_CHAMPION_REWARD_LOWER_LVL_ITEM_CHANCE))
 			{
 				if (Config.AUTO_LOOT || isFlying())
 				{
-					player.addItem("ChampionLoot", item.getId(), item.getCount(), this, true); // Give the item(s) to the L2PcInstance that has killed the L2Attackable
+					// vGodFather fix
+					if ((itemCheck.isStackable() && (player.getInventory().getItemByItemId(itemCheck.getId()) != null)) || (player.getInventory().getSize(false) < player.getInventoryLimit()))
+					{
+						player.addItem("ChampionLoot", item.getId(), item.getCount(), this, true); // Give the item(s) to the L2PcInstance that has killed the L2Attackable
+					}
+					else
+					{
+						dropItem(player, item); // drop the item on the ground
+					}
 				}
 				else
 				{
@@ -1587,7 +1604,15 @@ public class L2Attackable extends L2Npc
 			{
 				if (Config.AUTO_LOOT || isFlying())
 				{
-					player.addItem("ChampionLoot", item.getId(), item.getCount(), this, true); // Give the item(s) to the L2PcInstance that has killed the L2Attackable
+					// vGodFather fix
+					if ((itemCheck.isStackable() && (player.getInventory().getItemByItemId(itemCheck.getId()) != null)) || (player.getInventory().getSize(false) < player.getInventoryLimit()))
+					{
+						player.addItem("ChampionLoot", item.getId(), item.getCount(), this, true); // Give the item(s) to the L2PcInstance that has killed the L2Attackable
+					}
+					else
+					{
+						dropItem(player, item); // drop the item on the ground
+					}
 				}
 				else
 				{
