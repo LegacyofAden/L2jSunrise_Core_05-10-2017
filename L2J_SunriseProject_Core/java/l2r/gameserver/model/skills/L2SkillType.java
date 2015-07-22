@@ -63,9 +63,6 @@ public enum L2SkillType
 	DISARM,
 	// Aggro
 	AGGDAMAGE,
-	AGGREDUCE,
-	AGGREMOVE,
-	AGGREDUCE_CHAR,
 	AGGDEBUFF,
 	// Misc
 	UNLOCK,

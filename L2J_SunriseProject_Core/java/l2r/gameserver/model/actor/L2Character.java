@@ -6768,17 +6768,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 								}
 							}
 							// notify target AI about the attack
-							if (((L2Character) target).hasAI())
+							if (((L2Character) target).hasAI() && !skill.hasEffectType(L2EffectType.HATE))
 							{
-								switch (skill.getSkillType())
-								{
-									case AGGREDUCE:
-									case AGGREDUCE_CHAR:
-									case AGGREMOVE:
-										break;
-									default:
-										((L2Character) target).getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
-								}
+								((L2Character) target).getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
 							}
 						}
 						else
@@ -6878,29 +6870,21 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					}
 				}
 			}
+			
 			// Notify AI
-			if (skill.isOffensive() && (skill.getTargetType() != L2TargetType.SELF))
+			if (skill.isOffensive() && !skill.hasEffectType(L2EffectType.HATE))
 			{
-				switch (skill.getSkillType())
+				for (L2Object target : targets)
 				{
-					case AGGREDUCE:
-					case AGGREDUCE_CHAR:
-					case AGGREMOVE:
-						break;
-					default:
-						for (L2Object target : targets)
+					if (target instanceof L2Character)
+					{
+						final L2Character creature = (L2Character) target;
+						if (creature.hasAI())
 						{
-							if (target instanceof L2Character)
-							{
-								final L2Character creature = (L2Character) target;
-								if (creature.hasAI())
-								{
-									// notify target AI about the attack
-									creature.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
-								}
-							}
+							// Notify target AI about the attack
+							creature.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
 						}
-						break;
+					}
 				}
 			}
 		}
