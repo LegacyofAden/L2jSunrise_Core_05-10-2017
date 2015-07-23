@@ -75,7 +75,16 @@ public final class L2TrapInstance extends L2Npc
 		// TODO: Manage this properly when NPC templates are complete and in XML.
 		for (L2Skill skill : template.getSkills().values())
 		{
-			_skill = skill; // Last skill
+			//@formatter:off
+			if ((skill.getId() == 4072) || (skill.getId() == 4186) || (skill.getId() == 5267)
+				|| (skill.getId() == 5268) || (skill.getId() == 5269) || (skill.getId() == 5270)
+				|| (skill.getId() == 5271) || (skill.getId() == 5340) || (skill.getId() == 5422)
+				|| (skill.getId() == 5423) || (skill.getId() == 5424) || (skill.getId() == 5679))
+			{
+				_skill = skill;
+				break;
+			}
+			//@formatter:on
 		}
 		// _skill = getTemplate().getParameters().getObject("trap_skill", SkillHolder.class);
 		_hasLifeTime = lifeTime >= 0;

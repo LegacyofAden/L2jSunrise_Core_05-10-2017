@@ -183,7 +183,6 @@ import l2r.gameserver.model.actor.tasks.player.TeleportWatchdogTask;
 import l2r.gameserver.model.actor.tasks.player.VitalityTask;
 import l2r.gameserver.model.actor.tasks.player.WarnUserTakeBreakTask;
 import l2r.gameserver.model.actor.tasks.player.WaterTask;
-import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.actor.templates.L2PcTemplate;
 import l2r.gameserver.model.actor.transform.Transform;
 import l2r.gameserver.model.base.ClassId;
@@ -6167,12 +6166,11 @@ public final class L2PcInstance extends L2Playable
 	/**
 	 * Add the L2Trap of this L2PcInstance
 	 * @param id
-	 * @param npcTemplate
-	 * @param despawnTime
+	 * @param trap
 	 */
-	public void addTrap(int id, L2NpcTemplate npcTemplate, int despawnTime)
+	public void addTrap(int id, L2TrapInstance trap)
 	{
-		_traps.put(id, new L2TrapInstance(id, npcTemplate, this, despawnTime));
+		_traps.put(id, trap);
 	}
 	
 	/**
