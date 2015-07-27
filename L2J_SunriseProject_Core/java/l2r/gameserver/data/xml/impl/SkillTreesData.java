@@ -436,7 +436,7 @@ public final class SkillTreesData implements IXmlReader
 		final SkillData st = SkillData.getInstance();
 		for (Entry<Integer, L2SkillLearn> e : _nobleSkillTree.entrySet())
 		{
-			tree.put(e.getKey(), st.getInfo(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
+			tree.put(e.getKey(), st.getSkill(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
 		}
 		return tree;
 	}
@@ -451,7 +451,7 @@ public final class SkillTreesData implements IXmlReader
 		final SkillData st = SkillData.getInstance();
 		for (Entry<Integer, L2SkillLearn> e : _heroSkillTree.entrySet())
 		{
-			tree.put(e.getKey(), st.getInfo(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
+			tree.put(e.getKey(), st.getSkill(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
 		}
 		return tree;
 	}
@@ -466,7 +466,7 @@ public final class SkillTreesData implements IXmlReader
 		final SkillData st = SkillData.getInstance();
 		for (Entry<Integer, L2SkillLearn> e : _gameMasterSkillTree.entrySet())
 		{
-			tree.put(e.getKey(), st.getInfo(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
+			tree.put(e.getKey(), st.getSkill(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
 		}
 		return tree;
 	}
@@ -481,7 +481,7 @@ public final class SkillTreesData implements IXmlReader
 		final SkillData st = SkillData.getInstance();
 		for (Entry<Integer, L2SkillLearn> e : _gameMasterAuraSkillTree.entrySet())
 		{
-			tree.put(e.getKey(), st.getInfo(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
+			tree.put(e.getKey(), st.getSkill(e.getValue().getSkillId(), e.getValue().getSkillLevel()));
 		}
 		return tree;
 	}
@@ -555,7 +555,7 @@ public final class SkillTreesData implements IXmlReader
 		{
 			for (L2SkillLearn s : learnable)
 			{
-				L2Skill sk = SkillData.getInstance().getInfo(s.getSkillId(), s.getSkillLevel());
+				L2Skill sk = SkillData.getInstance().getSkill(s.getSkillId(), s.getSkillLevel());
 				holder.addSkill(sk);
 			}
 			
@@ -747,7 +747,7 @@ public final class SkillTreesData implements IXmlReader
 				final L2Skill oldSkill = clan.getSkills().get(skill.getSkillId());
 				if (oldSkill != null)
 				{
-					if (oldSkill.getLevel() == (skill.getSkillLevel() - 1))
+					if ((oldSkill.getLevel() + 1) == skill.getSkillLevel())
 					{
 						result.add(skill);
 					}
@@ -1123,7 +1123,7 @@ public final class SkillTreesData implements IXmlReader
 		final SkillData st = SkillData.getInstance();
 		for (L2SkillLearn sl : skills)
 		{
-			gmchar.addSkill(st.getInfo(sl.getSkillId(), sl.getSkillLevel()), false); // Don't Save GM skills to database
+			gmchar.addSkill(st.getSkill(sl.getSkillId(), sl.getSkillLevel()), false); // Don't Save GM skills to database
 		}
 	}
 	

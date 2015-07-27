@@ -312,13 +312,20 @@ public final class WalkingManager implements IXmlReader
 						return;
 					}
 					
-					walk.setBlocked(true);
-					final L2NpcWalkerNode node = walk.getCurrentNode();
-					npc.sendDebugMessage("Route '" + routeName + "', continuing to node " + walk.getCurrentNodeId());
-					npc.setIsRunning(node.runToLocation());
-					npc.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, node);
-					walk.setBlocked(false);
-					walk.setStoppedByAttack(false);
+					try
+					{
+						walk.setBlocked(true);
+						final L2NpcWalkerNode node = walk.getCurrentNode();
+						npc.sendDebugMessage("Route '" + routeName + "', continuing to node " + walk.getCurrentNodeId());
+						npc.setIsRunning(node.runToLocation());
+						npc.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, node);
+						walk.setBlocked(false);
+						walk.setStoppedByAttack(false);
+					}
+					catch (Exception e)
+					{
+						LOGGER.error(getClass().getSimpleName() + ": Failed start movement for NPC ID: " + npc.getId(), e);
+					}
 				}
 				else
 				{

@@ -218,7 +218,6 @@ import l2r.gameserver.model.events.impl.character.player.OnPlayerTransform;
 import l2r.gameserver.model.fishing.L2Fish;
 import l2r.gameserver.model.fishing.L2Fishing;
 import l2r.gameserver.model.holders.ItemHolder;
-import l2r.gameserver.model.holders.PlayerEventHolder;
 import l2r.gameserver.model.holders.SkillUseHolder;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.itemcontainer.ItemContainer;
@@ -782,8 +781,6 @@ public final class L2PcInstance extends L2Playable
 	protected Set<Integer> _activeSoulShots = ConcurrentHashMap.newKeySet(1);
 	
 	public final ReentrantLock soulShotLock = new ReentrantLock();
-	
-	private PlayerEventHolder eventStatus = null;
 	
 	private byte _handysBlockCheckerEventArena = -1;
 	
@@ -3006,6 +3003,12 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
+		if (isSitting())
+		{
+			System.out.println("PLAYER IS SITTING");
+			return;
+		}
+		
 		if (!_waitTypeSitting && !isAttackingDisabled() && !isOutOfControl() && !isImmobilized())
 		{
 			breakAttack();
@@ -3023,11 +3026,13 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void standUp()
 	{
-		if (SunriseEvents.isInEvent(this) && getEventStatus().isSitForced())
+		if (SunriseEvents.isInEvent(this) && getEventInfo().isSitForced())
 		{
 			sendMessage("A dark force beyond your mortal understanding makes your knees to shake when you try to stand up...");
+			return;
 		}
-		else if (_waitTypeSitting && !isInStoreMode() && !isAlikeDead())
+		
+		if (_waitTypeSitting && !isInStoreMode() && !isAlikeDead())
 		{
 			if (_effects.isAffected(EffectFlag.RELAXING))
 			{
@@ -14997,21 +15002,6 @@ public final class L2PcInstance extends L2Playable
 	public L2ContactList getContactList()
 	{
 		return _contactList;
-	}
-	
-	public void setEventStatus()
-	{
-		eventStatus = new PlayerEventHolder(this);
-	}
-	
-	public void setEventStatus(PlayerEventHolder pes)
-	{
-		eventStatus = pes;
-	}
-	
-	public PlayerEventHolder getEventStatus()
-	{
-		return eventStatus;
 	}
 	
 	public long getNotMoveUntil()
