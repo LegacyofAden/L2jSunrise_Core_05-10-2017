@@ -203,29 +203,36 @@ public class MinionList
 	 */
 	public void onAssist(L2Character caller, L2Character attacker)
 	{
-		if (attacker == null)
+		try
 		{
-			return;
-		}
-		
-		if (!_master.isAlikeDead() && !_master.isInCombat())
-		{
-			_master.addDamageHate(attacker, 0, 1);
-		}
-		
-		final boolean callerIsMaster = caller == _master;
-		int aggro = callerIsMaster ? 10 : 1;
-		if (_master.isRaid())
-		{
-			aggro *= 10;
-		}
-		
-		for (L2MonsterInstance minion : _minionReferences)
-		{
-			if ((minion != null) && !minion.isDead() && (callerIsMaster || !minion.isInCombat()))
+			if (attacker == null)
 			{
-				minion.addDamageHate(attacker, 0, aggro);
+				return;
 			}
+			
+			if (!_master.isAlikeDead() && !_master.isInCombat())
+			{
+				_master.addDamageHate(attacker, 0, 1);
+			}
+			
+			final boolean callerIsMaster = caller == _master;
+			int aggro = callerIsMaster ? 10 : 1;
+			if (_master.isRaid())
+			{
+				aggro *= 10;
+			}
+			
+			for (L2MonsterInstance minion : _minionReferences)
+			{
+				if ((minion != null) && !minion.isDead() && (callerIsMaster || !minion.isInCombat()))
+				{
+					minion.addDamageHate(attacker, 0, aggro);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			// no need to log
 		}
 	}
 	
