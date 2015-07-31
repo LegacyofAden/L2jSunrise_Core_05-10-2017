@@ -2685,7 +2685,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		}
 		catch (Exception e)
 		{
-			_log.warn(getClass().getSimpleName() + ": " + this + " -  onEvtThink() failed: " + e.getMessage());
+			_log.warn(getClass().getSimpleName() + ": " + this + " -  onEvtThink() failed: " + e.getMessage(), e);
 		}
 		finally
 		{

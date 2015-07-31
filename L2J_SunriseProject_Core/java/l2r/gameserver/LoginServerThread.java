@@ -568,7 +568,7 @@ public class LoginServerThread extends Thread
 				client
 			});
 			_logAccounting.log(record);
-			client.setAditionalClosePacket(SystemMessage.getSystemMessage(SystemMessageId.ANOTHER_LOGIN_WITH_ACCOUNT));
+			client.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.ANOTHER_LOGIN_WITH_ACCOUNT));
 			client.closeNow();
 		}
 	}

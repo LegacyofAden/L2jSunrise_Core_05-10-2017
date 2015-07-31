@@ -21,6 +21,7 @@ package l2r.gameserver.network;
 import java.nio.ByteBuffer;
 
 import l2r.Config;
+import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.network.L2GameClient.GameClientState;
 import l2r.gameserver.network.clientpackets.*;
 import l2r.util.Util;
@@ -52,11 +53,6 @@ public final class L2GamePacketHandler implements IPacketHandler<L2GameClient>, 
 	@Override
 	public ReceivablePacket<L2GameClient> handlePacket(ByteBuffer buf, L2GameClient client)
 	{
-		if (client.dropPacket())
-		{
-			return null;
-		}
-		
 		int opcode = buf.get() & 0xFF;
 		int id3;
 		
@@ -1199,8 +1195,8 @@ public final class L2GamePacketHandler implements IPacketHandler<L2GameClient>, 
 	}
 	
 	@Override
-	public void execute(ReceivablePacket<L2GameClient> rp)
+	public void execute(Runnable r)
 	{
-		rp.getClient().execute(rp);
+		ThreadPoolManager.getInstance().execute(r);
 	}
 }

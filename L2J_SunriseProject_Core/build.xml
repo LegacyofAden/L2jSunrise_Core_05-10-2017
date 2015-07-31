@@ -71,6 +71,7 @@
 		<jar destfile="${build.dist.login}/login.jar" level="9">
 			<fileset dir="${build.bin}">
 				<exclude name="**/gameserver/**" />
+				<exclude name="**/gr/**" />
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

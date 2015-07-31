@@ -271,9 +271,16 @@ public class GameServerThread extends Thread
 	
 	public void broadcastToTelnet(String msg)
 	{
-		if (L2LoginServer.getInstance().getStatusServer() != null)
+		try
 		{
-			L2LoginServer.getInstance().getStatusServer().sendMessageToTelnets(msg);
+			if (L2LoginServer.getInstance().getStatusServer() != null)
+			{
+				L2LoginServer.getInstance().getStatusServer().sendMessageToTelnets(msg);
+			}
+		}
+		catch (Exception e)
+		{
+		
 		}
 	}
 	

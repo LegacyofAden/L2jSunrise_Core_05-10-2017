@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import l2r.Config;
 import l2r.util.StringUtil;
 
+import com.l2jserver.mmocore.threading.LoggingRejectedExecutionHandler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +110,7 @@ public class ThreadPoolManager
 	private final ThreadPoolExecutor _ioPacketsThreadPool;
 	private final ThreadPoolExecutor _generalThreadPool;
 	private final ThreadPoolExecutor _eventThreadPool;
+	private final ThreadPoolExecutor _executor;
 	
 	private boolean _shutdown;
 	
@@ -126,6 +129,7 @@ public class ThreadPoolManager
 		_generalThreadPool = new ThreadPoolExecutor(Config.GENERAL_THREAD_CORE_SIZE, Config.GENERAL_THREAD_CORE_SIZE + 2, 5L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new PriorityThreadFactory("General Pool", Thread.NORM_PRIORITY));
 		_aiScheduledThreadPool = new ScheduledThreadPoolExecutor(Config.AI_MAX_THREAD, new PriorityThreadFactory("AISTPool", Thread.NORM_PRIORITY));
 		_eventThreadPool = new ThreadPoolExecutor(Config.EVENT_MAX_THREAD, Config.EVENT_MAX_THREAD + 2, 5L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new PriorityThreadFactory("Event Pool", Thread.NORM_PRIORITY));
+		_executor = new ThreadPoolExecutor(8, Integer.MAX_VALUE, 5L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new PriorityThreadFactory("ThreadPoolExecutor", Thread.NORM_PRIORITY), new LoggingRejectedExecutionHandler());
 		
 		scheduleGeneralAtFixedRate(new PurgeTask(), 10, 5, TimeUnit.MINUTES);
 	}
@@ -702,6 +706,17 @@ public class ThreadPoolManager
 			_aiScheduledThreadPool.purge();
 			_eventScheduledThreadPool.purge();
 		}
+	}
+	
+	public void execute(Runnable r)
+	{
+		_executor.execute(wrap(r));
+	}
+	
+	public Runnable wrap(Runnable r)
+	{
+		// return Config.ENABLE_RUNNABLE_STATS ? RunnableStatsWrapper.wrap(r) : r;
+		return r;
 	}
 	
 	private static class SingletonHolder

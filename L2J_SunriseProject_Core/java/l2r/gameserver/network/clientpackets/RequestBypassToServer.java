@@ -71,7 +71,8 @@ public final class RequestBypassToServer extends L2GameClientPacket
 		"_match",
 		"_diary",
 		"_olympiad?command",
-		"manor_menu_select"
+		"manor_menu_select",
+		"admin_"
 	};
 	
 	// S

@@ -614,6 +614,12 @@
 	<admin command="admin_check_farm_bots" accessLevel="7"/>
 	<admin command="admin_check_enchant_bots" accessLevel="7"/>
 
-	<!-- ADMIN REUNION Events MENU -->
+	<!-- ADMIN SUNRISE Events MENU -->
 	<admin command="admin_event_manage" accessLevel="7"/>
+	
+	<!-- ADMIN SUNRISE LogsViewer MENU -->
+	<admin command="admin_logsviewer" accessLevel="7"/>
+	<admin command="admin_startViewer" accessLevel="7"/>
+	<admin command="admin_stopViewer" accessLevel="7"/>
+	<admin command="admin_viewLog" accessLevel="7"/>
 </list>

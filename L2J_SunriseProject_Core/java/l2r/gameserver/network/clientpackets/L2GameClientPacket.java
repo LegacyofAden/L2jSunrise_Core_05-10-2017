@@ -89,9 +89,9 @@ public abstract class L2GameClientPacket extends ReceivablePacket<L2GameClient>
 				}
 			}
 		}
-		catch (Throwable t)
+		catch (RuntimeException e)
 		{
-			_log.error("Client: " + getClient().toString() + " - Failed running: " + getType() + t.getMessage(), t);
+			_log.error("Client: " + getClient().toString() + " - Failed running: " + getType() + e.getMessage(), e);
 			// in case of EnterWorld error kick player from game
 			if (this instanceof EnterWorld)
 			{

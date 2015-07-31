@@ -126,7 +126,7 @@ public final class ServerList extends L2LoginServerPacket
 	}
 	
 	@Override
-	public void write()
+	public void writeImpl()
 	{
 		writeC(0x04);
 		writeC(_servers.size());

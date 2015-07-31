@@ -572,6 +572,9 @@ public final class L2PcInstance extends L2Playable
 	private String donateCode;
 	private boolean donateCodeRight = true;
 	
+	/** LogViewer System */
+	public ScheduledFuture<?> _captureTask;
+	
 	public Map<String, List<Integer>> _profileBuffs = new ConcurrentHashMap<>();
 	
 	/** Premium Items */

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.logging.LogManager;
 
@@ -147,7 +146,6 @@ import gr.sr.main.SunriseInfo;
 import gr.sr.main.SunriseServerMods;
 import gr.sr.protection.Protection;
 
-import com.l2jserver.mmocore.SelectorConfig;
 import com.l2jserver.mmocore.SelectorThread;
 
 import org.slf4j.Logger;
@@ -440,40 +438,13 @@ public class GameServer
 		_loginThread = LoginServerThread.getInstance();
 		_loginThread.start();
 		
-		final SelectorConfig sc = new SelectorConfig();
-		sc.MAX_READ_PER_PASS = Config.MMO_MAX_READ_PER_PASS;
-		sc.MAX_SEND_PER_PASS = Config.MMO_MAX_SEND_PER_PASS;
-		sc.SLEEP_TIME = Config.MMO_SELECTOR_SLEEP_TIME;
-		sc.HELPER_BUFFER_COUNT = Config.MMO_HELPER_BUFFER_COUNT;
-		sc.TCP_NODELAY = Config.MMO_TCP_NODELAY;
+		InetAddress serverAddr = Config.GAMESERVER_HOSTNAME.equalsIgnoreCase("*") ? null : InetAddress.getByName(Config.GAMESERVER_HOSTNAME);
 		
 		_gamePacketHandler = new L2GamePacketHandler();
-		_selectorThread = new SelectorThread<>(sc, _gamePacketHandler, _gamePacketHandler, _gamePacketHandler, new IPv4Filter());
-		
-		InetAddress bindAddress = null;
-		if (!Config.GAMESERVER_HOSTNAME.equals("*"))
-		{
-			try
-			{
-				bindAddress = InetAddress.getByName(Config.GAMESERVER_HOSTNAME);
-			}
-			catch (UnknownHostException e1)
-			{
-				_log.error(getClass().getSimpleName() + ": WARNING: The GameServer bind address is invalid, using all avaliable IPs. Reason: " + e1.getMessage(), e1);
-			}
-		}
-		
-		try
-		{
-			_selectorThread.openServerSocket(bindAddress, Config.PORT_GAME);
-			_selectorThread.start();
-			_log.info(getClass().getSimpleName() + ": is now listening on: " + Config.GAMESERVER_HOSTNAME + ":" + Config.PORT_GAME);
-		}
-		catch (IOException e)
-		{
-			_log.error(getClass().getSimpleName() + ": FATAL: Failed to open server socket. Reason: " + e.getMessage(), e);
-			System.exit(1);
-		}
+		_selectorThread = new SelectorThread<>(Config.SELECTOR_CONFIG, _gamePacketHandler, _gamePacketHandler, _gamePacketHandler, new IPv4Filter());
+		_selectorThread.openServerSocket(serverAddr, Config.PORT_GAME);
+		_selectorThread.start();
+		_log.info(getClass().getSimpleName() + ": is now listening on: " + Config.GAMESERVER_HOSTNAME + ":" + Config.PORT_GAME);
 		
 		_log.info("Maximum Numbers of Connected players: " + Config.MAXIMUM_ONLINE_USERS);
 		_log.info("Server loaded in " + ((System.currentTimeMillis() - serverLoadStart) / 1000) + " seconds.");
@@ -484,47 +455,6 @@ public class GameServer
 		AutoAnnounceTaskManager.getInstance();
 		
 		SunriseInfo.load();
-	}
-	
-	public static void main(String[] args) throws Exception
-	{
-		Server.serverMode = Server.MODE_GAMESERVER;
-		// Local Constants
-		final String LOG_FOLDER = "log"; // Name of folder for log file
-		final String LOG_NAME = "./log.cfg"; // Name of log file
-		
-		/*** Main ***/
-		// Create log folder
-		File logFolder = new File(Config.DATAPACK_ROOT, LOG_FOLDER);
-		logFolder.mkdir();
-		
-		// Create input stream for log file -- or store file data into memory
-		try (InputStream is = new FileInputStream(new File(LOG_NAME)))
-		{
-			LogManager.getLogManager().readConfiguration(is);
-		}
-		
-		// Initialize config
-		Config.load();
-		// Sunrise configs load section
-		ConfigsController.getInstance().reloadSunriseConfigs();
-		// Check binding address
-		checkFreePorts();
-		_log.info("Sunrise Configs Loaded...");
-		// Initialize database
-		Class.forName(Config.DATABASE_DRIVER).newInstance();
-		L2DatabaseFactory.getInstance().getConnection().close();
-		gameServer = new GameServer();
-		
-		if (Config.IS_TELNET_ENABLED)
-		{
-			_statusServer = new Status(Server.serverMode);
-			_statusServer.start();
-		}
-		else
-		{
-			_log.info(GameServer.class.getSimpleName() + ": Telnet server is currently disabled.");
-		}
 	}
 	
 	public static void printSection(String s)
@@ -568,6 +498,47 @@ public class GameServer
 				{
 				}
 			}
+		}
+	}
+	
+	public static void main(String[] args) throws Exception
+	{
+		Server.serverMode = Server.MODE_GAMESERVER;
+		// Local Constants
+		final String LOG_FOLDER = "log"; // Name of folder for log file
+		final String LOG_NAME = "./log.cfg"; // Name of log file
+		
+		/*** Main ***/
+		// Create log folder
+		File logFolder = new File(Config.DATAPACK_ROOT, LOG_FOLDER);
+		logFolder.mkdir();
+		
+		// Create input stream for log file -- or store file data into memory
+		try (InputStream is = new FileInputStream(new File(LOG_NAME)))
+		{
+			LogManager.getLogManager().readConfiguration(is);
+		}
+		
+		// Initialize config
+		Config.load();
+		// Sunrise configs load section
+		ConfigsController.getInstance().reloadSunriseConfigs();
+		// Check binding address
+		checkFreePorts();
+		_log.info("Sunrise Configs Loaded...");
+		// Initialize database
+		Class.forName(Config.DATABASE_DRIVER).newInstance();
+		L2DatabaseFactory.getInstance().getConnection().close();
+		gameServer = new GameServer();
+		
+		if (Config.IS_TELNET_ENABLED)
+		{
+			_statusServer = new Status(Server.serverMode);
+			_statusServer.start();
+		}
+		else
+		{
+			_log.info(GameServer.class.getSimpleName() + ": Telnet server is currently disabled.");
 		}
 	}
 }

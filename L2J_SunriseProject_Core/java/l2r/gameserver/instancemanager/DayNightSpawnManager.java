@@ -19,9 +19,9 @@
 package l2r.gameserver.instancemanager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.enums.RaidBossStatus;
@@ -35,14 +35,13 @@ import org.slf4j.LoggerFactory;
 /**
  * @author godson
  */
-public class DayNightSpawnManager
+public final class DayNightSpawnManager
 {
-	
 	private static Logger _log = LoggerFactory.getLogger(DayNightSpawnManager.class);
 	
 	private final List<L2Spawn> _dayCreatures = new ArrayList<>();
 	private final List<L2Spawn> _nightCreatures = new ArrayList<>();
-	private final Map<L2Spawn, L2RaidBossInstance> _bosses = new ConcurrentHashMap<>();
+	private final Map<L2Spawn, L2RaidBossInstance> _bosses = new HashMap<>();
 	
 	// private static int _currentState; // 0 = Day, 1 = Night
 	
@@ -257,6 +256,7 @@ public class DayNightSpawnManager
 			return raidboss;
 		}
 		
+		_bosses.put(spawnDat, null);
 		return null;
 	}
 	

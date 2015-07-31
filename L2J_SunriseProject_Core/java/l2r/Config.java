@@ -57,6 +57,8 @@ import l2r.gameserver.util.Util;
 import l2r.util.PropertiesParser;
 import l2r.util.StringUtil;
 
+import com.l2jserver.mmocore.SelectorConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -130,6 +132,9 @@ public final class Config
 	public static final String LOGIN_CONFIGURATION_FILE = "./config/network/LoginServer.ini";
 	public static final String CONFIGURATION_FILE = "./config/network/Server.ini";
 	public static final String TELNET_FILE = "./config/network/Telnet.ini";
+	
+	/** Network settings */
+	public static SelectorConfig SELECTOR_CONFIG = new SelectorConfig();
 	
 	// sunrise
 	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
@@ -943,24 +948,6 @@ public final class Config
 	// --------------------------------------------------
 	public static int MOVE_PACKET_DELAY;
 	public static int ATTACK_PACKET_DELAY;
-	public static int CLIENT_PACKET_QUEUE_SIZE;
-	public static int CLIENT_PACKET_QUEUE_MAX_BURST_SIZE;
-	public static int CLIENT_PACKET_QUEUE_MAX_PACKETS_PER_SECOND;
-	public static int CLIENT_PACKET_QUEUE_MEASURE_INTERVAL;
-	public static int CLIENT_PACKET_QUEUE_MAX_AVERAGE_PACKETS_PER_SECOND;
-	public static int CLIENT_PACKET_QUEUE_MAX_FLOODS_PER_MIN;
-	public static int CLIENT_PACKET_QUEUE_MAX_OVERFLOWS_PER_MIN;
-	public static int CLIENT_PACKET_QUEUE_MAX_UNDERFLOWS_PER_MIN;
-	public static int CLIENT_PACKET_QUEUE_MAX_UNKNOWN_PER_MIN;
-	
-	// --------------------------------------------------
-	// MMO Settings
-	// --------------------------------------------------
-	public static int MMO_SELECTOR_SLEEP_TIME;
-	public static int MMO_MAX_SEND_PER_PASS;
-	public static int MMO_MAX_READ_PER_PASS;
-	public static int MMO_HELPER_BUFFER_COUNT;
-	public static boolean MMO_TCP_NODELAY;
 	
 	// --------------------------------------------------
 	// Vitality Settings
@@ -1831,23 +1818,6 @@ public final class Config
 			
 			MOVE_PACKET_DELAY = clientPacketsSettings.getInt("MovePacketDelay", 100);
 			ATTACK_PACKET_DELAY = clientPacketsSettings.getInt("AttackPacketDelay", 500);
-			CLIENT_PACKET_QUEUE_SIZE = clientPacketsSettings.getInt("ClientPacketQueueSize", 0);
-			if (CLIENT_PACKET_QUEUE_SIZE == 0)
-			{
-				CLIENT_PACKET_QUEUE_SIZE = MMO_MAX_READ_PER_PASS + 2;
-			}
-			CLIENT_PACKET_QUEUE_MAX_BURST_SIZE = clientPacketsSettings.getInt("ClientPacketQueueMaxBurstSize", 0);
-			if (CLIENT_PACKET_QUEUE_MAX_BURST_SIZE == 0)
-			{
-				CLIENT_PACKET_QUEUE_MAX_BURST_SIZE = MMO_MAX_READ_PER_PASS + 1;
-			}
-			CLIENT_PACKET_QUEUE_MAX_PACKETS_PER_SECOND = clientPacketsSettings.getInt("ClientPacketQueueMaxPacketsPerSecond", 80);
-			CLIENT_PACKET_QUEUE_MEASURE_INTERVAL = clientPacketsSettings.getInt("ClientPacketQueueMeasureInterval", 5);
-			CLIENT_PACKET_QUEUE_MAX_AVERAGE_PACKETS_PER_SECOND = clientPacketsSettings.getInt("ClientPacketQueueMaxAveragePacketsPerSecond", 40);
-			CLIENT_PACKET_QUEUE_MAX_FLOODS_PER_MIN = clientPacketsSettings.getInt("ClientPacketQueueMaxFloodsPerMin", 2);
-			CLIENT_PACKET_QUEUE_MAX_OVERFLOWS_PER_MIN = clientPacketsSettings.getInt("ClientPacketQueueMaxOverflowsPerMin", 1);
-			CLIENT_PACKET_QUEUE_MAX_UNDERFLOWS_PER_MIN = clientPacketsSettings.getInt("ClientPacketQueueMaxUnderflowsPerMin", 1);
-			CLIENT_PACKET_QUEUE_MAX_UNKNOWN_PER_MIN = clientPacketsSettings.getInt("ClientPacketQueueMaxUnknownPerMin", 5);
 			
 			// Load Telnet L2Properties file (if exists)
 			final PropertiesParser telnetSettings = new PropertiesParser(TELNET_FILE);
@@ -1857,11 +1827,12 @@ public final class Config
 			// MMO
 			final PropertiesParser mmoSettings = new PropertiesParser(MMO_CONFIG_FILE);
 			
-			MMO_SELECTOR_SLEEP_TIME = mmoSettings.getInt("SleepTime", 20);
-			MMO_MAX_SEND_PER_PASS = mmoSettings.getInt("MaxSendPerPass", 12);
-			MMO_MAX_READ_PER_PASS = mmoSettings.getInt("MaxReadPerPass", 12);
-			MMO_HELPER_BUFFER_COUNT = mmoSettings.getInt("HelperBufferCount", 20);
-			MMO_TCP_NODELAY = mmoSettings.getBoolean("TcpNoDelay", false);
+			SELECTOR_CONFIG.SLEEP_TIME = mmoSettings.getLong("SelectorSleepTime", 10L);
+			SELECTOR_CONFIG.INTEREST_DELAY = mmoSettings.getLong("InterestDelay", 30L);
+			SELECTOR_CONFIG.MAX_SEND_PER_PASS = mmoSettings.getInt("MaxSendPerPass", 32);
+			SELECTOR_CONFIG.READ_BUFFER_SIZE = mmoSettings.getInt("ReadBufferSize", 65536);
+			SELECTOR_CONFIG.WRITE_BUFFER_SIZE = mmoSettings.getInt("WriteBufferSize", 131072);
+			SELECTOR_CONFIG.HELPER_BUFFER_COUNT = mmoSettings.getInt("BufferPoolSize", 64);
 			
 			// Load IdFactory L2Properties file (if exists)
 			final PropertiesParser IdFactory = new PropertiesParser(ID_CONFIG_FILE);
@@ -2862,11 +2833,12 @@ public final class Config
 			// MMO
 			final PropertiesParser mmoSettings = new PropertiesParser(MMO_CONFIG_FILE);
 			
-			MMO_SELECTOR_SLEEP_TIME = mmoSettings.getInt("SleepTime", 20);
-			MMO_MAX_SEND_PER_PASS = mmoSettings.getInt("MaxSendPerPass", 12);
-			MMO_MAX_READ_PER_PASS = mmoSettings.getInt("MaxReadPerPass", 12);
-			MMO_HELPER_BUFFER_COUNT = mmoSettings.getInt("HelperBufferCount", 20);
-			MMO_TCP_NODELAY = mmoSettings.getBoolean("TcpNoDelay", false);
+			SELECTOR_CONFIG.SLEEP_TIME = mmoSettings.getLong("SelectorSleepTime", 10L);
+			SELECTOR_CONFIG.INTEREST_DELAY = mmoSettings.getLong("InterestDelay", 30L);
+			SELECTOR_CONFIG.MAX_SEND_PER_PASS = mmoSettings.getInt("MaxSendPerPass", 32);
+			SELECTOR_CONFIG.READ_BUFFER_SIZE = mmoSettings.getInt("ReadBufferSize", 65536);
+			SELECTOR_CONFIG.WRITE_BUFFER_SIZE = mmoSettings.getInt("WriteBufferSize", 131072);
+			SELECTOR_CONFIG.HELPER_BUFFER_COUNT = mmoSettings.getInt("BufferPoolSize", 64);
 			
 			// Load Telnet L2Properties file (if exists)
 			final PropertiesParser telnetSettings = new PropertiesParser(TELNET_FILE);
@@ -3087,41 +3059,6 @@ public final class Config
 				break;
 			case "deletecharafterdays":
 				DELETE_DAYS = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuesize":
-				CLIENT_PACKET_QUEUE_SIZE = Integer.parseInt(pValue);
-				if (CLIENT_PACKET_QUEUE_SIZE == 0)
-				{
-					CLIENT_PACKET_QUEUE_SIZE = MMO_MAX_READ_PER_PASS + 1;
-				}
-				break;
-			case "clientpacketqueuemaxburstsize":
-				CLIENT_PACKET_QUEUE_MAX_BURST_SIZE = Integer.parseInt(pValue);
-				if (CLIENT_PACKET_QUEUE_MAX_BURST_SIZE == 0)
-				{
-					CLIENT_PACKET_QUEUE_MAX_BURST_SIZE = MMO_MAX_READ_PER_PASS;
-				}
-				break;
-			case "clientpacketqueuemaxpacketspersecond":
-				CLIENT_PACKET_QUEUE_MAX_PACKETS_PER_SECOND = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuemeasureinterval":
-				CLIENT_PACKET_QUEUE_MEASURE_INTERVAL = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuemaxaveragepacketspersecond":
-				CLIENT_PACKET_QUEUE_MAX_AVERAGE_PACKETS_PER_SECOND = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuemaxfloodspermin":
-				CLIENT_PACKET_QUEUE_MAX_FLOODS_PER_MIN = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuemaxoverflowspermin":
-				CLIENT_PACKET_QUEUE_MAX_OVERFLOWS_PER_MIN = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuemaxunderflowspermin":
-				CLIENT_PACKET_QUEUE_MAX_UNDERFLOWS_PER_MIN = Integer.parseInt(pValue);
-				break;
-			case "clientpacketqueuemaxunknownpermin":
-				CLIENT_PACKET_QUEUE_MAX_UNKNOWN_PER_MIN = Integer.parseInt(pValue);
 				break;
 			case "allowdiscarditem":
 				ALLOW_DISCARDITEM = Boolean.parseBoolean(pValue);

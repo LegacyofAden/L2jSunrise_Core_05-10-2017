@@ -19,9 +19,6 @@
 package l2r.loginserver;
 
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import l2r.loginserver.network.L2LoginClient;
 import l2r.loginserver.network.serverpackets.Init;
@@ -31,26 +28,23 @@ import com.l2jserver.mmocore.IAcceptFilter;
 import com.l2jserver.mmocore.IClientFactory;
 import com.l2jserver.mmocore.IMMOExecutor;
 import com.l2jserver.mmocore.MMOConnection;
-import com.l2jserver.mmocore.ReceivablePacket;
 
 /**
  * @author KenM
  */
 public class SelectorHelper implements IMMOExecutor<L2LoginClient>, IClientFactory<L2LoginClient>, IAcceptFilter
 {
-	private final ThreadPoolExecutor _generalPacketsThreadPool;
 	private final IPv4Filter _ipv4filter;
 	
 	public SelectorHelper()
 	{
-		_generalPacketsThreadPool = new ThreadPoolExecutor(4, 6, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		_ipv4filter = new IPv4Filter();
 	}
 	
 	@Override
-	public void execute(ReceivablePacket<L2LoginClient> packet)
+	public void execute(Runnable r)
 	{
-		_generalPacketsThreadPool.execute(packet);
+		ThreadPoolManager.getInstance().execute(r);
 	}
 	
 	@Override

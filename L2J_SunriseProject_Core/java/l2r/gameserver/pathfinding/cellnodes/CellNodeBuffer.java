@@ -53,7 +53,7 @@ public class CellNodeBuffer
 		_buffer = new CellNode[_mapSize][_mapSize];
 	}
 	
-	public final boolean lock()
+	public final boolean isLocked()
 	{
 		return _lock.tryLock();
 	}

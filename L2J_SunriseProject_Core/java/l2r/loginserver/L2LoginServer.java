@@ -53,55 +53,14 @@ public final class L2LoginServer
 	private static final Logger _log = LoggerFactory.getLogger(L2LoginServer.class);
 	
 	public static final int PROTOCOL_REV = 0x0106;
-	private static L2LoginServer _instance;
-	private GameServerListener _gameServerListener;
-	private SelectorThread<L2LoginClient> _selectorThread;
-	private Status _statusServer;
+	private final GameServerListener _gameServerListener;
+	private final SelectorThread<L2LoginClient> _selectorThread;
+	public static L2LoginServer loginServer;
+	private static Status _statusServer;
 	private Thread _restartLoginServer;
 	
-	public static void main(String[] args)
+	private L2LoginServer() throws Exception
 	{
-		new L2LoginServer();
-	}
-	
-	public static L2LoginServer getInstance()
-	{
-		return _instance;
-	}
-	
-	private L2LoginServer()
-	{
-		_instance = this;
-		Server.serverMode = Server.MODE_LOGINSERVER;
-		// Local Constants
-		final String LOG_FOLDER = "log"; // Name of folder for log file
-		final String LOG_NAME = "./log.cfg"; // Name of log file
-		
-		/*** Main ***/
-		// Create log folder
-		File logFolder = new File(Config.DATAPACK_ROOT, LOG_FOLDER);
-		logFolder.mkdir();
-		
-		// Create input stream for log file -- or store file data into memory
-		
-		try (InputStream is = new FileInputStream(new File(LOG_NAME)))
-		{
-			LogManager.getLogManager().readConfiguration(is);
-		}
-		catch (IOException e)
-		{
-			_log.warn(getClass().getSimpleName() + ": " + e.getMessage());
-		}
-		
-		// Load Config
-		Config.load();
-		
-		// Check binding address
-		checkFreePorts();
-		
-		// Prepare Database
-		L2DatabaseFactory.getInstance();
-		
 		try
 		{
 			LoginController.load();
@@ -121,77 +80,20 @@ public final class L2LoginServer
 			MailSystem.getInstance();
 		}
 		
-		InetAddress bindAddress = null;
-		if (!Config.LOGINSERVER_HOSTNAME.equals("*"))
-		{
-			try
-			{
-				bindAddress = InetAddress.getByName(Config.LOGINSERVER_HOSTNAME);
-			}
-			catch (UnknownHostException e)
-			{
-				_log.warn("WARNING: The LoginServer bind address is invalid, using all avaliable IPs. Reason: " + e.getMessage(), e);
-			}
-		}
+		InetAddress serverAddr = Config.LOGINSERVER_HOSTNAME.equalsIgnoreCase("*") ? null : InetAddress.getByName(Config.LOGINSERVER_HOSTNAME);
 		
-		final SelectorConfig sc = new SelectorConfig();
-		sc.MAX_READ_PER_PASS = Config.MMO_MAX_READ_PER_PASS;
-		sc.MAX_SEND_PER_PASS = Config.MMO_MAX_SEND_PER_PASS;
-		sc.SLEEP_TIME = Config.MMO_SELECTOR_SLEEP_TIME;
-		sc.HELPER_BUFFER_COUNT = Config.MMO_HELPER_BUFFER_COUNT;
+		L2LoginPacketHandler loginPacketHandler = new L2LoginPacketHandler();
+		SelectorHelper sh = new SelectorHelper();
+		SelectorConfig sc = new SelectorConfig();
+		_selectorThread = new SelectorThread<>(sc, loginPacketHandler, sh, sh, sh);
 		
-		final L2LoginPacketHandler lph = new L2LoginPacketHandler();
-		final SelectorHelper sh = new SelectorHelper();
-		try
-		{
-			_selectorThread = new SelectorThread<>(sc, sh, lph, sh, sh);
-		}
-		catch (IOException e)
-		{
-			_log.error("FATAL: Failed to open Selector. Reason: " + e.getMessage(), e);
-			System.exit(1);
-		}
+		_gameServerListener = new GameServerListener();
+		_gameServerListener.start();
+		_log.info("Listening for GameServers on " + Config.GAME_SERVER_LOGIN_HOST + ":" + Config.GAME_SERVER_LOGIN_PORT);
 		
-		try
-		{
-			_gameServerListener = new GameServerListener();
-			_gameServerListener.start();
-			_log.info("Listening for GameServers on " + Config.GAME_SERVER_LOGIN_HOST + ":" + Config.GAME_SERVER_LOGIN_PORT);
-		}
-		catch (IOException e)
-		{
-			_log.error("FATAL: Failed to start the Game Server Listener. Reason: " + e.getMessage(), e);
-			System.exit(1);
-		}
-		
-		if (Config.IS_TELNET_ENABLED)
-		{
-			try
-			{
-				_statusServer = new Status(Server.serverMode);
-				_statusServer.start();
-			}
-			catch (IOException e)
-			{
-				_log.warn("Failed to start the Telnet Server. Reason: " + e.getMessage(), e);
-			}
-		}
-		else
-		{
-			_log.info("Telnet server is currently disabled.");
-		}
-		
-		try
-		{
-			_selectorThread.openServerSocket(bindAddress, Config.PORT_LOGIN);
-			_selectorThread.start();
-			_log.info(getClass().getSimpleName() + ": is now listening on: " + Config.LOGINSERVER_HOSTNAME + ":" + Config.PORT_LOGIN);
-		}
-		catch (IOException e)
-		{
-			_log.error("FATAL: Failed to open server socket. Reason: " + e.getMessage(), e);
-			System.exit(1);
-		}
+		_selectorThread.openServerSocket(serverAddr, Config.PORT_LOGIN);
+		_selectorThread.start();
+		_log.info(getClass().getSimpleName() + ": is now listening on: " + Config.LOGINSERVER_HOSTNAME + ":" + Config.PORT_LOGIN);
 		
 		UPnPService.getInstance();
 	}
@@ -331,6 +233,51 @@ public final class L2LoginServer
 				{
 				}
 			}
+		}
+	}
+	
+	public static L2LoginServer getInstance()
+	{
+		return loginServer;
+	}
+	
+	public static void main(String[] args) throws Exception
+	{
+		Server.serverMode = Server.MODE_LOGINSERVER;
+		// Local Constants
+		final String LOG_FOLDER = "log"; // Name of folder for log file
+		final String LOG_NAME = "./log.cfg"; // Name of log file
+		
+		/*** Main ***/
+		// Create log folder
+		File logFolder = new File(Config.DATAPACK_ROOT, LOG_FOLDER);
+		logFolder.mkdir();
+		
+		// Create input stream for log file -- or store file data into memory
+		try (InputStream is = new FileInputStream(new File(LOG_NAME)))
+		{
+			LogManager.getLogManager().readConfiguration(is);
+		}
+		
+		// Initialize config
+		Config.load();
+		
+		// Check binding address
+		checkFreePorts();
+		
+		// Prepare Database
+		L2DatabaseFactory.getInstance();
+		
+		loginServer = new L2LoginServer();
+		
+		if (Config.IS_TELNET_ENABLED)
+		{
+			_statusServer = new Status(Server.serverMode);
+			_statusServer.start();
+		}
+		else
+		{
+			_log.info("Telnet server is currently disabled.");
 		}
 	}
 }

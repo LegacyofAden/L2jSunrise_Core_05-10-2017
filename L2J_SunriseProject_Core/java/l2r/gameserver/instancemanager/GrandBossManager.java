@@ -221,10 +221,7 @@ public final class GrandBossManager implements IStorable
 	 */
 	public void addBoss(L2GrandBossInstance boss)
 	{
-		if (boss != null)
-		{
-			BOSSES.put(boss.getId(), boss);
-		}
+		BOSSES.put(boss.getId(), boss);
 	}
 	
 	public L2GrandBossInstance getBoss(int bossId)
