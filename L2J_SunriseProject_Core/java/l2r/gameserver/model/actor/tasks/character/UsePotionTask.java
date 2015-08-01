@@ -41,6 +41,14 @@ public final class UsePotionTask implements Runnable
 	{
 		if (_character != null)
 		{
+			// vGodFather using this to avoid infinite loop
+			if (_character.taskPotionCounter >= 2)
+			{
+				_character.abortCast();
+				_character.taskPotionCounter = 0;
+				return;
+			}
+			_character.taskPotionCounter++;
 			_character.doSimultaneousCast(_skill);
 		}
 	}

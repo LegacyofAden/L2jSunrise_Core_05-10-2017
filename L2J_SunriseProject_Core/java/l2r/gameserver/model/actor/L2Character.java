@@ -219,9 +219,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	/** Map containing the active chance skills on this character */
 	private volatile ChanceSkillList _chanceSkills;
 	/** Map containing the skill reuse time stamps. */
-	private volatile Map<Integer, TimeStamp> _reuseTimeStampsSkills = null;
+	private volatile Map<Integer, TimeStamp> _reuseTimeStampsSkills = new ConcurrentHashMap<>();
 	/** Map containing the item reuse time stamps. */
-	private volatile Map<Integer, TimeStamp> _reuseTimeStampsItems = null;
+	private volatile Map<Integer, TimeStamp> _reuseTimeStampsItems = new ConcurrentHashMap<>();
 	/** Map containing all the disabled skills. */
 	private volatile Map<Integer, Long> _disabledSkills = null;
 	private boolean _allSkillsDisabled;
@@ -1872,31 +1872,23 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			skillTime = 500;
 		}
 		
-		// queue herbs and potions
-		if (isCastingSimultaneouslyNow() && simultaneously)
-		{
-			ThreadPoolManager.getInstance().scheduleAi(new UsePotionTask(this, skill), 100);
-			return;
-		}
-		
 		// Set the _castInterruptTime and casting status (L2PcInstance already has this true)
 		if (simultaneously)
 		{
+			// queue herbs and potions
+			if (isCastingSimultaneouslyNow())
+			{
+				ThreadPoolManager.getInstance().scheduleAi(new UsePotionTask(this, skill), 100);
+				return;
+			}
 			setIsCastingSimultaneouslyNow(true);
+			setLastSimultaneousSkillCast(skill);
 		}
 		else
 		{
 			setIsCastingNow(true);
-		}
-		
-		if (!simultaneously)
-		{
 			_castInterruptTime = -2 + GameTimeController.getInstance().getGameTicks() + (skillTime / GameTimeController.MILLIS_IN_TICK);
 			setLastSkillCast(skill);
-		}
-		else
-		{
-			setLastSimultaneousSkillCast(skill);
 		}
 		
 		// Calculate the Reuse Time of the Skill
@@ -2308,16 +2300,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public final void addTimeStampItem(L2ItemInstance item, long reuse, long systime)
 	{
-		if (_reuseTimeStampsItems == null)
-		{
-			synchronized (this)
-			{
-				if (_reuseTimeStampsItems == null)
-				{
-					_reuseTimeStampsItems = new ConcurrentHashMap<>();
-				}
-			}
-		}
 		_reuseTimeStampsItems.put(item.getObjectId(), new TimeStamp(item, reuse, systime));
 	}
 	
@@ -2326,7 +2308,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * @param itemObjId the item object ID
 	 * @return if the item has a reuse time stamp, the remaining time, otherwise -1
 	 */
-	public synchronized final long getItemRemainingReuseTime(int itemObjId)
+	public final long getItemRemainingReuseTime(int itemObjId)
 	{
 		if ((_reuseTimeStampsItems == null) || !_reuseTimeStampsItems.containsKey(itemObjId))
 		{
@@ -2390,16 +2372,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public final void addTimeStamp(L2Skill skill, long reuse, long systime)
 	{
-		if (_reuseTimeStampsSkills == null)
-		{
-			synchronized (this)
-			{
-				if (_reuseTimeStampsSkills == null)
-				{
-					_reuseTimeStampsSkills = new ConcurrentHashMap<>();
-				}
-			}
-		}
 		_reuseTimeStampsSkills.put(skill.getReuseHashCode(), new TimeStamp(skill, reuse, systime));
 	}
 	
@@ -2407,18 +2379,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * Removes a skill reuse time stamp.
 	 * @param skill the skill to remove
 	 */
-	public synchronized final void removeTimeStamp(L2Skill skill)
+	public final void removeTimeStamp(L2Skill skill)
 	{
-		if (_reuseTimeStampsSkills != null)
-		{
-			_reuseTimeStampsSkills.remove(skill.getReuseHashCode());
-		}
+		_reuseTimeStampsSkills.remove(skill.getReuseHashCode());
 	}
 	
 	/**
 	 * Removes all skill reuse time stamps.
 	 */
-	public synchronized final void resetTimeStamps()
+	public final void resetTimeStamps()
 	{
 		if (_reuseTimeStampsSkills != null)
 		{
@@ -2431,7 +2400,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * @param hashCode the skill hash code
 	 * @return if the skill has a reuse time stamp, the remaining time, otherwise -1
 	 */
-	public synchronized final long getSkillRemainingReuseTime(int hashCode)
+	public final long getSkillRemainingReuseTime(int hashCode)
 	{
 		if ((_reuseTimeStampsSkills == null) || !_reuseTimeStampsSkills.containsKey(hashCode))
 		{
@@ -2445,7 +2414,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * @param hashCode the skill hash code
 	 * @return {@code true} if the skill is under reuse time, {@code false} otherwise
 	 */
-	public synchronized final boolean hasSkillReuse(int hashCode)
+	public final boolean hasSkillReuse(int hashCode)
 	{
 		if ((_reuseTimeStampsSkills == null) || !_reuseTimeStampsSkills.containsKey(hashCode))
 		{
@@ -6495,7 +6464,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			return;
 		}
 		
-		_disabledSkills.remove(Integer.valueOf(skill.getReuseHashCode()));
+		_disabledSkills.remove(skill.getReuseHashCode());
 	}
 	
 	/**
@@ -6513,22 +6482,16 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		if (_disabledSkills == null)
 		{
-			synchronized (this)
-			{
-				if (_disabledSkills == null)
-				{
-					_disabledSkills = new ConcurrentHashMap<>();
-				}
-			}
+			_disabledSkills = new ConcurrentHashMap<>();
 		}
 		
-		_disabledSkills.put(skill.getReuseHashCode(), delay > 0 ? System.currentTimeMillis() + delay : Long.MAX_VALUE);
+		_disabledSkills.put(skill.getReuseHashCode(), delay > 10 ? System.currentTimeMillis() + delay : Long.MAX_VALUE);
 	}
 	
 	/**
 	 * Removes all the disabled skills.
 	 */
-	public synchronized final void resetDisabledSkills()
+	public final void resetDisabledSkills()
 	{
 		if (_disabledSkills != null)
 		{
@@ -7833,4 +7796,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	{
 		return 0;
 	}
+	
+	public int taskPotionCounter = 0;
 }

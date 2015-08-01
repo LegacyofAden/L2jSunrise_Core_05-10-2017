@@ -19,13 +19,15 @@
 package l2r.gameserver.pathfinding.cellnodes;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import l2r.Config;
 import l2r.gameserver.GeoData;
+import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.itemcontainer.Inventory;
+import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.pathfinding.AbstractNode;
 import l2r.gameserver.pathfinding.AbstractNodeLoc;
 import l2r.gameserver.pathfinding.PathFinding;
@@ -45,8 +47,10 @@ public class CellPathFinding extends PathFinding
 	private int _findFails = 0;
 	private int _postFilterUses = 0;
 	private int _postFilterPlayableUses = 0;
-	private final int _postFilterPasses = 0;
+	private int _postFilterPasses = 0;
 	private long _postFilterElapsed = 0;
+	
+	private List<L2ItemInstance> _debugItems = null;
 	
 	public static CellPathFinding getInstance()
 	{
@@ -112,9 +116,22 @@ public class CellPathFinding extends PathFinding
 		}
 		
 		boolean debug = playable && Config.DEBUG_PATH;
+		
 		if (debug)
 		{
-			clearDebugItems();
+			if (_debugItems == null)
+			{
+				_debugItems = new CopyOnWriteArrayList<>();
+			}
+			else
+			{
+				for (L2ItemInstance item : _debugItems)
+				{
+					item.decayMe();
+				}
+				
+				_debugItems.clear();
+			}
 		}
 		
 		List<AbstractNodeLoc> path = null;
@@ -169,183 +186,190 @@ public class CellPathFinding extends PathFinding
 			_postFilterPlayableUses++;
 		}
 		
-		// get path list iterator
-		ListIterator<AbstractNodeLoc> point = path.listIterator();
-		
-		// get node A (origin)
-		int nodeAx = gx;
-		int nodeAy = gy;
-		int nodeAz = gz;
-		
-		// get node B
-		AbstractNodeLoc nodeB = point.next();
-		
-		// iterate thought the path to optimize it
-		while (point.hasNext())
+		boolean remove;
+		int pass = 0;
+		do
 		{
-			// get node C
-			AbstractNodeLoc nodeC = path.get(point.nextIndex());
+			pass++;
+			_postFilterPasses++;
 			
-			// check movement from node A to node C
-			if (GeoData.getInstance().canMove(nodeAx, nodeAy, nodeAz, nodeC.getNodeX(), nodeC.getNodeY(), nodeC.getZ(), instanceId))
+			remove = false;
+			final Iterator<AbstractNodeLoc> endPoint = path.iterator();
+			endPoint.next();
+			int currentX = x;
+			int currentY = y;
+			int currentZ = z;
+			
+			int midPoint = 0;
+			while (endPoint.hasNext())
 			{
-				if ((nodeAx == nodeC.getNodeX()) && (nodeAy == nodeC.getNodeY()))
+				AbstractNodeLoc locMiddle = path.get(midPoint);
+				AbstractNodeLoc locEnd = endPoint.next();
+				if (GeoData.getInstance().canMove(currentX, currentY, currentZ, locEnd.getX(), locEnd.getY(), locEnd.getZ(), instanceId))
 				{
-					// can move from node A to node C
-					
-					// remove node B
-					point.remove();
-					
-					// show skipped nodes
+					path.remove(midPoint);
+					remove = true;
 					if (debug)
 					{
-						PathFinding.dropDebugItem(735, 1, nodeB); // green potion
+						dropDebugItem(735, 1, locMiddle);
 					}
 				}
 				else
 				{
-					// can not move from node A to node C
-					
-					// set node A (node B is part of path, update A coordinates)
-					nodeAx = nodeB.getX();
-					nodeAy = nodeB.getY();
-					nodeAz = nodeB.getZ();
+					currentX = locMiddle.getX();
+					currentY = locMiddle.getY();
+					currentZ = locMiddle.getZ();
+					midPoint++;
 				}
 			}
-			
-			// set node B
-			nodeB = point.next();
 		}
+		// only one postfilter pass for AI
+		while (playable && remove && (path.size() > 2) && (pass < Config.MAX_POSTFILTER_PASSES));
 		
 		if (debug)
 		{
 			path.forEach(n -> dropDebugItem(65, 1, n));
 		}
 		
+		_findSuccess++;
 		_postFilterElapsed += System.currentTimeMillis() - timeStamp;
-		
 		return path;
 	}
 	
 	private List<AbstractNodeLoc> constructPath(AbstractNode<NodeLoc> node)
 	{
-		// create empty list
-		LinkedList<AbstractNodeLoc> list = new LinkedList<>();
+		final List<AbstractNodeLoc> path = new CopyOnWriteArrayList<>();
+		int previousDirectionX = Integer.MIN_VALUE;
+		int previousDirectionY = Integer.MIN_VALUE;
+		int directionX, directionY;
 		
-		// set direction X/Y
-		int dx = 0;
-		int dy = 0;
-		
-		// get target parent
-		AbstractNode<NodeLoc> parent = node.getParent();
-		
-		// while parent exists
-		while (parent != null)
+		while (node.getParent() != null)
 		{
-			// get parent <> target direction X/Y
-			final int nx = parent.getLoc().getNodeX() - node.getLoc().getNodeX();
-			final int ny = parent.getLoc().getNodeY() - node.getLoc().getNodeY();
-			
-			// direction has changed?
-			if ((dx != nx) || (dy != ny))
+			if (!Config.ADVANCED_DIAGONAL_STRATEGY && (node.getParent().getParent() != null))
 			{
-				// add node to the beginning of the list
-				list.addFirst(node.getLoc());
-				
-				// update direction X/Y
-				dx = nx;
-				dy = ny;
+				int tmpX = node.getLoc().getNodeX() - node.getParent().getParent().getLoc().getNodeX();
+				int tmpY = node.getLoc().getNodeY() - node.getParent().getParent().getLoc().getNodeY();
+				if (Math.abs(tmpX) == Math.abs(tmpY))
+				{
+					directionX = tmpX;
+					directionY = tmpY;
+				}
+				else
+				{
+					directionX = node.getLoc().getNodeX() - node.getParent().getLoc().getNodeX();
+					directionY = node.getLoc().getNodeY() - node.getParent().getLoc().getNodeY();
+				}
+			}
+			else
+			{
+				directionX = node.getLoc().getNodeX() - node.getParent().getLoc().getNodeX();
+				directionY = node.getLoc().getNodeY() - node.getParent().getLoc().getNodeY();
 			}
 			
-			// move to next node, set target and get its parent
-			node = parent;
-			parent = node.getParent();
+			// only add a new route point if moving direction changes
+			if ((directionX != previousDirectionX) || (directionY != previousDirectionY))
+			{
+				previousDirectionX = directionX;
+				previousDirectionY = directionY;
+				
+				path.add(0, node.getLoc());
+				node.setLoc(null);
+			}
+			
+			node = node.getParent();
 		}
-		return list;
+		return path;
 	}
 	
 	private final CellNodeBuffer alloc(int size, boolean playable)
 	{
 		CellNodeBuffer current = null;
-		for (BufferInfo holder : _allBuffers)
+		for (BufferInfo i : _allBuffers)
 		{
-			// Find proper size of buffer
-			if (holder._size < size)
+			if (i.mapSize >= size)
 			{
-				continue;
-			}
-			
-			// Find unlocked NodeBuffer
-			for (CellNodeBuffer buffer : holder._buffer)
-			{
-				if (!buffer.isLocked())
+				for (CellNodeBuffer buf : i.bufs)
 				{
-					continue;
+					if (buf.lock())
+					{
+						i.uses++;
+						if (playable)
+						{
+							i.playableUses++;
+						}
+						i.elapsed += buf.getElapsedTime();
+						current = buf;
+						break;
+					}
+				}
+				if (current != null)
+				{
+					break;
 				}
 				
-				holder._uses++;
+				// not found, allocate temporary buffer
+				current = new CellNodeBuffer(i.mapSize);
+				current.lock();
+				if (i.bufs.size() < i.count)
+				{
+					i.bufs.add(current);
+					i.uses++;
+					if (playable)
+					{
+						i.playableUses++;
+					}
+					break;
+				}
+				
+				i.overflows++;
 				if (playable)
 				{
-					holder._playableUses++;
+					i.playableOverflows++;
+					// System.err.println("Overflow, size requested: " + size + " playable:"+playable);
 				}
-				
-				holder._elapsed += buffer.getElapsedTime();
-				return buffer;
-			}
-			
-			// NodeBuffer not found, allocate temporary buffer
-			current = new CellNodeBuffer(holder._size);
-			current.isLocked();
-			
-			holder._overflows++;
-			if (playable)
-			{
-				holder._playableOverflows++;
 			}
 		}
 		
 		return current;
 	}
 	
-	/**
-	 * NodeBuffer container with specified size and count of separate buffers.
-	 */
+	private final void dropDebugItem(int itemId, int num, AbstractNodeLoc loc)
+	{
+		final L2ItemInstance item = new L2ItemInstance(IdFactory.getInstance().getNextId(), itemId);
+		item.setCount(num);
+		item.spawnMe(loc.getX(), loc.getY(), loc.getZ());
+		_debugItems.add(item);
+	}
+	
 	private static final class BufferInfo
 	{
-		final int _size;
-		final int _count;
-		ArrayList<CellNodeBuffer> _buffer;
+		final int mapSize;
+		final int count;
+		List<CellNodeBuffer> bufs;
+		int uses = 0;
+		int playableUses = 0;
+		int overflows = 0;
+		int playableOverflows = 0;
+		long elapsed = 0;
 		
-		// statistics
-		int _playableUses = 0;
-		int _uses = 0;
-		int _playableOverflows = 0;
-		int _overflows = 0;
-		long _elapsed = 0;
-		
-		public BufferInfo(int size, int count)
+		public BufferInfo(int size, int cnt)
 		{
-			_size = size;
-			_count = count;
-			_buffer = new ArrayList<>(count);
-			
-			for (int i = 0; i < count; i++)
-			{
-				_buffer.add(new CellNodeBuffer(size));
-			}
+			mapSize = size;
+			count = cnt;
+			bufs = new ArrayList<>(count);
 		}
 		
 		@Override
 		public String toString()
 		{
 			final StringBuilder stat = new StringBuilder(100);
-			StringUtil.append(stat, String.valueOf(_size), "x", String.valueOf(_size), " num:", String.valueOf(_buffer.size()), "/", String.valueOf(_count), " uses:", String.valueOf(_uses), "/", String.valueOf(_playableUses));
-			if (_uses > 0)
+			StringUtil.append(stat, String.valueOf(mapSize), "x", String.valueOf(mapSize), " num:", String.valueOf(bufs.size()), "/", String.valueOf(count), " uses:", String.valueOf(uses), "/", String.valueOf(playableUses));
+			if (uses > 0)
 			{
-				StringUtil.append(stat, " total/avg(ms):", String.valueOf(_elapsed), "/", String.format("%1.2f", (double) _elapsed / _uses));
+				StringUtil.append(stat, " total/avg(ms):", String.valueOf(elapsed), "/", String.format("%1.2f", (double) elapsed / uses));
 			}
 			
-			StringUtil.append(stat, " ovf:", String.valueOf(_overflows), "/", String.valueOf(_playableOverflows));
+			StringUtil.append(stat, " ovf:", String.valueOf(overflows), "/", String.valueOf(playableOverflows));
 			
 			return stat.toString();
 		}
