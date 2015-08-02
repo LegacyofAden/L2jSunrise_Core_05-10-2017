@@ -21,14 +21,12 @@ package l2r.loginserver;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
-import java.util.logging.LogManager;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
@@ -53,14 +51,43 @@ public final class L2LoginServer
 	private static final Logger _log = LoggerFactory.getLogger(L2LoginServer.class);
 	
 	public static final int PROTOCOL_REV = 0x0106;
+	private static L2LoginServer _instance;
 	private final GameServerListener _gameServerListener;
 	private final SelectorThread<L2LoginClient> _selectorThread;
-	public static L2LoginServer loginServer;
-	private static Status _statusServer;
+	private Status _statusServer;
 	private Thread _restartLoginServer;
+	
+	public static void main(String[] args) throws Exception
+	{
+		new L2LoginServer();
+	}
+	
+	public static L2LoginServer getInstance()
+	{
+		return _instance;
+	}
 	
 	private L2LoginServer() throws Exception
 	{
+		_instance = this;
+		Server.serverMode = Server.MODE_LOGINSERVER;
+		// Local Constants
+		final String LOG_FOLDER = "log"; // Name of folder for log file
+		
+		/*** Main ***/
+		// Create log folder
+		File logFolder = new File(Config.DATAPACK_ROOT, LOG_FOLDER);
+		logFolder.mkdir();
+		
+		// Load Config
+		Config.load();
+		
+		// Check binding address
+		checkFreePorts();
+		
+		// Prepare Database
+		L2DatabaseFactory.getInstance();
+		
 		try
 		{
 			LoginController.load();
@@ -90,6 +117,23 @@ public final class L2LoginServer
 		_gameServerListener = new GameServerListener();
 		_gameServerListener.start();
 		_log.info("Listening for GameServers on " + Config.GAME_SERVER_LOGIN_HOST + ":" + Config.GAME_SERVER_LOGIN_PORT);
+		
+		if (Config.IS_TELNET_ENABLED)
+		{
+			try
+			{
+				_statusServer = new Status(Server.serverMode);
+				_statusServer.start();
+			}
+			catch (IOException e)
+			{
+				_log.warn("Failed to start the Telnet Server. Reason: " + e.getMessage(), e);
+			}
+		}
+		else
+		{
+			_log.info("Telnet server is currently disabled.");
+		}
 		
 		_selectorThread.openServerSocket(serverAddr, Config.PORT_LOGIN);
 		_selectorThread.start();
@@ -233,51 +277,6 @@ public final class L2LoginServer
 				{
 				}
 			}
-		}
-	}
-	
-	public static L2LoginServer getInstance()
-	{
-		return loginServer;
-	}
-	
-	public static void main(String[] args) throws Exception
-	{
-		Server.serverMode = Server.MODE_LOGINSERVER;
-		// Local Constants
-		final String LOG_FOLDER = "log"; // Name of folder for log file
-		final String LOG_NAME = "./log.cfg"; // Name of log file
-		
-		/*** Main ***/
-		// Create log folder
-		File logFolder = new File(Config.DATAPACK_ROOT, LOG_FOLDER);
-		logFolder.mkdir();
-		
-		// Create input stream for log file -- or store file data into memory
-		try (InputStream is = new FileInputStream(new File(LOG_NAME)))
-		{
-			LogManager.getLogManager().readConfiguration(is);
-		}
-		
-		// Initialize config
-		Config.load();
-		
-		// Check binding address
-		checkFreePorts();
-		
-		// Prepare Database
-		L2DatabaseFactory.getInstance();
-		
-		loginServer = new L2LoginServer();
-		
-		if (Config.IS_TELNET_ENABLED)
-		{
-			_statusServer = new Status(Server.serverMode);
-			_statusServer.start();
-		}
-		else
-		{
-			_log.info("Telnet server is currently disabled.");
 		}
 	}
 }
