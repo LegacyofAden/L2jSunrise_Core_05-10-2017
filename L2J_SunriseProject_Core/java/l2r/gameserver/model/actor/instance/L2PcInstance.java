@@ -13435,14 +13435,13 @@ public final class L2PcInstance extends L2Playable
 	{
 		if ((_controlItemId != 0) && (petId != 0))
 		{
-			String req;
-			req = "UPDATE pets SET fed=? WHERE item_obj_id = ?";
+			final String req = "UPDATE pets SET fed=? WHERE item_obj_id = ?";
 			try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-				PreparedStatement statement = con.prepareStatement(req))
+				PreparedStatement ps = con.prepareStatement(req))
 			{
-				statement.setInt(1, getCurrentFeed());
-				statement.setInt(2, _controlItemId);
-				statement.executeUpdate();
+				ps.setInt(1, getCurrentFeed());
+				ps.setInt(2, _controlItemId);
+				ps.executeUpdate();
 				_controlItemId = 0;
 			}
 			catch (Exception e)

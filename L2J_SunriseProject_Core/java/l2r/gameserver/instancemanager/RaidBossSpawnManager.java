@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,20 +76,20 @@ public class RaidBossSpawnManager
 		_schedules.clear();
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT * FROM raidboss_spawnlist ORDER BY boss_id");
-			ResultSet rset = statement.executeQuery())
+			Statement s = con.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM raidboss_spawnlist ORDER BY boss_id"))
 		{
-			while (rset.next())
+			while (rs.next())
 			{
-				final L2Spawn spawnDat = new L2Spawn(rset.getInt("boss_id"));
-				spawnDat.setX(rset.getInt("loc_x"));
-				spawnDat.setY(rset.getInt("loc_y"));
-				spawnDat.setZ(rset.getInt("loc_z"));
-				spawnDat.setAmount(rset.getInt("amount"));
-				spawnDat.setHeading(rset.getInt("heading"));
-				spawnDat.setRespawnDelay(rset.getInt("respawn_delay"), rset.getInt("respawn_random"));
+				final L2Spawn spawnDat = new L2Spawn(rs.getInt("boss_id"));
+				spawnDat.setX(rs.getInt("loc_x"));
+				spawnDat.setY(rs.getInt("loc_y"));
+				spawnDat.setZ(rs.getInt("loc_z"));
+				spawnDat.setAmount(rs.getInt("amount"));
+				spawnDat.setHeading(rs.getInt("heading"));
+				spawnDat.setRespawnDelay(rs.getInt("respawn_delay"), rs.getInt("respawn_random"));
 				
-				addNewSpawn(spawnDat, rset.getLong("respawn_time"), rset.getDouble("currentHP"), rset.getDouble("currentMP"), false);
+				addNewSpawn(spawnDat, rs.getLong("respawn_time"), rs.getDouble("currentHP"), rs.getDouble("currentMP"), false);
 			}
 			
 			_log.info(getClass().getSimpleName() + ": Loaded " + _bosses.size() + " Instances");

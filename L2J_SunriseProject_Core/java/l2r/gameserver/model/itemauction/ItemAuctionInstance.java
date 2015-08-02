@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -71,14 +72,7 @@ public final class ItemAuctionInstance
 	/**
 	 * Cached comparator to avoid initialization on each loop run.
 	 */
-	private static final Comparator<ItemAuction> itemAuctionComparator = new Comparator<ItemAuction>()
-	{
-		@Override
-		public final int compare(final ItemAuction o1, final ItemAuction o2)
-		{
-			return Long.valueOf(o2.getStartingTime()).compareTo(Long.valueOf(o1.getStartingTime()));
-		}
-	};
+	private static final Comparator<ItemAuction> itemAuctionComparator = (o1, o2) -> Long.valueOf(o2.getStartingTime()).compareTo(Long.valueOf(o1.getStartingTime()));
 	
 	private final int _instanceId;
 	private final AtomicInteger _auctionIds;
@@ -616,7 +610,7 @@ public final class ItemAuctionInstance
 				return null;
 			}
 			
-			final ArrayList<ItemAuctionBid> auctionBids = new ArrayList<>();
+			final List<ItemAuctionBid> auctionBids = new ArrayList<>();
 			try (PreparedStatement ps = con.prepareStatement(SELECT_PLAYERS_ID_BY_AUCTION_ID))
 			{
 				ps.setInt(1, auctionId);

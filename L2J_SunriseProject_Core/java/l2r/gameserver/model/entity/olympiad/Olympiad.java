@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -176,8 +177,8 @@ public class Olympiad extends ListenersContainer
 		NOBLES.clear();
 		boolean loaded = false;
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(OLYMPIAD_LOAD_DATA);
-			ResultSet rset = statement.executeQuery())
+			Statement s = con.createStatement();
+			ResultSet rset = s.executeQuery(OLYMPIAD_LOAD_DATA))
 		{
 			while (rset.next())
 			{
@@ -251,8 +252,8 @@ public class Olympiad extends ListenersContainer
 		}
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(OLYMPIAD_LOAD_NOBLES);
-			ResultSet rset = statement.executeQuery())
+			Statement s = con.createStatement();
+			ResultSet rset = s.executeQuery(OLYMPIAD_LOAD_NOBLES))
 		{
 			StatsSet statData;
 			while (rset.next())
@@ -337,8 +338,8 @@ public class Olympiad extends ListenersContainer
 		NOBLES_RANK.clear();
 		Map<Integer, Integer> tmpPlace = new HashMap<>();
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(GET_ALL_CLASSIFIED_NOBLESS);
-			ResultSet rset = statement.executeQuery())
+			Statement statement = con.createStatement();
+			ResultSet rset = statement.executeQuery(GET_ALL_CLASSIFIED_NOBLESS))
 		{
 			int place = 1;
 			while (rset.next())
@@ -854,11 +855,11 @@ public class Olympiad extends ListenersContainer
 	protected void updateMonthlyData()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement ps1 = con.prepareStatement(OLYMPIAD_MONTH_CLEAR);
-			PreparedStatement ps2 = con.prepareStatement(OLYMPIAD_MONTH_CREATE))
+			Statement s1 = con.createStatement();
+			Statement s2 = con.createStatement())
 		{
-			ps1.execute();
-			ps2.execute();
+			s1.executeUpdate(OLYMPIAD_MONTH_CLEAR);
+			s2.executeUpdate(OLYMPIAD_MONTH_CREATE);
 		}
 		catch (SQLException e)
 		{
@@ -1256,9 +1257,9 @@ public class Olympiad extends ListenersContainer
 	protected void deleteNobles()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(OLYMPIAD_DELETE_ALL))
+			Statement s = con.createStatement())
 		{
-			statement.execute();
+			s.executeUpdate(OLYMPIAD_DELETE_ALL);
 		}
 		catch (SQLException e)
 		{

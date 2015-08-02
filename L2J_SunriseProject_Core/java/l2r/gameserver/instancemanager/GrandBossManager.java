@@ -244,9 +244,9 @@ public final class GrandBossManager implements IStorable
 	public boolean storeMe()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement delete = con.prepareStatement(DELETE_GRAND_BOSS_LIST))
+			Statement s = con.createStatement())
 		{
-			delete.executeUpdate();
+			s.executeUpdate(DELETE_GRAND_BOSS_LIST);
 			
 			try (PreparedStatement insert = con.prepareStatement(INSERT_GRAND_BOSS_LIST))
 			{

@@ -56,13 +56,13 @@ public class BlockList
 	private void addToBlockList(int target)
 	{
 		_blockList.add(target);
-		updateInDB(target, true);
+		persistInDB(target);
 	}
 	
 	private void removeFromBlockList(int target)
 	{
 		_blockList.remove(Integer.valueOf(target));
-		updateInDB(target, false);
+		removeFromDB(target);
 	}
 	
 	public void playerLogout()
@@ -74,15 +74,15 @@ public class BlockList
 	{
 		List<Integer> list = new ArrayList<>();
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT friendId FROM character_friends WHERE charId=? AND relation=1"))
+			PreparedStatement ps = con.prepareStatement("SELECT friendId FROM character_friends WHERE charId=? AND relation=1"))
 		{
-			statement.setInt(1, ObjId);
-			try (ResultSet rset = statement.executeQuery())
+			ps.setInt(1, ObjId);
+			try (ResultSet rs = ps.executeQuery())
 			{
 				int friendId;
-				while (rset.next())
+				while (rs.next())
 				{
-					friendId = rset.getInt("friendId");
+					friendId = rs.getInt("friendId");
 					if (friendId == ObjId)
 					{
 						continue;
@@ -98,33 +98,33 @@ public class BlockList
 		return list;
 	}
 	
-	private void updateInDB(int targetId, boolean state)
+	private void removeFromDB(int targetId)
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE charId=? AND friendId=? AND relation=1"))
 		{
-			if (state) // add
-			{
-				try (PreparedStatement statement = con.prepareStatement("INSERT INTO character_friends (charId, friendId, relation) VALUES (?, ?, 1)"))
-				{
-					statement.setInt(1, _owner.getObjectId());
-					statement.setInt(2, targetId);
-					statement.execute();
-				}
-			}
-			else
-			// remove
-			{
-				try (PreparedStatement statement = con.prepareStatement("DELETE FROM character_friends WHERE charId=? AND friendId=? AND relation=1"))
-				{
-					statement.setInt(1, _owner.getObjectId());
-					statement.setInt(2, targetId);
-					statement.execute();
-				}
-			}
+			ps.setInt(1, _owner.getObjectId());
+			ps.setInt(2, targetId);
+			ps.execute();
 		}
 		catch (Exception e)
 		{
-			_log.warn("Could not add block player: " + e.getMessage(), e);
+			_log.warn("Could not remove blocked player: " + e.getMessage(), e);
+		}
+	}
+	
+	private void persistInDB(int targetId)
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement ps = con.prepareStatement("INSERT INTO character_friends (charId, friendId, relation) VALUES (?, ?, 1)"))
+		{
+			ps.setInt(1, _owner.getObjectId());
+			ps.setInt(2, targetId);
+			ps.execute();
+		}
+		catch (Exception e)
+		{
+			_log.warn("Could not add blocked player: " + e.getMessage(), e);
 		}
 	}
 	

@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import l2r.Config;
@@ -56,7 +57,7 @@ public final class ItemAuction
 	private final long _startingTime;
 	private volatile long _endingTime;
 	private final AuctionItem _auctionItem;
-	private final ArrayList<ItemAuctionBid> _auctionBids;
+	private final List<ItemAuctionBid> _auctionBids;
 	private final Object _auctionStateLock;
 	
 	private volatile ItemAuctionState _auctionState;
@@ -74,10 +75,10 @@ public final class ItemAuction
 	
 	public ItemAuction(final int auctionId, final int instanceId, final long startingTime, final long endingTime, final AuctionItem auctionItem)
 	{
-		this(auctionId, instanceId, startingTime, endingTime, auctionItem, new ArrayList<ItemAuctionBid>(), ItemAuctionState.CREATED);
+		this(auctionId, instanceId, startingTime, endingTime, auctionItem, new ArrayList<>(), ItemAuctionState.CREATED);
 	}
 	
-	public ItemAuction(final int auctionId, final int instanceId, final long startingTime, final long endingTime, final AuctionItem auctionItem, final ArrayList<ItemAuctionBid> auctionBids, final ItemAuctionState auctionState)
+	public ItemAuction(final int auctionId, final int instanceId, final long startingTime, final long endingTime, final AuctionItem auctionItem, final List<ItemAuctionBid> auctionBids, final ItemAuctionState auctionState)
 	{
 		_auctionId = auctionId;
 		_instanceId = instanceId;

@@ -129,9 +129,9 @@ public class RaidBossPointsManager
 	public final void cleanUp()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("DELETE from character_raid_points WHERE charId > 0"))
+			Statement s = con.createStatement())
 		{
-			statement.executeUpdate();
+			s.executeUpdate("DELETE from character_raid_points WHERE charId > 0");
 			_list.clear();
 		}
 		catch (Exception e)
