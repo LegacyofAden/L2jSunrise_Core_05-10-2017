@@ -69,11 +69,6 @@ public final class ItemAuctionInstance
 	private static final String DELETE_AUCTION_BID_INFO_BY_AUCTION_ID = "DELETE FROM item_auction_bid WHERE auctionId = ?";
 	private static final String SELECT_PLAYERS_ID_BY_AUCTION_ID = "SELECT playerObjId, playerBid FROM item_auction_bid WHERE auctionId = ?";
 	
-	/**
-	 * Cached comparator to avoid initialization on each loop run.
-	 */
-	private static final Comparator<ItemAuction> itemAuctionComparator = (o1, o2) -> Long.valueOf(o2.getStartingTime()).compareTo(Long.valueOf(o1.getStartingTime()));
-	
 	private final int _instanceId;
 	private final AtomicInteger _auctionIds;
 	private final Map<Integer, ItemAuction> _auctions;
@@ -294,7 +289,7 @@ public final class ItemAuctionInstance
 			
 			default:
 			{
-				Arrays.sort(auctions, itemAuctionComparator);
+				Arrays.sort(auctions, Comparator.comparingLong(ItemAuction::getStartingTime).reversed());
 				
 				// just to make sure we won't skip any auction because of little different times
 				final long currentTime = System.currentTimeMillis();
