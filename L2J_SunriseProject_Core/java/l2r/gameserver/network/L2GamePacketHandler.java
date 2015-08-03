@@ -21,7 +21,6 @@ package l2r.gameserver.network;
 import java.nio.ByteBuffer;
 
 import l2r.Config;
-import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.network.L2GameClient.GameClientState;
 import l2r.gameserver.network.clientpackets.*;
 import l2r.util.Util;
@@ -31,6 +30,7 @@ import com.l2jserver.mmocore.IMMOExecutor;
 import com.l2jserver.mmocore.IPacketHandler;
 import com.l2jserver.mmocore.MMOConnection;
 import com.l2jserver.mmocore.ReceivablePacket;
+import com.l2jserver.mmocore.threading.ThreadPoolManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

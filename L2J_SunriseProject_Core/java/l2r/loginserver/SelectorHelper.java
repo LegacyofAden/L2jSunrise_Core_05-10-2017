@@ -28,6 +28,7 @@ import com.l2jserver.mmocore.IAcceptFilter;
 import com.l2jserver.mmocore.IClientFactory;
 import com.l2jserver.mmocore.IMMOExecutor;
 import com.l2jserver.mmocore.MMOConnection;
+import com.l2jserver.mmocore.threading.ThreadPoolManager;
 
 /**
  * @author KenM
