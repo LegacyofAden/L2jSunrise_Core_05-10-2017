@@ -22,8 +22,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
 import l2r.Config;
@@ -93,7 +93,7 @@ public class L2Party extends AbstractPlayerGroup
 	public static final byte ITEM_ORDER = 3;
 	public static final byte ITEM_ORDER_SPOIL = 4;
 	
-	private final FastList<L2PcInstance> _members;
+	private final List<L2PcInstance> _members = new CopyOnWriteArrayList<>();
 	private boolean _pendingInvitation = false;
 	private long _pendingInviteTimeout;
 	private int _partyLvl = 0;
@@ -115,7 +115,6 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public L2Party(L2PcInstance leader, PartyDistributionType partyDistributionType)
 	{
-		_members = new FastList<L2PcInstance>().shared();
 		_members.add(leader);
 		_partyLvl = leader.getLevel();
 		_distributionType = partyDistributionType;
@@ -124,7 +123,6 @@ public class L2Party extends AbstractPlayerGroup
 	// vGodFather: used only for event engine
 	public L2Party(L2PcInstance leader)
 	{
-		_members = new FastList<L2PcInstance>().shared();
 		_members.add(leader);
 		_partyLvl = leader.getLevel();
 		_distributionType = PartyDistributionType.RANDOM;
@@ -1100,14 +1098,7 @@ public class L2Party extends AbstractPlayerGroup
 	@Override
 	public L2PcInstance getLeader()
 	{
-		try
-		{
-			return _members.getFirst();
-		}
-		catch (NoSuchElementException e)
-		{
-			return null;
-		}
+		return _members.get(0);
 	}
 	
 	public synchronized void requestLootChange(PartyDistributionType partyDistributionType)

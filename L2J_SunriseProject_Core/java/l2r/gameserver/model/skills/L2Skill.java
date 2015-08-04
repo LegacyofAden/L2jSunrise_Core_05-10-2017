@@ -154,6 +154,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final int _feed;
 	// base success chance
 	private final double _power;
+	private final int _activateRate;
 	private final double _pvpPower;
 	private final double _pvePower;
 	private final int _magicLevel;
@@ -427,6 +428,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		
 		_targetType = set.getEnum("targetType", L2TargetType.class);
 		_power = set.getFloat("power", 0.f);
+		_activateRate = set.getInt("activateRate", -1);
 		_pvpPower = set.getFloat("pvpPower", (float) getPower());
 		_pvePower = set.getFloat("pvePower", (float) getPower());
 		_magicLevel = set.getInt("magicLvl", 0);
@@ -605,6 +607,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public final double getPower()
 	{
 		return _power;
+	}
+	
+	public int getActivateRate()
+	{
+		return _activateRate;
 	}
 	
 	public final double getPower(boolean isPvP, boolean isPvE)

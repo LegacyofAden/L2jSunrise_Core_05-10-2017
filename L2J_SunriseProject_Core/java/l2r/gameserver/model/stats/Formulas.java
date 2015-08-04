@@ -1711,7 +1711,7 @@ public final class Formulas
 			}
 		}
 		
-		final double activateRate = effect.effectPower;
+		final double activateRate = skill.getActivateRate() > 0 ? skill.getPower() : effect.effectPower;
 		if ((activateRate == -1) || (skill.getBasicProperty() == BaseStats.NONE) || skill.hasEffectType(L2EffectType.CANCEL) || skill.hasEffectType(L2EffectType.STEAL_ABNORMAL))
 		{
 			return true;
