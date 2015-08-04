@@ -1634,7 +1634,7 @@ public class L2Clan implements IIdentifiable, INamable
 		return _warehouse;
 	}
 	
-	public boolean isAtWarWith(Integer id)
+	public boolean isAtWarWith(int id)
 	{
 		return _atWarWith.contains(id);
 	}
@@ -1664,7 +1664,7 @@ public class L2Clan implements IIdentifiable, INamable
 		_atWarAttackers.add(clan.getId());
 	}
 	
-	public void setAttackerClan(Integer clan)
+	public void setAttackerClan(int clan)
 	{
 		_atWarAttackers.add(clan);
 	}
