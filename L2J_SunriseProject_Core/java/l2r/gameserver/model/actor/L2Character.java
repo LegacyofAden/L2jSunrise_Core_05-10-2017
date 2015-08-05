@@ -866,7 +866,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		if (getActiveWeaponItem() != null)
 		{
 			L2Weapon wpn = getActiveWeaponItem();
-			if (!wpn.isAttackWeapon() && !isGM())
+			if ((wpn != null) && !wpn.isAttackWeapon() && !isGM())
 			{
 				if (wpn.getItemType() == WeaponType.FISHINGROD)
 				{
