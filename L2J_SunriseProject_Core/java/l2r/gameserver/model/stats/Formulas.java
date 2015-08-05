@@ -1712,7 +1712,12 @@ public final class Formulas
 		}
 		
 		final double activateRate = (skill.getActivateRate() > 0) && (effect.effectPower < 0) ? skill.getPower() : effect.effectPower;
-		if ((activateRate == -1) || (skill.getBasicProperty() == BaseStats.NONE) || skill.hasEffectType(L2EffectType.CANCEL) || skill.hasEffectType(L2EffectType.STEAL_ABNORMAL))
+		if ((activateRate == -1) || skill.hasEffectType(L2EffectType.CANCEL) || skill.hasEffectType(L2EffectType.STEAL_ABNORMAL))
+		{
+			return true;
+		}
+		
+		if (skill.mustIncludeBasicProperty() && (skill.getBasicProperty() == BaseStats.NONE))
 		{
 			return true;
 		}
@@ -1746,9 +1751,20 @@ public final class Formulas
 				break;
 		}
 		
-		// Calculate BaseRate.
-		final double baseMod = ((((((magicLevel - target.getLevel()) + 3) * skill.getLvlBonusRate()) + activateRate) + 30.0) - targetBaseStat);
-		double rate = baseMod;
+		double baseMod = 0;
+		double rate = 0;
+		if (skill.mustIncludeBasicProperty())
+		{
+			// Calculate BaseRate.
+			baseMod = ((((((magicLevel - target.getLevel()) + 3) * skill.getLvlBonusRate()) + activateRate) + 30.0) - targetBaseStat);
+			rate = baseMod;
+		}
+		else
+		{
+			// Calculate BaseRate.
+			baseMod = skill.getPower() / skill.getBasicProperty().calcBonus(target);
+			rate = baseMod;
+		}
 		
 		// Resists.
 		double vuln = calcSkillTraitVulnerability(0, target, skill);

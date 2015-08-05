@@ -163,6 +163,8 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final int _maxChance;
 	private final int _blowChance;
 	
+	private final boolean _mustIncludeBasicProperty;
+	
 	// Effecting area of the skill, in radius.
 	// The radius center varies according to the _targetType:
 	// "caster" if targetType = AURA/PARTY/CLAN or "target" if targetType = AREA
@@ -473,6 +475,8 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_soulMaxConsume = set.getInt("soulMaxConsumeCount", 0);
 		_blowChance = set.getInt("blowChance", 0);
 		_critChance = set.getInt("critChance", 0);
+		
+		_mustIncludeBasicProperty = set.getBoolean("mustIncludeBasicProperty", true);
 		
 		_transformId = set.getInt("transformId", 0);
 		_transformDuration = set.getInt("transformDuration", 0);
@@ -1894,6 +1898,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public int getBlowChance()
 	{
 		return _blowChance;
+	}
+	
+	public boolean mustIncludeBasicProperty()
+	{
+		return _mustIncludeBasicProperty;
 	}
 	
 	public boolean ignoreShield()
