@@ -37,6 +37,7 @@ import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.cache.HtmCache;
 import l2r.gameserver.enums.CategoryType;
+import l2r.gameserver.enums.QuestSound;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.enums.TrapAction;
 import l2r.gameserver.instancemanager.QuestManager;
@@ -2991,5 +2992,75 @@ public class Quest extends AbstractScript implements IIdentifiable
 	public void addCondInCategory(CategoryType categoryType, String html)
 	{
 		getStartConditions().put(p -> p.isInCategory(categoryType), html);
+	}
+	
+	// vGodFather addons
+	public static boolean calcChance(int max)
+	{
+		return Rnd.get(100) < max;
+	}
+	
+	public boolean dropQuestItems(L2PcInstance player, int itemId, int minCount, int maxCount, long neededCount, int dropChance, boolean sound)
+	{
+		dropChance *= Config.RATE_QUEST_DROP / ((player.getParty() != null) ? player.getParty().getMemberCount() : 1);
+		long currentCount = getQuestItemsCount(player, itemId);
+		
+		if ((neededCount > 0) && (currentCount >= neededCount))
+		{
+			return true;
+		}
+		
+		if (currentCount >= neededCount)
+		{
+			return true;
+		}
+		
+		long itemCount = 0;
+		int random = Rnd.get(1000000);
+		
+		while (random < dropChance)
+		{
+			// Get the item quantity dropped
+			if (minCount < maxCount)
+			{
+				itemCount += Rnd.get(minCount, maxCount);
+			}
+			else if (minCount == maxCount)
+			{
+				itemCount += minCount;
+			}
+			else
+			{
+				itemCount++;
+			}
+			
+			// Prepare for next iteration if dropChance > L2DropData.MAX_CHANCE
+			dropChance -= 1000000;
+		}
+		
+		if (itemCount > 0)
+		{
+			// if over neededCount, just fill the gap
+			if ((neededCount > 0) && ((currentCount + itemCount) > neededCount))
+			{
+				itemCount = neededCount - currentCount;
+			}
+			
+			// Inventory slot check
+			if (!player.getInventory().validateCapacityByItemId(itemId))
+			{
+				return false;
+			}
+			
+			// Give the item to Player
+			player.addItem("Quest", itemId, itemCount, player.getTarget(), true);
+			
+			if (sound)
+			{
+				playSound(player, ((currentCount + itemCount) < neededCount) ? QuestSound.ITEMSOUND_QUEST_ITEMGET : QuestSound.ITEMSOUND_QUEST_MIDDLE);
+			}
+		}
+		
+		return ((neededCount > 0) && ((currentCount + itemCount) >= neededCount));
 	}
 }

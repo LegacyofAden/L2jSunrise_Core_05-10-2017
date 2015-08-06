@@ -1266,4 +1266,27 @@ public final class QuestState
 		final String val = get("restartTime");
 		return ((val == null) || !Util.isDigit(val)) || (Long.parseLong(val) <= System.currentTimeMillis());
 	}
+	
+	public void takeAllItems(int[] items)
+	{
+		for (int itemId : items)
+		{
+			AbstractScript.takeItems(_player, itemId, -1);
+		}
+	}
+	
+	public boolean dropQuestItems(int itemId, int minCount, int maxCount, long neededCount, int dropChance, boolean sound)
+	{
+		return getQuest().dropQuestItems(getPlayer(), itemId, minCount, maxCount, neededCount, dropChance, sound);
+	}
+	
+	public long getQuestItemsCount(int... itemId)
+	{
+		long count = 0;
+		for (int i : itemId)
+		{
+			count += AbstractScript.getQuestItemsCount(_player, i);
+		}
+		return count;
+	}
 }

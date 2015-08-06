@@ -1128,4 +1128,66 @@ public final class Util
 	{
 		return (input < min) ? min : (input > max) ? max : input;
 	}
+	
+	// vGodFather addons
+	public static int[] unpackInt(int a, int bits)
+	{
+		int m = 32 / bits;
+		int mval = (int) Math.pow(2, bits);
+		int[] result = new int[m];
+		int next;
+		for (int i = m; i > 0; i--)
+		{
+			next = a;
+			a = a >> bits;
+			result[i - 1] = next - (a * mval);
+		}
+		return result;
+	}
+	
+	public static int[] unpackLong(long a, int bits)
+	{
+		int m = 64 / bits;
+		int mval = (int) Math.pow(2, bits);
+		int[] result = new int[m];
+		long next;
+		for (int i = m; i > 0; i--)
+		{
+			next = a;
+			a = a >> bits;
+			result[i - 1] = (int) (next - (a * mval));
+		}
+		return result;
+	}
+	
+	public static int packInt(int[] a, int bits) throws Exception
+	{
+		int m = 32 / bits;
+		if (a.length > m)
+		{
+			throw new Exception("Overflow");
+		}
+		
+		int result = 0;
+		int next;
+		int mval = (int) Math.pow(2, bits);
+		for (int i = 0; i < m; i++)
+		{
+			result <<= bits;
+			if (a.length > i)
+			{
+				next = a[i];
+				if ((next >= mval) || (next < 0))
+				{
+					throw new Exception("Overload, value is out of range");
+				}
+			}
+			else
+			{
+				next = 0;
+			}
+			result += next;
+		}
+		return result;
+	}
 }
