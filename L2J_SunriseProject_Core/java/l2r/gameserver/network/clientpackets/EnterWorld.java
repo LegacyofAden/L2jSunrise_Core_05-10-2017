@@ -83,6 +83,7 @@ import l2r.gameserver.network.serverpackets.SkillCoolTime;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
 import gr.sr.antibotEngine.AntibotSystem;
+import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import gr.sr.configsEngine.configs.impl.SecuritySystemConfigs;
 import gr.sr.interf.SunriseEvents;
 import gr.sr.main.EnterWorldCustomHandler;
@@ -91,6 +92,7 @@ import gr.sr.protection.Protection;
 import gr.sr.protection.network.ProtectionManager;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
+import gr.sr.utils.Tools;
 
 /**
  * Enter World Packet Handler
@@ -609,6 +611,24 @@ public class EnterWorld extends L2GameClientPacket
 		if (!activeChar.getPremiumItemList().isEmpty())
 		{
 			activeChar.sendPacket(ExNotifyPremiumItem.STATIC_PACKET);
+		}
+		
+		if (CustomServerConfigs.DUAL_BOX_IN_GAME > 0)
+		{
+			int inGameClients = 0;
+			for (L2PcInstance inGameChar : L2World.getInstance().getPlayers())
+			{
+				if ((inGameChar.getClient() != null) && !inGameChar.getClient().isDetached() && Tools.isDualBox(activeChar, inGameChar))
+				{
+					inGameClients++;
+				}
+				
+				if (inGameClients > CustomServerConfigs.DUAL_BOX_IN_GAME)
+				{
+					activeChar.logout();
+					break;
+				}
+			}
 		}
 		
 		// Unstuck players that had client open when server crashed.
