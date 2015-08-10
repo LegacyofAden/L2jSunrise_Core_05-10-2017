@@ -8,7 +8,6 @@ import l2r.util.Rnd;
 
 import gr.sr.configsEngine.configs.impl.AntibotConfigs;
 import gr.sr.imageGeneratorEngine.GenerateLogos;
-import gr.sr.imageGeneratorEngine.LogoType;
 
 /**
  * @author L2jSunrise Team
@@ -16,8 +15,8 @@ import gr.sr.imageGeneratorEngine.LogoType;
  */
 public class GenerateHtmls
 {
-	private static int _extraImgId;
-	private static int _refreshImgId;
+	private static String _extraImgId;
+	private static String _refreshImgId;
 	
 	public GenerateHtmls(L2PcInstance player)
 	{
@@ -43,14 +42,14 @@ public class GenerateHtmls
 		switch (botType)
 		{
 			case "FARM":
-				tb.append("<button action=\"bypass -h voice .farmcaptcha\" width=16 height=16 back=\"Crest.crest_" + Config.SERVER_ID + "_" + _refreshImgId + "\" fore=\"Crest.crest_" + Config.SERVER_ID + "_" + _refreshImgId + "\">");
+				tb.append("<button action=\"bypass -h voice .farmcaptcha\" width=16 height=16 back=\"" + _refreshImgId + "\" fore=\"" + _refreshImgId + "\">");
 				tb.append("</td></tr></table><br1>");
 				tb.append("<font color=\"888888\">(There are only english uppercase letters.)</font><br1>");
 				if (AntibotConfigs.ENABLE_DOUBLE_PROTECTION)
 				{
 					tb.append("<table width=254><tr>");
 					tb.append("<td width=160 align=left><font color=\"849D68\">Select the correct answer:</font></td>");
-					tb.append("<td align=center><img src=\"Crest.crest_" + Config.SERVER_ID + "_" + _extraImgId + "\" width=32 height=16></td>");
+					tb.append("<td align=center><img src=\"" + _extraImgId + "\" width=32 height=16></td>");
 					tb.append("<td align=right><combobox width=62 var=type list=Maybe;Yes;No></td>");
 					tb.append("</tr></table><br1>");
 				}
@@ -66,14 +65,14 @@ public class GenerateHtmls
 				activeChar.setFarmBotCode(GenerateLogos.getInstance().getFinalString());
 				break;
 			case "ENCHANT":
-				tb.append("<button action=\"bypass -h voice .enchantcaptcha\" width=16 height=16 back=\"Crest.crest_" + Config.SERVER_ID + "_" + _refreshImgId + "\" fore=\"Crest.crest_" + Config.SERVER_ID + "_" + _refreshImgId + "\">");
+				tb.append("<button action=\"bypass -h voice .enchantcaptcha\" width=16 height=16 back=\"" + _refreshImgId + "\" fore=\"" + _refreshImgId + "\">");
 				tb.append("</td></tr></table><br1>");
 				tb.append("<font color=\"888888\">(There are only english uppercase letters.)<br1>");
 				if (AntibotConfigs.ENABLE_DOUBLE_PROTECTION)
 				{
 					tb.append("<table width=254><tr>");
 					tb.append("<td width=160 align=left><font color=\"849D68\">Select the correct answer:</font></td>");
-					tb.append("<td align=center><img src=\"Crest.crest_" + Config.SERVER_ID + "_" + _extraImgId + "\" width=32 height=16></td>");
+					tb.append("<td align=center><img src=\"" + _extraImgId + "\" width=32 height=16></td>");
 					tb.append("<td align=right><combobox width=62 var=type list=Maybe;Yes;No></td>");
 					tb.append("</tr></table><br>");
 				}
@@ -103,20 +102,20 @@ public class GenerateHtmls
 		{
 			case 1:
 				activeChar.setBotAnswer("Maybe");
-				_extraImgId = Integer.valueOf(LogoType.MAYBE.getText());
+				_extraImgId = "%image:maybe.png%";
 				break;
 			case 2:
 				activeChar.setBotAnswer("Yes");
-				_extraImgId = Integer.valueOf(LogoType.YES.getText());
+				_extraImgId = "%image:yes.png%";
 				break;
 			case 3:
 				activeChar.setBotAnswer("No");
-				_extraImgId = Integer.valueOf(LogoType.NO.getText());
+				_extraImgId = "%image:no.png%";
 				break;
 			default:
 				break;
 		}
 		
-		_refreshImgId = Integer.valueOf(LogoType.REFRESH.getText());
+		_refreshImgId = "%image:refresh.png%";
 	}
 }

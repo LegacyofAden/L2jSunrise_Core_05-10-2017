@@ -18,7 +18,13 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.regex.Matcher;
+
+import l2r.Config;
 import l2r.gameserver.enums.HtmlActionScope;
+import l2r.gameserver.model.actor.instance.L2PcInstance;
+
+import gr.sr.imageGeneratorEngine.ImagesCache;
 
 /**
  * NpcHtmlMessage server packet implementation.
@@ -78,10 +84,30 @@ public final class NpcHtmlMessage extends AbstractHtmlPacket
 	@Override
 	protected final void writeImpl()
 	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
 		writeC(0x19);
 		
+		String html = getHtml();
+		Matcher m = ImagesCache.HTML_PATTERN.matcher(html);
+		while (m.find())
+		{
+			String imageName = m.group(1);
+			int imageId = ImagesCache.getInstance().getImageId(imageName);
+			html = html.replaceAll("%image:" + imageName + "%", "Crest.crest_" + Config.SERVER_ID + "_" + imageId);
+			byte[] image = ImagesCache.getInstance().getImage(imageId);
+			if (image != null)
+			{
+				player.sendPacket(new PledgeCrest(imageId, image));
+			}
+		}
+		
 		writeD(getNpcObjId());
-		writeS(getHtml());
+		writeS(html);
 		writeD(_itemId);
 	}
 	

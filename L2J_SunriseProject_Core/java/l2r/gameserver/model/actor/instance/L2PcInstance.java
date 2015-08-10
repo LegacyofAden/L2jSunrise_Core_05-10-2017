@@ -15782,4 +15782,33 @@ public final class L2PcInstance extends L2Playable
 			e.printStackTrace();
 		}
 	}
+	
+	private final List<Integer> loadedImages = new ArrayList<>();
+	
+	/**
+	 * Adding new Image Id to List of Images loaded by Game Client of this plater
+	 * @param id of the image
+	 */
+	public void addLoadedImage(int id)
+	{
+		loadedImages.add(id);
+	}
+	
+	/**
+	 * Did Game Client already receive Custom Image from the server?
+	 * @param id of the image
+	 * @return client received image
+	 */
+	public boolean wasImageLoaded(int id)
+	{
+		return loadedImages.contains(id);
+	}
+	
+	/**
+	 * @return Number of Custom Images sent from Server to the Player
+	 */
+	public int getLoadedImagesSize()
+	{
+		return loadedImages.size();
+	}
 }
