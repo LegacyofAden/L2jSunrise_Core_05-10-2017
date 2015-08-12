@@ -25,8 +25,8 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
 import l2r.Config;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.Shutdown;
+import l2r.gameserver.util.Broadcast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,11 +109,9 @@ public class DeadLockDetector extends Thread
 					
 					if (Config.RESTART_ON_DEADLOCK)
 					{
-						Announcements an = Announcements.getInstance();
-						an.announceToAll("Server has stability issues - restarting now.");
+						Broadcast.toAllOnlinePlayers("Server has stability issues - restarting now.");
 						Shutdown.getInstance().startTelnetShutdown("DeadLockDetector - Auto Restart", 60, true);
 					}
-					
 				}
 				Thread.sleep(_sleepTime);
 			}

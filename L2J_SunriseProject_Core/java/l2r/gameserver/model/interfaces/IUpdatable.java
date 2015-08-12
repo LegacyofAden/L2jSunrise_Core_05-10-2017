@@ -16,16 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.script;
+package l2r.gameserver.model.interfaces;
 
 /**
- * @author Luis Arias
+ * @author UnAfraid
  */
-public interface EngineInterface
+public interface IUpdatable
 {
-	public void addQuestDrop(int npcID, int itemID, int min, int max, int chance, String questID, String[] states);
-	
-	public void addEventDrop(int[] items, int[] count, double chance, DateRange range);
-	
-	public void onPlayerLogin(String message, DateRange range);
+	public boolean updateMe();
 }

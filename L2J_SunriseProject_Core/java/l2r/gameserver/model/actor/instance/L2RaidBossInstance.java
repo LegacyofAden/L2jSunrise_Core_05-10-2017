@@ -19,7 +19,6 @@
 package l2r.gameserver.model.actor.instance;
 
 import l2r.Config;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.RaidBossStatus;
@@ -32,6 +31,7 @@ import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.entity.Hero;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.util.Broadcast;
 import l2r.util.Rnd;
 
 import gr.sr.achievementEngine.AchievementsManager;
@@ -110,7 +110,7 @@ public class L2RaidBossInstance extends L2MonsterInstance
 			
 			if (CustomServerConfigs.ANNOUNCE_DEATH_REVIVE_OF_RAIDS)
 			{
-				Announcements.getInstance().handleAnnounce("RaidBoss Manager: " + getName() + " defeated!", 0, true);
+				Broadcast.toAllOnlinePlayers("RaidBoss Manager: " + getName() + " defeated!", true);
 			}
 			
 			if (player.getParty() != null)

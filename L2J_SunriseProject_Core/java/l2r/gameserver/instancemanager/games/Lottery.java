@@ -27,11 +27,11 @@ import java.util.Calendar;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.util.Broadcast;
 import l2r.util.Rnd;
 
 import org.slf4j.Logger;
@@ -180,7 +180,7 @@ public class Lottery
 			_isSellingTickets = true;
 			_isStarted = true;
 			
-			Announcements.getInstance().announceToAll("Lottery tickets are now available for Lucky Lottery #" + getId() + ".");
+			Broadcast.toAllOnlinePlayers("Lottery tickets are now available for Lucky Lottery #" + getId() + ".");
 			Calendar finishtime = Calendar.getInstance();
 			finishtime.setTimeInMillis(_enddate);
 			finishtime.set(Calendar.MINUTE, 0);
@@ -235,7 +235,7 @@ public class Lottery
 			}
 			_isSellingTickets = false;
 			
-			Announcements.getInstance().announceToAll(SystemMessage.getSystemMessage(SystemMessageId.LOTTERY_TICKET_SALES_TEMP_SUSPENDED));
+			Broadcast.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.LOTTERY_TICKET_SALES_TEMP_SUSPENDED));
 		}
 	}
 	
@@ -412,7 +412,7 @@ public class Lottery
 				sm.addInt(getId());
 				sm.addLong(getPrize());
 				sm.addLong(count1);
-				Announcements.getInstance().announceToAll(sm);
+				Broadcast.toAllOnlinePlayers(sm);
 			}
 			else
 			{
@@ -420,7 +420,7 @@ public class Lottery
 				sm = SystemMessage.getSystemMessage(SystemMessageId.AMOUNT_FOR_LOTTERY_S1_IS_S2_ADENA_NO_WINNER);
 				sm.addInt(getId());
 				sm.addLong(getPrize());
-				Announcements.getInstance().announceToAll(sm);
+				Broadcast.toAllOnlinePlayers(sm);
 			}
 			
 			try (Connection con = L2DatabaseFactory.getInstance().getConnection();

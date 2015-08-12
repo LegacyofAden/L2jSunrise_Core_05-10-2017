@@ -35,6 +35,7 @@ import l2r.UPnPService;
 import l2r.gameserver.cache.HtmCache;
 import l2r.gameserver.data.EventDroplist;
 import l2r.gameserver.data.SpawnTable;
+import l2r.gameserver.data.sql.AnnouncementsTable;
 import l2r.gameserver.data.sql.BotReportTable;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.data.sql.CharSummonTable;
@@ -216,7 +217,7 @@ public class GameServer
 		InstanceManager.getInstance();
 		L2World.getInstance();
 		MapRegionManager.getInstance();
-		Announcements.getInstance();
+		AnnouncementsTable.getInstance();
 		GlobalVariablesManager.getInstance();
 		
 		printSection("Data");

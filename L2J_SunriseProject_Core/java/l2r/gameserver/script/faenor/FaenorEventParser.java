@@ -22,7 +22,6 @@ import java.util.Date;
 
 import javax.script.ScriptContext;
 
-import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.script.DateRange;
 import l2r.gameserver.script.IntList;
@@ -85,7 +84,7 @@ public class FaenorEventParser extends FaenorParser
 		try
 		{
 			String type = attribute(sysMsg, "Type");
-			String[] message = attribute(sysMsg, "Msg").split(Config.EOL);
+			String message = attribute(sysMsg, "Msg");
 			
 			if (type.equalsIgnoreCase("OnJoin"))
 			{

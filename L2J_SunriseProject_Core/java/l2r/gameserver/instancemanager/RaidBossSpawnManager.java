@@ -30,13 +30,13 @@ import java.util.concurrent.ScheduledFuture;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.SpawnTable;
 import l2r.gameserver.enums.RaidBossStatus;
 import l2r.gameserver.model.L2Spawn;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
+import l2r.gameserver.util.Broadcast;
 import l2r.util.Rnd;
 
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
@@ -154,7 +154,7 @@ public class RaidBossSpawnManager
 			
 			if ((raidboss != null) && CustomServerConfigs.ANNOUNCE_DEATH_REVIVE_OF_RAIDS)
 			{
-				Announcements.getInstance().handleAnnounce("RaidBoss Manager: " + raidboss.getName() + " has spawned!", 0, true);
+				Broadcast.toAllOnlinePlayers("RaidBoss Manager: " + raidboss.getName() + " has spawned!", true);
 			}
 		}
 	}

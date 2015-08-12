@@ -16,16 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.script;
+package l2r.gameserver.model.announce;
+
+import l2r.gameserver.model.interfaces.IDeletable;
+import l2r.gameserver.model.interfaces.IStorable;
+import l2r.gameserver.model.interfaces.IUpdatable;
 
 /**
- * @author Luis Arias
+ * @author UnAfraid
  */
-public interface EngineInterface
+public interface IAnnouncement extends IStorable, IUpdatable, IDeletable
 {
-	public void addQuestDrop(int npcID, int itemID, int min, int max, int chance, String questID, String[] states);
+	public int getId();
 	
-	public void addEventDrop(int[] items, int[] count, double chance, DateRange range);
+	public AnnouncementType getType();
 	
-	public void onPlayerLogin(String message, DateRange range);
+	public void setType(AnnouncementType type);
+	
+	public boolean isValid();
+	
+	public String getContent();
+	
+	public void setContent(String content);
+	
+	public String getAuthor();
+	
+	public void setAuthor(String author);
 }

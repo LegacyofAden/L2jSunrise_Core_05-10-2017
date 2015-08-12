@@ -20,12 +20,13 @@ package l2r.gameserver.script.faenor;
 
 import java.util.List;
 
-import l2r.gameserver.Announcements;
 import l2r.gameserver.data.EventDroplist;
+import l2r.gameserver.data.sql.AnnouncementsTable;
 import l2r.gameserver.data.sql.NpcTable;
 import l2r.gameserver.model.L2DropCategory;
 import l2r.gameserver.model.L2DropData;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
+import l2r.gameserver.model.announce.EventAnnouncement;
 import l2r.gameserver.script.DateRange;
 import l2r.gameserver.script.EngineInterface;
 
@@ -116,9 +117,9 @@ public class FaenorInterface implements EngineInterface
 	}
 	
 	@Override
-	public void onPlayerLogin(String[] message, DateRange validDateRange)
+	public void onPlayerLogin(String message, DateRange validDateRange)
 	{
-		Announcements.getInstance().addEventAnnouncement(validDateRange, message);
+		AnnouncementsTable.getInstance().addAnnouncement(new EventAnnouncement(validDateRange, message));
 	}
 	
 	private static class SingletonHolder

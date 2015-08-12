@@ -19,10 +19,10 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.LoginServerThread;
 import l2r.gameserver.SevenSigns;
 import l2r.gameserver.cache.HtmCache;
+import l2r.gameserver.data.sql.AnnouncementsTable;
 import l2r.gameserver.data.xml.impl.AdminData;
 import l2r.gameserver.data.xml.impl.SkillTreesData;
 import l2r.gameserver.enums.PcCondOverride;
@@ -451,7 +451,7 @@ public class EnterWorld extends L2GameClientPacket
 		activeChar.sendPacket(SystemMessageId.WELCOME_TO_LINEAGE);
 		
 		SevenSigns.getInstance().sendCurrentPeriodMsg(activeChar);
-		Announcements.getInstance().showAnnouncements(activeChar);
+		AnnouncementsTable.getInstance().showAnnouncements(activeChar);
 		
 		if (showClanNotice)
 		{

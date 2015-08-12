@@ -35,13 +35,13 @@ import java.util.concurrent.TimeUnit;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.SpawnTable;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.MapRegionManager;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.interfaces.IIdentifiable;
+import l2r.gameserver.util.Broadcast;
 import l2r.util.Rnd;
 
 import org.slf4j.Logger;
@@ -508,7 +508,7 @@ public class AutoSpawnHandler
 					// Announce to all players that the spawn has taken place, with the nearest town location.
 					if (spawnInst.isBroadcasting())
 					{
-						Announcements.getInstance().announceToAll("The " + npcInst.getName() + " has spawned near " + nearestTown + "!");
+						Broadcast.toAllOnlinePlayers("The " + npcInst.getName() + " has spawned near " + nearestTown + "!");
 					}
 				}
 				

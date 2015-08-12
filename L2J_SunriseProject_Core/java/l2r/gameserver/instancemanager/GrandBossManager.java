@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.sql.NpcTable;
 import l2r.gameserver.instancemanager.tasks.GrandBossManagerStoreTask;
@@ -44,6 +43,7 @@ import l2r.gameserver.model.actor.instance.L2GrandBossInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.interfaces.IStorable;
 import l2r.gameserver.model.zone.type.L2BossZone;
+import l2r.gameserver.util.Broadcast;
 
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
@@ -211,7 +211,7 @@ public final class GrandBossManager implements IStorable
 		
 		if ((status == 0) && CustomServerConfigs.ANNOUNCE_DEATH_REVIVE_OF_RAIDS)
 		{
-			Announcements.getInstance().handleAnnounce("RaidBoss Manager: " + NpcTable.getInstance().getTemplate(bossId).getName() + " has spawned!", 0, true);
+			Broadcast.toAllOnlinePlayers("RaidBoss Manager: " + NpcTable.getInstance().getTemplate(bossId).getName() + " has spawned!", true);
 		}
 	}
 	

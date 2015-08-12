@@ -50,7 +50,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.Announcements;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.ItemsAutoDestroy;
@@ -5517,11 +5516,11 @@ public final class L2PcInstance extends L2Playable
 						{
 							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1);
 							sm.addString(msg);
-							Announcements.getInstance().announceToAll(sm);
+							Broadcast.toAllOnlinePlayers(sm);
 						}
 						else
 						{
-							Announcements.getInstance().announceToAll(msg);
+							Broadcast.toAllOnlinePlayers(msg);
 						}
 					}
 					else if (getPvpFlag() != 0)
@@ -5531,11 +5530,11 @@ public final class L2PcInstance extends L2Playable
 						{
 							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1);
 							sm.addString(msg);
-							Announcements.getInstance().announceToAll(sm);
+							Broadcast.toAllOnlinePlayers(sm);
 						}
 						else
 						{
-							Announcements.getInstance().announceToAll(msg);
+							Broadcast.toAllOnlinePlayers(msg);
 						}
 					}
 				}
