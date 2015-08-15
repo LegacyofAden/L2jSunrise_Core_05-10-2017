@@ -60,6 +60,7 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.AutoAttackStop;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
+import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
 
 /**
@@ -91,6 +92,8 @@ public class L2CharacterAI extends AbstractAI
 			return _crtlIntention;
 		}
 	}
+	
+	protected static final int FEAR_RANGE = 500;
 	
 	/**
 	 * Cast Task
@@ -278,8 +281,7 @@ public class L2CharacterAI extends AbstractAI
 				stopFollow();
 				
 				// Launch the Think Event
-				notifyEvent(CtrlEvent.EVT_THINK, null);
-				
+				notifyEvent(CtrlEvent.EVT_THINK);
 			}
 			else
 			{
@@ -297,7 +299,7 @@ public class L2CharacterAI extends AbstractAI
 			stopFollow();
 			
 			// Launch the Think Event
-			notifyEvent(CtrlEvent.EVT_THINK, null);
+			notifyEvent(CtrlEvent.EVT_THINK);
 		}
 	}
 	
@@ -343,7 +345,7 @@ public class L2CharacterAI extends AbstractAI
 		changeIntention(AI_INTENTION_CAST, skill, target);
 		
 		// Launch the Think Event
-		notifyEvent(CtrlEvent.EVT_THINK, null);
+		notifyEvent(CtrlEvent.EVT_THINK);
 	}
 	
 	/**
@@ -959,6 +961,31 @@ public class L2CharacterAI extends AbstractAI
 	protected void onEvtFinishCasting()
 	{
 		// do nothing
+	}
+	
+	@Override
+	protected void onEvtAfraid(L2Character effector, boolean start)
+	{
+		double radians = Math.toRadians(start ? Util.calculateAngleFrom(effector, _actor) : Util.convertHeadingToDegree(_actor.getHeading()));
+		
+		int posX = (int) (_actor.getX() + (FEAR_RANGE * Math.cos(radians)));
+		int posY = (int) (_actor.getY() + (FEAR_RANGE * Math.sin(radians)));
+		int posZ = _actor.getZ();
+		
+		if (!_actor.isPet())
+		{
+			_actor.setRunning();
+		}
+		
+		// If pathfinding enabled the creature will go to the defined destination (retail like).
+		// Otherwise it will go to the nearest obstacle.
+		/**
+		 * final Location destination; if (Config.PATHFINDING > 0) { destination = new Location(posX, posY, posZ, _actor.getInstanceId()); } else { destination = GeoData.getInstance().moveCheck(_actor.getX(), _actor.getY(), _actor.getZ(), posX, posY, posZ, _actor.getInstanceId()); }
+		 * setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, destination);
+		 */
+		
+		final Location destination = GeoData.getInstance().moveCheck(_actor.getX(), _actor.getY(), _actor.getZ(), posX, posY, posZ, _actor.getInstanceId());
+		setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, destination);
 	}
 	
 	protected boolean maybeMoveToPosition(Location worldPosition, int offset)

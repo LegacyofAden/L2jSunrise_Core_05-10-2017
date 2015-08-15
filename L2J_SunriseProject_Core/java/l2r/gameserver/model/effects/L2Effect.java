@@ -475,6 +475,9 @@ public abstract class L2Effect implements IChanceSkillTrigger
 					getEffected().sendPacket(smsg);
 				}
 				
+				// vGodFather Update abnormal effects just in case
+				getEffected().updateAbnormalEffect();
+				
 				if (_abnormalTime != 0)
 				{
 					startEffectTask();
@@ -522,6 +525,9 @@ public abstract class L2Effect implements IChanceSkillTrigger
 				
 				// Stop the task of the L2Effect, remove it and update client magic icon
 				stopEffectTask();
+				
+				// vGodFather Update abnormal effects just in case
+				getEffected().updateAbnormalEffect();
 				
 				// Cancel the effect in the the abnormal effect map of the L2Character
 				if (getInUse() || !((_count > 1) || (_abnormalTime > 0)))
