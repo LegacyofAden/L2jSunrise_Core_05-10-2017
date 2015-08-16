@@ -309,14 +309,8 @@ public class CharInfo extends L2GameServerPacket
 			
 			writeC(_activeChar.isInsideZone(ZoneIdType.WATER) ? 1 : _activeChar.isFlyingMounted() ? 2 : 0);
 			
-			if (antifeed || _activeChar.hasAntiFeed())
-			{
-				writeH(0);
-			}
-			else
-			{
-				writeH(_activeChar.getRecomHave()); // Blue value for name (0 = white, 255 = pure blue)
-			}
+			writeH(antifeed || _activeChar.hasAntiFeed() ? 0 : _activeChar.getRecomHave());
+			
 			writeD(_activeChar.getMountNpcId() + 1000000);
 			
 			writeD(_activeChar.getClassId().getId());
@@ -343,28 +337,14 @@ public class CharInfo extends L2GameServerPacket
 			writeD(_activeChar.getFishy());
 			writeD(_activeChar.getFishz());
 			
-			if (antifeed || _activeChar.hasAntiFeed())
-			{
-				writeD(0xFFFFFF);
-			}
-			else
-			{
-				writeD(_activeChar.getAppearance().getNameColor());
-			}
+			writeD(antifeed || _activeChar.hasAntiFeed() ? 0xFFFFFF : _activeChar.getAppearance().getNameColor());
 			
 			writeD(_heading);
 			
 			writeD(_activeChar.getPledgeClass());
 			writeD(_activeChar.getPledgeType());
 			
-			if (antifeed || _activeChar.hasAntiFeed())
-			{
-				writeD(0xFFFF77);
-			}
-			else
-			{
-				writeD(_activeChar.getAppearance().getTitleColor());
-			}
+			writeD(antifeed || _activeChar.hasAntiFeed() ? 0xFFFF77 : _activeChar.getAppearance().getTitleColor());
 			
 			writeD(_activeChar.isCursedWeaponEquipped() ? CursedWeaponsManager.getInstance().getLevel(_activeChar.getCursedWeaponEquippedId()) : 0);
 			
