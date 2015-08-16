@@ -186,7 +186,7 @@ public final class OlympiadGameTask implements Runnable
 				{
 					if (!startGame())
 					{
-						_state = BattleStatus.GAME_STOPPED;
+						_state = BattleStatus.GAME_CANCELLED;
 						break;
 					}
 					
@@ -256,6 +256,13 @@ public final class OlympiadGameTask implements Runnable
 						_state = BattleStatus.GAME_STOPPED;
 					}
 					
+					break;
+				}
+					// Battle cancelled before teleport participants to the stadium
+				case GAME_CANCELLED:
+				{
+					stopGame();
+					_state = BattleStatus.CLEANUP;
 					break;
 				}
 					// End of the battle

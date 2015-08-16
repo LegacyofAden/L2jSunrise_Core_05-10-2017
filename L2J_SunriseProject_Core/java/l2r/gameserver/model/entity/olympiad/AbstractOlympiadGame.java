@@ -365,12 +365,16 @@ public abstract class AbstractOlympiadGame
 				player.untransform();
 			}
 			
+			if (player.isInOlympiadMode())
+			{
+				player.sendPacket(new ExOlympiadMode(0));
+			}
+			
 			player.setIsInOlympiad(false);
 			player.setIsInOlympiadMode(false);
 			player.setIsOlympiadStart(false);
 			player.setOlympiadSide(-1);
 			player.setOlympiadGameId(-1);
-			player.sendPacket(new ExOlympiadMode(0));
 			
 			// Add Clan Skills
 			if (player.getClan() != null)
