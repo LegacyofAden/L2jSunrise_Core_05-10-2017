@@ -132,7 +132,6 @@ import l2r.gameserver.network.L2GamePacketHandler;
 import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.script.faenor.FaenorScriptEngine;
 import l2r.gameserver.scripting.L2ScriptEngineManager;
-import l2r.gameserver.taskmanager.AutoAnnounceTaskManager;
 import l2r.gameserver.taskmanager.KnownListUpdateTaskManager;
 import l2r.gameserver.taskmanager.TaskManager;
 import l2r.status.Status;
@@ -450,9 +449,6 @@ public class GameServer
 		
 		printSection("UPnP");
 		UPnPService.getInstance();
-		
-		AutoAnnounceTaskManager.getInstance();
-		
 		SunriseInfo.load();
 	}
 	
