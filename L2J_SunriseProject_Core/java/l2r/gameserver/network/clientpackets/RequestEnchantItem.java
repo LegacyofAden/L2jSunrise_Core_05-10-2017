@@ -357,10 +357,14 @@ public final class RequestEnchantItem extends L2GameClientPacket
 						{
 							// enchant failed, destroy item
 							int crystalId = item.getItem().getCrystalItemId();
-							int count = item.getCrystalCount() - ((item.getItem().getCrystalCount() + 1) / 2);
-							if (count < 1)
+							int count = 0;
+							if (item.getItem().getCrystalCount() > 0)
 							{
-								count = 1;
+								count = item.getCrystalCount() - ((item.getItem().getCrystalCount() + 1) / 2);
+								if (count < 1)
+								{
+									count = 1;
+								}
 							}
 							
 							item = activeChar.getInventory().destroyItem("Enchant", item, activeChar, null);
@@ -389,7 +393,7 @@ public final class RequestEnchantItem extends L2GameClientPacket
 							
 							L2World.getInstance().removeObject(item);
 							L2ItemInstance crystals = null;
-							if (crystalId != 0)
+							if ((crystalId != 0) && (count > 0))
 							{
 								crystals = activeChar.getInventory().addItem("Enchant", crystalId, count, activeChar, item);
 								
