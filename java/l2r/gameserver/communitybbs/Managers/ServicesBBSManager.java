@@ -181,6 +181,7 @@ public class ServicesBBSManager extends BaseBBSManager
 		{
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gmshop.htm");
 			separateAndSend(content, activeChar);
+			activeChar.setIsUsingAioMultisell(true);
 			activeChar.sendPacket(new BuyList(activeChar.getAdena()));
 			activeChar.sendPacket(new ExBuySellList(activeChar, 0, true));
 		}
