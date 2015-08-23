@@ -489,6 +489,11 @@ public class L2CharTemplate extends ListenersContainer
 		return _baseAggression;
 	}
 	
+	public boolean isAggressive()
+	{
+		return _baseAggression > 0;
+	}
+	
 	/**
 	 * @return the baseBleed
 	 */
