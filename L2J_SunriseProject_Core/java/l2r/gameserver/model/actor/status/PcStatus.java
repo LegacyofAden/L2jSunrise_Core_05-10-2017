@@ -256,21 +256,12 @@ public class PcStatus extends PlayableStatus
 				smsg.addInt(fullValue);
 				getActiveChar().sendPacket(smsg);
 				
-				if (tDmg > 0)
+				if ((tDmg > 0) && (attackerPlayer != null))
 				{
-					smsg = SystemMessage.getSystemMessage(SystemMessageId.C1_RECEIVED_DAMAGE_OF_S3_FROM_C2);
-					smsg.addString(getActiveChar().getSummon().getName());
-					smsg.addCharName(attacker);
+					smsg = SystemMessage.getSystemMessage(SystemMessageId.GIVEN_S1_DAMAGE_TO_YOUR_TARGET_AND_S2_DAMAGE_TO_SERVITOR);
+					smsg.addInt(fullValue);
 					smsg.addInt(tDmg);
-					getActiveChar().sendPacket(smsg);
-					
-					if (attackerPlayer != null)
-					{
-						smsg = SystemMessage.getSystemMessage(SystemMessageId.GIVEN_S1_DAMAGE_TO_YOUR_TARGET_AND_S2_DAMAGE_TO_SERVITOR);
-						smsg.addInt(fullValue);
-						smsg.addInt(tDmg);
-						attackerPlayer.sendPacket(smsg);
-					}
+					attackerPlayer.sendPacket(smsg);
 				}
 			}
 		}

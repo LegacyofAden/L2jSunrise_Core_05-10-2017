@@ -134,6 +134,8 @@ public abstract class L2Summon extends L2Playable
 		
 		// Notify to scripts
 		EventDispatcher.getInstance().notifyEventAsync(new OnPlayerSummonSpawn(this), this);
+		
+		rechargeShots(true, true);
 	}
 	
 	@Override

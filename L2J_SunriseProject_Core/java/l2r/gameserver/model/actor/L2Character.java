@@ -1153,9 +1153,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		else
 		{
-			// If we didn't miss the hit, discharge the shoulshots, if any
-			setChargedShot(ShotType.SOULSHOTS, false);
-			
 			if (player != null)
 			{
 				if (player.isCursedWeaponEquipped())
@@ -5157,6 +5154,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				target.getChanceSkills().onEvadedHit(this);
 			}
+		}
+		else
+		{
+			// If we didn't miss the hit, discharge the shoulshots, if any
+			setChargedShot(ShotType.SOULSHOTS, false);
 		}
 		
 		// Send message about damage/crit or miss
