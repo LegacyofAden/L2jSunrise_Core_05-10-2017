@@ -7661,4 +7661,33 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	}
 	
 	public int taskPotionCounter = 0;
+	
+	/**
+	 * Active the abnormal effect Fear flag, notify the L2Character AI and send Server->Client UserInfo/CharInfo packet.
+	 */
+	public final void startFear()
+	{
+		getAI().notifyEvent(CtrlEvent.EVT_AFRAID);
+		updateAbnormalEffect();
+	}
+	
+	/**
+	 * Stop a specified/all Fear abnormal L2Effect.<br>
+	 * <B><U>Actions</U>:</B>
+	 * <ul>
+	 * <li>Delete a specified/all (if effect=null) Fear abnormal L2Effect from L2Character and update client magic icon</li>
+	 * <li>Set the abnormal effect flag _affraid to False</li>
+	 * <li>Notify the L2Character AI</li>
+	 * <li>Send Server->Client UserInfo/CharInfo packet</li>
+	 * </ul>
+	 * @param removeEffects
+	 */
+	public final void stopFear(boolean removeEffects)
+	{
+		if (removeEffects)
+		{
+			stopEffects(L2EffectType.FEAR);
+		}
+		updateAbnormalEffect();
+	}
 }
