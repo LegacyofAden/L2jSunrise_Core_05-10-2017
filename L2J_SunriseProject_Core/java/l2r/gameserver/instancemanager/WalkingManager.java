@@ -324,7 +324,7 @@ public final class WalkingManager implements IXmlReader
 					}
 					catch (Exception e)
 					{
-						LOGGER.error(getClass().getSimpleName() + ": Failed start movement for NPC ID: " + npc.getId(), e);
+						// LOGGER.error(getClass().getSimpleName() + ": Failed start movement for NPC ID: " + npc.getId(), e);
 					}
 				}
 				else
