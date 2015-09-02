@@ -3,8 +3,12 @@ package l2r.gameserver.communitybbs.SunriseBoards;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import l2r.L2DatabaseFactory;
+import l2r.gameserver.data.sql.NpcTable;
+import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 
@@ -26,54 +30,64 @@ public class RaidList
 		int type = Integer.parseInt(rfid);
 		int stpoint = 0;
 		int pos = 0;
-		String sort = "";
-		if (SmartCommunityConfigs.RAID_LIST_SORT_ASC)
-		{
-			sort = "ASC";
-		}
-		else
-		{
-			sort = "DESC";
-		}
+		int tempCounter = 0;
+		
 		for (int count = 1; count != type; count++)
 		{
 			stpoint += SmartCommunityConfigs.RAID_LIST_RESULTS;
 		}
 		
+		pos = stpoint;
+		List<L2NpcTemplate> raids = new ArrayList<>();
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			PreparedStatement statement = con.prepareStatement("SELECT id, name, level FROM npc WHERE type='L2RaidBoss' AND EXISTS (SELECT * FROM raidboss_spawnlist WHERE raidboss_spawnlist.boss_id = npc.id) ORDER BY `level` " + sort + " Limit " + stpoint + ", " + SmartCommunityConfigs.RAID_LIST_RESULTS);
+			PreparedStatement statement = con.prepareStatement("SELECT boss_id FROM raidboss_spawnlist");
 			ResultSet result = statement.executeQuery();
-			pos = stpoint;
 			
 			while (result.next())
 			{
-				int npcid = result.getInt("id");
-				String npcname = result.getString("name");
-				int rlevel = result.getInt("level");
-				PreparedStatement statement2 = con.prepareStatement("SELECT respawn_time, respawn_delay, respawn_random FROM raidboss_spawnlist WHERE boss_id=" + npcid);
-				ResultSet result2 = statement2.executeQuery();
-				
-				while (result2.next())
-				{
-					pos++;
-					boolean rstatus = false;
-					long respawn = result2.getLong("respawn_time");
-					if (respawn == 0)
-					{
-						rstatus = true;
-					}
-					int mindelay = result2.getInt("respawn_delay");
-					int maxdelay = result2.getInt("respawn_random");
-					mindelay = mindelay / 60 / 60;
-					maxdelay = maxdelay / 60 / 60;
-					addRaidToList(pos, npcname, rlevel, mindelay, maxdelay, rstatus);
-				}
+				raids.add(NpcTable.getInstance().getTemplate(result.getInt("boss_id")));
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+		raids.sort((o1, o2) -> NpcTable.getInstance().getTemplate(o1.getId()).getLevel() - NpcTable.getInstance().getTemplate(o2.getId()).getLevel());
+		
+		for (int i = stpoint; i < raids.size(); i++)
+		{
+			L2NpcTemplate npc = raids.get(i);
+			int npcid = npc.getId();
+			String npcname = npc.getName();
+			int rlevel = npc.getLevel();
+			if (tempCounter >= SmartCommunityConfigs.RAID_LIST_RESULTS)
+			{
+				break;
+			}
+			
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+			{
+				PreparedStatement statement = con.prepareStatement("SELECT respawn_time, respawn_delay, respawn_random FROM raidboss_spawnlist WHERE boss_id=" + npcid);
+				ResultSet result = statement.executeQuery();
+				
+				while (result.next())
+				{
+					pos++;
+					tempCounter++;
+					long respawn = result.getLong("respawn_time");
+					boolean rstatus = respawn == 0;
+					int mindelay = result.getInt("respawn_delay");
+					int maxdelay = result.getInt("respawn_random");
+					mindelay = mindelay / 60 / 60;
+					maxdelay = maxdelay / 60 / 60;
+					addRaidToList(pos, npcname, rlevel, mindelay, maxdelay, rstatus);
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	
