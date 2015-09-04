@@ -4,12 +4,12 @@ import java.util.List;
 
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 
-import gr.sr.datatables.SunriseTable;
-import gr.sr.javaBuffer.BuffInstance;
 import gr.sr.javaBuffer.BufferMenuCategories;
 import gr.sr.javaBuffer.BufferPacketCategories;
 import gr.sr.javaBuffer.BufferPacketSender;
+import gr.sr.javaBuffer.BuffsInstance;
 import gr.sr.javaBuffer.PlayerMethods;
+import gr.sr.javaBuffer.xml.dataHolder.BuffsHolder;
 
 /**
  * @author L2jSunrise Team
@@ -92,7 +92,7 @@ public class GenerateHtmls
 				break;
 		}
 		tb.append("<center><img src=\"L2UI.SquareGray\" width=280 height=1>");
-		for (BuffInstance buffInst : SunriseTable.getInstance().getBuffs().values())
+		for (BuffsInstance buffInst : BuffsHolder.getInstance().getBuffs().values())
 		{
 			// Just a check to know if this buff
 			// Is in the category we wish to be
@@ -169,7 +169,7 @@ public class GenerateHtmls
 		// Temporary fix for long html
 		tb.append("<center><img src=\"L2UI.SquareGray\" width=280 height=1></center><table width=280>");
 		// tb.append("<center><img src=\"L2UI.SquareGray\" width=280 height=1><table bgcolor=131210>");
-		for (BuffInstance buffInst : SunriseTable.getInstance().getBuffs().values())
+		for (BuffsInstance buffInst : BuffsHolder.getInstance().getBuffs().values())
 		{
 			int id = buffInst.getId();
 			// Integer level = buffInst.getLevel();

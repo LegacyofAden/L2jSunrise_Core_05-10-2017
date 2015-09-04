@@ -2,6 +2,10 @@ package gr.sr.main;
 
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 
+/**
+ * @author L2jSunrise Team
+ * @Website www.l2jsunrise.com
+ */
 public class NamePrefix
 {
 	private NamePrefix()

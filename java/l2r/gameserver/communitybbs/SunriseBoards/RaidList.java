@@ -16,17 +16,14 @@ import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
  * @author L2jSunrise Team
  * @Website www.l2jsunrise.com
  */
-public class RaidList
+public class RaidList extends AbstractSunriseBoards
 {
-	private final StringBuilder _raidList = new StringBuilder();
+	private final StringBuilder _list = new StringBuilder();
 	
-	public RaidList(String rfid)
+	@Override
+	public void load(String rfid)
 	{
-		loadFromDB(rfid);
-	}
-	
-	private void loadFromDB(String rfid)
-	{
+		_list.setLength(0);
 		int type = Integer.parseInt(rfid);
 		int stpoint = 0;
 		int pos = 0;
@@ -93,22 +90,33 @@ public class RaidList
 	
 	private void addRaidToList(int pos, String npcname, int rlevel, int mindelay, int maxdelay, boolean rstatus)
 	{
-		_raidList.append("<table border=0 cellspacing=0 cellpadding=2  bgcolor=111111 width=750 height=" + SmartCommunityConfigs.RAID_LIST_ROW_HEIGHT + ">");
-		_raidList.append("<tr>");
-		_raidList.append("<td FIXWIDTH=5></td>");
-		_raidList.append("<td FIXWIDTH=20>" + pos + "</td>");
-		_raidList.append("<td FIXWIDTH=270>" + npcname + "</td>");
-		_raidList.append("<td FIXWIDTH=50>" + rlevel + "</td>");
-		_raidList.append("<td FIXWIDTH=120 align=center>" + mindelay + " - " + maxdelay + "</td>");
-		_raidList.append("<td FIXWIDTH=50 align=center>" + ((rstatus) ? "<font color=99FF00>Alive</font>" : "<font color=CC0000>Dead</font>") + "</td>");
-		_raidList.append("<td FIXWIDTH=5></td>");
-		_raidList.append("</tr>");
-		_raidList.append("</table>");
-		_raidList.append("<img src=\"L2UI.Squaregray\" width=\"735\" height=\"1\">");
+		_list.append("<table border=0 cellspacing=0 cellpadding=0  bgcolor=111111 width=680 height=" + SmartCommunityConfigs.RAID_LIST_ROW_HEIGHT + ">");
+		_list.append("<tr>");
+		_list.append("<td FIXWIDTH=5></td>");
+		_list.append("<td FIXWIDTH=20>" + pos + "</td>");
+		_list.append("<td FIXWIDTH=270>" + npcname + "</td>");
+		_list.append("<td FIXWIDTH=50>" + rlevel + "</td>");
+		_list.append("<td FIXWIDTH=120 align=center>" + mindelay + " - " + maxdelay + "</td>");
+		_list.append("<td FIXWIDTH=50 align=center>" + ((rstatus) ? "<font color=99FF00>Alive</font>" : "<font color=CC0000>Dead</font>") + "</td>");
+		_list.append("<td FIXWIDTH=5></td>");
+		_list.append("</tr>");
+		_list.append("</table>");
+		_list.append("<img src=\"L2UI.Squaregray\" width=\"680\" height=\"1\">");
 	}
 	
-	public String loadRaidList()
+	@Override
+	public String getList()
 	{
-		return _raidList.toString();
+		return _list.toString();
+	}
+	
+	public static RaidList getInstance()
+	{
+		return SingletonHolder._instance;
+	}
+	
+	private static class SingletonHolder
+	{
+		protected static final RaidList _instance = new RaidList();
 	}
 }

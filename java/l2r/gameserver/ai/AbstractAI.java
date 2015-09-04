@@ -414,7 +414,14 @@ public abstract class AbstractAI implements Ctrl
 				break;
 			case EVT_AFRAID:
 			{
-				onEvtAfraid((L2Character) args[0], (Boolean) args[1]);
+				try
+				{
+					onEvtAfraid((L2Character) args[0], (Boolean) args[1]);
+				}
+				catch (Exception e)
+				{
+					// vGodFather: TODO remove try catch when implement completely
+				}
 				break;
 			}
 		}

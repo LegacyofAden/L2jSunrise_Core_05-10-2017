@@ -1,85 +1,63 @@
 package l2r.gameserver.communitybbs.SunriseBoards;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import l2r.gameserver.data.sql.ClanTable;
 
-import l2r.L2DatabaseFactory;
+import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
+import gr.sr.dataHolder.PlayersTopData;
+import gr.sr.main.TopListsLoader;
 
 /**
  * @author L2jSunrise Team
  * @Website www.l2jsunrise.com
  */
-public class TopClan
+public class TopClan extends AbstractSunriseBoards
 {
-	private final StringBuilder _topClan = new StringBuilder();
 	private int _counter = 1;
+	private final StringBuilder _list = new StringBuilder();
 	
-	public TopClan(String file)
+	@Override
+	public void load()
 	{
-		loadFromDB(file);
-	}
-	
-	private void loadFromDB(String file)
-	{
-		int results = 10;
-		String leadername = "";
+		_list.setLength(0);
+		_counter = 1;
 		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopClan())
 		{
-			PreparedStatement statement = con.prepareStatement("SELECT clan_name, leader_id, clan_level, reputation_score FROM clan_data ORDER BY `clan_level` desc Limit " + results);
-			ResultSet result = statement.executeQuery();
-			
-			while (result.next())
+			if (_counter <= SmartCommunityConfigs.TOP_PLAYER_RESULTS)
 			{
-				String clan = result.getString("clan_name");
-				int clanleader = result.getInt("leader_id");
-				int clanlevel = result.getInt("clan_level");
-				int reputation = result.getInt("reputation_score");
-				
-				PreparedStatement statement3 = con.prepareStatement("SELECT char_name FROM characters WHERE charId=" + clanleader);
-				ResultSet result2 = statement3.executeQuery();
-				
-				if (result2.next())
-				{
-					leadername = result2.getString("char_name");
-				}
-				addClanToList(clan, leadername, clanlevel, reputation);
-				
-				setCounter(getCounter() + 1);
+				String leaderName = ClanTable.getInstance().getClanByName(playerData.getClanName()).getLeader().getName();
+				int clanReputation = ClanTable.getInstance().getClanByName(playerData.getClanName()).getReputationScore();
+				addClanToList(playerData.getClanName(), leaderName, playerData.getClanLevel(), clanReputation);
+				_counter++;
 			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
 		}
 	}
 	
 	private void addClanToList(String clan, String leadername, int clanlevel, int reputation)
 	{
-		_topClan.append("<table border=0 cellspacing=0 cellpadding=2 bgcolor=111111 width=762>");
-		_topClan.append("<tr>");
-		_topClan.append("<td FIXWIDTH=40>" + getCounter() + "</td");
-		_topClan.append("<td fixwidth=90>" + clan + "</td");
-		_topClan.append("<td fixwidth=85>" + leadername + "</td>");
-		_topClan.append("<td fixwidth=45>" + clanlevel + "</td>");
-		_topClan.append("<td FIXWIDTH=70>" + reputation + "</td>");
-		_topClan.append("</tr></table><img src=\"L2UI.Squaregray\" width=\"734\" height=\"1\">");
-		
+		_list.append("<table width=680 height=16 bgcolor=111111 border=0 cellspacing=0 cellpadding=0>");
+		_list.append("<tr>");
+		_list.append("<td FIXWIDTH=40>" + _counter + "</td");
+		_list.append("<td fixwidth=90>" + clan + "</td");
+		_list.append("<td fixwidth=85>" + leadername + "</td>");
+		_list.append("<td fixwidth=45>" + clanlevel + "</td>");
+		_list.append("<td  align=center FIXWIDTH=70>" + reputation + "</td>");
+		_list.append("</tr></table><img src=\"L2UI.Squaregray\" width=\"680\" height=\"1\">");
 	}
 	
-	public int getCounter()
+	@Override
+	public String getList()
 	{
-		return _counter;
+		return _list.toString();
 	}
 	
-	public void setCounter(int counter)
+	public static TopClan getInstance()
 	{
-		_counter = counter;
+		return SingletonHolder._instance;
 	}
 	
-	public String loadClanList()
+	private static class SingletonHolder
 	{
-		return _topClan.toString();
+		protected static final TopClan _instance = new TopClan();
 	}
 }

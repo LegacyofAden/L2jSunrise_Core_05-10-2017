@@ -11,17 +11,14 @@ import l2r.gameserver.data.sql.NpcTable;
  * @author L2jSunrise Team
  * @Website www.l2jsunrise.com
  */
-public class GrandBossList
+public class GrandBossList extends AbstractSunriseBoards
 {
-	private final StringBuilder _GrandBossList = new StringBuilder();
+	private final StringBuilder _list = new StringBuilder();
 	
-	public GrandBossList()
+	@Override
+	public void load()
 	{
-		loadFromDB();
-	}
-	
-	private void loadFromDB()
-	{
+		_list.setLength(0);
 		int pos = 0;
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
@@ -52,18 +49,29 @@ public class GrandBossList
 	
 	private void addGrandBossToList(int pos, String npcname, boolean rstatus)
 	{
-		_GrandBossList.append("<table border=0 cellspacing=0 cellpadding=2 bgcolor=111111 width=835>");
-		_GrandBossList.append("<tr>");
-		_GrandBossList.append("<td FIXWIDTH=30>" + pos + "</td>");
-		_GrandBossList.append("<td FIXWIDTH=30>" + npcname + "</td>");
-		_GrandBossList.append("<td FIXWIDTH=30 align=center>" + ((rstatus) ? "<font color=99FF00>Alive</font>" : "<font color=CC0000>Dead</font>") + "</td>");
-		_GrandBossList.append("</tr>");
-		_GrandBossList.append("</table>");
-		_GrandBossList.append("<img src=\"L2UI.Squaregray\" width=\"735\" height=\"1\">");
+		_list.append("<table width=680 bgcolor=111111 height=16 border=0 cellspacing=0 cellpadding=0>");
+		_list.append("<tr>");
+		_list.append("<td FIXWIDTH=30>" + pos + "</td>");
+		_list.append("<td FIXWIDTH=30>" + npcname + "</td>");
+		_list.append("<td FIXWIDTH=30 align=center>" + ((rstatus) ? "<font color=99FF00>Alive</font>" : "<font color=CC0000>Dead</font>") + "</td>");
+		_list.append("</tr>");
+		_list.append("</table>");
+		_list.append("<img src=\"L2UI.Squaregray\" width=\"680\" height=\"1\">");
 	}
 	
-	public String loadGrandBossList()
+	@Override
+	public String getList()
 	{
-		return _GrandBossList.toString();
+		return _list.toString();
+	}
+	
+	public static GrandBossList getInstance()
+	{
+		return SingletonHolder._instance;
+	}
+	
+	private static class SingletonHolder
+	{
+		protected static final GrandBossList _instance = new GrandBossList();
 	}
 }

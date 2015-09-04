@@ -2,61 +2,57 @@ package l2r.gameserver.communitybbs.SunriseBoards;
 
 import gr.sr.configsEngine.configs.impl.SmartCommunityConfigs;
 import gr.sr.dataHolder.PlayersTopData;
-import gr.sr.datatables.SunriseTable;
+import gr.sr.main.TopListsLoader;
 
 /**
  * @author L2jSunrise Team
  * @Website www.l2jsunrise.com
  */
-public class TopPkPlayers
+public class TopPkPlayers extends AbstractSunriseBoards
 {
 	private int _counter = 1;
-	private final StringBuilder _topPk = new StringBuilder();
+	private final StringBuilder _list = new StringBuilder();
 	
-	public TopPkPlayers(String file)
+	@Override
+	public void load()
 	{
-		loadDB(file);
-	}
-	
-	private void loadDB(String file)
-	{
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopPk())
+		_list.setLength(0);
+		_counter = 1;
+		
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopPk())
 		{
-			if (getCounter() <= SmartCommunityConfigs.TOP_PLAYER_RESULTS)
+			if (_counter <= SmartCommunityConfigs.TOP_PLAYER_RESULTS)
 			{
-				String name = playerData.getCharName();
-				String cName = playerData.getClanName();
-				int pk = playerData.getPk();
-				
-				addChar(name, cName, pk);
-				setCounter(getCounter() + 1);
+				addChar(playerData.getCharName(), playerData.getClanName(), playerData.getPk());
+				_counter++;
 			}
 		}
 	}
 	
-	public String loadTopList()
-	{
-		return _topPk.toString();
-	}
-	
 	private void addChar(String name, String cname, int pk)
 	{
-		_topPk.append("<table border=0 cellspacing=0 cellpadding=2 bgcolor=111111 width=750>");
-		_topPk.append("<tr>");
-		_topPk.append("<td FIXWIDTH=40>" + getCounter() + "</td");
-		_topPk.append("<td fixwidth=160>" + name + "</td");
-		_topPk.append("<td fixwidth=160>" + cname + "</td>");
-		_topPk.append("<td fixwidth=80>" + pk + "</td>");
-		_topPk.append("</tr></table><img src=\"L2UI.Squaregray\" width=\"735\" height=\"1\">");
+		_list.append("<table width=680 bgcolor=111111  height=16 border=0 cellspacing=0 cellpadding=0>");
+		_list.append("<tr>");
+		_list.append("<td FIXWIDTH=40>" + _counter + "</td");
+		_list.append("<td fixwidth=160>" + name + "</td");
+		_list.append("<td fixwidth=160>" + cname + "</td>");
+		_list.append("<td align=center fixwidth=80>" + pk + "</td>");
+		_list.append("</tr></table><img src=\"L2UI.Squaregray\" width=\"680\" height=\"1\">");
 	}
 	
-	public int getCounter()
+	@Override
+	public String getList()
 	{
-		return _counter;
+		return _list.toString();
 	}
 	
-	public void setCounter(int counter)
+	public static TopPkPlayers getInstance()
 	{
-		_counter = counter;
+		return SingletonHolder._instance;
+	}
+	
+	private static class SingletonHolder
+	{
+		protected static final TopPkPlayers _instance = new TopPkPlayers();
 	}
 }

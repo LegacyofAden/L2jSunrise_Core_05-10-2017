@@ -81,7 +81,6 @@ import gr.sr.configsEngine.configs.impl.AioItemsConfigs;
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import gr.sr.configsEngine.configs.impl.LeaderboardsConfigs;
 import gr.sr.dataHolder.PlayersTopData;
-import gr.sr.datatables.SunriseTable;
 import gr.sr.donateEngine.DonateHandler;
 import gr.sr.imageGeneratorEngine.GenerateLogos;
 import gr.sr.leaderboards.ArenaLeaderboard;
@@ -89,6 +88,7 @@ import gr.sr.leaderboards.CraftLeaderboard;
 import gr.sr.leaderboards.FishermanLeaderboard;
 import gr.sr.leaderboards.TvTLeaderboard;
 import gr.sr.main.Conditions;
+import gr.sr.main.TopListsLoader;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
 
@@ -1124,12 +1124,12 @@ public final class L2AioNpcInstance extends L2Npc
 			try
 			{
 				Integer[] c = new Integer[3];
-				c[0] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[0];
-				c[1] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[1];
-				c[2] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[2];
-				boolean onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
-				itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
-				price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
+				c[0] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[0];
+				c[1] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[1];
+				c[2] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[2];
+				boolean onlyForNobless = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
+				itemIdToGet = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
+				price = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
 				
 				if (!AioItemsConfigs.ALLOW_TELEPORT_DURING_SIEGE)
 				{
@@ -1520,11 +1520,11 @@ public final class L2AioNpcInstance extends L2Npc
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Character Name:</font></td><td><font color=FFD700>Clan Name:</font></td><td><font color=FFD700>Fa Count:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopFa())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopCurrency())
 		{
 			String name = playerData.getCharName();
 			String cName = playerData.getClanName();
-			long countFa = playerData.getFa();
+			long countFa = playerData.getCurrencyCount();
 			
 			sb.append("<tr>");
 			sb.append("<td align=center>" + count + "</td><td>" + name + "</td><td align=center>" + cName + "</td><td align=center>" + countFa + "</td>");
@@ -1553,7 +1553,7 @@ public final class L2AioNpcInstance extends L2Npc
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Character Name:</font></td><td><font color=FFD700>Clan Name:</font></td><td><font color=FFD700>PvP Kills:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopPvp())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopPvp())
 		{
 			String name = playerData.getCharName();
 			String cName = playerData.getClanName();
@@ -1586,7 +1586,7 @@ public final class L2AioNpcInstance extends L2Npc
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Character Name:</font></td><td><font color=FFD700>Pk Kills:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopPk())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopPk())
 		{
 			String name = playerData.getCharName();
 			int pvp = playerData.getPk();
@@ -1618,7 +1618,7 @@ public final class L2AioNpcInstance extends L2Npc
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Leader's Name:</font></td><td><font color=FFD700>Clan Name:</font></td><td><font color=FFD700>Clan Level:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopClan())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopClan())
 		{
 			String name = playerData.getCharName();
 			String cName = playerData.getClanName();
