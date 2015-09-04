@@ -60,7 +60,6 @@ import l2r.gameserver.util.Util;
 
 import gr.sr.configsEngine.configs.impl.CommunityServicesConfigs;
 import gr.sr.configsEngine.configs.impl.IndividualVoteSystemConfigs;
-import gr.sr.datatables.SunriseTable;
 import gr.sr.interf.SunriseEvents;
 import gr.sr.javaBuffer.AutoBuff;
 import gr.sr.javaBuffer.BufferPacketCategories;
@@ -70,6 +69,7 @@ import gr.sr.javaBuffer.PlayerMethods;
 import gr.sr.javaBuffer.buffCommunity.dynamicHtmls.GenerateHtmls;
 import gr.sr.javaBuffer.runnable.BuffDeleter;
 import gr.sr.main.Conditions;
+import gr.sr.main.TopListsLoader;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
 import gr.sr.voteEngine.old.VoteHandler;
@@ -206,12 +206,12 @@ public class ServicesBBSManager extends BaseBBSManager
 			{
 				String tp = commandSeperator(command);
 				Integer[] c = new Integer[3];
-				c[0] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(tp))[0];
-				c[1] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(tp))[1];
-				c[2] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(tp))[2];
-				boolean onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(tp))[3] == 1;
-				int itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(tp))[4];
-				int price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(tp))[5];
+				c[0] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(tp))[0];
+				c[1] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(tp))[1];
+				c[2] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(tp))[2];
+				boolean onlyForNobless = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(tp))[3] == 1;
+				int itemIdToGet = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(tp))[4];
+				int price = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(tp))[5];
 				
 				if (!CommunityServicesConfigs.ALLOW_TELEPORT_DURING_SIEGE)
 				{

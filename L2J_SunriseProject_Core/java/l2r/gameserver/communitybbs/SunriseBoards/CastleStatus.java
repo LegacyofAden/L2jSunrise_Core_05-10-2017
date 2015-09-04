@@ -12,17 +12,15 @@ import l2r.L2DatabaseFactory;
  * @author L2jSunrise Team
  * @Website www.l2jsunrise.com
  */
-public class CastleStatus
+public class CastleStatus extends AbstractSunriseBoards
 {
-	private final StringBuilder _playerList = new StringBuilder();
+	private final StringBuilder _list = new StringBuilder();
 	
-	public CastleStatus()
+	@Override
+	public void load()
 	{
-		loadFromDB();
-	}
-	
-	private void loadFromDB()
-	{
+		_list.setLength(0);
+		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			for (int i = 1; i < 9; i++)
@@ -60,19 +58,30 @@ public class CastleStatus
 	
 	private void addCastleToList(String name, String owner, int tax, String siegeDate)
 	{
-		_playerList.append("<table border=0 cellspacing=0 cellpadding=2 width=480>");
-		_playerList.append("<tr>");
-		_playerList.append("<td align=center FIXWIDTH=120>" + name + "</td>");
-		_playerList.append("<td align=center FIXWIDTH=60>" + tax + "</td>");
-		_playerList.append("<td align=center FIXWIDTH=120>" + owner + "</td>");
-		_playerList.append("<td align=center FIXWIDTH=155>" + siegeDate + "</td>");
-		_playerList.append("</tr>");
-		_playerList.append("</table>");
-		_playerList.append("<img src=\"L2UI.Squaregray\" width=\"480\" height=\"1\">");
+		_list.append("<table border=0 cellspacing=0 cellpadding=2 width=480>");
+		_list.append("<tr>");
+		_list.append("<td align=center FIXWIDTH=120>" + name + "</td>");
+		_list.append("<td align=center FIXWIDTH=60>" + tax + "</td>");
+		_list.append("<td align=center FIXWIDTH=120>" + owner + "</td>");
+		_list.append("<td align=center FIXWIDTH=155>" + siegeDate + "</td>");
+		_list.append("</tr>");
+		_list.append("</table>");
+		_list.append("<img src=\"L2UI.Squaregray\" width=\"480\" height=\"1\">");
 	}
 	
-	public String loadCastleList()
+	@Override
+	public String getList()
 	{
-		return _playerList.toString();
+		return _list.toString();
+	}
+	
+	public static CastleStatus getInstance()
+	{
+		return SingletonHolder._instance;
+	}
+	
+	private static class SingletonHolder
+	{
+		protected static final CastleStatus _instance = new CastleStatus();
 	}
 }

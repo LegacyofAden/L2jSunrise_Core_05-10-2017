@@ -36,23 +36,23 @@ public abstract class BaseBBSManager
 		{
 			return;
 		}
-		if (html.length() < 4096)
+		if (html.length() < 8180)
 		{
 			acha.sendPacket(new ShowBoard(html, "101"));
 			acha.sendPacket(new ShowBoard(null, "102"));
 			acha.sendPacket(new ShowBoard(null, "103"));
 		}
-		else if (html.length() < 8192)
+		else if (html.length() < (8180 * 2))
 		{
-			acha.sendPacket(new ShowBoard(html.substring(0, 4096), "101"));
-			acha.sendPacket(new ShowBoard(html.substring(4096), "102"));
+			acha.sendPacket(new ShowBoard(html.substring(0, 8180), "101"));
+			acha.sendPacket(new ShowBoard(html.substring(8180, html.length()), "102"));
 			acha.sendPacket(new ShowBoard(null, "103"));
 		}
-		else if (html.length() < 16384)
+		else if (html.length() < (8180 * 3))
 		{
-			acha.sendPacket(new ShowBoard(html.substring(0, 4096), "101"));
-			acha.sendPacket(new ShowBoard(html.substring(4096, 8192), "102"));
-			acha.sendPacket(new ShowBoard(html.substring(8192), "103"));
+			acha.sendPacket(new ShowBoard(html.substring(0, 8180), "101"));
+			acha.sendPacket(new ShowBoard(html.substring(8180, 8180 * 2), "102"));
+			acha.sendPacket(new ShowBoard(html.substring(8180 * 2, html.length()), "103"));
 		}
 	}
 	

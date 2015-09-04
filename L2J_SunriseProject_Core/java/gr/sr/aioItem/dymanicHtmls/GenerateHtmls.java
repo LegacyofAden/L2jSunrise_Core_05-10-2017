@@ -17,7 +17,7 @@ import gr.sr.achievementEngine.AchievementsManager;
 import gr.sr.achievementEngine.base.Achievement;
 import gr.sr.achievementEngine.base.Condition;
 import gr.sr.dataHolder.PlayersTopData;
-import gr.sr.datatables.SunriseTable;
+import gr.sr.main.TopListsLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -324,10 +324,10 @@ public class GenerateHtmls
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Character Name:</font></td><td><font color=FFD700>Fa Count:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopFa())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopCurrency())
 		{
 			String name = playerData.getCharName();
-			long countFa = playerData.getFa();
+			long countFa = playerData.getCurrencyCount();
 			
 			sb.append("<tr>");
 			sb.append("<td align=center>" + count + "</td><td>" + name + "</td><td align=center>" + countFa + "</td>");
@@ -359,7 +359,7 @@ public class GenerateHtmls
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Character Name:</font></td><td><font color=FFD700>Clan Name:</font></td><td><font color=FFD700>PvP Kills:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopPvp())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopPvp())
 		{
 			String name = playerData.getCharName();
 			String cName = playerData.getClanName();
@@ -395,7 +395,7 @@ public class GenerateHtmls
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Character Name:</font></td><td><font color=FFD700>Clan Name:</font></td><td><font color=FFD700>Pk Kills:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopPk())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopPk())
 		{
 			String name = playerData.getCharName();
 			String cName = playerData.getClanName();
@@ -431,7 +431,7 @@ public class GenerateHtmls
 		sb.append("<td><font color=FFD700>No</font></td><td><font color=FFD700>Leader Name:</font></td><td><font color=FFD700>Clan Name:</font></td><td><font color=FFD700>Clan Level:</font></td>");
 		sb.append("</tr>");
 		int count = 1;
-		for (PlayersTopData playerData : SunriseTable.getInstance().getTopClan())
+		for (PlayersTopData playerData : TopListsLoader.getInstance().getTopClan())
 		{
 			String name = playerData.getCharName();
 			String cName = playerData.getClanName();

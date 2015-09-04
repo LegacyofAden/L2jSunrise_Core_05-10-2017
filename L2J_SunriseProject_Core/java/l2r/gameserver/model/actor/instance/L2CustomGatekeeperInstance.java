@@ -15,8 +15,8 @@ import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 
 import gr.sr.configsEngine.configs.impl.CustomNpcsConfigs;
-import gr.sr.datatables.SunriseTable;
 import gr.sr.main.Conditions;
+import gr.sr.main.TopListsLoader;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
 
@@ -163,12 +163,12 @@ public final class L2CustomGatekeeperInstance extends L2Npc
 			try
 			{
 				Integer[] c = new Integer[3];
-				c[0] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[0];
-				c[1] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[1];
-				c[2] = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[2];
-				boolean onlyForNobless = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
-				int itemIdToGet = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
-				int price = SunriseTable.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
+				c[0] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[0];
+				c[1] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[1];
+				c[2] = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[2];
+				boolean onlyForNobless = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[3] == 1;
+				int itemIdToGet = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[4];
+				int price = TopListsLoader.getInstance().getTeleportInfo(Integer.parseInt(subCommand[1]))[5];
 				
 				if (!CustomNpcsConfigs.ALLOW_TELEPORT_DURING_SIEGE)
 				{

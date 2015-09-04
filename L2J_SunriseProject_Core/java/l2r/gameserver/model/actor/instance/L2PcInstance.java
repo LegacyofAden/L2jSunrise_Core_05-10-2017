@@ -15789,6 +15789,11 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
+	public long getCurrentOnlineTime()
+	{
+		return System.currentTimeMillis() - _onlineBeginTime;
+	}
+	
 	private final List<Integer> loadedImages = new ArrayList<>();
 	
 	/**
