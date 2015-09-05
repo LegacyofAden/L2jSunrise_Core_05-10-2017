@@ -54,11 +54,18 @@ public final class PunishmentHolder
 		if (_holder.containsKey(key))
 		{
 			task.stopPunishment();
-			final Map<PunishmentType, PunishmentTask> punishments = _holder.get(key);
-			punishments.remove(task.getType());
-			if (punishments.isEmpty())
+			try
 			{
-				_holder.remove(key);
+				final Map<PunishmentType, PunishmentTask> punishments = _holder.get(key);
+				punishments.remove(task.getType());
+				if (punishments.isEmpty())
+				{
+					_holder.remove(key);
+				}
+			}
+			catch (Exception e)
+			{
+				// vGodFather TODO nothing to log
 			}
 		}
 	}
