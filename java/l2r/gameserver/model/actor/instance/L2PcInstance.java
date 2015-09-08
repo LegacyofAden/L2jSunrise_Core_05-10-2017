@@ -5504,40 +5504,6 @@ public final class L2PcInstance extends L2Playable
 			if (pk != null)
 			{
 				EventDispatcher.getInstance().notifyEventAsync(new OnPlayerPvPKill(pk, this), this);
-				
-				// announce pvp/pk
-				if (Config.ANNOUNCE_PK_PVP && !pk.isGM())
-				{
-					String msg = "";
-					if (getPvpFlag() == 0)
-					{
-						msg = Config.ANNOUNCE_PK_MSG.replace("$killer", pk.getName()).replace("$target", getName());
-						if (Config.ANNOUNCE_PK_PVP_NORMAL_MESSAGE)
-						{
-							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1);
-							sm.addString(msg);
-							Broadcast.toAllOnlinePlayers(sm);
-						}
-						else
-						{
-							Broadcast.toAllOnlinePlayers(msg);
-						}
-					}
-					else if (getPvpFlag() != 0)
-					{
-						msg = Config.ANNOUNCE_PVP_MSG.replace("$killer", pk.getName()).replace("$target", getName());
-						if (Config.ANNOUNCE_PK_PVP_NORMAL_MESSAGE)
-						{
-							SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1);
-							sm.addString(msg);
-							Broadcast.toAllOnlinePlayers(sm);
-						}
-						else
-						{
-							Broadcast.toAllOnlinePlayers(msg);
-						}
-					}
-				}
 			}
 			
 			broadcastStatusUpdate();

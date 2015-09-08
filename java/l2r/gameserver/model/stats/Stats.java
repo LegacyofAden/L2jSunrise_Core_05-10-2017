@@ -53,8 +53,9 @@ public enum Stats
 	P_REUSE("pReuse"), // Physical Skill Reuse Rate
 	MAGIC_REUSE_RATE("mReuse"), // Magic Skill Reuse Rate
 	SHIELD_DEFENCE("sDef"),
-	CRITICAL_DAMAGE("cAtk"),
-	CRITICAL_DAMAGE_ADD("cAtkAdd"), // this is another type for special critical damage mods - vicious stance, critical power and critical damage SA
+	CRITICAL_DAMAGE("critDmg"),
+	CRITICAL_DAMAGE_POS("critDmgPos"),
+	CRITICAL_DAMAGE_ADD("critDmgAdd"), // this is another type for special critical damage mods - vicious stance, critical power and critical damage SA
 	MAGIC_CRIT_DMG("mCritPower"),
 	
 	// PVP BONUS
@@ -80,7 +81,8 @@ public enum Stats
 	DEFENCE_CRITICAL_DAMAGE("defCritDamage"),
 	DEFENCE_CRITICAL_DAMAGE_ADD("defCritDamageAdd"), // Resistance to critical damage in value (Example: +100 will be 100 more critical damage, NOT 100% more).
 	SHIELD_RATE("rShld"),
-	CRITICAL_RATE("rCrit"),
+	CRITICAL_RATE("critRate"),
+	CRITICAL_RATE_POS("critRatePos"),
 	BLOW_RATE("blowRate"),
 	LETHAL_RATE("lethalRate"),
 	MCRITICAL_RATE("mCritRate"),
@@ -214,18 +216,18 @@ public enum Stats
 	// ExSkill
 	INV_LIM("inventoryLimit"),
 	WH_LIM("whLimit"),
-	FREIGHT_LIM("FreightLimit"),
-	P_SELL_LIM("PrivateSellLimit"),
-	P_BUY_LIM("PrivateBuyLimit"),
-	REC_D_LIM("DwarfRecipeLimit"),
-	REC_C_LIM("CommonRecipeLimit"),
+	FREIGHT_LIM("freightLimit"),
+	P_SELL_LIM("privateSellLimit"),
+	P_BUY_LIM("privateBuyLimit"),
+	REC_D_LIM("dwarfRecipeLimit"),
+	REC_C_LIM("commonRecipeLimit"),
 	
 	// C4 Stats
-	PHYSICAL_MP_CONSUME_RATE("PhysicalMpConsumeRate"),
-	MAGICAL_MP_CONSUME_RATE("MagicalMpConsumeRate"),
-	DANCE_MP_CONSUME_RATE("DanceMpConsumeRate"),
-	BOW_MP_CONSUME_RATE("BowMpConsumeRate"),
-	MP_CONSUME("MpConsume"),
+	PHYSICAL_MP_CONSUME_RATE("physicalMpConsumeRate"),
+	MAGICAL_MP_CONSUME_RATE("magicalMpConsumeRate"),
+	DANCE_MP_CONSUME_RATE("danceMpConsumeRate"),
+	BOW_MP_CONSUME_RATE("bowMpConsumeRate"),
+	MP_CONSUME("mpConsume"),
 	
 	// Shield Stats
 	SHIELD_DEFENCE_ANGLE("shieldDefAngle"),
