@@ -604,6 +604,7 @@ public final class Formulas
 		double baseMod = ((77 * (skill.getPower(isPvP, isPvE) + (attacker.getPAtk(target) * ssboost))) / defence);
 		// Critical
 		double criticalMod = (attacker.calcStat(Stats.CRITICAL_DAMAGE, 1, target, skill));
+		double criticalModPos = (attacker.calcStat(Stats.CRITICAL_DAMAGE_POS, 1, target, skill)) / 2;
 		double criticalVulnMod = (target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE, 1, target, skill));
 		double criticalAddMod = ((attacker.getStat().calcStat(Stats.CRITICAL_DAMAGE_ADD, 0) * 6.1 * 77) / defence);
 		double criticalAddVuln = target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE_ADD, 0, target, skill);
@@ -613,7 +614,7 @@ public final class Formulas
 		// double weaponTraitMod = calcWeaponTraitBonus(attacker, target);
 		// double generalTraitMod = calcGeneralTraitBonus(attacker, target, skill.getTraitType(), false);
 		double attributeMod = calcAttributeBonus(attacker, target, skill);
-		double weaponMod = attacker.getRandomDamageMultiplier();
+		double weaponMod = 1;// attacker.getRandomDamageMultiplier();
 		
 		double penaltyMod = 1;
 		if ((target instanceof L2Attackable) && !target.isRaid() && !target.isRaidMinion() && (target.getLevel() >= Config.MIN_NPC_LVL_DMG_PENALTY) && (attacker.getActingPlayer() != null) && ((target.getLevel() - attacker.getActingPlayer().getLevel()) >= 2))
@@ -629,7 +630,7 @@ public final class Formulas
 			}
 		}
 		
-		damage = (baseMod * criticalMod * criticalVulnMod * proximityBonus * pvpBonus) + criticalAddMod + criticalAddVuln;
+		damage = (baseMod * criticalMod * criticalModPos * criticalVulnMod * proximityBonus * pvpBonus) + criticalAddMod + criticalAddVuln;
 		damage *= weaponTraitMod;
 		// FIXME: Traits
 		// damage *= generalTraitMod;
@@ -646,6 +647,7 @@ public final class Formulas
 			set.set("pvpBonus", pvpBonus);
 			set.set("baseMod", baseMod);
 			set.set("criticalMod", criticalMod);
+			set.set("criticalModPos", criticalModPos);
 			set.set("criticalVulnMod", criticalVulnMod);
 			set.set("criticalAddMod", criticalAddMod);
 			set.set("criticalAddVuln", criticalAddVuln);
@@ -703,6 +705,7 @@ public final class Formulas
 		double baseMod = ((77 * (skill.getPower(isPvP, isPvE) + attacker.getPAtk(target))) / defence) * ssboost;
 		// Critical
 		double criticalMod = (attacker.calcStat(Stats.CRITICAL_DAMAGE, 1, target, skill));
+		double criticalModPos = (attacker.calcStat(Stats.CRITICAL_DAMAGE_POS, 1, target, skill)) / 2;
 		double criticalVulnMod = (target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE, 1, target, skill));
 		double criticalAddMod = ((attacker.calcStat(Stats.CRITICAL_DAMAGE_ADD, 0, target, skill) * 6.1 * 77) / defence);
 		double criticalAddVuln = target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE_ADD, 0, target, skill);
@@ -711,7 +714,7 @@ public final class Formulas
 		double generalTraitMod = calcValakasTrait(attacker, target, skill);
 		// double generalTraitMod = calcGeneralTraitBonus(attacker, target, skill.getTraitType(), false);
 		double attributeMod = calcAttributeBonus(attacker, target, skill);
-		double weaponMod = attacker.getRandomDamageMultiplier();
+		double weaponMod = 1;// attacker.getRandomDamageMultiplier();
 		
 		double penaltyMod = 1;
 		if (target.isAttackable() && !target.isRaid() && !target.isRaidMinion() && (target.getLevel() >= Config.MIN_NPC_LVL_DMG_PENALTY) && (attacker.getActingPlayer() != null) && ((target.getLevel() - attacker.getActingPlayer().getLevel()) >= 2))
@@ -728,7 +731,7 @@ public final class Formulas
 			
 		}
 		
-		damage = (baseMod * criticalMod * criticalVulnMod * proximityBonus * pvpBonus) + criticalAddMod + criticalAddVuln;
+		damage = (baseMod * criticalMod * criticalModPos * criticalVulnMod * proximityBonus * pvpBonus) + criticalAddMod + criticalAddVuln;
 		damage *= generalTraitMod;
 		damage *= attributeMod;
 		damage *= weaponMod;
@@ -743,6 +746,7 @@ public final class Formulas
 			set.set("pvpBonus", pvpBonus);
 			set.set("baseMod", baseMod);
 			set.set("criticalMod", criticalMod);
+			set.set("criticalModPos", criticalModPos);
 			set.set("criticalVulnMod", criticalVulnMod);
 			set.set("criticalAddMod", criticalAddMod);
 			set.set("criticalAddVuln", criticalAddVuln);
@@ -863,7 +867,7 @@ public final class Formulas
 		if (crit)
 		{
 			// H5 Damage Formula
-			damage = 2 * attacker.calcStat(Stats.CRITICAL_DAMAGE, 1, target, skill) * target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE, 1, target, null) * ((76 * damage) / defence);
+			damage = 2 * attacker.calcStat(Stats.CRITICAL_DAMAGE, 1, target, skill) * (attacker.calcStat(Stats.CRITICAL_DAMAGE_POS, 1, target, skill) / 2) * target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE, 1, target, null) * ((76 * damage) / defence);
 			damage += ((attacker.calcStat(Stats.CRITICAL_DAMAGE_ADD, 0, target, skill) * 77) / defence);
 			damage += target.calcStat(Stats.DEFENCE_CRITICAL_DAMAGE_ADD, 0, target, skill);
 		}
@@ -1211,17 +1215,30 @@ public final class Formulas
 		return damage;
 	}
 	
+	public static final boolean calcCrit(L2Character attacker, L2Character target)
+	{
+		return calcCrit(attacker, target, null);
+	}
+	
 	/**
 	 * Returns true in case of critical hit
-	 * @param rate
-	 * @param skill
+	 * @param attacker
 	 * @param target
+	 * @param skill
 	 * @return
 	 */
-	public static final boolean calcCrit(double rate, boolean skill, L2Character target)
+	public static final boolean calcCrit(L2Character attacker, L2Character target, L2Skill skill)
 	{
-		double finalRate = target.getStat().calcStat(Stats.DEFENCE_CRITICAL_RATE, rate, null, null) + target.getStat().calcStat(Stats.DEFENCE_CRITICAL_RATE_ADD, 0, null, null);
-		return (finalRate * 10) > Rnd.get(1000 * 10);
+		double rate = 0.d;
+		if (skill != null)
+		{
+			rate = skill.getBaseCritRate() * 10 * BaseStats.STR.calcBonus(attacker);
+		}
+		else
+		{
+			rate = (int) attacker.getStat().calcStat(Stats.CRITICAL_RATE_POS, attacker.getStat().getCriticalHit(target, null));
+		}
+		return (target.getStat().calcStat(Stats.DEFENCE_CRITICAL_RATE, rate, null, null) + target.getStat().calcStat(Stats.DEFENCE_CRITICAL_RATE_ADD, 0, null, null)) > Rnd.get(1000);
 	}
 	
 	public static final boolean calcLethalHit(L2Character activeChar, L2Character target, L2Skill skill)

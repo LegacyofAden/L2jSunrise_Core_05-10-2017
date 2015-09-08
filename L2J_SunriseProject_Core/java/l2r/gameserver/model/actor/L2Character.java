@@ -1226,7 +1226,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			shld1 = Formulas.calcShldUse(this, target);
 			
 			// Calculate if hit is critical
-			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null), false, target);
+			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages
 			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.hasSoulshot());
@@ -1300,7 +1300,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			shld1 = Formulas.calcShldUse(this, target);
 			
 			// Calculate if hit is critical
-			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null), false, target);
+			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages
 			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.hasSoulshot());
@@ -1366,7 +1366,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			shld1 = Formulas.calcShldUse(this, target);
 			
 			// Calculate if hit 1 is critical
-			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null), false, target);
+			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages of hit 1
 			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, true, attack.hasSoulshot());
@@ -1380,7 +1380,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			shld2 = Formulas.calcShldUse(this, target);
 			
 			// Calculate if hit 2 is critical
-			crit2 = Formulas.calcCrit(getStat().getCriticalHit(target, null), false, target);
+			crit2 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages of hit 2
 			damage2 = (int) Formulas.calcPhysDam(this, target, null, shld2, crit2, true, attack.hasSoulshot());
@@ -1561,7 +1561,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			shld1 = Formulas.calcShldUse(this, target);
 			
 			// Calculate if hit is critical
-			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null), false, target);
+			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages
 			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.hasSoulshot());
@@ -6921,7 +6921,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getMaxRecoverableCp();
 	}
 	
-	final public double getMAtk(L2Character target, L2Skill skill)
+	public final double getMAtk(L2Character target, L2Skill skill)
 	{
 		return getStat().getMAtk(target, skill);
 	}
@@ -6956,7 +6956,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getMCriticalHit(target, skill);
 	}
 	
-	final public double getMDef(L2Character target, L2Skill skill)
+	public final double getMDef(L2Character target, L2Skill skill)
 	{
 		return getStat().getMDef(target, skill);
 	}
@@ -6966,7 +6966,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getMReuseRate(skill);
 	}
 	
-	final public double getPAtk(L2Character target)
+	public final double getPAtk(L2Character target)
 	{
 		return getStat().getPAtk(target);
 	}
@@ -6976,7 +6976,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getPAtkSpd();
 	}
 	
-	final public double getPDef(L2Character target)
+	public final double getPDef(L2Character target)
 	{
 		return getStat().getPDef(target);
 	}
