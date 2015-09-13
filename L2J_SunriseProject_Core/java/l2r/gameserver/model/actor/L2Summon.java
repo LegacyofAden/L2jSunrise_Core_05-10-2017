@@ -134,8 +134,6 @@ public abstract class L2Summon extends L2Playable
 		
 		// Notify to scripts
 		EventDispatcher.getInstance().notifyEventAsync(new OnPlayerSummonSpawn(this), this);
-		
-		rechargeShots(true, true);
 	}
 	
 	@Override
@@ -379,6 +377,15 @@ public abstract class L2Summon extends L2Playable
 			if (party != null)
 			{
 				party.broadcastToPartyMembers(owner, new ExPartyPetWindowDelete(this));
+			}
+			
+			for (int itemId : owner.getAutoSoulShot())
+			{
+				String handler = ((L2EtcItem) ItemData.getInstance().getTemplate(itemId)).getHandlerName();
+				if ((handler != null) && handler.contains("Beast"))
+				{
+					owner.disableAutoShot(itemId);
+				}
 			}
 		}
 		

@@ -5947,9 +5947,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					}
 					
 					// Healing party members should ignore LOS.
-					// if ((mut.getSkillTime() > 550) && ((skill.getTargetType() != L2TargetType.PARTY) || !skill.hasEffectType(L2EffectType.HEAL)) && !GeoData.getInstance().canSeeTarget(this, target))
 					if (((skill.getTargetType() != L2TargetType.PARTY) || !skill.hasEffectType(L2EffectType.HEAL)) //
-					&& !GeoData.getInstance().canSeeTarget(this, target))
+					&& (mut.getSkillTime() > 550) && !GeoData.getInstance().canSeeTarget(this, target))
 					{
 						skipLOS++;
 						continue;
@@ -7190,7 +7189,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public void sendDamageMessage(L2Character target, int damage, boolean mcrit, boolean pcrit, boolean miss)
 	{
-	
+		if (miss && target.isPlayer())
+		{
+			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_EVADED_C2_ATTACK);
+			sm.addPcName(target.getActingPlayer());
+			sm.addCharName(this);
+			target.sendPacket(sm);
+		}
 	}
 	
 	public FusionSkill getFusionSkill()

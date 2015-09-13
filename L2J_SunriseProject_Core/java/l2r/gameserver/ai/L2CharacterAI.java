@@ -1349,8 +1349,6 @@ public class L2CharacterAI extends AbstractAI
 						rootSkills.add(sk);
 						break;
 					case FEAR: // could be used as an alternative for healing?
-					case CONFUSION:
-						// trickSkills.add(sk);
 					case DEBUFF:
 						debuffSkills.add(sk);
 						break;
