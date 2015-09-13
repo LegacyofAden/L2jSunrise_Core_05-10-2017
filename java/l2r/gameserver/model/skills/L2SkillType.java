@@ -54,7 +54,6 @@ public enum L2SkillType
 	POISON,
 	STUN,
 	ROOT,
-	CONFUSION,
 	FEAR,
 	SLEEP,
 	CONFUSE_MOB_ONLY,

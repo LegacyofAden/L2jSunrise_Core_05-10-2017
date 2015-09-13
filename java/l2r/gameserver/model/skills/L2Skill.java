@@ -448,6 +448,9 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_removedOnAnyActionExceptMove = set.getBoolean("removedOnAnyActionExceptMove", false);
 		_removedOnDamage = set.getBoolean("removedOnDamage", _skillType == L2SkillType.SLEEP);
 		
+		// _removedOnAnyActionExceptMove = set.getBoolean("removedOnAnyActionExceptMove", (_abnormalType == AbnormalType.invincibility) || (_abnormalType == AbnormalType.hide));
+		// _removedOnDamage = set.getBoolean("removedOnDamage", (_abnormalType == AbnormalType.sleep) || (_abnormalType == AbnormalType.force_meditation) || (_abnormalType == AbnormalType.hide));
+		
 		_blockedInOlympiad = set.getBoolean("blockedInOlympiad", false);
 		_blockCertificationInOly = set.getBoolean("blockCertificationInOly", false);
 		
