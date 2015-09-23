@@ -246,6 +246,7 @@ public final class L2LoginServer
 		Runtime.getRuntime().exit(restart ? 2 : 0);
 	}
 	
+	@SuppressWarnings("resource")
 	private static void checkFreePorts()
 	{
 		boolean binded = false;

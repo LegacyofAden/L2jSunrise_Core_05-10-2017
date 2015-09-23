@@ -108,11 +108,9 @@ public class Files
 				e.printStackTrace(System.err);
 			}
 		}
-		try
+		try (FileOutputStream fos = new FileOutputStream(target))
 		{
-			FileOutputStream fos = new FileOutputStream(target);
 			fos.write(string.getBytes("UTF-8"));
-			fos.close();
 		}
 		catch (IOException e)
 		{

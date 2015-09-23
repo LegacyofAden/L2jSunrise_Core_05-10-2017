@@ -473,7 +473,7 @@ public class CharStat
 	 */
 	public final double getMReuseRate(L2Skill skill)
 	{
-		return calcStat(Stats.MAGIC_REUSE_RATE, _activeChar.getTemplate().getBaseMReuseRate(), null, skill);
+		return calcStat(Stats.MAGIC_REUSE_RATE, 1, null, skill);
 	}
 	
 	/**
@@ -560,15 +560,14 @@ public class CharStat
 	/**
 	 * @return the PAtk Speed (base+modifier) of the L2Character in function of the Armour Expertise Penalty.
 	 */
-	public int getPAtkSpd()
+	public double getPAtkSpd()
 	{
 		float bonusAtk = 1;
 		if (Config.L2JMOD_CHAMPION_ENABLE && _activeChar.isChampion())
 		{
 			bonusAtk = Config.L2JMOD_CHAMPION_SPD_ATK;
 		}
-		int val = (int) Math.round(calcStat(Stats.POWER_ATTACK_SPEED, _activeChar.getTemplate().getBasePAtkSpd() * bonusAtk, null, null));
-		return val;
+		return Math.round(calcStat(Stats.POWER_ATTACK_SPEED, _activeChar.getTemplate().getBasePAtkSpd() * bonusAtk, null, null));
 	}
 	
 	/**

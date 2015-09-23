@@ -624,7 +624,7 @@ public class L2PetInstance extends L2Summon
 			// If owner is in party and it isnt finders keepers, distribute the item instead of stealing it -.-
 			if (getOwner().isInParty() && (getOwner().getParty().getDistributionType() != PartyDistributionType.FINDERS_KEEPERS))
 			{
-				getOwner().getParty().distributeItem(getOwner(), target);
+				getOwner().getParty().distributeItem(getOwner(), target, false);
 			}
 			else
 			{

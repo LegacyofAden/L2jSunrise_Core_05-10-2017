@@ -74,6 +74,7 @@ import l2r.gameserver.model.conditions.ConditionPlayerHasCastle;
 import l2r.gameserver.model.conditions.ConditionPlayerHasClanHall;
 import l2r.gameserver.model.conditions.ConditionPlayerHasFort;
 import l2r.gameserver.model.conditions.ConditionPlayerHasPet;
+import l2r.gameserver.model.conditions.ConditionPlayerHasServitor;
 import l2r.gameserver.model.conditions.ConditionPlayerHp;
 import l2r.gameserver.model.conditions.ConditionPlayerInsideZoneId;
 import l2r.gameserver.model.conditions.ConditionPlayerInstanceId;
@@ -88,7 +89,6 @@ import l2r.gameserver.model.conditions.ConditionPlayerPkCount;
 import l2r.gameserver.model.conditions.ConditionPlayerPledgeClass;
 import l2r.gameserver.model.conditions.ConditionPlayerRace;
 import l2r.gameserver.model.conditions.ConditionPlayerRangeFromNpc;
-import l2r.gameserver.model.conditions.ConditionPlayerServitorNpcId;
 import l2r.gameserver.model.conditions.ConditionPlayerSex;
 import l2r.gameserver.model.conditions.ConditionPlayerSiegeSide;
 import l2r.gameserver.model.conditions.ConditionPlayerSouls;
@@ -919,14 +919,7 @@ public abstract class DocumentBase
 				}
 				case "servitornpcid":
 				{
-					StringTokenizer st = new StringTokenizer(a.getNodeValue(), ",");
-					ArrayList<Integer> array = new ArrayList<>(st.countTokens());
-					while (st.hasMoreTokens())
-					{
-						String item = st.nextToken().trim();
-						array.add(Integer.decode(getValue(item, null)));
-					}
-					cond = joinAnd(cond, new ConditionPlayerServitorNpcId(array));
+					cond = joinAnd(cond, new ConditionPlayerHasServitor());
 					break;
 				}
 				case "npcidradius":

@@ -35,6 +35,7 @@ import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.model.entity.olympiad.OlympiadGameManager;
 import l2r.gameserver.model.entity.olympiad.OlympiadGameTask;
+import l2r.gameserver.model.skills.AbnormalType;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
 import l2r.gameserver.network.SystemMessageId;
@@ -952,6 +953,11 @@ public class CharEffectList
 							for (L2Effect e : getBuffs())
 							{
 								if ((e == null) || e.getSkill().isDance() || e.getSkill().isTriggeredSkill())
+								{
+									continue;
+								}
+								
+								if (e.getSkill().getAbnormalType() == AbnormalType.summon_condition)
 								{
 									continue;
 								}

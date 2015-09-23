@@ -258,22 +258,22 @@ public class OfflineTradersTable
 	
 	public static synchronized void onTransaction(L2PcInstance trader, boolean finished, boolean firstCall)
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement cleanItems = con.prepareStatement(CLEAR_OFFLINE_TABLE_ITEMS_PLAYER);
+			PreparedStatement offlineTable = con.prepareStatement(CLEAR_OFFLINE_TABLE_PLAYER);
+			PreparedStatement saveItems = con.prepareStatement(SAVE_ITEMS);
+			PreparedStatement saveStatus = con.prepareStatement(SAVE_OFFLINE_STATUS))
 		{
 			String title = null;
 			
-			PreparedStatement st = con.prepareStatement(CLEAR_OFFLINE_TABLE_ITEMS_PLAYER);
-			st.setInt(1, trader.getObjectId()); // Char Id
-			st.execute();
-			st.close();
+			cleanItems.setInt(1, trader.getObjectId()); // Char Id
+			cleanItems.execute();
 			
 			// Trade is done - clear info
 			if (finished)
 			{
-				st = con.prepareStatement(CLEAR_OFFLINE_TABLE_PLAYER);
-				st.setInt(1, trader.getObjectId()); // Char Id
-				st.execute();
-				st.close();
+				offlineTable.setInt(1, trader.getObjectId()); // Char Id
+				offlineTable.execute();
 			}
 			else
 			{
@@ -281,7 +281,6 @@ public class OfflineTradersTable
 				{
 					if ((trader.getClient() == null) || trader.getClient().isDetached())
 					{
-						PreparedStatement st1 = con.prepareStatement(SAVE_ITEMS);
 						switch (trader.getPrivateStoreType())
 						{
 							case BUY:
@@ -291,12 +290,12 @@ public class OfflineTradersTable
 								}
 								for (TradeItem i : trader.getBuyList().getItems())
 								{
-									st1.setInt(1, trader.getObjectId());
-									st1.setInt(2, i.getItem().getId());
-									st1.setLong(3, i.getCount());
-									st1.setLong(4, i.getPrice());
-									st1.executeUpdate();
-									st1.clearParameters();
+									saveItems.setInt(1, trader.getObjectId());
+									saveItems.setInt(2, i.getItem().getId());
+									saveItems.setLong(3, i.getCount());
+									saveItems.setLong(4, i.getPrice());
+									saveItems.executeUpdate();
+									saveItems.clearParameters();
 								}
 								break;
 							case SELL:
@@ -307,12 +306,12 @@ public class OfflineTradersTable
 								}
 								for (TradeItem i : trader.getSellList().getItems())
 								{
-									st1.setInt(1, trader.getObjectId());
-									st1.setInt(2, i.getObjectId());
-									st1.setLong(3, i.getCount());
-									st1.setLong(4, i.getPrice());
-									st1.executeUpdate();
-									st1.clearParameters();
+									saveItems.setInt(1, trader.getObjectId());
+									saveItems.setInt(2, i.getObjectId());
+									saveItems.setLong(3, i.getCount());
+									saveItems.setLong(4, i.getPrice());
+									saveItems.executeUpdate();
+									saveItems.clearParameters();
 								}
 								break;
 							case MANUFACTURE:
@@ -323,25 +322,23 @@ public class OfflineTradersTable
 								}
 								for (L2ManufactureItem i : trader.getManufactureItems().values())
 								{
-									st1.setInt(1, trader.getObjectId());
-									st1.setInt(2, i.getRecipeId());
-									st1.setLong(3, 0);
-									st1.setLong(4, i.getCost());
-									st1.executeUpdate();
-									st1.clearParameters();
+									saveItems.setInt(1, trader.getObjectId());
+									saveItems.setInt(2, i.getRecipeId());
+									saveItems.setLong(3, 0);
+									saveItems.setLong(4, i.getCost());
+									saveItems.executeUpdate();
+									saveItems.clearParameters();
 								}
 						}
-						st1.close();
+						
 						if (firstCall)
 						{
-							PreparedStatement st2 = con.prepareStatement(SAVE_OFFLINE_STATUS);
-							st2.setInt(1, trader.getObjectId()); // Char Id
-							st2.setLong(2, trader.getOfflineStartTime());
-							st2.setInt(3, trader.getPrivateStoreType().getId()); // store type
-							st2.setString(4, title);
-							st2.executeUpdate();
-							st2.clearParameters();
-							st2.close();
+							saveStatus.setInt(1, trader.getObjectId()); // Char Id
+							saveStatus.setLong(2, trader.getOfflineStartTime());
+							saveStatus.setInt(3, trader.getPrivateStoreType().getId()); // store type
+							saveStatus.setString(4, title);
+							saveStatus.executeUpdate();
+							saveStatus.clearParameters();
 						}
 					}
 				}

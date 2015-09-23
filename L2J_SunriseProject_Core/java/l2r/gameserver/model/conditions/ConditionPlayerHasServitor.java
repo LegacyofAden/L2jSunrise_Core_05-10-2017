@@ -18,40 +18,29 @@
  */
 package l2r.gameserver.model.conditions;
 
-import java.util.List;
-
 import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.network.SystemMessageId;
 
 /**
  * The Class ConditionPlayerServitorNpcId.
  */
-public class ConditionPlayerServitorNpcId extends Condition
+public class ConditionPlayerHasServitor extends Condition
 {
-	private final List<Integer> _npcIds;
-	
-	/**
-	 * Instantiates a new condition player servitor npc id.
-	 * @param npcIds the npc ids
-	 */
-	public ConditionPlayerServitorNpcId(List<Integer> npcIds)
-	{
-		if ((npcIds.size() == 1) && (npcIds.get(0) == 0))
-		{
-			_npcIds = null;
-		}
-		else
-		{
-			_npcIds = npcIds;
-		}
-	}
 	
 	@Override
 	public boolean testImpl(Env env)
 	{
-		if ((env.getPlayer() == null) || !env.getPlayer().hasSummon())
+		if ((env.getPlayer() == null))
 		{
 			return false;
 		}
-		return (_npcIds == null) || _npcIds.contains(env.getPlayer().getSummon().getId());
+		
+		if (!env.getPlayer().hasSummon())
+		{
+			env.getPlayer().sendPacket(SystemMessageId.CANNOT_USE_SKILL_WITHOUT_SERVITOR);
+			return false;
+		}
+		
+		return true;
 	}
 }

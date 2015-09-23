@@ -21,6 +21,7 @@ package l2r.gameserver.model;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -66,8 +67,6 @@ import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javolution.util.FastList;
 
 /**
  * This class serves as a container for player parties.
@@ -166,7 +165,7 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	private L2PcInstance getCheckedRandomMember(int itemId, L2Character target)
 	{
-		List<L2PcInstance> availableMembers = new FastList<>();
+		List<L2PcInstance> availableMembers = new ArrayList<>();
 		for (L2PcInstance member : getMembers())
 		{
 			if (member.getInventory().validateCapacityByItemId(itemId) && Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
@@ -630,17 +629,29 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public void distributeItem(L2PcInstance player, L2ItemInstance item)
 	{
+		distributeItem(player, item, true);
+	}
+	
+	/**
+	 * distribute item(s) to party members
+	 * @param player
+	 * @param item
+	 * @param mustMultiply
+	 */
+	public void distributeItem(L2PcInstance player, L2ItemInstance item, boolean mustMultiply)
+	{
 		final int itemId = item.getId();
 		if (itemId == Inventory.ADENA_ID)
 		{
-			distributeAdena(player, item.getCount(), player);
+			distributeAdena(player, item.getCount(), player, mustMultiply);
 			ItemData.getInstance().destroyItem("Party", item, player, null);
 			return;
 		}
 		
 		if (CustomServerConfigs.EVENLY_DISTRIBUTED_ITEMS && (CustomServerConfigs.EVENLY_DISTRIBUTED_ITEMS_FORCED || ((getLeader() != null) && getLeader().hasEvenlyDistributedLoot())) && CustomServerConfigs.EVENLY_DISTRIBUTED_ITEMS_LIST.contains(itemId))
 		{
-			evenlyDistribute(player, itemId, item.getCount(), player);
+			evenlyDistribute(player, itemId, item.getCount(), player, mustMultiply);
+			ItemData.getInstance().destroyItem("Party", item, player, null);
 			return;
 		}
 		
@@ -736,38 +747,46 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public void distributeAdena(L2PcInstance player, long adena, L2Character target)
 	{
+		distributeAdena(player, adena, target, true);
+	}
+	
+	/**
+	 * distribute adena to party members
+	 * @param player
+	 * @param adena
+	 * @param target
+	 * @param mustMultiply
+	 */
+	public void distributeAdena(L2PcInstance player, long adena, L2Character target, boolean mustMultiply)
+	{
 		// Check the party members that must be rewarded.
 		// The party member must be in range to receive its reward.
-		final List<L2PcInstance> ToReward = new FastList<>();
+		final List<L2PcInstance> toReward = new LinkedList<>();
 		for (L2PcInstance member : getMembers())
 		{
-			if (!Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
+			if (Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
 			{
-				continue;
+				toReward.add(member);
 			}
-			ToReward.add(member);
 		}
 		
-		// Avoid null exceptions, if any
-		if (ToReward.isEmpty())
+		if (!toReward.isEmpty())
 		{
-			return;
-		}
-		
-		// Now we can actually distribute the adena reward
-		// (Total adena splitted by the number of party members that are in range and must be rewarded)
-		final long count = adena / ToReward.size();
-		for (L2PcInstance member : ToReward)
-		{
-			if (member.isPremium())
+			// Now we can actually distribute the adena reward
+			// (Total adena splitted by the number of party members that are in range and must be rewarded)
+			final long count = adena / toReward.size();
+			for (L2PcInstance member : toReward)
 			{
-				long tempCount = count;
-				tempCount *= member.calcPremiumDropMultipliers(57);
-				member.addAdena("Party", tempCount, player, true);
-			}
-			else
-			{
-				member.addAdena("Party", count, player, true);
+				if (member.isPremium() && mustMultiply)
+				{
+					long tempCount = count;
+					tempCount *= member.calcPremiumDropMultipliers(57);
+					member.addAdena("Party", tempCount, player, true);
+				}
+				else
+				{
+					member.addAdena("Party", count, player, true);
+				}
 			}
 		}
 	}
@@ -781,49 +800,47 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public void evenlyDistribute(L2PcInstance player, int itemId, long itemCount, L2Character target)
 	{
+		evenlyDistribute(player, itemId, itemCount, target, true);
+	}
+	
+	/**
+	 * Distribute items evenly for each party member.
+	 * @param player
+	 * @param itemCount
+	 * @param target
+	 * @param itemId
+	 * @param mustMultiply
+	 */
+	public void evenlyDistribute(L2PcInstance player, int itemId, long itemCount, L2Character target, boolean mustMultiply)
+	{
 		// Check the party members that must be rewarded.
-		// The party member must be in range to receive it's reward.
-		final List<L2PcInstance> toReward = new FastList<>();
+		// The party member must be in range to receive its reward.
+		final List<L2PcInstance> toReward = new LinkedList<>();
 		for (L2PcInstance member : getMembers())
 		{
-			if (!Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
+			if (Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
 			{
-				continue;
+				toReward.add(member);
 			}
-			toReward.add(member);
 		}
 		
-		// If there isn't to reward return.
-		if (toReward.isEmpty())
+		if (!toReward.isEmpty())
 		{
-			return;
-		}
-		
-		// Now we can actually distribute the rewards.
-		// Total item splitted by the number of party members that are in range and must be rewarded.
-		long count = itemCount / toReward.size();
-		final int rest = (int) (itemCount % toReward.size());
-		
-		// If the item count isn't exact the remain item amount is given randomly to a party member.
-		// Minimum 1, maximum 8 items.
-		if ((rest > 0) && (toReward.size() > 1))
-		{
-			int luckyOne = Rnd.get(toReward.size());
-			toReward.get(luckyOne).addItem("Party", itemId, count + rest, player, true);
-			toReward.remove(luckyOne);
-		}
-		
-		for (L2PcInstance member : toReward)
-		{
-			if (member.isPremium())
+			// Now we can actually distribute the adena reward
+			// (Total adena splitted by the number of party members that are in range and must be rewarded)
+			final long count = itemCount / toReward.size();
+			for (L2PcInstance member : toReward)
 			{
-				long tempCount = count;
-				tempCount *= member.calcPremiumDropMultipliers(itemId);
-				member.addItem("Party", itemId, tempCount, player, true);
-			}
-			else
-			{
-				member.addItem("Party", itemId, count, player, true);
+				if (member.isPremium() && mustMultiply)
+				{
+					long tempCount = count;
+					tempCount *= member.calcPremiumDropMultipliers(57);
+					member.addItem("Party", itemId, tempCount, player, true);
+				}
+				else
+				{
+					member.addItem("Party", itemId, count, player, true);
+				}
 			}
 		}
 	}

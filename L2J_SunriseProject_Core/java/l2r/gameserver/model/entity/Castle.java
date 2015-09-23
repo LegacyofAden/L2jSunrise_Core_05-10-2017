@@ -854,18 +854,19 @@ public final class Castle extends AbstractResidence
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			// NEED TO REMOVE HAS CASTLE FLAG FROM CLAN_DATA
-			// SHOULD BE CHECKED FROM CASTLE TABLE
-			PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET hasCastle = 0 WHERE hasCastle = ?");
-			statement.setInt(1, getResidenceId());
-			statement.execute();
-			statement.close();
+			// Need to remove has castle flag from clan_data, should be checked from castle table.
+			try (PreparedStatement ps = con.prepareStatement("UPDATE clan_data SET hasCastle = 0 WHERE hasCastle = ?"))
+			{
+				ps.setInt(1, getResidenceId());
+				ps.execute();
+			}
 			
-			statement = con.prepareStatement("UPDATE clan_data SET hasCastle = ? WHERE clan_id = ?");
-			statement.setInt(1, getResidenceId());
-			statement.setInt(2, getOwnerId());
-			statement.execute();
-			statement.close();
+			try (PreparedStatement ps = con.prepareStatement("UPDATE clan_data SET hasCastle = ? WHERE clan_id = ?"))
+			{
+				ps.setInt(1, getResidenceId());
+				ps.setInt(2, getOwnerId());
+				ps.execute();
+			}
 			
 			// Announce to clan members
 			if (clan != null)

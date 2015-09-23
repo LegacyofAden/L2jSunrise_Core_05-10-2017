@@ -24,6 +24,7 @@ import java.util.Map;
 
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.events.ListenersContainer;
+import l2r.gameserver.model.items.type.WeaponType;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.stats.MoveType;
 
@@ -50,9 +51,10 @@ public class L2CharTemplate extends ListenersContainer
 	private final int _baseMDef;
 	private final int _basePAtkSpd;
 	private final int _baseMAtkSpd;
-	private final float _baseMReuseRate;
+	private int _baseAttackRange;
+	private final int _randomDamage;
+	private WeaponType _baseAttackType;
 	private final int _baseShldDef;
-	private final int _baseAttackRange;
 	private final int _baseShldRate;
 	private final int _baseCritRate;
 	private final int _baseMCritRate;
@@ -125,9 +127,10 @@ public class L2CharTemplate extends ListenersContainer
 		_baseMDef = set.getInt("baseMDef", 0);
 		_basePAtkSpd = set.getInt("basePAtkSpd", 300);
 		_baseMAtkSpd = set.getInt("baseMAtkSpd", 333);
-		_baseMReuseRate = set.getFloat("baseMReuseDelay", 1.f);
 		_baseShldDef = set.getInt("baseShldDef", 0);
-		_baseAttackRange = set.getInt("baseAtkRange", 0);
+		_baseAttackRange = set.getInt("baseAtkRange", 40);
+		_randomDamage = set.getInt("baseRndDam", 0);
+		_baseAttackType = set.getEnum("baseAtkType", WeaponType.class, WeaponType.FIST);
 		_baseShldRate = set.getInt("baseShldRate", 0);
 		_baseCritRate = set.getInt("baseCritRate", 4);
 		_baseMCritRate = set.getInt("baseMCritRate", 0);
@@ -416,11 +419,11 @@ public class L2CharTemplate extends ListenersContainer
 	}
 	
 	/**
-	 * @return the baseMReuseRate
+	 * @return the random damage
 	 */
-	public float getBaseMReuseRate()
+	public int getRandomDamage()
 	{
-		return _baseMReuseRate;
+		return _randomDamage;
 	}
 	
 	/**
@@ -756,6 +759,32 @@ public class L2CharTemplate extends ListenersContainer
 	public void setBaseDarkRes(double baseDarkRes)
 	{
 		_baseDarkRes = baseDarkRes;
+	}
+	
+	/**
+	 * @return the base attack type (Sword, Fist, Blunt, etc..)
+	 */
+	public WeaponType getBaseAttackType()
+	{
+		return _baseAttackType;
+	}
+	
+	/**
+	 * Sets base attack type.
+	 * @param type
+	 */
+	public void setBaseAttackType(WeaponType type)
+	{
+		_baseAttackType = type;
+	}
+	
+	/**
+	 * Sets base attack range.
+	 * @param val
+	 */
+	public void setBaseAttackRange(int val)
+	{
+		_baseAttackRange = val;
 	}
 	
 	/**

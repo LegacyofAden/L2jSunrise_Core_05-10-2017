@@ -118,18 +118,17 @@ public class ShortCuts
 			deleteShortCutFromDb(oldShortCut);
 		}
 		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement ps = con.prepareStatement("REPLACE INTO character_shortcuts (charId,slot,page,type,shortcut_id,level,class_index) values(?,?,?,?,?,?,?)"))
 		{
-			PreparedStatement statement = con.prepareStatement("REPLACE INTO character_shortcuts (charId,slot,page,type,shortcut_id,level,class_index) values(?,?,?,?,?,?,?)");
-			statement.setInt(1, _owner.getObjectId());
-			statement.setInt(2, shortcut.getSlot());
-			statement.setInt(3, shortcut.getPage());
-			statement.setInt(4, shortcut.getType());
-			statement.setInt(5, shortcut.getId());
-			statement.setInt(6, shortcut.getLevel());
-			statement.setInt(7, _owner.getClassIndex());
-			statement.execute();
-			statement.close();
+			ps.setInt(1, _owner.getObjectId());
+			ps.setInt(2, shortcut.getSlot());
+			ps.setInt(3, shortcut.getPage());
+			ps.setInt(4, shortcut.getType());
+			ps.setInt(5, shortcut.getId());
+			ps.setInt(6, shortcut.getLevel());
+			ps.setInt(7, _owner.getClassIndex());
+			ps.execute();
 		}
 		catch (Exception e)
 		{
@@ -222,15 +221,14 @@ public class ShortCuts
 	 */
 	private void deleteShortCutFromDb(L2ShortCut shortcut)
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement ps = con.prepareStatement("DELETE FROM character_shortcuts WHERE charId=? AND slot=? AND page=? AND class_index=?"))
 		{
-			PreparedStatement statement = con.prepareStatement("DELETE FROM character_shortcuts WHERE charId=? AND slot=? AND page=? AND class_index=?");
-			statement.setInt(1, _owner.getObjectId());
-			statement.setInt(2, shortcut.getSlot());
-			statement.setInt(3, shortcut.getPage());
-			statement.setInt(4, _owner.getClassIndex());
-			statement.execute();
-			statement.close();
+			ps.setInt(1, _owner.getObjectId());
+			ps.setInt(2, shortcut.getSlot());
+			ps.setInt(3, shortcut.getPage());
+			ps.setInt(4, _owner.getClassIndex());
+			ps.execute();
 		}
 		catch (Exception e)
 		{
@@ -241,28 +239,26 @@ public class ShortCuts
 	public void restore()
 	{
 		_shortCuts.clear();
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement("SELECT charId, slot, page, type, shortcut_id, level FROM character_shortcuts WHERE charId=? AND class_index=?"))
 		{
-			PreparedStatement statement = con.prepareStatement("SELECT charId, slot, page, type, shortcut_id, level FROM character_shortcuts WHERE charId=? AND class_index=?");
 			statement.setInt(1, _owner.getObjectId());
 			statement.setInt(2, _owner.getClassIndex());
 			
-			ResultSet rset = statement.executeQuery();
-			
-			while (rset.next())
+			try (ResultSet rset = statement.executeQuery())
 			{
-				int slot = rset.getInt("slot");
-				int page = rset.getInt("page");
-				int type = rset.getInt("type");
-				int id = rset.getInt("shortcut_id");
-				int level = rset.getInt("level");
-				
-				L2ShortCut sc = new L2ShortCut(slot, page, type, id, level, 1);
-				_shortCuts.put(slot + (page * MAX_SHORTCUTS_PER_BAR), sc);
+				while (rset.next())
+				{
+					int slot = rset.getInt("slot");
+					int page = rset.getInt("page");
+					int type = rset.getInt("type");
+					int id = rset.getInt("shortcut_id");
+					int level = rset.getInt("level");
+					
+					L2ShortCut sc = new L2ShortCut(slot, page, type, id, level, 1);
+					_shortCuts.put(slot + (page * MAX_SHORTCUTS_PER_BAR), sc);
+				}
 			}
-			
-			rset.close();
-			statement.close();
 		}
 		catch (Exception e)
 		{
