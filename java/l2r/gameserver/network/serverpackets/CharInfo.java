@@ -93,7 +93,7 @@ public class CharInfo extends L2GameServerPacket
 		}
 		_heading = _activeChar.getHeading();
 		_mAtkSpd = _activeChar.getMAtkSpd();
-		_pAtkSpd = _activeChar.getPAtkSpd();
+		_pAtkSpd = (int) _activeChar.getPAtkSpd();
 		_attackSpeedMultiplier = _activeChar.getAttackSpeedMultiplier();
 		_invisible = cha.isInvisible();
 		

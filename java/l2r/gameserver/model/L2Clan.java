@@ -952,21 +952,20 @@ public class L2Clan implements IIdentifiable, INamable
 	
 	public void updateClanInDB()
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement ps = con.prepareStatement("UPDATE clan_data SET leader_id=?,ally_id=?,ally_name=?,reputation_score=?,ally_penalty_expiry_time=?,ally_penalty_type=?,char_penalty_expiry_time=?,dissolving_expiry_time=?,new_leader_id=? WHERE clan_id=?"))
 		{
-			final PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET leader_id=?,ally_id=?,ally_name=?,reputation_score=?,ally_penalty_expiry_time=?,ally_penalty_type=?,char_penalty_expiry_time=?,dissolving_expiry_time=?,new_leader_id=? WHERE clan_id=?");
-			statement.setInt(1, getLeaderId());
-			statement.setInt(2, getAllyId());
-			statement.setString(3, getAllyName());
-			statement.setInt(4, getReputationScore());
-			statement.setLong(5, getAllyPenaltyExpiryTime());
-			statement.setInt(6, getAllyPenaltyType());
-			statement.setLong(7, getCharPenaltyExpiryTime());
-			statement.setLong(8, getDissolvingExpiryTime());
-			statement.setInt(9, getNewLeaderId());
-			statement.setInt(10, getId());
-			statement.execute();
-			statement.close();
+			ps.setInt(1, getLeaderId());
+			ps.setInt(2, getAllyId());
+			ps.setString(3, getAllyName());
+			ps.setInt(4, getReputationScore());
+			ps.setLong(5, getAllyPenaltyExpiryTime());
+			ps.setInt(6, getAllyPenaltyType());
+			ps.setLong(7, getCharPenaltyExpiryTime());
+			ps.setLong(8, getDissolvingExpiryTime());
+			ps.setInt(9, getNewLeaderId());
+			ps.setInt(10, getId());
+			ps.execute();
 			if (Config.DEBUG)
 			{
 				_log.info("New clan leader saved in db: " + getId());
@@ -1052,22 +1051,6 @@ public class L2Clan implements IIdentifiable, INamable
 		catch (Exception e)
 		{
 			_log.error("Error removing clan member: " + e.getMessage(), e);
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private void updateWarsInDB()
-	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
-		{
-			final PreparedStatement statement = con.prepareStatement("UPDATE clan_wars SET wantspeace1=? WHERE clan1=?");
-			statement.setInt(1, 0);
-			statement.setInt(2, 0);
-			statement.close();
-		}
-		catch (Exception e)
-		{
-			_log.error("Error updating clan wars data: " + e.getMessage(), e);
 		}
 	}
 	

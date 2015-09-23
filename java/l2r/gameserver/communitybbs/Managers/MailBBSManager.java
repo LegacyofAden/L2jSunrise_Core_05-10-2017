@@ -124,27 +124,27 @@ public class MailBBSManager extends BaseBBSManager
 	{
 		ArrayList<UpdateMail> _letters = new ArrayList<>();
 		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(SELECT_CHAR_MAILS))
 		{
-			PreparedStatement statement = con.prepareStatement(SELECT_CHAR_MAILS);
 			statement.setInt(1, activeChar.getObjectId());
-			ResultSet result = statement.executeQuery();
-			while (result.next())
+			try (ResultSet result = statement.executeQuery())
 			{
-				UpdateMail letter = new UpdateMail();
-				letter.charId = result.getInt("charId");
-				letter.letterId = result.getInt("letterId");
-				letter.senderId = result.getInt("senderId");
-				letter.location = result.getString("location");
-				letter.recipientNames = result.getString("recipientNames");
-				letter.subject = result.getString("subject");
-				letter.message = result.getString("message");
-				letter.sentDate = result.getTimestamp("sentDate");
-				letter.unread = result.getInt("unread") != 0;
-				_letters.add(letter);
+				while (result.next())
+				{
+					UpdateMail letter = new UpdateMail();
+					letter.charId = result.getInt("charId");
+					letter.letterId = result.getInt("letterId");
+					letter.senderId = result.getInt("senderId");
+					letter.location = result.getString("location");
+					letter.recipientNames = result.getString("recipientNames");
+					letter.subject = result.getString("subject");
+					letter.message = result.getString("message");
+					letter.sentDate = result.getTimestamp("sentDate");
+					letter.unread = result.getInt("unread") != 0;
+					_letters.add(letter);
+				}
 			}
-			result.close();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -175,17 +175,17 @@ public class MailBBSManager extends BaseBBSManager
 	public int checkUnreadMail(L2PcInstance activeChar)
 	{
 		int letters = 0;
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(COUNT_UNREAD_MAILS))
 		{
-			PreparedStatement statement = con.prepareStatement(COUNT_UNREAD_MAILS);
 			statement.setInt(1, activeChar.getObjectId());
-			ResultSet result = statement.executeQuery();
-			if (result.next())
+			try (ResultSet result = statement.executeQuery())
 			{
-				letters = result.getInt(1);
+				if (result.next())
+				{
+					letters = result.getInt(1);
+				}
 			}
-			result.close();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -831,6 +831,7 @@ public class MailBBSManager extends BaseBBSManager
 		send1002(activeChar, " ", "Re: " + letter.subject, "0");
 	}
 	
+	@SuppressWarnings("resource")
 	private void sendLetter(String recipients, String subject, String message, L2PcInstance activeChar)
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
@@ -979,12 +980,11 @@ public class MailBBSManager extends BaseBBSManager
 	
 	public void deleteLetter(int letterId)
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(DELETE_MAIL))
 		{
-			PreparedStatement statement = con.prepareStatement(DELETE_MAIL);
 			statement.setInt(1, letterId);
 			statement.execute();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -994,13 +994,12 @@ public class MailBBSManager extends BaseBBSManager
 	
 	private void setLetterToRead(int letterId)
 	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(MARK_MAIL_READ))
 		{
-			PreparedStatement statement = con.prepareStatement(MARK_MAIL_READ);
 			statement.setInt(1, 0);
 			statement.setInt(2, letterId);
 			statement.execute();
-			statement.close();
 		}
 		catch (Exception e)
 		{
@@ -1026,15 +1025,15 @@ public class MailBBSManager extends BaseBBSManager
 		}
 		boolean isGM = false;
 		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement("SELECT accesslevel FROM characters WHERE charId = ?"))
 		{
-			PreparedStatement statement = con.prepareStatement("SELECT accesslevel FROM characters WHERE charId = ?");
 			statement.setInt(1, charId);
-			ResultSet result = statement.executeQuery();
-			result.next();
-			isGM = result.getInt(1) > 0;
-			result.close();
-			statement.close();
+			try (ResultSet result = statement.executeQuery())
+			{
+				result.next();
+				isGM = result.getInt(1) > 0;
+			}
 		}
 		catch (Exception e)
 		{
@@ -1046,16 +1045,16 @@ public class MailBBSManager extends BaseBBSManager
 	private boolean isRecipInboxFull(int charId)
 	{
 		boolean isFull = false;
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(COUNT_MAILBOX))
 		{
-			PreparedStatement statement = con.prepareStatement(COUNT_MAILBOX);
 			statement.setInt(1, charId);
 			statement.setString(2, "inbox");
-			ResultSet result = statement.executeQuery();
-			result.next();
-			isFull = result.getInt(1) >= 100;
-			result.close();
-			statement.close();
+			try (ResultSet result = statement.executeQuery())
+			{
+				result.next();
+				isFull = result.getInt(1) >= 100;
+			}
 		}
 		catch (Exception e)
 		{

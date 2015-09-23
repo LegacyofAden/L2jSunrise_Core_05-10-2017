@@ -462,6 +462,7 @@ public class GameServer
 		_log.info(s);
 	}
 	
+	@SuppressWarnings("resource")
 	private static void checkFreePorts()
 	{
 		boolean binded = false;

@@ -82,6 +82,7 @@ import l2r.gameserver.model.actor.tasks.character.QueuedMagicUseTask;
 import l2r.gameserver.model.actor.tasks.character.UsePotionTask;
 import l2r.gameserver.model.actor.templates.L2CharTemplate;
 import l2r.gameserver.model.actor.transform.Transform;
+import l2r.gameserver.model.actor.transform.TransformTemplate;
 import l2r.gameserver.model.effects.AbnormalEffect;
 import l2r.gameserver.model.effects.EffectFlag;
 import l2r.gameserver.model.effects.L2Effect;
@@ -1113,30 +1114,43 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		int reuse = calculateReuseTime(target, weaponItem);
 		
 		boolean hitted;
-		// Select the type of attack to start
-		if ((weaponItem == null) || isTransformed())
+		switch (getAttackType())
 		{
-			hitted = doAttackHitSimple(attack, target, timeToHit);
-		}
-		else if (weaponItem.getItemType() == WeaponType.BOW)
-		{
-			hitted = doAttackHitByBow(attack, target, timeAtk, reuse);
-		}
-		else if (weaponItem.getItemType() == WeaponType.CROSSBOW)
-		{
-			hitted = doAttackHitByCrossBow(attack, target, timeAtk, reuse);
-		}
-		else if (weaponItem.getItemType() == WeaponType.POLE)
-		{
-			hitted = doAttackHitByPole(attack, target, timeToHit);
-		}
-		else if (isUsingDualWeapon())
-		{
-			hitted = doAttackHitByDual(attack, target, timeToHit);
-		}
-		else
-		{
-			hitted = doAttackHitSimple(attack, target, timeToHit);
+			case BOW:
+			{
+				hitted = doAttackHitByBow(attack, target, timeAtk, reuse);
+				break;
+			}
+			case CROSSBOW:
+			{
+				hitted = doAttackHitByCrossBow(attack, target, timeAtk, reuse);
+				break;
+			}
+			case POLE:
+			{
+				hitted = doAttackHitByPole(attack, target, timeToHit);
+				break;
+			}
+			case FIST:
+			{
+				if (!isPlayer())
+				{
+					hitted = doAttackHitSimple(attack, target, timeToHit);
+					break;
+				}
+			}
+			case DUAL:
+			case DUALFIST:
+			case DUALDAGGER:
+			{
+				hitted = doAttackHitByDual(attack, target, timeToHit);
+				break;
+			}
+			default:
+			{
+				hitted = doAttackHitSimple(attack, target, timeToHit);
+				break;
+			}
 		}
 		
 		// Flag the attacker if it's a L2PcInstance outside a PvP area
@@ -3953,7 +3967,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				if (stat == Stats.POWER_ATTACK_SPEED)
 				{
-					su.addAttribute(StatusUpdate.ATK_SPD, getPAtkSpd());
+					su.addAttribute(StatusUpdate.ATK_SPD, (int) getPAtkSpd());
 				}
 				else if (stat == Stats.MAGIC_ATTACK_SPEED)
 				{
@@ -5133,8 +5147,10 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		if ((isNpc() && target.isAlikeDead()) || target.isDead() || (!getKnownList().knowsObject(target) && !isDoor()))
 		{
 			// getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE, null);
+			// Some times attack is processed but target die before the hit
+			// So we need to recharge shot for next attack
+			rechargeShots(true, false);
 			getAI().notifyEvent(CtrlEvent.EVT_CANCEL);
-			
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}
@@ -5550,48 +5566,48 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public int calculateTimeBetweenAttacks(L2Character target, L2Weapon weapon)
 	{
-		double atkSpd = 0;
 		if ((weapon != null) && !isTransformed())
 		{
 			switch (weapon.getItemType())
 			{
 				case BOW:
-					atkSpd = getStat().getPAtkSpd();
-					return (int) ((1500 * 345) / atkSpd);
+					return (int) ((1500 * 345) / getPAtkSpd());
 				case CROSSBOW:
-					atkSpd = getStat().getPAtkSpd();
-					return (int) ((1200 * 345) / atkSpd);
+					return (int) ((1200 * 345) / getPAtkSpd());
 				case DAGGER:
-					atkSpd = getStat().getPAtkSpd();
 					// atkSpd /= 1.15;
 					break;
-				default:
-					atkSpd = getStat().getPAtkSpd();
 			}
 		}
-		else
-		{
-			atkSpd = getPAtkSpd();
-		}
-		
-		return Formulas.calcPAtkSpd(this, target, atkSpd);
+		return Formulas.calcPAtkSpd(this, target, getPAtkSpd());
 	}
 	
 	public int calculateReuseTime(L2Character target, L2Weapon weapon)
 	{
-		if ((weapon == null) || isTransformed())
+		if (isTransformed())
+		{
+			switch (getAttackType())
+			{
+				case BOW:
+				case CROSSBOW:
+					return (int) ((517500 * getStat().getWeaponReuseModifier(null)) / getStat().getPAtkSpd());
+			}
+		}
+		
+		if ((weapon == null))
 		{
 			return 0;
 		}
 		
 		int reuse = weapon.getReuseDelay();
+		
 		// only bows should continue for now
 		if (reuse == 0)
 		{
 			return 0;
 		}
 		
-		reuse *= getStat().getWeaponReuseModifier(target);
+		reuse *= getStat().getWeaponReuseModifier(null);
 		double atkSpd = getStat().getPAtkSpd();
 		switch (weapon.getItemType())
 		{
@@ -6233,9 +6249,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			return;
 		}
 		
+		// Cleanup
 		_skillCast = null;
-		setIsCastingNow(false);
 		_castInterruptTime = 0;
+		
+		// Stop casting
+		setIsCastingNow(false);
+		setIsCastingSimultaneouslyNow(false);
 		
 		final L2Skill skill = mut.getSkill();
 		final L2Object target = mut.getTargets().length > 0 ? mut.getTargets()[0] : null;
@@ -6918,7 +6938,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getMaxRecoverableCp();
 	}
 	
-	public int getMAtk(L2Character target, L2Skill skill)
+	public double getMAtk(L2Character target, L2Skill skill)
 	{
 		return getStat().getMAtk(target, skill);
 	}
@@ -6953,7 +6973,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getMCriticalHit(target, skill);
 	}
 	
-	public int getMDef(L2Character target, L2Skill skill)
+	public double getMDef(L2Character target, L2Skill skill)
 	{
 		return getStat().getMDef(target, skill);
 	}
@@ -6963,17 +6983,17 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return getStat().getMReuseRate(skill);
 	}
 	
-	public int getPAtk(L2Character target)
+	public double getPAtk(L2Character target)
 	{
 		return getStat().getPAtk(target);
 	}
 	
-	public int getPAtkSpd()
+	public double getPAtkSpd()
 	{
 		return getStat().getPAtkSpd();
 	}
 	
-	public int getPDef(L2Character target)
+	public double getPDef(L2Character target)
 	{
 		return getStat().getPDef(target);
 	}
@@ -7459,6 +7479,27 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	{
 		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageReceived(attacker, this, damage, skill, critical, damageOverTime), this);
 		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageDealt(attacker, this, damage, skill, critical, damageOverTime), attacker);
+	}
+	
+	/**
+	 * @return {@link WeaponType} of current character's weapon or basic weapon type.
+	 */
+	public final WeaponType getAttackType()
+	{
+		if (isTransformed())
+		{
+			final TransformTemplate template = getTransformation().getTemplate(getActingPlayer());
+			if (template != null)
+			{
+				return template.getBaseAttackType();
+			}
+		}
+		final L2Weapon weapon = getActiveWeaponItem();
+		if (weapon != null)
+		{
+			return weapon.getItemType();
+		}
+		return getTemplate().getBaseAttackType();
 	}
 	
 	public final boolean isInCategory(CategoryType type)

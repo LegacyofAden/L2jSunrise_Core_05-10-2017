@@ -89,7 +89,10 @@ public class TopicBBSManager extends BaseBBSManager
 	{
 		if (command.equals("_bbsmemo"))
 		{
-			showTopics(activeChar.getMemo(), activeChar, 1, activeChar.getMemo().getID());
+			if (activeChar.getMemo() != null)
+			{
+				showTopics(activeChar.getMemo(), activeChar, 1, activeChar.getMemo().getID());
+			}
 		}
 		else if (command.startsWith("_bbstopics;read"))
 		{

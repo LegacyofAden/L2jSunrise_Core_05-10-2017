@@ -40,6 +40,7 @@ import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.skills.AbnormalType;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.l2skills.L2SkillSummon;
+import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.network.serverpackets.SetSummonRemainTime;
 
 import org.slf4j.Logger;
@@ -618,5 +619,53 @@ public class L2ServitorInstance extends L2Summon
 	public boolean isServitor()
 	{
 		return true;
+	}
+	
+	@Override
+	public double getMAtk(L2Character target, L2Skill skill)
+	{
+		return super.getMAtk(target, skill) + (getActingPlayer().getMAtk(target, skill) * (getActingPlayer().getServitorShareBonus(Stats.MAGIC_ATTACK) - 1.0));
+	}
+	
+	@Override
+	public double getMDef(L2Character target, L2Skill skill)
+	{
+		return super.getMDef(target, skill) + (getActingPlayer().getMDef(target, skill) * (getActingPlayer().getServitorShareBonus(Stats.MAGIC_DEFENCE) - 1.0));
+	}
+	
+	@Override
+	public double getPAtk(L2Character target)
+	{
+		return super.getPAtk(target) + (getActingPlayer().getPAtk(target) * (getActingPlayer().getServitorShareBonus(Stats.POWER_ATTACK) - 1.0));
+	}
+	
+	@Override
+	public double getPDef(L2Character target)
+	{
+		return super.getPDef(target) + (getActingPlayer().getPDef(target) * (getActingPlayer().getServitorShareBonus(Stats.POWER_DEFENCE) - 1.0));
+	}
+	
+	@Override
+	public int getMAtkSpd()
+	{
+		return (int) (super.getMAtkSpd() + (getActingPlayer().getMAtkSpd() * (getActingPlayer().getServitorShareBonus(Stats.MAGIC_ATTACK_SPEED) - 1.0)));
+	}
+	
+	@Override
+	public int getMaxHp()
+	{
+		return (int) (super.getMaxHp() + (getActingPlayer().getMaxHp() * (getActingPlayer().getServitorShareBonus(Stats.MAX_HP) - 1.0)));
+	}
+	
+	@Override
+	public int getCriticalHit(L2Character target, L2Skill skill)
+	{
+		return (int) (super.getCriticalHit(target, skill) + ((getActingPlayer().getCriticalHit(target, skill)) * (getActingPlayer().getServitorShareBonus(Stats.CRITICAL_RATE) - 1.0)));
+	}
+	
+	@Override
+	public double getPAtkSpd()
+	{
+		return super.getPAtkSpd() + (getActingPlayer().getPAtkSpd() * (getActingPlayer().getServitorShareBonus(Stats.POWER_ATTACK_SPEED) - 1.0));
 	}
 }
