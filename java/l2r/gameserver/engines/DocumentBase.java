@@ -917,7 +917,7 @@ public abstract class DocumentBase
 					cond = joinAnd(cond, new ConditionPlayerHasPet(array));
 					break;
 				}
-				case "servitornpcid":
+				case "hasservitor":
 				{
 					cond = joinAnd(cond, new ConditionPlayerHasServitor());
 					break;
