@@ -5840,7 +5840,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public final Collection<L2Skill> getAllSkills()
 	{
-		return new ArrayList<>(_skills.values());
+		return _skills.values();
 	}
 	
 	/**
@@ -5954,7 +5954,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			List<L2Character> targetList = new FastList<>(targets.length);
 			for (L2Object target : targets)
 			{
-				if (target instanceof L2Character)
+				if (target.isCharacter())
 				{
 					if (!isInsideRadius(target.getX(), target.getY(), target.getZ(), escapeRange + getTemplate().getCollisionRadius(), true, false))
 					{

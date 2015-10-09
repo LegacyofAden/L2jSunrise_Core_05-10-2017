@@ -18,43 +18,31 @@
  */
 package l2r.gameserver.instancemanager;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.entity.Duel;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
-
-import javolution.util.FastList;
+import l2r.util.Rnd;
 
 public class DuelManager
 {
-	private final FastList<Duel> _duels;
-	private int _currentDuelId = 0x90;
+	private static final List<String> ARENAS = Arrays.asList("OlympiadGrassyArena.xml", "OlympiadHerossVestigesArena.xml", "OlympiadOrbisArena.xml", "OlympiadThreeBridgesArena.xml");
+	private final Map<Integer, Duel> _duels = new ConcurrentHashMap<>();
+	private final AtomicInteger _currentDuelId = new AtomicInteger();
 	
 	protected DuelManager()
 	{
-		_duels = new FastList<>();
-	}
-	
-	private int getNextDuelId()
-	{
-		// In case someone wants to run the server forever :)
-		if (++_currentDuelId >= 2147483640)
-		{
-			_currentDuelId = 1;
-		}
-		return _currentDuelId;
 	}
 	
 	public Duel getDuel(int duelId)
 	{
-		for (FastList.Node<Duel> e = _duels.head(), end = _duels.tail(); (e = e.getNext()) != end;)
-		{
-			if (e.getValue().getId() == duelId)
-			{
-				return e.getValue();
-			}
-		}
-		return null;
+		return _duels.get(duelId);
 	}
 	
 	public void addDuel(L2PcInstance playerA, L2PcInstance playerB, int partyDuel)
@@ -111,14 +99,13 @@ public class DuelManager
 				return;
 			}
 		}
-		
-		Duel duel = new Duel(playerA, playerB, partyDuel, getNextDuelId());
-		_duels.add(duel);
+		final int duelId = _currentDuelId.incrementAndGet();
+		_duels.put(duelId, new Duel(playerA, playerB, partyDuel, duelId));
 	}
 	
 	public void removeDuel(Duel duel)
 	{
-		_duels.remove(duel);
+		_duels.remove(duel.getId());
 	}
 	
 	public void doSurrender(L2PcInstance player)
@@ -127,7 +114,7 @@ public class DuelManager
 		{
 			return;
 		}
-		Duel duel = getDuel(player.getDuelId());
+		final Duel duel = getDuel(player.getDuelId());
 		duel.doSurrender(player);
 	}
 	
@@ -141,7 +128,7 @@ public class DuelManager
 		{
 			return;
 		}
-		Duel duel = getDuel(player.getDuelId());
+		final Duel duel = getDuel(player.getDuelId());
 		if (duel != null)
 		{
 			duel.onPlayerDefeat(player);
@@ -159,7 +146,7 @@ public class DuelManager
 		{
 			return;
 		}
-		Duel duel = getDuel(player.getDuelId());
+		final Duel duel = getDuel(player.getDuelId());
 		if (duel != null)
 		{
 			duel.onBuff(player, buff);
@@ -176,7 +163,7 @@ public class DuelManager
 		{
 			return;
 		}
-		Duel duel = getDuel(player.getDuelId());
+		final Duel duel = getDuel(player.getDuelId());
 		if (duel != null)
 		{
 			duel.onRemoveFromParty(player);
@@ -194,7 +181,7 @@ public class DuelManager
 		{
 			return;
 		}
-		Duel duel = getDuel(player.getDuelId());
+		final Duel duel = getDuel(player.getDuelId());
 		if (duel == null)
 		{
 			return;
@@ -223,6 +210,15 @@ public class DuelManager
 				duel.broadcastToTeam1(packet);
 			}
 		}
+	}
+	
+	/**
+	 * Gets new a random Olympiad Stadium instance name.
+	 * @return an instance name
+	 */
+	public String getDuelArena()
+	{
+		return ARENAS.get(Rnd.get(ARENAS.size()));
 	}
 	
 	public static final DuelManager getInstance()

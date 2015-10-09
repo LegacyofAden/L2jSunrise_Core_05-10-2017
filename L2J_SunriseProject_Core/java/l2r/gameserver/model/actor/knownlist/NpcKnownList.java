@@ -18,10 +18,8 @@
  */
 package l2r.gameserver.model.actor.knownlist;
 
-import java.util.Collection;
 import java.util.concurrent.ScheduledFuture;
 
-import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.InstanceType;
@@ -54,10 +52,8 @@ public class NpcKnownList extends CharKnownList
 		
 		if (getActiveObject().isNpc() && (object instanceof L2Character))
 		{
-			final L2Npc npc = (L2Npc) getActiveObject();
-			
 			// Notify to scripts
-			EventDispatcher.getInstance().notifyEventAsync(new OnNpcCreatureSee(npc, (L2Character) object, object.isSummon()), npc);
+			EventDispatcher.getInstance().notifyEventAsync(new OnNpcCreatureSee(getActiveChar(), (L2Character) object, object.isSummon()), getActiveChar());
 		}
 		return true;
 	}
@@ -125,42 +121,35 @@ public class NpcKnownList extends CharKnownList
 		@Override
 		public void run()
 		{
-			if (getActiveChar() instanceof L2Attackable)
+			if (!getActiveChar().isAttackable())
 			{
-				final L2Attackable monster = (L2Attackable) getActiveChar();
-				
-				if (monster.getAI() == null)
+				if (!getActiveChar().isAttackable())
 				{
-					if (Config.DEBUG)
-					{
-						System.out.println("Monster getAi() is NULL, MonsterId: " + monster.getId());
-					}
 					return;
 				}
 				
-				if (monster.getAI().getIntention() == CtrlIntention.AI_INTENTION_MOVE_TO)
+				final L2Attackable monster = (L2Attackable) getActiveChar();
+				if (monster.getAI().getIntention() != CtrlIntention.AI_INTENTION_MOVE_TO)
 				{
-					final Collection<L2PcInstance> players = getKnownPlayers().values();
-					if (players != null)
+					return;
+				}
+				
+				for (L2PcInstance pl : getKnownPlayers().values())
+				{
+					if (!pl.isDead() && !pl.isInvul() && pl.isInsideRadius(monster, monster.getAggroRange(), true, false) && (monster.isMonster() || (monster.isInstanceTypes(InstanceType.L2GuardInstance) && (pl.getKarma() > 0))))
 					{
-						for (L2PcInstance pl : players)
+						// Send aggroRangeEnter
+						if (monster.getHating(pl) == 0)
 						{
-							if (!pl.isDead() && !pl.isInvul() && pl.isInsideRadius(monster, monster.getAggroRange(), true, false) && (monster.isMonster() || (monster.isInstanceTypes(InstanceType.L2GuardInstance) && (pl.getKarma() > 0))))
-							{
-								// Send aggroRangeEnter
-								if (monster.getHating(pl) == 0)
-								{
-									monster.addDamageHate(pl, 0, 0);
-								}
-								
-								// Skip attack for other targets, if one is already chosen for attack
-								if ((monster.getAI().getIntention() != CtrlIntention.AI_INTENTION_ATTACK) && !monster.isCoreAIDisabled())
-								{
-									WalkingManager.getInstance().stopMoving(getActiveChar(), false, true);
-									monster.addDamageHate(pl, 0, 100);
-									monster.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, pl, null);
-								}
-							}
+							monster.addDamageHate(pl, 0, 0);
+						}
+						
+						// Skip attack for other targets, if one is already chosen for attack
+						if ((monster.getAI().getIntention() != CtrlIntention.AI_INTENTION_ATTACK) && !monster.isCoreAIDisabled())
+						{
+							WalkingManager.getInstance().stopMoving(getActiveChar(), false, true);
+							monster.addDamageHate(pl, 0, 100);
+							monster.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, pl, null);
 						}
 					}
 				}

@@ -20,7 +20,6 @@ package l2r.gameserver.model.actor;
 
 import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_ACTIVE;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +81,6 @@ import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.L2Weapon;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.skills.L2Skill;
-import l2r.gameserver.model.skills.targets.L2TargetType;
 import l2r.gameserver.model.variables.NpcVariables;
 import l2r.gameserver.model.zone.type.L2TownZone;
 import l2r.gameserver.network.SystemMessageId;
@@ -104,6 +102,9 @@ import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import gr.sr.configsEngine.configs.impl.PremiumServiceConfigs;
 import gr.sr.datatables.FakePcsTable;
 import gr.sr.interf.SunriseEvents;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a Non-Player-Character in the world.<br>
@@ -140,7 +141,7 @@ public class L2Npc extends L2Character
 	/** Time of last social packet broadcast */
 	private long _lastSocialBroadcast = 0;
 	/** Minimum interval between social packets */
-	private final int _minimalSocialInterval = 6000;
+	private final int MINIMUM_SOCIAL_INTERVAL = 6000;
 	/** Support for random animation switching */
 	private boolean _isRandomAnimationEnabled = true;
 	private boolean _isTalking = true;
@@ -207,14 +208,6 @@ public class L2Npc extends L2Character
 		return _staticAIData.getClan();
 	}
 	
-	/**
-	 * @return the primary attack skill Id
-	 */
-	public int getPrimarySkillId()
-	{
-		return _staticAIData.getPrimarySkillId();
-	}
-	
 	public int getMinSkillChance()
 	{
 		return _staticAIData.getMinSkillChance();
@@ -223,6 +216,15 @@ public class L2Npc extends L2Character
 	public int getMaxSkillChance()
 	{
 		return _staticAIData.getMaxSkillChance();
+	}
+	
+	/**
+	 * Verifies if the NPC can cast a skill given the minimum and maximum skill chances.
+	 * @return {@code true} if the NPC has chances of casting a skill
+	 */
+	public boolean hasSkillChance()
+	{
+		return Rnd.get(100) < Rnd.get(getMinSkillChance(), getMaxSkillChance());
 	}
 	
 	public int getCanMove()
@@ -240,14 +242,14 @@ public class L2Npc extends L2Character
 		return _staticAIData.getDodge();
 	}
 	
-	public int getSSkillChance()
+	public List<L2Skill> getLongRangeSkills()
 	{
-		return _staticAIData.getShortRangeChance();
+		return getTemplate().getLongRangeSkills();
 	}
 	
-	public int getLSkillChance()
+	public List<L2Skill> getShortRangeSkills()
 	{
-		return _staticAIData.getLongRangeChance();
+		return getTemplate().getShortRangeSkills();
 	}
 	
 	public int getSwitchRangeChance()
@@ -255,177 +257,48 @@ public class L2Npc extends L2Character
 		return _staticAIData.getSwitchRangeChance();
 	}
 	
-	public boolean hasLSkill()
-	{
-		if (_staticAIData.getLongRangeSkill() == 0)
-		{
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean hasSSkill()
-	{
-		if (_staticAIData.getShortRangeSkill() == 0)
-		{
-			return false;
-		}
-		return true;
-	}
-	
-	public List<L2Skill> getLongRangeSkill()
-	{
-		final List<L2Skill> skilldata = new ArrayList<>();
-		if ((_staticAIData == null) || (_staticAIData.getLongRangeSkill() == 0))
-		{
-			return skilldata;
-		}
-		
-		switch (_staticAIData.getLongRangeSkill())
-		{
-			case -1:
-			{
-				Collection<L2Skill> skills = getAllSkills();
-				if (skills != null)
-				{
-					for (L2Skill sk : skills)
-					{
-						if ((sk == null) || sk.isPassive() || (sk.getTargetType() == L2TargetType.SELF))
-						{
-							continue;
-						}
-						
-						if (sk.getCastRange() >= 200)
-						{
-							skilldata.add(sk);
-						}
-					}
-				}
-				break;
-			}
-			case 1:
-			{
-				if (getTemplate().getUniversalSkills() != null)
-				{
-					for (L2Skill sk : getTemplate().getUniversalSkills())
-					{
-						if (sk.getCastRange() >= 200)
-						{
-							skilldata.add(sk);
-						}
-					}
-				}
-				break;
-			}
-			default:
-			{
-				for (L2Skill sk : getAllSkills())
-				{
-					if (sk.getId() == _staticAIData.getLongRangeSkill())
-					{
-						skilldata.add(sk);
-					}
-				}
-			}
-		}
-		return skilldata;
-	}
-	
-	public List<L2Skill> getShortRangeSkill()
-	{
-		final List<L2Skill> skilldata = new ArrayList<>();
-		if ((_staticAIData == null) || (_staticAIData.getShortRangeSkill() == 0))
-		{
-			return skilldata;
-		}
-		
-		switch (_staticAIData.getShortRangeSkill())
-		{
-			case -1:
-			{
-				Collection<L2Skill> skills = getAllSkills();
-				if (skills != null)
-				{
-					for (L2Skill sk : skills)
-					{
-						if ((sk == null) || sk.isPassive() || (sk.getTargetType() == L2TargetType.SELF))
-						{
-							continue;
-						}
-						if (sk.getCastRange() <= 200)
-						{
-							skilldata.add(sk);
-						}
-					}
-				}
-				break;
-			}
-			case 1:
-			{
-				if (getTemplate().getUniversalSkills() != null)
-				{
-					for (L2Skill sk : getTemplate().getUniversalSkills())
-					{
-						if (sk.getCastRange() <= 200)
-						{
-							skilldata.add(sk);
-						}
-					}
-				}
-				break;
-			}
-			default:
-			{
-				for (L2Skill sk : getAllSkills())
-				{
-					if (sk.getId() == _staticAIData.getShortRangeSkill())
-					{
-						skilldata.add(sk);
-					}
-				}
-			}
-		}
-		return skilldata;
-	}
-	
 	/** Task launching the function onRandomAnimation() */
-	protected class RandomAnimationTask implements Runnable
+	protected static class RandomAnimationTask implements Runnable
 	{
+		private static final Logger LOG = LoggerFactory.getLogger(RandomAnimationTask.class);
+		private final L2Npc _npc;
+		
+		protected RandomAnimationTask(L2Npc npc)
+		{
+			_npc = npc;
+		}
+		
 		@Override
 		public void run()
 		{
 			try
 			{
-				if (this != _rAniTask)
-				{
-					return; // Shouldn't happen, but who knows... just to make sure every active npc has only one timer.
-				}
-				if (isMob())
+				if (_npc.isMob())
 				{
 					// Cancel further animation timers until intention is changed to ACTIVE again.
-					if (getAI().getIntention() != AI_INTENTION_ACTIVE)
+					if (_npc.getAI().getIntention() != AI_INTENTION_ACTIVE)
 					{
 						return;
 					}
 				}
 				else
 				{
-					if (!isInActiveRegion())
+					if (!_npc.isInActiveRegion())
 					{
 						return;
 					}
 				}
 				
-				if (!(isDead() || isStunned() || isSleeping() || isParalyzed()))
+				if (!(_npc.isDead() || _npc.isStunned() || _npc.isSleeping() || _npc.isParalyzed()))
 				{
-					onRandomAnimation(Rnd.get(2, 3));
+					_npc.onRandomAnimation(Rnd.get(2, 3));
 				}
 				
-				startRandomAnimationTimer();
+				_npc.startRandomAnimationTimer();
 			}
 			catch (Exception e)
 			{
-				_log.error("", e);
+				LOG.error("There has been an error trying to perform a random animation for NPC {}!", _npc, e);
 			}
 		}
 	}
@@ -438,7 +311,7 @@ public class L2Npc extends L2Character
 	{
 		// Send a packet SocialAction to all L2PcInstance in the _KnownPlayers of the L2NpcInstance
 		long now = System.currentTimeMillis();
-		if ((now - _lastSocialBroadcast) > _minimalSocialInterval)
+		if ((now - _lastSocialBroadcast) > MINIMUM_SOCIAL_INTERVAL)
 		{
 			_lastSocialBroadcast = now;
 			broadcastPacket(new SocialAction(getObjectId(), animationId));
@@ -462,7 +335,7 @@ public class L2Npc extends L2Character
 		int interval = Rnd.get(minWait, maxWait) * 1000;
 		
 		// Create a RandomAnimation Task that will be launched after the calculated delay
-		_rAniTask = new RandomAnimationTask();
+		_rAniTask = new RandomAnimationTask(this);
 		ThreadPoolManager.getInstance().scheduleGeneral(_rAniTask, interval);
 	}
 	

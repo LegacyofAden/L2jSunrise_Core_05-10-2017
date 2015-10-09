@@ -23,11 +23,14 @@ package l2r.gameserver.network.serverpackets;
  */
 public class ExDuelStart extends L2GameServerPacket
 {
-	private final int _unk1;
+	public static final ExDuelReady PLAYER_DUEL = new ExDuelReady(false);
+	public static final ExDuelReady PARTY_DUEL = new ExDuelReady(true);
 	
-	public ExDuelStart(int unk1)
+	private final boolean _partyDuel;
+	
+	public ExDuelStart(boolean partyDuel)
 	{
-		_unk1 = unk1;
+		_partyDuel = partyDuel;
 	}
 	
 	@Override
@@ -36,6 +39,6 @@ public class ExDuelStart extends L2GameServerPacket
 		writeC(0xfe);
 		writeH(0x4e);
 		
-		writeD(_unk1);
+		writeD(_partyDuel ? 1 : 0);
 	}
 }
