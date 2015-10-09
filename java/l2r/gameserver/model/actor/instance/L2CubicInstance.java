@@ -32,7 +32,6 @@ import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2Party;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.tasks.cubic.CubicAction;
 import l2r.gameserver.model.actor.tasks.cubic.CubicDisappear;
 import l2r.gameserver.model.actor.tasks.cubic.CubicHeal;
@@ -265,7 +264,7 @@ public final class L2CubicInstance implements IIdentifiable
 			
 			if (SunriseEvents.isInEvent(_owner))
 			{
-				if (ownerTarget instanceof L2Character)
+				if (ownerTarget.isCharacter())
 				{
 					if (SunriseEvents.canAttack(_owner, (L2Character) ownerTarget))
 					{
@@ -357,7 +356,7 @@ public final class L2CubicInstance implements IIdentifiable
 			{
 				if (_owner.isOlympiadStart())
 				{
-					if (ownerTarget instanceof L2Playable)
+					if (ownerTarget.isPlayable())
 					{
 						final L2PcInstance targetPlayer = ownerTarget.getActingPlayer();
 						if ((targetPlayer != null) && (targetPlayer.getOlympiadGameId() == _owner.getOlympiadGameId()) && (targetPlayer.getOlympiadSide() != _owner.getOlympiadSide()))
@@ -369,12 +368,13 @@ public final class L2CubicInstance implements IIdentifiable
 				return;
 			}
 			// test owners target if it is valid then use it
-			if ((ownerTarget instanceof L2Character) && (ownerTarget != _owner.getSummon()) && (ownerTarget != _owner))
+			if (ownerTarget.isCharacter() && (ownerTarget != _owner.getSummon()) && (ownerTarget != _owner))
 			{
 				// target mob which has aggro on you or your summon
-				if (ownerTarget instanceof L2Attackable)
+				if (ownerTarget.isAttackable())
 				{
-					if ((((L2Attackable) ownerTarget).getAggroList().get(_owner) != null) && !((L2Attackable) ownerTarget).isDead())
+					final L2Attackable attackable = (L2Attackable) ownerTarget;
+					if (attackable.isInAggroList(_owner) && !attackable.isDead())
 					{
 						_target = (L2Character) ownerTarget;
 						return;

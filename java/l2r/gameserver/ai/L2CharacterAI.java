@@ -1628,7 +1628,7 @@ public class L2CharacterAI extends AbstractAI
 	
 	public boolean canParty(L2Skill sk)
 	{
-		if (sk.getTargetType() == L2TargetType.PARTY)
+		if (isParty(sk))
 		{
 			int count = 0;
 			int ccount = 0;

@@ -93,7 +93,7 @@ public final class L2EventMapGuardInstance extends L2GuardInstance
 		else
 		{
 			// Check if the L2PcInstance is in the _aggroList of the L2GuardInstance
-			if (containsTarget(player))
+			if (isInAggroList(player))
 			{
 				if (Config.DEBUG)
 				{

@@ -16,29 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.network.serverpackets;
+package l2r.gameserver.enums;
 
-/**
- * @author KenM
- */
-public class ExDuelReady extends L2GameServerPacket
+public enum DuelResult
 {
-	public static final ExDuelReady PLAYER_DUEL = new ExDuelReady(false);
-	public static final ExDuelReady PARTY_DUEL = new ExDuelReady(true);
-	
-	private final boolean _partyDuel;
-	
-	public ExDuelReady(boolean partyDuel)
-	{
-		_partyDuel = partyDuel;
-	}
-	
-	@Override
-	protected void writeImpl()
-	{
-		writeC(0xFE);
-		writeH(0x4D);
-		
-		writeD(_partyDuel ? 1 : 0);
-	}
+	Continue,
+	Team1Win,
+	Team2Win,
+	Team1Surrender,
+	Team2Surrender,
+	Canceled,
+	Timeout
 }

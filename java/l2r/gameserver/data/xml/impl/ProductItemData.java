@@ -312,7 +312,7 @@ public class ProductItemData
 			}
 			catch (Exception e)
 			{
-				LOGGER.error("Could not insert char game points: " + e.getMessage(), e);
+				// LOGGER.error("Could not insert char game points: " + e.getMessage(), e);
 			}
 		}
 	}
