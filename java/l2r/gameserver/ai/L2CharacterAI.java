@@ -31,6 +31,7 @@ import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_REST;
 import java.util.ArrayList;
 import java.util.List;
 
+import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.ThreadPoolManager;
@@ -976,14 +977,16 @@ public class L2CharacterAI extends AbstractAI
 			_actor.setRunning();
 		}
 		
-		// If pathfinding enabled the creature will go to the defined destination (retail like).
-		// Otherwise it will go to the nearest obstacle.
-		/**
-		 * final Location destination; if (Config.PATHFINDING > 0) { destination = new Location(posX, posY, posZ, _actor.getInstanceId()); } else { destination = GeoData.getInstance().moveCheck(_actor.getX(), _actor.getY(), _actor.getZ(), posX, posY, posZ, _actor.getInstanceId()); }
-		 * setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, destination);
-		 */
-		
-		final Location destination = GeoData.getInstance().moveCheck(_actor.getX(), _actor.getY(), _actor.getZ(), posX, posY, posZ, _actor.getInstanceId());
+		// If pathfinding enabled the creature will go to the destination or it will go to the nearest obstacle.
+		final Location destination;
+		if (Config.PATHFINDING > 0)
+		{
+			destination = GeoData.getInstance().moveCheck(_actor.getX(), _actor.getY(), _actor.getZ(), posX, posY, posZ, _actor.getInstanceId());
+		}
+		else
+		{
+			destination = new Location(posX, posY, posZ, _actor.getInstanceId());
+		}
 		setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, destination);
 	}
 	

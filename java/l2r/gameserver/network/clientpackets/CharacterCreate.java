@@ -29,11 +29,11 @@ import java.util.regex.PatternSyntaxException;
 import l2r.Config;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.data.xml.impl.InitialEquipmentData;
+import l2r.gameserver.data.xml.impl.InitialShortcutData;
 import l2r.gameserver.data.xml.impl.PlayerTemplateData;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.data.xml.impl.SkillTreesData;
 import l2r.gameserver.instancemanager.QuestManager;
-import l2r.gameserver.model.L2ShortCut;
 import l2r.gameserver.model.L2SkillLearn;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.Location;
@@ -284,17 +284,6 @@ public final class CharacterCreate extends L2GameClientPacket
 			newChar.getStat().addSp(Config.STARTING_SP);
 		}
 		
-		L2ShortCut shortcut;
-		// add attack shortcut
-		shortcut = new L2ShortCut(0, 0, 3, 2, 0, 1);
-		newChar.registerShortCut(shortcut);
-		// add take shortcut
-		shortcut = new L2ShortCut(3, 0, 3, 5, 0, 1);
-		newChar.registerShortCut(shortcut);
-		// add sit shortcut
-		shortcut = new L2ShortCut(10, 0, 3, 0, 0, 1);
-		newChar.registerShortCut(shortcut);
-		
 		final List<PcItemTemplate> initialItems = InitialEquipmentData.getInstance().getEquipmentList(newChar.getClassId());
 		if (initialItems != null)
 		{
@@ -307,13 +296,6 @@ public final class CharacterCreate extends L2GameClientPacket
 					continue;
 				}
 				
-				// Place Tutorial Guide shortcut.
-				if (item.getId() == 5588)
-				{
-					shortcut = new L2ShortCut(11, 0, 1, item.getObjectId(), 0, 1);
-					newChar.registerShortCut(shortcut);
-				}
-				
 				if (item.isEquipable() && ie.isEquipped())
 				{
 					newChar.getInventory().equipItem(item);
@@ -323,22 +305,16 @@ public final class CharacterCreate extends L2GameClientPacket
 		
 		for (L2SkillLearn skill : SkillTreesData.getInstance().getAvailableSkills(newChar, newChar.getClassId(), false, true))
 		{
-			newChar.addSkill(SkillData.getInstance().getInfo(skill.getSkillId(), skill.getSkillLevel()), true);
-			if ((skill.getSkillId() == 1001) || (skill.getSkillId() == 1177))
-			{
-				shortcut = new L2ShortCut(1, 0, 2, skill.getSkillId(), skill.getSkillLevel(), 1);
-				newChar.registerShortCut(shortcut);
-			}
-			if (skill.getSkillId() == 1216)
-			{
-				shortcut = new L2ShortCut(10, 0, 2, skill.getSkillId(), skill.getSkillLevel(), 1);
-				newChar.registerShortCut(shortcut);
-			}
 			if (Config.DEBUG)
 			{
 				_log.info("Adding starter skill:" + skill.getSkillId() + " / " + skill.getSkillLevel());
 			}
+			
+			newChar.addSkill(SkillData.getInstance().getSkill(skill.getSkillId(), skill.getSkillLevel()), true);
 		}
+		
+		// Register all shortcuts for actions, skills and items for this new character.
+		InitialShortcutData.getInstance().registerAllShortcuts(newChar);
 		
 		if (!Config.DISABLE_TUTORIAL)
 		{

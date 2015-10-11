@@ -54,6 +54,7 @@ public class Die extends L2GameServerPacket
 	 */
 	public Die(L2Character cha)
 	{
+		_charObjId = cha.getObjectId();
 		_activeChar = cha;
 		if (cha.isPlayer())
 		{
@@ -62,8 +63,8 @@ public class Die extends L2GameServerPacket
 			_clan = player.getClan();
 			_isJailed = player.isJailed();
 		}
-		_charObjId = cha.getObjectId();
 		_canTeleport = !cha.isPendingRevive();
+		_sweepable = cha.isSweepActive();
 		
 		if (cha.isPlayer())
 		{
@@ -86,8 +87,6 @@ public class Die extends L2GameServerPacket
 				}
 			}
 		}
-		
-		_sweepable = cha.isAttackable() && cha.isSweepActive();
 	}
 	
 	@Override
@@ -95,16 +94,20 @@ public class Die extends L2GameServerPacket
 	{
 		writeC(0x00);
 		writeD(_charObjId);
-		writeD(_canTeleport ? 0x01 : 0);
+		writeD(_canTeleport ? 0x01 : 0x00);
 		
-		if (_activeChar.isPlayer() && !OlympiadManager.getInstance().isRegistered(_activeChar.getActingPlayer()) && !_activeChar.isOnEvent())
+		if (_activeChar.isPlayer())
 		{
-			_staticRes = _activeChar.getInventory().haveItemForSelfResurrection();
-		}
-		
-		if (_access.allowFixedRes())
-		{
-			_staticRes = true;
+			if (!OlympiadManager.getInstance().isRegistered(_activeChar.getActingPlayer()) && !_activeChar.isOnEvent())
+			{
+				_staticRes = _activeChar.getInventory().haveItemForSelfResurrection();
+			}
+			
+			// Verify if player can use fixed resurrection without Feather
+			if (_access.allowFixedRes())
+			{
+				_staticRes = true;
+			}
 		}
 		
 		if (_canTeleport && (_clan != null) && !_isJailed)
@@ -152,12 +155,8 @@ public class Die extends L2GameServerPacket
 			writeD(0x00); // 6d 05 00 00 00 - to fortress
 		}
 		// TODO: protocol 152
-		//@formatter:off
-		/*
-		 * writeC(0); //show die animation 
-		 * writeD(0); //agathion ress button 
-		 * writeD(0); //additional free space
-		 */
-		//@formatter:on
+		// writeC(0); // show die animation
+		// writeD(0); // agathion ress button
+		// writeD(0); // additional free space
 	}
 }

@@ -18,21 +18,15 @@
  */
 package l2r.gameserver.network.clientpackets;
 
-import l2r.gameserver.model.L2ShortCut;
-import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.enums.ShortcutType;
+import l2r.gameserver.model.Shortcut;
 import l2r.gameserver.network.serverpackets.ShortCutRegister;
 
-import gr.sr.interf.SunriseEvents;
-
-/**
- * This class ...
- * @version $Revision: 1.3.4.3 $ $Date: 2005/03/27 15:29:30 $
- */
 public final class RequestShortCutReg extends L2GameClientPacket
 {
 	private static final String _C__3D_REQUESTSHORTCUTREG = "[C] 3D RequestShortCutReg";
 	
-	private int _type;
+	private ShortcutType _type;
 	private int _id;
 	private int _slot;
 	private int _page;
@@ -42,67 +36,27 @@ public final class RequestShortCutReg extends L2GameClientPacket
 	@Override
 	protected void readImpl()
 	{
-		_type = readD();
-		int slot = readD();
+		final int typeId = readD();
+		_type = ShortcutType.values()[(typeId < 1) || (typeId > 6) ? 0 : typeId];
+		final int slot = readD();
+		_slot = slot % 12;
+		_page = slot / 12;
 		_id = readD();
 		_lvl = readD();
 		_characterType = readD();
-		
-		_slot = slot % 12;
-		_page = slot / 12;
 	}
 	
 	@Override
 	protected void runImpl()
 	{
-		L2PcInstance activeChar = getClient().getActiveChar();
-		if (activeChar == null)
+		if ((getActiveChar() == null) || (_page > 10) || (_page < 0))
 		{
 			return;
 		}
 		
-		if ((_page > 10) || (_page < 0))
-		{
-			return;
-		}
-		
-		boolean saveToDb = true;
-		
-		if (SunriseEvents.isInEvent(activeChar))
-		{
-			if (!SunriseEvents.canSaveShortcuts(activeChar))
-			{
-				saveToDb = false;
-			}
-		}
-		
-		switch (_type)
-		{
-			case 0x01: // item
-			case 0x02: // skill
-			{
-				L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, _lvl, _characterType);
-				activeChar.registerShortCut(sc, saveToDb);
-				sendPacket(new ShortCutRegister(sc));
-				break;
-			}
-			case 0x03: // action
-			case 0x04: // macro
-			case 0x05: // recipe
-			{
-				L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, _lvl, _characterType);
-				activeChar.registerShortCut(sc, saveToDb);
-				sendPacket(new ShortCutRegister(sc));
-				break;
-			}
-			case 0x06: // Teleport Bookmark
-			{
-				L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, _lvl, _characterType);
-				activeChar.registerShortCut(sc, saveToDb);
-				sendPacket(new ShortCutRegister(sc));
-				break;
-			}
-		}
+		final Shortcut sc = new Shortcut(_slot, _page, _type, _id, _lvl, _characterType);
+		getActiveChar().registerShortCut(sc);
+		sendPacket(new ShortCutRegister(sc));
 	}
 	
 	@Override

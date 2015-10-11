@@ -18,24 +18,21 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import l2r.gameserver.model.L2ShortCut;
+import l2r.gameserver.model.Shortcut;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 
 public final class ShortCutInit extends L2GameServerPacket
 {
-	private L2ShortCut[] _shortCuts;
-	private L2PcInstance _activeChar;
+	private Shortcut[] _shortCuts;
 	
 	public ShortCutInit(L2PcInstance activeChar)
 	{
-		_activeChar = activeChar;
-		
-		if (_activeChar == null)
+		if (activeChar == null)
 		{
 			return;
 		}
 		
-		_shortCuts = _activeChar.getAllShortCuts();
+		_shortCuts = activeChar.getAllShortCuts();
 	}
 	
 	@Override
@@ -43,15 +40,15 @@ public final class ShortCutInit extends L2GameServerPacket
 	{
 		writeC(0x45);
 		writeD(_shortCuts.length);
-		
-		for (L2ShortCut sc : _shortCuts)
+		for (Shortcut sc : _shortCuts)
 		{
-			writeD(sc.getType());
+			writeD(sc.getType().ordinal());
 			writeD(sc.getSlot() + (sc.getPage() * 12));
 			
 			switch (sc.getType())
 			{
-				case L2ShortCut.TYPE_ITEM: // 1
+				case ITEM:
+				{
 					writeD(sc.getId());
 					writeD(0x01);
 					writeD(sc.getSharedReuseGroup());
@@ -60,27 +57,23 @@ public final class ShortCutInit extends L2GameServerPacket
 					writeH(0x00);
 					writeH(0x00);
 					break;
-				case L2ShortCut.TYPE_SKILL: // 2
+				}
+				case SKILL:
+				{
 					writeD(sc.getId());
 					writeD(sc.getLevel());
 					writeC(0x00); // C5
 					writeD(0x01); // C6
 					break;
-				case L2ShortCut.TYPE_ACTION: // 3
+				}
+				case ACTION:
+				case MACRO:
+				case RECIPE:
+				case BOOKMARK:
+				{
 					writeD(sc.getId());
 					writeD(0x01); // C6
-					break;
-				case L2ShortCut.TYPE_MACRO: // 4
-					writeD(sc.getId());
-					writeD(0x01); // C6
-					break;
-				case L2ShortCut.TYPE_RECIPE: // 5
-					writeD(sc.getId());
-					writeD(0x01); // C6
-					break;
-				default:
-					writeD(sc.getId());
-					writeD(0x01); // C6
+				}
 			}
 		}
 	}
