@@ -93,6 +93,7 @@ import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.enums.PrivateStoreType;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.enums.Sex;
+import l2r.gameserver.enums.ShortcutType;
 import l2r.gameserver.enums.ShotType;
 import l2r.gameserver.enums.Team;
 import l2r.gameserver.enums.TeleportWhereType;
@@ -133,7 +134,6 @@ import l2r.gameserver.model.L2PremiumItem;
 import l2r.gameserver.model.L2Radar;
 import l2r.gameserver.model.L2RecipeList;
 import l2r.gameserver.model.L2Request;
-import l2r.gameserver.model.L2ShortCut;
 import l2r.gameserver.model.L2SkillLearn;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
@@ -144,6 +144,7 @@ import l2r.gameserver.model.PartyMatchRoom;
 import l2r.gameserver.model.PartyMatchRoomList;
 import l2r.gameserver.model.PartyMatchWaitingList;
 import l2r.gameserver.model.ShortCuts;
+import l2r.gameserver.model.Shortcut;
 import l2r.gameserver.model.TeleportBookmark;
 import l2r.gameserver.model.TerritoryWard;
 import l2r.gameserver.model.TimeStamp;
@@ -632,12 +633,10 @@ public final class L2PcInstance extends L2Playable
 	/** The table containing all Quests began by the L2PcInstance */
 	private final Map<String, QuestState> _quests = new ConcurrentHashMap<>();
 	
-	/** The list containing all shortCuts of this L2PcInstance */
+	/** The list containing all shortCuts of this player. */
 	private final ShortCuts _shortCuts = new ShortCuts(this);
 	
-	/**
-	 * The list containing all macros of this L2PcInstance.
-	 */
+	/** The list containing all macros of this player. */
 	private final MacroList _macros = new MacroList(this);
 	
 	private final Set<L2PcInstance> _snoopListener = ConcurrentHashMap.newKeySet(1);
@@ -1421,9 +1420,9 @@ public final class L2PcInstance extends L2Playable
 			_log.warn("Attempted to remove unknown RecipeList: " + recipeId);
 		}
 		
-		for (L2ShortCut sc : getAllShortCuts())
+		for (Shortcut sc : getAllShortCuts())
 		{
-			if ((sc != null) && (sc.getId() == recipeId) && (sc.getType() == L2ShortCut.TYPE_RECIPE))
+			if ((sc != null) && (sc.getId() == recipeId) && (sc.getType() == ShortcutType.RECIPE))
 			{
 				deleteShortCut(sc.getSlot(), sc.getPage());
 			}
@@ -1616,7 +1615,7 @@ public final class L2PcInstance extends L2Playable
 	/**
 	 * @return a table containing all L2ShortCut of the L2PcInstance.
 	 */
-	public L2ShortCut[] getAllShortCuts()
+	public Shortcut[] getAllShortCuts()
 	{
 		return _shortCuts.getAllShortCuts();
 	}
@@ -1626,7 +1625,7 @@ public final class L2PcInstance extends L2Playable
 	 * @param page The page of shortCuts containing the slot
 	 * @return the L2ShortCut of the L2PcInstance corresponding to the position (page-slot).
 	 */
-	public L2ShortCut getShortCut(int slot, int page)
+	public Shortcut getShortCut(int slot, int page)
 	{
 		return _shortCuts.getShortCut(slot, page);
 	}
@@ -1635,7 +1634,7 @@ public final class L2PcInstance extends L2Playable
 	 * Add a L2shortCut to the L2PcInstance _shortCuts
 	 * @param shortcut
 	 */
-	public void registerShortCut(L2ShortCut shortcut)
+	public void registerShortCut(Shortcut shortcut)
 	{
 		_shortCuts.registerShortCut(shortcut);
 	}
@@ -5541,12 +5540,13 @@ public final class L2PcInstance extends L2Playable
 			}
 			else
 			{
-				final boolean insidePvpZone = isInsideZone(ZoneIdType.PVP) || isInsideZone(ZoneIdType.SIEGE);
+				final boolean insidePvpZone = isInsideZone(ZoneIdType.PVP);
+				final boolean insideSiegeZone = isInsideZone(ZoneIdType.SIEGE);
 				if ((pk == null) || !pk.isCursedWeaponEquipped())
 				{
 					onDieDropItem(killer); // Check if any item should be dropped
 					
-					if (!insidePvpZone)
+					if (!insidePvpZone && !insideSiegeZone)
 					{
 						if ((pk != null) && (pk.getClan() != null) && (getClan() != null) && !isAcademyMember() && !(pk.isAcademyMember()))
 						{
@@ -5570,7 +5570,7 @@ public final class L2PcInstance extends L2Playable
 					}
 					
 					// If player is Lucky shouldn't get penalized.
-					if (!isLucky() && !insidePvpZone && !getNevitSystem().isAdventBlessingActive())
+					if (!isLucky() && (insideSiegeZone || !insidePvpZone) && !getNevitSystem().isAdventBlessingActive())
 					{
 						if (Config.ALT_GAME_DELEVEL)
 						{
@@ -7654,7 +7654,7 @@ public final class L2PcInstance extends L2Playable
 		_macros.restoreMe();
 		
 		// Retrieve from the database all shortCuts of this L2PcInstance and add them to _shortCuts.
-		_shortCuts.restore();
+		_shortCuts.restoreMe();
 		
 		// Retrieve from the database all henna of this L2PcInstance and add them to _henna.
 		restoreHenna();
@@ -8201,12 +8201,14 @@ public final class L2PcInstance extends L2Playable
 			return oldSkill;
 		}
 		
-		final L2ShortCut[] allShortCuts = getAllShortCuts();
-		for (L2ShortCut sc : allShortCuts)
+		if (skill != null)
 		{
-			if ((sc != null) && (skill != null) && (sc.getId() == skill.getId()) && (sc.getType() == L2ShortCut.TYPE_SKILL) && !((skill.getId() >= 3080) && (skill.getId() <= 3259)))
+			for (Shortcut sc : getAllShortCuts())
 			{
-				deleteShortCut(sc.getSlot(), sc.getPage());
+				if ((sc != null) && (sc.getId() == skill.getId()) && (sc.getType() == ShortcutType.SKILL) && !((skill.getId() >= 3080) && (skill.getId() <= 3259)))
+				{
+					deleteShortCut(sc.getSlot(), sc.getPage());
+				}
 			}
 		}
 		return oldSkill;
@@ -10953,7 +10955,7 @@ public final class L2PcInstance extends L2Playable
 			// Clear resurrect xp calculation
 			setExpBeforeDeath(0);
 			
-			_shortCuts.restore();
+			_shortCuts.restoreMe();
 			sendPacket(new ShortCutInit(this));
 			
 			broadcastPacket(new SocialAction(getObjectId(), SocialAction.LEVEL_UP));
@@ -15465,7 +15467,7 @@ public final class L2PcInstance extends L2Playable
 		_antiFeed = start;
 	}
 	
-	public void registerShortCut(L2ShortCut shortcut, boolean storeToDb)
+	public void registerShortCut(Shortcut shortcut, boolean storeToDb)
 	{
 		_shortCuts.registerShortCut(shortcut, storeToDb);
 	}
@@ -15477,7 +15479,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void restoreShortCuts()
 	{
-		_shortCuts.restore();
+		_shortCuts.restoreMe();
 	}
 	
 	public void removeAllShortcuts()

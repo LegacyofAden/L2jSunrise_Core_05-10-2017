@@ -27,7 +27,6 @@ import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.model.L2AccessLevel;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.L2SiegeClan;
-import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Castle;
@@ -43,7 +42,7 @@ public class Die extends L2GameServerPacket
 {
 	private final int _charObjId;
 	private boolean _canTeleport;
-	private boolean _sweepable;
+	private final boolean _sweepable;
 	private L2AccessLevel _access = AdminData.getInstance().getAccessLevel(0);
 	private L2Clan _clan;
 	private final L2Character _activeChar;
@@ -55,6 +54,7 @@ public class Die extends L2GameServerPacket
 	 */
 	public Die(L2Character cha)
 	{
+		_charObjId = cha.getObjectId();
 		_activeChar = cha;
 		if (cha.isPlayer())
 		{
@@ -63,8 +63,8 @@ public class Die extends L2GameServerPacket
 			_clan = player.getClan();
 			_isJailed = player.isJailed();
 		}
-		_charObjId = cha.getObjectId();
 		_canTeleport = !cha.isPendingRevive();
+		_sweepable = cha.isSweepActive();
 		
 		if (cha.isPlayer())
 		{
@@ -87,11 +87,6 @@ public class Die extends L2GameServerPacket
 				}
 			}
 		}
-		
-		if (cha.isAttackable())
-		{
-			_sweepable = ((L2Attackable) cha).isSweepActive();
-		}
 	}
 	
 	@Override
@@ -99,16 +94,20 @@ public class Die extends L2GameServerPacket
 	{
 		writeC(0x00);
 		writeD(_charObjId);
-		writeD(_canTeleport ? 0x01 : 0);
+		writeD(_canTeleport ? 0x01 : 0x00);
 		
-		if (_activeChar.isPlayer() && !OlympiadManager.getInstance().isRegistered(_activeChar.getActingPlayer()) && !_activeChar.isOnEvent())
+		if (_activeChar.isPlayer())
 		{
-			_staticRes = _activeChar.getInventory().haveItemForSelfResurrection();
-		}
-		
-		if (_access.allowFixedRes())
-		{
-			_staticRes = true;
+			if (!OlympiadManager.getInstance().isRegistered(_activeChar.getActingPlayer()) && !_activeChar.isOnEvent())
+			{
+				_staticRes = _activeChar.getInventory().haveItemForSelfResurrection();
+			}
+			
+			// Verify if player can use fixed resurrection without Feather
+			if (_access.allowFixedRes())
+			{
+				_staticRes = true;
+			}
 		}
 		
 		if (_canTeleport && (_clan != null) && !_isJailed)
@@ -156,12 +155,8 @@ public class Die extends L2GameServerPacket
 			writeD(0x00); // 6d 05 00 00 00 - to fortress
 		}
 		// TODO: protocol 152
-		//@formatter:off
-		/*
-		 * writeC(0); //show die animation 
-		 * writeD(0); //agathion ress button 
-		 * writeD(0); //additional free space
-		 */
-		//@formatter:on
+		// writeC(0); // show die animation
+		// writeD(0); // agathion ress button
+		// writeD(0); // additional free space
 	}
 }

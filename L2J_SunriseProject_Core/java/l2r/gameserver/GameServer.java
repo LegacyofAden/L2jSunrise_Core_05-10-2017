@@ -66,6 +66,7 @@ import l2r.gameserver.data.xml.impl.HennaData;
 import l2r.gameserver.data.xml.impl.HerbDropData;
 import l2r.gameserver.data.xml.impl.HitConditionBonusData;
 import l2r.gameserver.data.xml.impl.InitialEquipmentData;
+import l2r.gameserver.data.xml.impl.InitialShortcutData;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.data.xml.impl.KarmaData;
 import l2r.gameserver.data.xml.impl.MerchantPriceConfigData;
@@ -251,6 +252,7 @@ public class GameServer
 		printSection("Characters");
 		ClassListData.getInstance();
 		InitialEquipmentData.getInstance();
+		InitialShortcutData.getInstance();
 		ExperienceData.getInstance();
 		PlayerXpPercentLostData.getInstance();
 		KarmaData.getInstance();

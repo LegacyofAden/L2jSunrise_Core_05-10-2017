@@ -16,29 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.network.serverpackets;
+package l2r.gameserver.enums;
 
 /**
- * @author KenM
+ * Macro type enumerated.
+ * @author Zoey76
  */
-public class ExDuelStart extends L2GameServerPacket
+public enum MacroType
 {
-	public static final ExDuelStart PLAYER_DUEL = new ExDuelStart(false);
-	public static final ExDuelStart PARTY_DUEL = new ExDuelStart(true);
-	
-	private final boolean _partyDuel;
-	
-	public ExDuelStart(boolean partyDuel)
-	{
-		_partyDuel = partyDuel;
-	}
-	
-	@Override
-	protected void writeImpl()
-	{
-		writeC(0xfe);
-		writeH(0x4e);
-		
-		writeD(_partyDuel ? 1 : 0);
-	}
+	NONE,
+	SKILL,
+	ACTION,
+	TEXT,
+	SHORTCUT,
+	ITEM,
+	DELAY
 }
