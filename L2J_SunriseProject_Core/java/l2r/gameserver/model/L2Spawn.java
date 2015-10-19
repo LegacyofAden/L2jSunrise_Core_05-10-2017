@@ -572,7 +572,7 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 				return mob;
 			}
 			mob = (L2Npc) tmp;
-			// Check for certain AI data, overriden in spawnlist
+			// Check for certain AI data, overridden in spawnlist
 			if (_name != null)
 			{
 				NpcPersonalAIData.getInstance().initializeNpcParameters(mob, this, _name);
