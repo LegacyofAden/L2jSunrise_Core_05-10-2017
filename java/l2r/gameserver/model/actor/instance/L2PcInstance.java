@@ -9187,17 +9187,12 @@ public final class L2PcInstance extends L2Playable
 		// Are the target and the player in the same duel?
 		if (isInDuel())
 		{
-			// Get L2PcInstance
-			if (target instanceof L2Playable)
+			final L2PcInstance cha = target.getActingPlayer();
+			if ((cha != null) && (cha.getDuelId() != getDuelId()))
 			{
-				// Get L2PcInstance
-				L2PcInstance cha = target.getActingPlayer();
-				if (cha.getDuelId() != getDuelId())
-				{
-					sendMessage("You cannot do this while duelling.");
-					sendPacket(ActionFailed.STATIC_PACKET);
-					return false;
-				}
+				sendMessage("You cannot do this while duelling.");
+				sendPacket(ActionFailed.STATIC_PACKET);
+				return false;
 			}
 		}
 		
@@ -9409,12 +9404,12 @@ public final class L2PcInstance extends L2Playable
 			case SELF:
 				break;
 			default:
-				if (!checkPvpSkill(target, skill) && !getAccessLevel().allowPeaceAttack())
+				if (target.isPlayable() && !getAccessLevel().allowPeaceAttack() && !checkPvpSkill(target, skill))
 				{
-					// Send a System Message to the L2PcInstance
-					sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
+					// Send a System Message to the player
+					sendPacket(SystemMessageId.INCORRECT_TARGET);
 					
-					// Send a Server->Client packet ActionFailed to the L2PcInstance
+					// Send a Server->Client packet ActionFailed to the player
 					sendPacket(ActionFailed.STATIC_PACKET);
 					return false;
 				}
@@ -15536,7 +15531,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public float calcPremiumDropMultipliers(int itemId)
 	{
-		if (PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overriden rate in premium list first
+		if (PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.containsKey(itemId)) // check for overridden rate in premium list first
 		{
 			return PremiumServiceConfigs.PR_RATE_DROP_ITEMS_ID.get(itemId);
 		}

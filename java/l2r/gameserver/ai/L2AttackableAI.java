@@ -448,7 +448,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		}
 	}
 	
-	private void thinkCast()
+	protected void thinkCast()
 	{
 		if (checkTargetLost(getCastTarget()))
 		{
@@ -473,7 +473,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	 * <li>If the actor is a L2MonsterInstance that can't attack, order to it to random walk (1/100)</li>
 	 * </ul>
 	 */
-	private void thinkActive()
+	protected void thinkActive()
 	{
 		L2Attackable npc = getActiveChar();
 		
@@ -753,7 +753,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	 * <li>Chose a target and order to attack it with magic skill or physical attack</li>
 	 * </ul>
 	 */
-	private void thinkAttack()
+	protected void thinkAttack()
 	{
 		final L2Attackable npc = getActiveChar();
 		if (npc.isCastingNow())
@@ -1233,9 +1233,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		}
 		
 		setTimepass(0);
+		
 		// --------------------------------------------------------------------------------
 		// Long/Short Range skill usage.
-		if (!npc.getShortRangeSkills().isEmpty() && npc.hasSkillChance())
+		if (!npc.getShortRangeSkills().isEmpty() && npc.hasSkillChance() && (dist2 <= 150))
 		{
 			final L2Skill shortRangeSkill = npc.getShortRangeSkills().get(Rnd.get(npc.getShortRangeSkills().size()));
 			if (checkSkillCastConditions(npc, shortRangeSkill))
@@ -1243,6 +1244,18 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				clientStopMoving(null);
 				npc.doCast(shortRangeSkill);
 				_log.debug(this + " used short range skill " + shortRangeSkill + " on {}", npc.getTarget());
+				return;
+			}
+		}
+		
+		if (!npc.getLongRangeSkills().isEmpty() && npc.hasSkillChance() && (dist2 > 150))
+		{
+			final L2Skill longRangeSkill = npc.getLongRangeSkills().get(Rnd.get(npc.getLongRangeSkills().size()));
+			if (checkSkillCastConditions(npc, longRangeSkill))
+			{
+				clientStopMoving(null);
+				npc.doCast(longRangeSkill);
+				_log.debug(this + " used long range skill " + longRangeSkill + " on {}", npc.getTarget());
 				return;
 			}
 		}
@@ -1255,17 +1268,17 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			{
 				targetReconsider();
 			}
-			else if (getAttackTarget() != null)
+			else
 			{
-				if (getAttackTarget().isMoving())
+				final L2Character target = getAttackTarget();
+				if (target != null)
 				{
-					range -= 100;
+					if (target.isMoving())
+					{
+						range -= 100;
+					}
+					moveToPawn(target, Math.max(range, 5));
 				}
-				if (range < 5)
-				{
-					range = 5;
-				}
-				moveToPawn(getAttackTarget(), range);
 			}
 			return;
 		}
