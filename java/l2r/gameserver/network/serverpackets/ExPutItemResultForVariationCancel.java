@@ -33,7 +33,7 @@ public class ExPutItemResultForVariationCancel extends L2GameServerPacket
 		_itemObjId = item.getObjectId();
 		_itemId = item.getDisplayId();
 		_price = price;
-		_itemAug1 = ((short) item.getAugmentation().getAugmentationId());
+		_itemAug1 = item.getAugmentation() != null ? ((short) item.getAugmentation().getAugmentationId()) : 0;
 		_itemAug2 = item.getAugmentation().getAugmentationId() >> 16;
 	}
 	
