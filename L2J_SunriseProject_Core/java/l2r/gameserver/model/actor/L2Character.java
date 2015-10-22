@@ -79,7 +79,6 @@ import l2r.gameserver.model.actor.tasks.character.HitTask;
 import l2r.gameserver.model.actor.tasks.character.MagicUseTask;
 import l2r.gameserver.model.actor.tasks.character.NotifyAITask;
 import l2r.gameserver.model.actor.tasks.character.QueuedMagicUseTask;
-import l2r.gameserver.model.actor.tasks.character.UsePotionTask;
 import l2r.gameserver.model.actor.templates.L2CharTemplate;
 import l2r.gameserver.model.actor.transform.Transform;
 import l2r.gameserver.model.actor.transform.TransformTemplate;
@@ -1500,7 +1499,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					continue;
 				}
 				
-				if (isAttackable() && obj.isPlayer() && getTarget().isAttackable())
+				if (isAttackable() && obj.isPlayer() && (getTarget() != null) && getTarget().isAttackable())
 				{
 					continue;
 				}
@@ -1884,15 +1883,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			skillTime = 500;
 		}
 		
-		// Set the _castInterruptTime and casting status (L2PcInstance already has this true)
+		// queue herbs and potions
+		if (isCastingSimultaneouslyNow() && simultaneously)
+		{
+			ThreadPoolManager.getInstance().scheduleAi(() -> beginCast(skill, simultaneously, target, targets), 100);
+			return;
+		}
+		
 		if (simultaneously)
 		{
-			// queue herbs and potions
-			if (isCastingSimultaneouslyNow())
-			{
-				ThreadPoolManager.getInstance().scheduleAi(new UsePotionTask(this, skill), 100);
-				return;
-			}
 			setIsCastingSimultaneouslyNow(true);
 			setLastSimultaneousSkillCast(skill);
 		}
@@ -7711,8 +7710,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	{
 		return 0;
 	}
-	
-	public int taskPotionCounter = 0;
 	
 	/**
 	 * Active the abnormal effect Fear flag, notify the L2Character AI and send Server->Client UserInfo/CharInfo packet.
