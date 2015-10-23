@@ -180,6 +180,11 @@ public class L2CommandChannel extends AbstractPlayerGroup
 		return _channelLvl;
 	}
 	
+	public void setLevel(int channelLvl)
+	{
+		_channelLvl = channelLvl;
+	}
+	
 	@Override
 	public void setLeader(L2PcInstance leader)
 	{

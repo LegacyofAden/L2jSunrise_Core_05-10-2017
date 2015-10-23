@@ -331,7 +331,15 @@ public class L2Party extends AbstractPlayerGroup
 		
 		// add player to party, adjust party level
 		getMembers().add(player);
-		if (player.getLevel() > _partyLvl)
+		
+		if (isInCommandChannel())
+		{
+			if (player.getLevel() > getCommandChannel().getLevel())
+			{
+				getCommandChannel().setLevel(player.getLevel());
+			}
+		}
+		else if (player.getLevel() > _partyLvl)
 		{
 			_partyLvl = player.getLevel();
 		}
@@ -854,7 +862,9 @@ public class L2Party extends AbstractPlayerGroup
 	 * <li>Calculate the Experience and SP reward distribution rate</li>
 	 * <li>Add Experience and SP to the L2PcInstance</li><BR>
 	 * <BR>
-	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T GIVE rewards to L2PetInstance</B></FONT><BR> <BR> Exception are L2PetInstances that leech from the owner's XP; they get the exp indirectly, via the owner's exp gain<BR>
+	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T GIVE rewards to L2PetInstance</B></FONT><BR>
+	 * <BR>
+	 * Exception are L2PetInstances that leech from the owner's XP; they get the exp indirectly, via the owner's exp gain<BR>
 	 * @param xpReward_pr
 	 * @param spReward_pr
 	 * @param xpReward The Experience reward to distribute
