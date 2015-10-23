@@ -254,8 +254,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	/** Represents the time where the attack should end, in nanoseconds. */
 	private volatile long _attackEndTime;
 	private int _attacking;
-	private int _disableBowAttackEndTime;
-	private int _disableCrossBowAttackEndTime;
+	private long _disableBowCrossBowAttackEndTime;
 	
 	private int _castInterruptTime;
 	
@@ -938,45 +937,53 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		L2Weapon weaponItem = getActiveWeaponItem();
 		if ((weaponItem != null) && !isTransformed())
 		{
-			if (weaponItem.getItemType() == WeaponType.BOW)
+			switch (weaponItem.getItemType())
 			{
-				// Check for arrows and MP
-				if (isPlayer())
-				{
-					// Checking if target has moved to peace zone - only for player-bow attacks at the moment
-					// Other melee is checked in movement code and for offensive spells a check is done every time
-					if (target.isInsidePeaceZone(getActingPlayer()))
+				case BOW:
+					// Check for arrows and MP
+					if (isPlayer())
 					{
-						getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
-						sendPacket(ActionFailed.STATIC_PACKET);
-						return;
-					}
-					
-					// Equip arrows needed in left hand and send a Server->Client packet ItemList to the L2PcInstance then return True
-					if (!checkAndEquipArrows())
-					{
-						// Cancel the action because the L2PcInstance have no arrow
-						getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
-						sendPacket(ActionFailed.STATIC_PACKET);
-						sendPacket(SystemMessageId.NOT_ENOUGH_ARROWS);
-						return;
-					}
-					
-					// Verify if the bow can be use
-					if (_disableBowAttackEndTime <= GameTimeController.getInstance().getGameTicks())
-					{
+						// Checking if target has moved to peace zone - only for player-bow attacks at the moment
+						// Other melee is checked in movement code and for offensive spells a check is done every time
+						if (target.isInsidePeaceZone(getActingPlayer()))
+						{
+							getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
+							sendPacket(ActionFailed.STATIC_PACKET);
+							return;
+						}
+						
+						// Equip arrows needed in left hand and send a Server->Client packet ItemList to the L2PcInstance then return True
+						if (!checkAndEquipArrows())
+						{
+							// Cancel the action because the L2PcInstance have no arrow
+							getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+							sendPacket(ActionFailed.STATIC_PACKET);
+							sendPacket(SystemMessageId.NOT_ENOUGH_ARROWS);
+							return;
+						}
+						
+						// Verify if the bow can be use
+						final long timeToNextBowCrossBowAttack = _disableBowCrossBowAttackEndTime - System.currentTimeMillis();
+						if (timeToNextBowCrossBowAttack > 0)
+						{
+							// Cancel the action because the bow can't be re-use at this moment
+							ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), timeToNextBowCrossBowAttack);
+							sendPacket(ActionFailed.STATIC_PACKET);
+							return;
+						}
+						
 						// Verify if L2PcInstance owns enough MP
 						int mpConsume = weaponItem.getMpConsume();
 						if ((weaponItem.getReducedMpConsume() > 0) && (Rnd.get(100) < weaponItem.getReducedMpConsumeChance()))
 						{
 							mpConsume = weaponItem.getReducedMpConsume();
 						}
-						mpConsume = (int) calcStat(Stats.BOW_MP_CONSUME_RATE, mpConsume, null, null);
 						
+						mpConsume = (int) calcStat(Stats.BOW_MP_CONSUME_RATE, mpConsume, null, null);
 						if (getCurrentMp() < mpConsume)
 						{
 							// If L2PcInstance doesn't have enough MP, stop the attack
-							ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), 1000);
+							ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), 150);
 							sendPacket(SystemMessageId.NOT_ENOUGH_MP);
 							sendPacket(ActionFailed.STATIC_PACKET);
 							return;
@@ -987,58 +994,60 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						{
 							getStatus().reduceMp(mpConsume);
 						}
+					}
+					else if (isNpc())
+					{
+						if (_disableBowCrossBowAttackEndTime > System.currentTimeMillis())
+						{
+							return;
+						}
+					}
+					break;
+				case CROSSBOW:
+					// Check for bolts and MP
+					if (isPlayer())
+					{
+						// Checking if target has moved to peace zone - only for player-crossbow attacks at the moment
+						// Other melee is checked in movement code and for offensive spells a check is done every time
+						if (target.isInsidePeaceZone(getActingPlayer()))
+						{
+							getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
+							sendPacket(ActionFailed.STATIC_PACKET);
+							return;
+						}
 						
-						// Set the period of bow no re-use
-						_disableBowAttackEndTime = (5 * GameTimeController.TICKS_PER_SECOND) + GameTimeController.getInstance().getGameTicks();
-					}
-					else
-					{
-						// Cancel the action because the bow can't be re-use at this moment
-						ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), 1000);
-						sendPacket(ActionFailed.STATIC_PACKET);
-						return;
-					}
-				}
-			}
-			if (weaponItem.getItemType() == WeaponType.CROSSBOW)
-			{
-				// Check for bolts
-				if (isPlayer())
-				{
-					// Checking if target has moved to peace zone - only for player-crossbow attacks at the moment
-					// Other melee is checked in movement code and for offensive spells a check is done every time
-					if (target.isInsidePeaceZone(getActingPlayer()))
-					{
-						getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
-						sendPacket(ActionFailed.STATIC_PACKET);
-						return;
-					}
-					
-					// Equip bolts needed in left hand and send a Server->Client packet ItemList to the L2PcINstance then return True
-					if (!checkAndEquipBolts())
-					{
-						// Cancel the action because the L2PcInstance have no arrow
-						getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
-						sendPacket(ActionFailed.STATIC_PACKET);
-						sendPacket(SystemMessageId.NOT_ENOUGH_BOLTS);
-						return;
-					}
-					
-					// Verify if the crossbow can be use
-					if (_disableCrossBowAttackEndTime <= GameTimeController.getInstance().getGameTicks())
-					{
+						// Equip bolts needed in left hand and send a Server->Client packet ItemList to the L2PcINstance then return True
+						if (!checkAndEquipBolts())
+						{
+							// Cancel the action because the L2PcInstance have no arrow
+							getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+							sendPacket(ActionFailed.STATIC_PACKET);
+							sendPacket(SystemMessageId.NOT_ENOUGH_BOLTS);
+							return;
+						}
+						
+						// Verify if the crossbow can be use
+						final long timeToNextBowCrossBowAttack = _disableBowCrossBowAttackEndTime - System.currentTimeMillis();
+						if (timeToNextBowCrossBowAttack > 0)
+						{
+							// Cancel the action because the bow can't be re-use at this moment
+							ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), timeToNextBowCrossBowAttack);
+							sendPacket(ActionFailed.STATIC_PACKET);
+							return;
+						}
+						
 						// Verify if L2PcInstance owns enough MP
 						int mpConsume = weaponItem.getMpConsume();
 						if ((weaponItem.getReducedMpConsume() > 0) && (Rnd.get(100) < weaponItem.getReducedMpConsumeChance()))
 						{
 							mpConsume = weaponItem.getReducedMpConsume();
 						}
-						mpConsume = (int) calcStat(Stats.BOW_MP_CONSUME_RATE, mpConsume, null, null);
 						
+						mpConsume = (int) calcStat(Stats.BOW_MP_CONSUME_RATE, mpConsume, null, null);
 						if (getCurrentMp() < mpConsume)
 						{
 							// If L2PcInstance doesn't have enough MP, stop the attack
-							ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), 1000);
+							ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), 150);
 							sendPacket(SystemMessageId.NOT_ENOUGH_MP);
 							sendPacket(ActionFailed.STATIC_PACKET);
 							return;
@@ -1049,25 +1058,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						{
 							getStatus().reduceMp(mpConsume);
 						}
-						
-						// Set the period of crossbow no re-use
-						_disableCrossBowAttackEndTime = (5 * GameTimeController.TICKS_PER_SECOND) + GameTimeController.getInstance().getGameTicks();
 					}
-					else
+					else if (isNpc())
 					{
-						// Cancel the action because the crossbow can't be re-use at this moment
-						ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(this, CtrlEvent.EVT_READY_TO_ACT), 1000);
-						sendPacket(ActionFailed.STATIC_PACKET);
-						return;
+						if (_disableBowCrossBowAttackEndTime > System.currentTimeMillis())
+						{
+							return;
+						}
 					}
-				}
-				else if (isNpc())
-				{
-					if (_disableCrossBowAttackEndTime > GameTimeController.getInstance().getGameTicks())
-					{
-						return;
-					}
-				}
+					break;
 			}
 		}
 		
@@ -1103,6 +1102,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		// Set the Attacking Body part to CHEST
 		setAttackingBodypart();
+		
 		// Make sure that char is facing selected target
 		// also works: setHeading(Util.convertDegreeToClientHeading(Util.calculateAngleFrom(this, target)));
 		setHeading(Util.calculateHeadingFrom(this, target));
@@ -1265,7 +1265,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		ThreadPoolManager.getInstance().scheduleAi(new HitTask(this, target, damage1, crit1, miss1, attack.hasSoulshot(), shld1), sAtk);
 		
 		// Calculate and set the disable delay of the bow in function of the Attack Speed
-		_disableBowAttackEndTime = ((sAtk + reuse) / GameTimeController.MILLIS_IN_TICK) + GameTimeController.getInstance().getGameTicks();
+		_disableBowCrossBowAttackEndTime = System.currentTimeMillis() + (sAtk + reuse);
 		
 		// Add this hit to the Server-Client packet Attack
 		attack.addHit(target, damage1, miss1, crit1, shld1);
@@ -1335,7 +1335,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		ThreadPoolManager.getInstance().scheduleAi(new HitTask(this, target, damage1, crit1, miss1, attack.hasSoulshot(), shld1), sAtk);
 		
 		// Calculate and set the disable delay of the bow in function of the Attack Speed
-		_disableCrossBowAttackEndTime = ((sAtk + reuse) / GameTimeController.MILLIS_IN_TICK) + GameTimeController.getInstance().getGameTicks();
+		_disableBowCrossBowAttackEndTime = System.currentTimeMillis() + (sAtk + reuse);
 		
 		// Add this hit to the Server-Client packet Attack
 		attack.addHit(target, damage1, miss1, crit1, shld1);
@@ -6895,11 +6895,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public final long getAttackEndTime()
 	{
 		return _attackEndTime;
-	}
-	
-	public int getBowAttackEndTime()
-	{
-		return _disableBowAttackEndTime;
 	}
 	
 	/**
