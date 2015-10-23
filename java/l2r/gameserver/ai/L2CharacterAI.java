@@ -32,9 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import l2r.Config;
-import l2r.gameserver.GameTimeController;
 import l2r.gameserver.GeoData;
-import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.ItemLocation;
@@ -59,6 +57,7 @@ import l2r.gameserver.model.skills.targets.L2TargetType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.AutoAttackStop;
+import l2r.gameserver.network.serverpackets.SetupGauge;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
 import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
@@ -325,20 +324,24 @@ public class L2CharacterAI extends AbstractAI
 			return;
 		}
 		
-		if (_actor.getBowAttackEndTime() > GameTimeController.getInstance().getGameTicks())
-		{
-			ThreadPoolManager.getInstance().scheduleGeneral(new CastTask(_actor, skill, target), (_actor.getBowAttackEndTime() - GameTimeController.getInstance().getGameTicks()) * GameTimeController.MILLIS_IN_TICK);
-		}
-		else
-		{
-			changeIntentionToCast(skill, target);
-		}
+		changeIntentionToCast(skill, target);
 	}
 	
 	protected void changeIntentionToCast(L2Skill skill, L2Object target)
 	{
 		// Set the AI cast target
 		setCastTarget((L2Character) target);
+		// Stop actions client-side to cast the skill
+		if (skill.getHitTime() > 50)
+		{
+			_actor.abortAttack();
+			// Send a Server->Client packet SetupGauge
+			if (_actor.isPlayer())
+			{
+				SetupGauge sg = new SetupGauge(SetupGauge.RED, 0);
+				_actor.sendPacket(sg);
+			}
+		}
 		// Set the AI skill used by INTENTION_CAST
 		_skill = skill;
 		// Change the Intention of this AbstractAI to AI_INTENTION_CAST
