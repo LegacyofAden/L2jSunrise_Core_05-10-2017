@@ -569,6 +569,43 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 					ps.execute();
 				}
 			}
+			
+			// vGodFather
+			try (PreparedStatement ps = con.prepareStatement("DELETE FROM achievements WHERE owner_id=?"))
+			{
+				ps.setInt(1, objid);
+				ps.execute();
+			}
+			
+			try (PreparedStatement ps = con.prepareStatement("DELETE FROM aio_scheme_profiles_buffs WHERE charId=?"))
+			{
+				ps.setInt(1, objid);
+				ps.execute();
+			}
+			
+			try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_item_mall_transactions WHERE charId=?"))
+			{
+				ps.setInt(1, objid);
+				ps.execute();
+			}
+			
+			try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_mail WHERE charId=?"))
+			{
+				ps.setInt(1, objid);
+				ps.execute();
+			}
+			
+			try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_achivment_levels WHERE char_id=?"))
+			{
+				ps.setInt(1, objid);
+				ps.execute();
+			}
+			
+			try (PreparedStatement ps = con.prepareStatement("DELETE FROM sunrise_variables WHERE obj_id=?"))
+			{
+				ps.setInt(1, objid);
+				ps.execute();
+			}
 		}
 		catch (Exception e)
 		{
