@@ -3000,6 +3000,11 @@ public class Quest extends AbstractScript implements IIdentifiable
 		return Rnd.get(100) < max;
 	}
 	
+	public static boolean calcChanceHigh(int max)
+	{
+		return Rnd.get(1000000) < max;
+	}
+	
 	public boolean dropQuestItems(L2PcInstance player, int itemId, int minCount, int maxCount, long neededCount, int dropChance, boolean sound)
 	{
 		dropChance *= Config.RATE_QUEST_DROP / ((player.getParty() != null) ? player.getParty().getMemberCount() : 1);
