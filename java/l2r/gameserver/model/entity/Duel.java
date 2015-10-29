@@ -75,7 +75,7 @@ public class Duel
 	private final boolean _partyDuel;
 	private final Calendar _duelEndTime;
 	private int _surrenderRequest = 0;
-	private int _countdown = 4;
+	private int _countdown = 5;
 	private boolean _finished = false;
 	private final Map<Integer, PlayerCondition> _playerConditions = new ConcurrentHashMap<>();
 	private int _duelInstanceId;
@@ -94,8 +94,6 @@ public class Duel
 		
 		if (_partyDuel)
 		{
-			// increase countdown so that start task can teleport players
-			_countdown++;
 			// inform players that they will be ported shortly
 			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.IN_A_MOMENT_YOU_WILL_BE_TRANSPORTED_TO_THE_SITE_WHERE_THE_DUEL_WILL_TAKE_PLACE);
 			broadcastToTeam1(sm);
@@ -255,7 +253,7 @@ public class Duel
 					_duel.teleportPlayers();
 					
 					// give players 20 seconds to complete teleport and get ready (its ought to be 30 on official..)
-					ThreadPoolManager.getInstance().scheduleGeneral(this, 20000);
+					ThreadPoolManager.getInstance().scheduleGeneral(this, _duel.isPartyDuel() ? 20000 : 1);
 				}
 				else if (count > 0) // duel not started yet - continue countdown
 				{
