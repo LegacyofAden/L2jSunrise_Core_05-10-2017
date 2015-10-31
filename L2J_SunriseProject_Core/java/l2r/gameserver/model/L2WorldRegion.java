@@ -91,25 +91,12 @@ public final class L2WorldRegion
 		{
 			return;
 		}
-		
-		for (L2ZoneType z : getZones())
-		{
-			if (z != null)
-			{
-				z.revalidateInZone(character);
-			}
-		}
+		_zones.forEach(z -> z.revalidateInZone(character));
 	}
 	
 	public void removeFromZones(L2Character character)
 	{
-		for (L2ZoneType z : getZones())
-		{
-			if (z != null)
-			{
-				z.removeCharacter(character);
-			}
-		}
+		_zones.forEach(z -> z.removeCharacter(character));
 	}
 	
 	public boolean containsZone(int zoneId)
@@ -167,24 +154,12 @@ public final class L2WorldRegion
 	
 	public void onDeath(L2Character character)
 	{
-		for (L2ZoneType z : getZones())
-		{
-			if (z != null)
-			{
-				z.onDieInside(character);
-			}
-		}
+		_zones.stream().filter(z -> z.isCharacterInZone(character)).forEach(z -> z.onDieInside(character));
 	}
 	
 	public void onRevive(L2Character character)
 	{
-		for (L2ZoneType z : getZones())
-		{
-			if (z != null)
-			{
-				z.onReviveInside(character);
-			}
-		}
+		_zones.stream().filter(z -> z.isCharacterInZone(character)).forEach(z -> z.onReviveInside(character));
 	}
 	
 	/** Task of AI notification */
@@ -423,7 +398,7 @@ public final class L2WorldRegion
 			return;
 		}
 		
-		assert(object.getWorldRegion() == this) || (object.getWorldRegion() == null);
+		assert (object.getWorldRegion() == this) || (object.getWorldRegion() == null);
 		
 		_visibleObjects.remove(object.getObjectId());
 		

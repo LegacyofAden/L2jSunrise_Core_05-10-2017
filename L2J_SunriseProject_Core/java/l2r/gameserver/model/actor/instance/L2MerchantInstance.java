@@ -104,6 +104,10 @@ public class L2MerchantInstance extends L2NpcInstance
 		
 		player.tempInventoryDisable();
 		
+		if (player.isGM())
+		{
+			player.sendMessage("Buy List [" + buyList.getListId() + "]");
+		}
 		player.sendPacket(new BuyList(buyList, player.getAdena(), taxRate));
 		player.sendPacket(new ExBuySellList(player, taxRate, false));
 		player.sendPacket(ActionFailed.STATIC_PACKET);

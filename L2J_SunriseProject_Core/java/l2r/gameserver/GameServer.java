@@ -145,7 +145,6 @@ import gr.sr.interf.SunriseEvents;
 import gr.sr.main.PlayerValues;
 import gr.sr.main.SunriseInfo;
 import gr.sr.main.SunriseServerMods;
-import gr.sr.protection.Protection;
 
 import com.l2jserver.mmocore.SelectorThread;
 
@@ -400,17 +399,6 @@ public class GameServer
 		Runtime.getRuntime().addShutdownHook(Shutdown.getInstance());
 		
 		_log.info("IdFactory: Free ObjectID's remaining: " + IdFactory.getInstance().size());
-		
-		printSection("Protection System");
-		Protection.Init();
-		if (Protection.isProtectionOn())
-		{
-			_log.info("[Protection]: System is loading.");
-		}
-		else
-		{
-			_log.info("[Protection]: System is disabled.");
-		}
 		
 		KnownListUpdateTaskManager.getInstance();
 		
