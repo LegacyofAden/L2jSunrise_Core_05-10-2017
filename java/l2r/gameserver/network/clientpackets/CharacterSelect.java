@@ -28,6 +28,7 @@ import l2r.gameserver.data.xml.impl.SecondaryAuthData;
 import l2r.gameserver.instancemanager.AntiFeedManager;
 import l2r.gameserver.instancemanager.PunishmentManager;
 import l2r.gameserver.model.CharSelectInfoPackage;
+import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.events.Containers;
 import l2r.gameserver.model.events.EventDispatcher;
@@ -156,6 +157,7 @@ public class CharacterSelect extends L2GameClientPacket
 						return; // handled in L2GameClient
 					}
 					
+					L2World.getInstance().addPlayerToWorld(cha);
 					CharNameTable.getInstance().addName(cha);
 					
 					cha.setClient(client);
