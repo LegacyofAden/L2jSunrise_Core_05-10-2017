@@ -210,7 +210,7 @@ public final class CharacterCreate extends L2GameClientPacket
 		// newChar.setMaxLoad(template.getBaseLoad());
 		
 		sendPacket(new CharCreateOk());
-		
+		getClient().setCharCreation(true);
 		initNewChar(getClient(), newChar);
 		
 		LogRecord record = new LogRecord(Level.INFO, "Created new character");
@@ -327,7 +327,9 @@ public final class CharacterCreate extends L2GameClientPacket
 		newChar.deleteMe();
 		
 		final CharSelectionInfo cl = new CharSelectionInfo(client.getAccountName(), client.getSessionId().playOkID1);
+		client.sendPacket(cl);
 		client.setCharSelection(cl.getCharInfo());
+		getClient().setCharCreation(false);
 		
 		if (Config.DEBUG)
 		{
