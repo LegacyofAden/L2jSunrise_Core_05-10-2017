@@ -29,6 +29,7 @@ import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.handler.ActionHandler;
 import l2r.gameserver.handler.ActionShiftHandler;
 import l2r.gameserver.handler.IActionHandler;
+import l2r.gameserver.handler.IActionShiftHandler;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.model.actor.L2Character;
@@ -136,7 +137,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public void onActionShift(L2PcInstance player)
 	{
-		IActionHandler handler = ActionShiftHandler.getInstance().getHandler(getInstanceType());
+		IActionShiftHandler handler = ActionShiftHandler.getInstance().getHandler(getInstanceType());
 		if (handler != null)
 		{
 			handler.action(player, this, true);
@@ -192,7 +193,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public final boolean spawnMe()
 	{
-		assert(getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
+		assert (getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
 		
 		synchronized (this)
 		{
