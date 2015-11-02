@@ -109,15 +109,7 @@ public class CharSelectionInfo extends L2GameServerPacket
 			
 			writeD(charInfoPackage.getSex());
 			writeD(charInfoPackage.getRace());
-			
-			if (charInfoPackage.getClassId() == charInfoPackage.getBaseClassId())
-			{
-				writeD(charInfoPackage.getClassId());
-			}
-			else
-			{
-				writeD(charInfoPackage.getBaseClassId());
-			}
+			writeD(charInfoPackage.getBaseClassId());
 			
 			writeD(0x01); // active ??
 			
@@ -158,22 +150,14 @@ public class CharSelectionInfo extends L2GameServerPacket
 			writeF(charInfoPackage.getMaxHp()); // hp max
 			writeF(charInfoPackage.getMaxMp()); // mp max
 			
-			long deleteTime = charInfoPackage.getDeleteTimer();
-			int deletedays = 0;
-			if (deleteTime > 0)
-			{
-				deletedays = (int) ((deleteTime - System.currentTimeMillis()) / 1000);
-			}
-			writeD(deletedays); // days left before
+			writeD(charInfoPackage.getDeleteTimer() > 0 ? (int) ((charInfoPackage.getDeleteTimer() - System.currentTimeMillis()) / 1000) : 0); // days left before
 			// delete .. if != 0
 			// then char is inactive
 			writeD(charInfoPackage.getClassId());
 			writeD(i == _activeId ? 0x01 : 0x00); // c3 auto-select char
 			
-			writeC(charInfoPackage.getEnchantEffect() > 127 ? 127 : charInfoPackage.getEnchantEffect());
-			writeH(0x00);
-			writeH(0x00);
-			// writeD(charInfoPackage.getAugmentationId());
+			writeC(Math.min(charInfoPackage.getEnchantEffect(), 127));
+			writeD(charInfoPackage.getAugmentationId()); // Can we see this on retail??
 			
 			// writeD(charInfoPackage.getTransformId()); // Used to display Transformations
 			writeD(0x00); // Currently on retail when you are on character select you don't see your transformation.
