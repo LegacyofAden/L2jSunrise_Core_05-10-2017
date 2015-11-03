@@ -9138,6 +9138,7 @@ public final class L2PcInstance extends L2Playable
 			case FRONT_AURA:
 			case BEHIND_AURA:
 			case PARTY:
+			case PARTY_NOTME:
 			case CLAN:
 			case PARTY_CLAN:
 			case GROUND:

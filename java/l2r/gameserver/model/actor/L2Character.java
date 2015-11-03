@@ -1734,6 +1734,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			case SUMMON:
 			case OWNER_PET:
 			case PARTY:
+			case PARTY_NOTME:
 			case CLAN:
 			case PARTY_CLAN:
 			case COMMAND_CHANNEL:

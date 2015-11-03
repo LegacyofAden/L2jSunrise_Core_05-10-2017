@@ -631,6 +631,7 @@ public abstract class L2Summon extends L2Playable
 				break;
 			// PARTY, AURA, SELF should be cast even if no target has been found
 			case PARTY:
+			case PARTY_NOTME:
 			case AURA:
 			case FRONT_AURA:
 			case BEHIND_AURA:
