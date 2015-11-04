@@ -236,6 +236,7 @@ public class OfflineTradersTable
 					player.setOnlineStatus(true, true);
 					player.restoreEffects();
 					player.broadcastUserInfo();
+					L2World.getInstance().addPlayerToWorld(player);
 					nTraders++;
 				}
 				catch (Exception e)
