@@ -67,9 +67,7 @@ public class PrivateStoreListBuy extends L2GameServerPacket
 			writeD(item.getItem().getBodyPart());
 			writeH(item.getEnchant());
 			writeH(item.getCustomType2());
-			// Player cannot sell/buy augmented, shadow or time-limited items
-			// probably so hardcode values here
-			writeD(0x00); // Augment
+			writeD(item.getAugmentationId()); // Augment
 			writeD(-1); // Mana
 			writeD(-9999); // Time
 			writeH(item.getAttackElementType());
