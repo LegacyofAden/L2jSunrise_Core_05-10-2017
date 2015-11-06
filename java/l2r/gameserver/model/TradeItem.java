@@ -27,6 +27,7 @@ public class TradeItem
 	private final L2Item _item;
 	private final int _location;
 	private int _enchant;
+	private final int _augment;
 	private final int _type1;
 	private final int _type2;
 	private long _count;
@@ -51,6 +52,7 @@ public class TradeItem
 		_item = item.getItem();
 		_location = item.getLocationSlot();
 		_enchant = item.getEnchantLevel();
+		_augment = item.isAugmented() ? item.getAugmentation().getAugmentationId() : 0;
 		_type1 = item.getCustomType1();
 		_type2 = item.getCustomType2();
 		_count = count;
@@ -70,6 +72,7 @@ public class TradeItem
 		_item = item;
 		_location = 0;
 		_enchant = 0;
+		_augment = 0;
 		_type1 = 0;
 		_type2 = 0;
 		_count = count;
@@ -86,6 +89,7 @@ public class TradeItem
 		_item = item.getItem();
 		_location = item.getLocationSlot();
 		_enchant = item.getEnchant();
+		_augment = item.getAugmentationId();
 		_type1 = item.getCustomType1();
 		_type2 = item.getCustomType2();
 		_count = count;
@@ -128,6 +132,11 @@ public class TradeItem
 	public int getEnchant()
 	{
 		return _enchant;
+	}
+	
+	public int getAugmentationId()
+	{
+		return _augment;
 	}
 	
 	public int getCustomType1()

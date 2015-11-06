@@ -57,9 +57,7 @@ public final class TradeStart extends L2GameServerPacket
 			writeD(item.getItem().getBodyPart());
 			writeH(item.getEnchantLevel());
 			writeH(item.getCustomType2());
-			// Player cannot sell/buy augmented, shadow or time-limited items
-			// probably so hardcode values here
-			writeD(0x00); // Augment
+			writeD(item.isAugmented() ? item.getAugmentation().getAugmentationId() : 0); // Augment
 			writeD(-1); // Mana
 			writeD(-9999); // Time
 			writeH(item.getAttackElementType());
