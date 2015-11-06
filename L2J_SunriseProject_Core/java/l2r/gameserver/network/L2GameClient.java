@@ -595,12 +595,6 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 				ps.execute();
 			}
 			
-			try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_achivment_levels WHERE char_id=?"))
-			{
-				ps.setInt(1, objid);
-				ps.execute();
-			}
-			
 			try (PreparedStatement ps = con.prepareStatement("DELETE FROM sunrise_variables WHERE obj_id=?"))
 			{
 				ps.setInt(1, objid);
