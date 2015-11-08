@@ -18,8 +18,6 @@
  */
 package l2r.gameserver.model.items;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 import l2r.gameserver.handler.ISkillHandler;
@@ -30,7 +28,6 @@ import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.conditions.Condition;
 import l2r.gameserver.model.conditions.ConditionGameChance;
-import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.npc.OnNpcSkillSee;
 import l2r.gameserver.model.holders.SkillHolder;
@@ -345,18 +342,16 @@ public final class L2Weapon extends L2Item
 	/**
 	 * @param caster the L2Character pointing out the caster
 	 * @param target the L2Character pointing out the target
-	 * @param crit the boolean tells whether the hit was critical
-	 * @return the effects of skills associated with the item to be triggered onHit.
 	 */
-	public L2Effect[] getSkillEffects(L2Character caster, L2Character target, boolean crit)
+	public void castOnCriticalSkill(L2Character caster, L2Character target)
 	{
-		if ((_skillsOnCrit == null) || !crit)
+		if (_skillsOnCrit == null)
 		{
-			return _emptyEffectSet;
+			return;
 		}
 		
-		final List<L2Effect> effects = new LinkedList<>();
 		final L2Skill onCritSkill = _skillsOnCrit.getSkill();
+		
 		if (_skillsOnCritCondition != null)
 		{
 			Env env = new Env();
@@ -366,35 +361,39 @@ public final class L2Weapon extends L2Item
 			if (!_skillsOnCritCondition.test(env))
 			{
 				// Chance not met
-				return _emptyEffectSet;
+				return;
 			}
 		}
 		
 		if (!onCritSkill.checkCondition(caster, target, false))
 		{
 			// Skill condition not met
-			return _emptyEffectSet;
+			return;
 		}
 		
 		final byte shld = Formulas.calcShldUse(caster, target, onCritSkill);
 		if (!Formulas.calcSkillSuccess(caster, target, onCritSkill, shld, false, false, false))
 		{
 			// These skills should not work on RaidBoss
-			return _emptyEffectSet;
+			return;
 		}
-		if (target.getFirstEffect(onCritSkill.getId()) != null)
+		
+		L2Character[] targets =
 		{
-			target.getFirstEffect(onCritSkill.getId()).exit();
-		}
-		for (L2Effect e : onCritSkill.getEffects(caster, target, new Env(shld, false, false, false)))
+			target
+		};
+		
+		// Launch the magic skill and calculate its effects
+		// Get the skill handler corresponding to the skill type
+		final ISkillHandler handler = SkillHandler.getInstance().getHandler(onCritSkill.getSkillType());
+		if (handler != null)
 		{
-			effects.add(e);
+			handler.useSkill(caster, onCritSkill, targets);
 		}
-		if (effects.isEmpty())
+		else
 		{
-			return _emptyEffectSet;
+			onCritSkill.useSkill(caster, targets);
 		}
-		return effects.toArray(new L2Effect[effects.size()]);
 	}
 	
 	/**
@@ -488,5 +487,20 @@ public final class L2Weapon extends L2Item
 				});
 			//@formatter:on
 		}
+	}
+	
+	public boolean isRange()
+	{
+		return isBow() || isCrossBow();
+	}
+	
+	public boolean isBow()
+	{
+		return _type == WeaponType.BOW;
+	}
+	
+	public boolean isCrossBow()
+	{
+		return _type == WeaponType.CROSSBOW;
 	}
 }

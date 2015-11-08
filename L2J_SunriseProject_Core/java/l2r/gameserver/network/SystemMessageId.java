@@ -13751,10 +13751,34 @@ public final class SystemMessageId
 	public static final SystemMessageId YOUR_NUMBER_OF_MY_TELEPORTS_SLOTS_HAS_REACHED_ITS_MAXIMUM_LIMIT;
 	
 	/**
-	 * ID: 2393<br>
-	 * Message: You have acquired $s1 PC Cafe points.
+	 * ID: 2391<br>
+	 * Message: You have used the Feather of Blessing to resurrect.
 	 */
-	public static final SystemMessageId YOU_HAVE_ACQUIRED_S1_PC_CAFE_POINTS;
+	public static final SystemMessageId YOU_HAVE_USED_THE_FEATHER_OF_BLESSING_TO_RESURRECT;
+	
+	/**
+	 * ID: 2392<br>
+	 * Message: The Dimensional Item cannot be located because of a temporary connection error.
+	 */
+	public static final SystemMessageId THE_DIMENSIONAL_ITEM_CANNOT_BE_LOCATED_BECAUSE_OF_A_TEMPORARY_CONNECTION_ERROR;
+	
+	/**
+	 * ID: 2393<br>
+	 * Message: You have acquired $s1 PC Points.
+	 */
+	public static final SystemMessageId YOU_HAVE_ACQUIRED_S1_PC_POINTS;
+	
+	/**
+	 * ID: 2394<br>
+	 * Message: That skill cannot be used because your pet/servitor lacks sufficient MP.
+	 */
+	public static final SystemMessageId THAT_SKILL_CANNOT_BE_USED_BECAUSE_YOUR_PET_SERVITOR_LACKS_SUFFICIENT_MP;
+	
+	/**
+	 * ID: 2395<br>
+	 * Message: That skill cannot be used because your pet/servitor lacks sufficient HP.
+	 */
+	public static final SystemMessageId THAT_SKILL_CANNOT_BE_USED_BECAUSE_YOUR_PET_SERVITOR_LACKS_SUFFICIENT_HP;
 	
 	/**
 	 * ID: 2396<br>
@@ -17553,7 +17577,11 @@ public final class SystemMessageId
 		
 		THE_MAXMIMUM_ACCUMULATION_ALLOWED_OF_PC_CAFE_POINTS_HAS_BEEN_EXCEEDED = new SystemMessageId(2389);
 		YOUR_NUMBER_OF_MY_TELEPORTS_SLOTS_HAS_REACHED_ITS_MAXIMUM_LIMIT = new SystemMessageId(2390);
-		YOU_HAVE_ACQUIRED_S1_PC_CAFE_POINTS = new SystemMessageId(2393);
+		YOU_HAVE_USED_THE_FEATHER_OF_BLESSING_TO_RESURRECT = new SystemMessageId(2391);
+		THE_DIMENSIONAL_ITEM_CANNOT_BE_LOCATED_BECAUSE_OF_A_TEMPORARY_CONNECTION_ERROR = new SystemMessageId(2392);
+		YOU_HAVE_ACQUIRED_S1_PC_POINTS = new SystemMessageId(2393);
+		THAT_SKILL_CANNOT_BE_USED_BECAUSE_YOUR_PET_SERVITOR_LACKS_SUFFICIENT_MP = new SystemMessageId(2394);
+		THAT_SKILL_CANNOT_BE_USED_BECAUSE_YOUR_PET_SERVITOR_LACKS_SUFFICIENT_HP = new SystemMessageId(2395);
 		PET_SKILL_CANNOT_BE_USED_RECHARCHING = new SystemMessageId(2396);
 		YOU_HAVE_NO_OPEN_MY_TELEPORTS_SLOTS = new SystemMessageId(2398);
 		C1_IS_ALREADY_REGISTERED_NON_CLASS_LIMITED_EVENT_TEAMS = new SystemMessageId(2440);
