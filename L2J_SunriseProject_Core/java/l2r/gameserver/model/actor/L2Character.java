@@ -1018,6 +1018,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		L2Weapon weaponItem = getActiveWeaponItem();
 		final int timeAtk = calculateTimeBetweenAttacks();
 		final int timeToHit = timeAtk / 2;
+		_attackEndTime = System.nanoTime() + TimeUnit.NANOSECONDS.convert(timeAtk, TimeUnit.MILLISECONDS);
 		
 		Attack attack = new Attack(this, target, isChargedShot(ShotType.SOULSHOTS), (weaponItem != null) ? weaponItem.getItemGradeSPlus().getId() : 0);
 		setHeading(Util.calculateHeadingFrom(this, target));
