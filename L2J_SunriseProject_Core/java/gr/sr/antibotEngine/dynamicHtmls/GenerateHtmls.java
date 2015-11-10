@@ -7,7 +7,7 @@ import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import l2r.util.Rnd;
 
 import gr.sr.configsEngine.configs.impl.AntibotConfigs;
-import gr.sr.imageGeneratorEngine.GenerateLogos;
+import gr.sr.imageGeneratorEngine.CaptchaImageGenerator;
 
 /**
  * @author L2jSunrise Team
@@ -32,7 +32,7 @@ public class GenerateHtmls
 		// Random image file name
 		int imgId = IdFactory.getInstance().getNextId();
 		// Conversion from .png to .dds, and crest packed send
-		GenerateLogos.getInstance().captchaLogo(activeChar, imgId);
+		CaptchaImageGenerator.getInstance().captchaLogo(activeChar, imgId);
 		
 		tb.append("<html><title>Captcha Antibot System</title><body><center>Enter the 5-digits code below and click Confirm.<br>");
 		tb.append("<img src=\"Crest.crest_" + Config.SERVER_ID + "_" + imgId + "\" width=256 height=64><br>");
@@ -62,7 +62,7 @@ public class GenerateHtmls
 				tb.append("<font color=849D68>\".captcha\"</font><font color=898989> in all chat.<br1>");
 				tb.append("You have " + AntibotConfigs.JAIL_TIMER + " second(s) to answer and 3 tries,<br1>");
 				tb.append("if time passes or your answer is wrong to all tries, punishment will be jail.</font></td>");
-				activeChar.setFarmBotCode(GenerateLogos.getInstance().getFinalString());
+				activeChar.setFarmBotCode(CaptchaImageGenerator.getInstance().getFinalString());
 				break;
 			case "ENCHANT":
 				tb.append("<button action=\"bypass -h voice .enchantcaptcha\" width=16 height=16 back=\"" + _refreshImgId + "\" fore=\"" + _refreshImgId + "\">");
@@ -81,7 +81,7 @@ public class GenerateHtmls
 				tb.append("<table bgcolor=2E2E2E>");
 				tb.append("<tr>");
 				tb.append("<td width=270><font color=898989>If you close by mistake this window, it will open again in few seconds.</font></td>");
-				activeChar.setEnchantBotCode(GenerateLogos.getInstance().getFinalString());
+				activeChar.setEnchantBotCode(CaptchaImageGenerator.getInstance().getFinalString());
 				break;
 			default:
 				break;
@@ -91,7 +91,7 @@ public class GenerateHtmls
 		
 		antibotReply.setHtml(tb.toString());
 		activeChar.sendPacket(antibotReply);
-		GenerateLogos.getInstance().getFinalString().replace(0, 5, "");
+		CaptchaImageGenerator.getInstance().getFinalString().replace(0, 5, "");
 	}
 	
 	private static void generateAntibotImages(L2PcInstance activeChar)

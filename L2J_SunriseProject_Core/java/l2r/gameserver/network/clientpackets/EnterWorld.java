@@ -85,7 +85,6 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 import gr.sr.antibotEngine.AntibotSystem;
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import gr.sr.configsEngine.configs.impl.SecuritySystemConfigs;
-import gr.sr.imageGeneratorEngine.ImagesCache;
 import gr.sr.interf.SunriseEvents;
 import gr.sr.main.EnterWorldCustomHandler;
 import gr.sr.main.PlayerValues;
@@ -581,7 +580,6 @@ public class EnterWorld extends L2GameClientPacket
 		EnterWorldCustomHandler.getInstance().initializeColorSystem(activeChar);
 		EnterWorldCustomHandler.getInstance().checkIfBot(activeChar);
 		AntibotSystem.checkOnEnterBot(activeChar);
-		ImagesCache.getInstance().getAllImages().forEach(img -> ImagesCache.getInstance().sendImageToPlayer(activeChar, img));
 		if (Olympiad.getInstance().playerInStadia(activeChar))
 		{
 			activeChar.doRevive();

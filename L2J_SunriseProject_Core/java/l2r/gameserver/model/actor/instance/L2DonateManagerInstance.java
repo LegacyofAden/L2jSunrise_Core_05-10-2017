@@ -24,7 +24,7 @@ import l2r.gameserver.util.Util;
 import gr.sr.aioItem.runnable.TransformFinalizer;
 import gr.sr.configsEngine.configs.impl.DonateManagerConfigs;
 import gr.sr.donateEngine.DonateHandler;
-import gr.sr.imageGeneratorEngine.GenerateLogos;
+import gr.sr.imageGeneratorEngine.CaptchaImageGenerator;
 import gr.sr.main.Conditions;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
@@ -306,12 +306,12 @@ public class L2DonateManagerInstance extends L2Npc
 			// Random image file name
 			int imgId = IdFactory.getInstance().getNextId();
 			// Conversion from .png to .dds, and crest packed send
-			GenerateLogos.getInstance().captchaLogo(player, imgId);
+			CaptchaImageGenerator.getInstance().captchaLogo(player, imgId);
 			playerReply.setHtml("<html><body><title>Donate Manager</title><center><br><img src=\"l2ui.SquareGray\" width=270 height=1><br1><table width=\"262\" cellpadding=\"5\" bgcolor=\"151515\"><tr><td valign=\"top\"><center><font color=\"EBDF6C\">L2 Sunrise</font> donate manager<br>Support our server by donating and receive special coins! Exchange here your donated coins for staff or services.</center></td></tr></table><br1><img src=\"l2ui.SquareGray\" width=270 height=1><br></center><br><center><img src=\"L2UI.SquareGray\" width=270 height=1><br><center><font color=\"EBDF6C\">Enter the 5-digits numbers to continue.</font></center><br><img src=\"Crest.crest_" + Config.SERVER_ID + "_" + imgId + "\" width=256 height=64>" + "<br><font color=\"888888\">(There are only numbers.)</font>" + "<br><edit var=\"captcha\" width=110><br><button value=\"Confirm\" action=\"bypass -h npc_%objectId%_confirmDonateCode $captcha\" width=80 height=26 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></center><br><img src=\"l2ui.SquareGray\" width=270 height=1></body></html>");
 			playerReply.replace("%objectId%", String.valueOf(getObjectId()));
 			player.sendPacket(playerReply);
-			player.setDonateCode(GenerateLogos.getInstance().getFinalString());
-			GenerateLogos.getInstance().getFinalString().replace(0, 5, "");
+			player.setDonateCode(CaptchaImageGenerator.getInstance().getFinalString());
+			CaptchaImageGenerator.getInstance().getFinalString().replace(0, 5, "");
 			return;
 		}
 		// Donate captcha code
