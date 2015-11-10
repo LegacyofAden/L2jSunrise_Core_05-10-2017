@@ -82,7 +82,7 @@ import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import gr.sr.configsEngine.configs.impl.LeaderboardsConfigs;
 import gr.sr.dataHolder.PlayersTopData;
 import gr.sr.donateEngine.DonateHandler;
-import gr.sr.imageGeneratorEngine.GenerateLogos;
+import gr.sr.imageGeneratorEngine.CaptchaImageGenerator;
 import gr.sr.leaderboards.ArenaLeaderboard;
 import gr.sr.leaderboards.CraftLeaderboard;
 import gr.sr.leaderboards.FishermanLeaderboard;
@@ -1282,12 +1282,12 @@ public final class L2AioNpcInstance extends L2Npc
 			// Random image file name
 			int imgId = IdFactory.getInstance().getNextId();
 			// Conversion from .png to .dds, and crest packed send
-			GenerateLogos.getInstance().captchaLogo(player, imgId);
+			CaptchaImageGenerator.getInstance().captchaLogo(player, imgId);
 			playerReply.setHtml("<html><title>Donate Captcha System</title>" + "<body>" + "<center>Enter the 5-digits code below and click Confirm." + "<br><img src=\"Crest.crest_" + Config.SERVER_ID + "_" + imgId + "\" width=256 height=64>" + "<br><font color=\"888888\">(There are only english uppercase letters.)</font>" + "<br><edit var=\"captcha\" width=110><br><button value=\"Confirm\" action=\"bypass -h npc_%objectId%_confirmDonateCode $captcha\" width=80 height=26 back=\"L2UI_CT1.Button_DF_Down\" fore=\"L2UI_ct1.button_df\"></center></body></html>");
 			playerReply.replace("%objectId%", String.valueOf(getObjectId()));
 			player.sendPacket(playerReply);
-			player.setDonateCode(GenerateLogos.getInstance().getFinalString());
-			GenerateLogos.getInstance().getFinalString().replace(0, 5, "");
+			player.setDonateCode(CaptchaImageGenerator.getInstance().getFinalString());
+			CaptchaImageGenerator.getInstance().getFinalString().replace(0, 5, "");
 			return;
 		}
 		// Donate captcha code
