@@ -345,6 +345,8 @@ public class L2Npc extends L2Character
 		}
 		
 		_fakePc = FakePcsTable.getInstance().getFakePc(template.getId());
+		// Set the name of the L2Character
+		setName(template.getName());
 	}
 	
 	@Override
