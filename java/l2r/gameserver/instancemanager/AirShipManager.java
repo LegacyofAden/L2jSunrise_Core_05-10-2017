@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import l2r.L2DatabaseFactory;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.VehiclePathPoint;
 import l2r.gameserver.model.actor.instance.L2AirShipInstance;
@@ -104,7 +103,7 @@ public class AirShipManager
 	
 	public L2AirShipInstance getNewAirShip(int x, int y, int z, int heading)
 	{
-		final L2AirShipInstance airShip = new L2AirShipInstance(IdFactory.getInstance().getNextId(), _airShipTemplate);
+		final L2AirShipInstance airShip = new L2AirShipInstance(_airShipTemplate);
 		
 		airShip.setHeading(heading);
 		airShip.setXYZInvisible(x, y, z);
@@ -130,7 +129,7 @@ public class AirShipManager
 		}
 		else
 		{
-			airShip = new L2ControllableAirShipInstance(IdFactory.getInstance().getNextId(), _airShipTemplate, ownerId);
+			airShip = new L2ControllableAirShipInstance(_airShipTemplate, ownerId);
 			_airShips.put(ownerId, airShip);
 			
 			airShip.setMaxFuel(600);

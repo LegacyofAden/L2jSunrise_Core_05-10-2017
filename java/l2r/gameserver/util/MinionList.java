@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.sql.NpcTable;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
@@ -344,7 +343,7 @@ public class MinionList
 		}
 		
 		// Create and Init the Minion and generate its Identifier
-		L2MonsterInstance minion = new L2MonsterInstance(IdFactory.getInstance().getNextId(), minionTemplate);
+		L2MonsterInstance minion = new L2MonsterInstance(minionTemplate);
 		return initializeNpcInstance(master, minion);
 	}
 	

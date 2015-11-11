@@ -72,12 +72,12 @@ public class L2VillageMasterInstance extends L2NpcInstance
 	private static Logger _log = LoggerFactory.getLogger(L2VillageMasterInstance.class);
 	
 	/**
-	 * @param objectId
-	 * @param template
+	 * Creates a village master.
+	 * @param template the village master NPC template
 	 */
-	public L2VillageMasterInstance(int objectId, L2NpcTemplate template)
+	public L2VillageMasterInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2VillageMasterInstance);
 	}
 	

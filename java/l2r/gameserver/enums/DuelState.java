@@ -18,13 +18,14 @@
  */
 package l2r.gameserver.enums;
 
-public enum DuelResult
+/**
+ * @author Zealar
+ */
+public enum DuelState
 {
-	CONTINUE,
-	TEAM_1_WIN,
-	TEAM_2_WIN,
-	TEAM_1_SURRENDER,
-	TEAM_2_SURRENDER,
-	CANCELED,
-	TIMEOUT
+	NO_DUEL,
+	DUELLING,
+	DEAD,
+	WINNER,
+	INTERRUPTED
 }

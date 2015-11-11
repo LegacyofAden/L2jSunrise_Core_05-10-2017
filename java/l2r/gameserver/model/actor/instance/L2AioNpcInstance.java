@@ -100,13 +100,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class L2AioNpcInstance extends L2Npc
 {
-	/**
-	 * @param objectId
-	 * @param template
-	 */
-	public L2AioNpcInstance(int objectId, L2NpcTemplate template)
+	public L2AioNpcInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2AioNpcInstance);
 		FakePc fpc = getFakePc();
 		if (fpc != null)

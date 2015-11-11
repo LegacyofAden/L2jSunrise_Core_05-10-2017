@@ -30,9 +30,9 @@ import gr.sr.configsEngine.configs.impl.PcBangConfigs;
  */
 public class L2AdventurerInstance extends L2NpcInstance
 {
-	public L2AdventurerInstance(int objectId, L2NpcTemplate template)
+	public L2AdventurerInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2AdventurerInstance);
 	}
 	

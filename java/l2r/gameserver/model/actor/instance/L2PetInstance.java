@@ -40,7 +40,6 @@ import l2r.gameserver.enums.PartyDistributionType;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.handler.IItemHandler;
 import l2r.gameserver.handler.ItemHandler;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.CursedWeaponsManager;
 import l2r.gameserver.instancemanager.FortSiegeManager;
 import l2r.gameserver.instancemanager.ItemsOnGroundManager;
@@ -94,6 +93,42 @@ public class L2PetInstance extends L2Summon
 	/** The Experience before the last Death Penalty */
 	private long _expBeforeDeath = 0;
 	private int _curWeightPenalty = 0;
+	
+	/**
+	 * Creates a pet.
+	 * @param template the pet NPC template
+	 * @param owner the owner
+	 * @param control the summoning item
+	 */
+	public L2PetInstance(L2NpcTemplate template, L2PcInstance owner, L2ItemInstance control)
+	{
+		this(template, owner, control, (byte) (template.getDisplayId() == 12564 ? owner.getLevel() : template.getLevel()));
+	}
+	
+	/**
+	 * Creates a pet.
+	 * @param template the pet NPC template
+	 * @param owner the pet NPC template
+	 * @param control the summoning item
+	 * @param level the level
+	 */
+	public L2PetInstance(L2NpcTemplate template, L2PcInstance owner, L2ItemInstance control, byte level)
+	{
+		super(template, owner);
+		setInstanceType(InstanceType.L2PetInstance);
+		
+		_controlObjectId = control.getObjectId();
+		
+		getStat().setLevel((byte) Math.max(level, PetData.getInstance().getPetMinLevel(template.getId())));
+		
+		_inventory = new PetInventory(this);
+		_inventory.restore();
+		
+		int npcId = template.getId();
+		_mountable = PetData.isMountable(npcId);
+		getPetData();
+		getPetLevelData();
+	}
 	
 	public final L2PetLevelData getPetLevelData()
 	{
@@ -234,44 +269,6 @@ public class L2PetInstance extends L2Summon
 			L2World.getInstance().addPet(owner.getObjectId(), pet);
 		}
 		return pet;
-	}
-	
-	/**
-	 * Constructor for new pet
-	 * @param objectId
-	 * @param template
-	 * @param owner
-	 * @param control
-	 */
-	public L2PetInstance(int objectId, L2NpcTemplate template, L2PcInstance owner, L2ItemInstance control)
-	{
-		this(objectId, template, owner, control, (byte) (template.getDisplayId() == 12564 ? owner.getLevel() : template.getLevel()));
-	}
-	
-	/**
-	 * Constructor for restored pet
-	 * @param objectId
-	 * @param template
-	 * @param owner
-	 * @param control
-	 * @param level
-	 */
-	public L2PetInstance(int objectId, L2NpcTemplate template, L2PcInstance owner, L2ItemInstance control, byte level)
-	{
-		super(objectId, template, owner);
-		setInstanceType(InstanceType.L2PetInstance);
-		
-		_controlObjectId = control.getObjectId();
-		
-		getStat().setLevel((byte) Math.max(level, PetData.getInstance().getPetMinLevel(template.getId())));
-		
-		_inventory = new PetInventory(this);
-		_inventory.restore();
-		
-		int npcId = template.getId();
-		_mountable = PetData.isMountable(npcId);
-		getPetData();
-		getPetLevelData();
 	}
 	
 	@Override
@@ -864,27 +861,26 @@ public class L2PetInstance extends L2Summon
 			statement.setInt(1, control.getObjectId());
 			try (ResultSet rset = statement.executeQuery())
 			{
-				final int id = IdFactory.getInstance().getNextId();
 				if (!rset.next())
 				{
 					if (template.isType("L2BabyPet"))
 					{
-						pet = new L2BabyPetInstance(id, template, owner, control);
+						pet = new L2BabyPetInstance(template, owner, control);
 					}
 					else
 					{
-						pet = new L2PetInstance(id, template, owner, control);
+						pet = new L2PetInstance(template, owner, control);
 					}
 					return pet;
 				}
 				
 				if (template.isType("L2BabyPet"))
 				{
-					pet = new L2BabyPetInstance(id, template, owner, control, rset.getByte("level"));
+					pet = new L2BabyPetInstance(template, owner, control, rset.getByte("level"));
 				}
 				else
 				{
-					pet = new L2PetInstance(id, template, owner, control, rset.getByte("level"));
+					pet = new L2PetInstance(template, owner, control, rset.getByte("level"));
 				}
 				
 				pet._respawned = true;

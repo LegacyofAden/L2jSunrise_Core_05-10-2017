@@ -31,7 +31,6 @@ import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.xml.impl.ExperienceData;
 import l2r.gameserver.data.xml.impl.PetData;
 import l2r.gameserver.data.xml.impl.SkillData;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2PetData;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
@@ -172,19 +171,18 @@ public class CharSummonTable
 						return;
 					}
 					
-					final int id = IdFactory.getInstance().getNextId();
 					if (summonTemplate.isType("L2SiegeSummon"))
 					{
-						summon = new L2SiegeSummonInstance(id, summonTemplate, activeChar, skill);
+						summon = new L2SiegeSummonInstance(summonTemplate, activeChar, skill);
 					}
 					else if (summonTemplate.isType("L2MerchantSummon"))
 					{
 						// TODO: Confirm L2Merchant summon = new L2MerchantSummonInstance(id, summonTemplate, activeChar, skill);
-						summon = new L2ServitorInstance(id, summonTemplate, activeChar, skill);
+						summon = new L2ServitorInstance(summonTemplate, activeChar, skill);
 					}
 					else
 					{
-						summon = new L2ServitorInstance(id, summonTemplate, activeChar, skill);
+						summon = new L2ServitorInstance(summonTemplate, activeChar, skill);
 					}
 					
 					summon.setName(summonTemplate.getName());

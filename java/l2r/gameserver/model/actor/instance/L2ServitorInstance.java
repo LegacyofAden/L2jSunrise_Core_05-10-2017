@@ -72,9 +72,9 @@ public class L2ServitorInstance extends L2Summon
 	private boolean _shareElementals = false;
 	private double _sharedElementalsPercent = 1;
 	
-	public L2ServitorInstance(int objectId, L2NpcTemplate template, L2PcInstance owner, L2Skill skill)
+	public L2ServitorInstance(L2NpcTemplate template, L2PcInstance owner, L2Skill skill)
 	{
-		super(objectId, template, owner);
+		super(template, owner);
 		setInstanceType(InstanceType.L2ServitorInstance);
 		setShowSummonAnimation(true);
 		

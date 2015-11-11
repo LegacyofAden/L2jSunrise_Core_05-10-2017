@@ -31,13 +31,9 @@ import gr.sr.securityEngine.SecurityType;
 
 public class L2DonateManagerInstance extends L2Npc
 {
-	/**
-	 * @param objectId
-	 * @param template
-	 */
-	public L2DonateManagerInstance(int objectId, L2NpcTemplate template)
+	public L2DonateManagerInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2DonateManagerInstance);
 		FakePc fpc = getFakePc();
 		if (fpc != null)

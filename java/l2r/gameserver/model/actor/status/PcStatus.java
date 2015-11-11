@@ -20,6 +20,7 @@ package l2r.gameserver.model.actor.status;
 
 import l2r.Config;
 import l2r.gameserver.enums.CtrlIntention;
+import l2r.gameserver.enums.DuelState;
 import l2r.gameserver.enums.PrivateStoreType;
 import l2r.gameserver.instancemanager.DuelManager;
 import l2r.gameserver.model.actor.L2Character;
@@ -27,7 +28,6 @@ import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.stat.PcStat;
-import l2r.gameserver.model.entity.Duel;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
@@ -132,11 +132,11 @@ public class PcStatus extends PlayableStatus
 				
 				if (getActiveChar().isInDuel())
 				{
-					if (getActiveChar().getDuelState() == Duel.DUELSTATE_DEAD)
+					if (getActiveChar().getDuelState() == DuelState.DEAD)
 					{
 						return;
 					}
-					else if (getActiveChar().getDuelState() == Duel.DUELSTATE_WINNER)
+					else if (getActiveChar().getDuelState() == DuelState.WINNER)
 					{
 						return;
 					}
@@ -144,7 +144,7 @@ public class PcStatus extends PlayableStatus
 					// cancel duel if player got hit by another player, that is not part of the duel
 					if (attackerPlayer.getDuelId() != getActiveChar().getDuelId())
 					{
-						getActiveChar().setDuelState(Duel.DUELSTATE_INTERRUPTED);
+						getActiveChar().setDuelState(DuelState.INTERRUPTED);
 					}
 				}
 				
@@ -279,7 +279,10 @@ public class PcStatus extends PlayableStatus
 					{
 						attacker.getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
 						attacker.sendPacket(ActionFailed.STATIC_PACKET);
+						attacker.setTarget(null);
+						attacker.abortAttack();
 					}
+					
 					// let the DuelManager know of his defeat
 					DuelManager.getInstance().onPlayerDefeat(getActiveChar());
 					value = 1;

@@ -27,13 +27,9 @@ import gr.sr.securityEngine.SecurityType;
 
 public final class L2CustomGatekeeperInstance extends L2Npc
 {
-	/**
-	 * @param objectId
-	 * @param template
-	 */
-	public L2CustomGatekeeperInstance(int objectId, L2NpcTemplate template)
+	public L2CustomGatekeeperInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2CustomGatekeeperInstance);
 		FakePc fpc = getFakePc();
 		if (fpc != null)

@@ -54,6 +54,7 @@ import l2r.gameserver.enums.TeleportWhereType;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.handler.ISkillHandler;
 import l2r.gameserver.handler.SkillHandler;
+import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.instancemanager.MapRegionManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
@@ -414,6 +415,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public L2AccessLevel getAccessLevel()
 	{
 		return null;
+	}
+	
+	/**
+	 * Creates a creature.
+	 * @param template the creature template
+	 */
+	public L2Character(L2CharTemplate template)
+	{
+		this(IdFactory.getInstance().getNextId(), template);
 	}
 	
 	/**

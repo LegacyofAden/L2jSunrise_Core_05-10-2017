@@ -31,6 +31,16 @@ public class L2ControllableMobInstance extends L2MonsterInstance
 {
 	private boolean _isInvul;
 	
+	/**
+	 * Creates a controllable monster.
+	 * @param template the controllable monster NPC template
+	 */
+	public L2ControllableMobInstance(L2NpcTemplate template)
+	{
+		super(template);
+		setInstanceType(InstanceType.L2ControllableMobInstance);
+	}
+	
 	@Override
 	public boolean isAggressive()
 	{
@@ -42,12 +52,6 @@ public class L2ControllableMobInstance extends L2MonsterInstance
 	{
 		// force mobs to be aggro
 		return 500;
-	}
-	
-	public L2ControllableMobInstance(int objectId, L2NpcTemplate template)
-	{
-		super(objectId, template);
-		setInstanceType(InstanceType.L2ControllableMobInstance);
 	}
 	
 	@Override

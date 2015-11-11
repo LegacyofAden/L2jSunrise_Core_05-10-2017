@@ -34,7 +34,6 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.MessageType;
 import l2r.gameserver.enums.PartyDistributionType;
-import l2r.gameserver.instancemanager.DuelManager;
 import l2r.gameserver.instancemanager.PcCafePointsManager;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
@@ -436,11 +435,6 @@ public class L2Party extends AbstractPlayerGroup
 				SevenSignsFestival.getInstance().updateParticipants(player, this);
 			}
 			
-			if (player.isInDuel())
-			{
-				DuelManager.getInstance().onRemoveFromParty(player);
-			}
-			
 			try
 			{
 				if (player.getFusionSkill() != null)
@@ -521,16 +515,14 @@ public class L2Party extends AbstractPlayerGroup
 				if (getLeader() != null)
 				{
 					getLeader().setParty(null);
-					if (getLeader().isInDuel())
-					{
-						DuelManager.getInstance().onRemoveFromParty(getLeader());
-					}
 				}
+				
 				if (_changeDistributionTypeRequestTask != null)
 				{
 					_changeDistributionTypeRequestTask.cancel(true);
 					_changeDistributionTypeRequestTask = null;
 				}
+				
 				if (_positionBroadcastTask != null)
 				{
 					_positionBroadcastTask.cancel(false);
