@@ -21,7 +21,6 @@ package l2r.gameserver;
 import java.lang.reflect.Constructor;
 
 import l2r.gameserver.data.sql.NpcTable;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.util.Rnd;
@@ -34,7 +33,6 @@ public class MonsterRace
 	protected static final Logger _log = LoggerFactory.getLogger(MonsterRace.class);
 	
 	private final L2Npc[] _monsters;
-	private Constructor<?> _constructor;
 	private int[][] _speeds;
 	private final int[] _first, _second;
 	
@@ -74,15 +72,13 @@ public class MonsterRace
 			try
 			{
 				L2NpcTemplate template = NpcTable.getInstance().getTemplate(id + random);
-				_constructor = Class.forName("l2r.gameserver.model.actor.instance." + template.getType() + "Instance").getConstructors()[0];
-				int objectId = IdFactory.getInstance().getNextId();
-				_monsters[i] = (L2Npc) _constructor.newInstance(objectId, template);
+				Constructor<?> constructor = Class.forName("l2r.gameserver.model.actor.instance." + template.getType() + "Instance").getConstructors()[0];
+				_monsters[i] = (L2Npc) constructor.newInstance(template);
 			}
 			catch (Exception e)
 			{
-				_log.warn(String.valueOf(e));
+				_log.warn("Unable to create monster!", e);
 			}
-			// _log.info("Monster "+i+" is id: "+(id+random));
 		}
 		newSpeeds();
 	}

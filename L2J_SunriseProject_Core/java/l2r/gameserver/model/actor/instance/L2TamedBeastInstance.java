@@ -29,7 +29,6 @@ import l2r.gameserver.data.sql.NpcTable;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.InstanceType;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
@@ -65,16 +64,16 @@ public final class L2TamedBeastInstance extends L2FeedableBeastInstance
 	protected boolean _isFreyaBeast;
 	private List<L2Skill> _beastSkills = null;
 	
-	public L2TamedBeastInstance(int objectId, int npcTemplateId)
+	public L2TamedBeastInstance(int npcTemplateId)
 	{
-		super(IdFactory.getInstance().getNextId(), NpcTable.getInstance().getTemplate(npcTemplateId));
+		super(NpcTable.getInstance().getTemplate(npcTemplateId));
 		setInstanceType(InstanceType.L2TamedBeastInstance);
 		setHome(this);
 	}
 	
 	public L2TamedBeastInstance(int npcTemplateId, L2PcInstance owner, int foodSkillId, int x, int y, int z)
 	{
-		super(IdFactory.getInstance().getNextId(), NpcTable.getInstance().getTemplate(npcTemplateId));
+		super(NpcTable.getInstance().getTemplate(npcTemplateId));
 		_isFreyaBeast = false;
 		setInstanceType(InstanceType.L2TamedBeastInstance);
 		setCurrentHp(getMaxHp());
@@ -87,7 +86,7 @@ public final class L2TamedBeastInstance extends L2FeedableBeastInstance
 	
 	public L2TamedBeastInstance(int npcTemplateId, L2PcInstance owner, int food, int x, int y, int z, boolean isFreyaBeast)
 	{
-		super(IdFactory.getInstance().getNextId(), NpcTable.getInstance().getTemplate(npcTemplateId));
+		super(NpcTable.getInstance().getTemplate(npcTemplateId));
 		_isFreyaBeast = isFreyaBeast;
 		setInstanceType(InstanceType.L2TamedBeastInstance);
 		setCurrentHp(getMaxHp());

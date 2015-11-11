@@ -19,7 +19,6 @@
 package l2r.gameserver.model.skills.l2skills;
 
 import l2r.gameserver.data.sql.NpcTable;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.StatsSet;
@@ -48,7 +47,7 @@ public final class L2SkillSignet extends L2Skill
 		}
 		
 		L2NpcTemplate template = NpcTable.getInstance().getTemplate(getNpcId());
-		L2EffectPointInstance effectPoint = new L2EffectPointInstance(IdFactory.getInstance().getNextId(), template, caster);
+		L2EffectPointInstance effectPoint = new L2EffectPointInstance(template, caster);
 		effectPoint.setCurrentHp(effectPoint.getMaxHp());
 		effectPoint.setCurrentMp(effectPoint.getMaxMp());
 		

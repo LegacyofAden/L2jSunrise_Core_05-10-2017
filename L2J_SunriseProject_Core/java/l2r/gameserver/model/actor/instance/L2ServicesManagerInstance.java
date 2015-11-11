@@ -67,13 +67,9 @@ import gr.sr.securityEngine.SecurityType;
  */
 public final class L2ServicesManagerInstance extends L2NpcInstance
 {
-	/**
-	 * @param objectId
-	 * @param template
-	 */
-	public L2ServicesManagerInstance(int objectId, L2NpcTemplate template)
+	public L2ServicesManagerInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2ServicesManagerInstance);
 		FakePc fpc = getFakePc();
 		if (fpc != null)

@@ -27,21 +27,9 @@ public final class L2EventMapGuardInstance extends L2GuardInstance
 {
 	private static Logger _log = LoggerFactory.getLogger(L2GuardInstance.class);
 	
-	/**
-	 * Constructor of L2GuardInstance (use L2Character and L2NpcInstance constructor).<BR>
-	 * <BR>
-	 * <B><U> Actions</U> :</B><BR>
-	 * <BR>
-	 * <li>Call the L2Character constructor to set the _template of the L2GuardInstance (copy skills from template to object and link _calculators to NPC_STD_CALCULATOR)</li>
-	 * <li>Set the name of the L2GuardInstance</li>
-	 * <li>Create a RandomAnimation Task that will be launched after the calculated delay if the server allow it</li><BR>
-	 * <BR>
-	 * @param objectId Identifier of the object to initialized
-	 * @param template
-	 */
-	public L2EventMapGuardInstance(int objectId, L2NpcTemplate template)
+	public L2EventMapGuardInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 	}
 	
 	@Override

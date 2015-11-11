@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.VehiclePathPoint;
@@ -104,7 +103,7 @@ public class BoatManager
 		npcDat.set("basePDef", 100);
 		npcDat.set("baseMDef", 100);
 		
-		L2BoatInstance boat = new L2BoatInstance(IdFactory.getInstance().getNextId(), new L2CharTemplate(npcDat));
+		L2BoatInstance boat = new L2BoatInstance(new L2CharTemplate(npcDat));
 		boat.setHeading(heading);
 		boat.setXYZInvisible(x, y, z);
 		boat.spawnMe();

@@ -35,12 +35,12 @@ import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 public class L2DoormenInstance extends L2NpcInstance
 {
 	/**
-	 * @param objectID
-	 * @param template
+	 * Creates a doorman.
+	 * @param template the doorman NPC template
 	 */
-	public L2DoormenInstance(int objectID, L2NpcTemplate template)
+	public L2DoormenInstance(L2NpcTemplate template)
 	{
-		super(objectID, template);
+		super(template);
 		setInstanceType(InstanceType.L2DoormenInstance);
 	}
 	

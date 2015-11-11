@@ -27,6 +27,7 @@ import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_PICK_UP;
 import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_REST;
 
 import l2r.gameserver.enums.CtrlIntention;
+import l2r.gameserver.enums.DuelState;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
@@ -34,6 +35,8 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2StaticObjectInstance;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.targets.L2TargetType;
+import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.SystemMessage;
 
 public class L2PlayerAI extends L2PlayableAI
 {
@@ -189,6 +192,13 @@ public class L2PlayerAI extends L2PlayableAI
 		{
 			// Cancel action client side by sending Server->Client packet ActionFailed to the L2PcInstance actor
 			clientActionFailed();
+			return;
+		}
+		
+		if (_actor.getActingPlayer().getDuelState() == DuelState.DEAD)
+		{
+			clientActionFailed();
+			_actor.getActingPlayer().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CANNOT_MOVE_FROZEN));
 			return;
 		}
 		

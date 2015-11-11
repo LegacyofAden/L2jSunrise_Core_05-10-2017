@@ -31,9 +31,9 @@ public class L2BufferInstance extends L2Npc
 		player.sendPacket(html);
 	}
 	
-	public L2BufferInstance(int objectId, L2NpcTemplate template)
+	public L2BufferInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2BufferInstance);
 		FakePc fpc = getFakePc();
 		if (fpc != null)

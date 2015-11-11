@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
+import l2r.gameserver.enums.DuelState;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
@@ -27,6 +28,7 @@ import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+import l2r.gameserver.network.serverpackets.SystemMessage;
 
 /**
  * This class ...
@@ -101,6 +103,13 @@ public final class Action extends L2GameClientPacket
 		{
 			// pressing e.g. pickup many times quickly would get you here
 			sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
+		if (obj.isPlayable() && (obj.getActingPlayer().getDuelState() == DuelState.DEAD))
+		{
+			sendPacket(ActionFailed.STATIC_PACKET);
+			activeChar.getActingPlayer().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.OTHER_PARTY_IS_FROZEN));
 			return;
 		}
 		

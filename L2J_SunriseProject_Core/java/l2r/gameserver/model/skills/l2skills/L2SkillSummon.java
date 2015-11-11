@@ -20,7 +20,6 @@ package l2r.gameserver.model.skills.l2skills;
 
 import l2r.gameserver.data.sql.NpcTable;
 import l2r.gameserver.data.xml.impl.ExperienceData;
-import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.StatsSet;
 import l2r.gameserver.model.actor.L2Character;
@@ -90,15 +89,14 @@ public class L2SkillSummon extends L2Skill
 			return; // npcID doesn't exist
 		}
 		
-		final int id = IdFactory.getInstance().getNextId();
 		L2ServitorInstance summon;
 		if (summonTemplate.isType("L2SiegeSummon"))
 		{
-			summon = new L2SiegeSummonInstance(id, summonTemplate, activeChar, this);
+			summon = new L2SiegeSummonInstance(summonTemplate, activeChar, this);
 		}
 		else
 		{
-			summon = new L2ServitorInstance(id, summonTemplate, activeChar, this);
+			summon = new L2ServitorInstance(summonTemplate, activeChar, this);
 		}
 		
 		summon.setName(summonTemplate.getName());

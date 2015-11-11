@@ -29,9 +29,13 @@ import l2r.gameserver.model.entity.olympiad.Olympiad;
  */
 public class L2OlympiadManagerInstance extends L2Npc
 {
-	public L2OlympiadManagerInstance(int objectId, L2NpcTemplate template)
+	/**
+	 * Creates an olympiad manager.
+	 * @param template the olympiad manager NPC template
+	 */
+	public L2OlympiadManagerInstance(L2NpcTemplate template)
 	{
-		super(objectId, template);
+		super(template);
 		setInstanceType(InstanceType.L2OlympiadManagerInstance);
 	}
 	
