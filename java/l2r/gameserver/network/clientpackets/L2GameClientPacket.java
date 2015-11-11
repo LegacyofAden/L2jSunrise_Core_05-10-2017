@@ -54,12 +54,17 @@ public abstract class L2GameClientPacket extends ReceivablePacket<L2GameClient>
 		{
 			if (e instanceof BufferUnderflowException)
 			{
-				_log.info("Client: " + getClient().toString() + " - Failed reading: " + getType() + " Buffer Under Flow Exception.");
+				if (Config.PACKET_HANDLER_DEBUG)
+				{
+					_log.info("Client: " + getClient().toString() + " - Failed reading: " + getType() + " Buffer Under Flow Exception.");
+				}
 				getClient().onBufferUnderflow();
 				return false;
 			}
-			
-			_log.error("Client: " + getClient().toString() + " - Failed reading: " + getType() + e.getMessage(), e);
+			if (Config.PACKET_HANDLER_DEBUG)
+			{
+				_log.error("Client: " + getClient().toString() + " - Failed reading: " + getType() + e.getMessage(), e);
+			}
 		}
 		return false;
 	}
@@ -91,7 +96,10 @@ public abstract class L2GameClientPacket extends ReceivablePacket<L2GameClient>
 		}
 		catch (RuntimeException e)
 		{
-			_log.error("Client: " + getClient().toString() + " - Failed running: " + getType() + e.getMessage(), e);
+			if (Config.PACKET_HANDLER_DEBUG)
+			{
+				_log.error("Client: " + getClient().toString() + " - Failed running: " + getType() + e.getMessage(), e);
+			}
 			// in case of EnterWorld error kick player from game
 			if (this instanceof EnterWorld)
 			{
