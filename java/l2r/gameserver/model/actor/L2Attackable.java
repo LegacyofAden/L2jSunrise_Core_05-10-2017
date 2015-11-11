@@ -1027,12 +1027,12 @@ public class L2Attackable extends L2Npc
 			return;
 		}
 		
+		CursedWeaponsManager.getInstance().checkDrop(this, player);
+		
 		if (isSpoiled())
 		{
 			_sweepItems.set(npcTemplate.calculateDrops(DropListScope.CORPSE, this, player));
 		}
-		
-		CursedWeaponsManager.getInstance().checkDrop(this, player);
 		
 		Collection<ItemHolder> deathItems = npcTemplate.calculateDrops(DropListScope.DEATH, this, player);
 		if (deathItems != null)

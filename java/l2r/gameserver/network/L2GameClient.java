@@ -570,35 +570,42 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 				}
 			}
 			
-			// vGodFather
-			try (PreparedStatement ps = con.prepareStatement("DELETE FROM achievements WHERE owner_id=?"))
+			try
 			{
-				ps.setInt(1, objid);
-				ps.execute();
+				// vGodFather
+				try (PreparedStatement ps = con.prepareStatement("DELETE FROM achievements WHERE owner_id=?"))
+				{
+					ps.setInt(1, objid);
+					ps.execute();
+				}
+				
+				try (PreparedStatement ps = con.prepareStatement("DELETE FROM aio_scheme_profiles_buffs WHERE charId=?"))
+				{
+					ps.setInt(1, objid);
+					ps.execute();
+				}
+				
+				try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_item_mall_transactions WHERE charId=?"))
+				{
+					ps.setInt(1, objid);
+					ps.execute();
+				}
+				
+				try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_mail WHERE charId=?"))
+				{
+					ps.setInt(1, objid);
+					ps.execute();
+				}
+				
+				try (PreparedStatement ps = con.prepareStatement("DELETE FROM sunrise_variables WHERE obj_id=?"))
+				{
+					ps.setInt(1, objid);
+					ps.execute();
+				}
 			}
-			
-			try (PreparedStatement ps = con.prepareStatement("DELETE FROM aio_scheme_profiles_buffs WHERE charId=?"))
+			catch (Exception e)
 			{
-				ps.setInt(1, objid);
-				ps.execute();
-			}
-			
-			try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_item_mall_transactions WHERE charId=?"))
-			{
-				ps.setInt(1, objid);
-				ps.execute();
-			}
-			
-			try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_mail WHERE charId=?"))
-			{
-				ps.setInt(1, objid);
-				ps.execute();
-			}
-			
-			try (PreparedStatement ps = con.prepareStatement("DELETE FROM sunrise_variables WHERE obj_id=?"))
-			{
-				ps.setInt(1, objid);
-				ps.execute();
+				// do nothing
 			}
 		}
 		catch (Exception e)
