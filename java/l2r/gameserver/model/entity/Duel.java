@@ -616,6 +616,7 @@ public class Duel
 				{
 					sm = SystemMessage.getSystemMessage(SystemMessageId.C1_HAS_WON_THE_DUEL);
 				}
+				sm.addString(_leaderB.getName());
 				break;
 			case CANCELED:
 			case TIMEOUT:
