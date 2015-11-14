@@ -40,7 +40,6 @@ public class ConditionUsingSlotType extends Condition
 			return false;
 		}
 		
-		return (env.getPlayer().getActiveWeaponItem().getBodyPart() & _mask) != 0;
+		return ((env.getPlayer() != null) && (env.getPlayer().getActiveWeaponItem() != null) && ((env.getPlayer().getActiveWeaponItem().getBodyPart() & _mask) != 0));
 	}
-	
 }
