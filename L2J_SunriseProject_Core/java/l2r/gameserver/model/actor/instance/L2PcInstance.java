@@ -2523,7 +2523,7 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Set the fists weapon of the L2PcInstance (used when no weapon is equiped).
+	 * Set the fists weapon of the L2PcInstance (used when no weapon is equipped).
 	 * @param weaponItem The fists L2Weapon to set to the L2PcInstance
 	 */
 	public void setFistsWeaponItem(L2Weapon weaponItem)
@@ -2545,63 +2545,55 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public L2Weapon findFistsWeaponItem(int classId)
 	{
-		L2Weapon weaponItem = null;
 		if ((classId >= 0x00) && (classId <= 0x09))
 		{
 			// human fighter fists
-			L2Item temp = ItemData.getInstance().getTemplate(246);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(246);
 		}
 		else if ((classId >= 0x0a) && (classId <= 0x11))
 		{
 			// human mage fists
-			L2Item temp = ItemData.getInstance().getTemplate(251);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(251);
 		}
 		else if ((classId >= 0x12) && (classId <= 0x18))
 		{
 			// elven fighter fists
-			L2Item temp = ItemData.getInstance().getTemplate(244);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(244);
 		}
 		else if ((classId >= 0x19) && (classId <= 0x1e))
 		{
 			// elven mage fists
-			L2Item temp = ItemData.getInstance().getTemplate(249);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(249);
 		}
 		else if ((classId >= 0x1f) && (classId <= 0x25))
 		{
 			// dark elven fighter fists
-			L2Item temp = ItemData.getInstance().getTemplate(245);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(245);
 		}
 		else if ((classId >= 0x26) && (classId <= 0x2b))
 		{
 			// dark elven mage fists
-			L2Item temp = ItemData.getInstance().getTemplate(250);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(250);
 		}
 		else if ((classId >= 0x2c) && (classId <= 0x30))
 		{
 			// orc fighter fists
-			L2Item temp = ItemData.getInstance().getTemplate(248);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(248);
 		}
 		else if ((classId >= 0x31) && (classId <= 0x34))
 		{
 			// orc mage fists
-			L2Item temp = ItemData.getInstance().getTemplate(252);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(252);
 		}
 		else if ((classId >= 0x35) && (classId <= 0x39))
 		{
 			// dwarven fists
-			L2Item temp = ItemData.getInstance().getTemplate(247);
-			weaponItem = (L2Weapon) temp;
+			return (L2Weapon) ItemData.getInstance().getTemplate(247);
 		}
-		
-		return weaponItem;
+		else
+		{
+			return null;
+		}
 	}
 	
 	/**
@@ -4876,6 +4868,15 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void doCast(L2Skill skill)
 	{
+		if (getCurrentSkill() != null)
+		{
+			if (!checkUseMagicConditions(skill, getCurrentSkill().isCtrlPressed(), getCurrentSkill().isShiftPressed()))
+			{
+				setIsCastingNow(false);
+				return;
+			}
+		}
+		
 		super.doCast(skill);
 		setRecentFakeDeath(false);
 	}
@@ -5186,7 +5187,7 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Return the active weapon item (always equiped in the right hand).
+	 * Return the active weapon item (always equipped in the right hand).
 	 */
 	@Override
 	public L2Weapon getActiveWeaponItem()
@@ -9020,12 +9021,6 @@ public final class L2PcInstance extends L2Playable
 		if (getQueuedSkill() != null)
 		{
 			setQueuedSkill(null, false, false);
-		}
-		
-		if (!checkUseMagicConditions(skill, forceUse, dontMove))
-		{
-			setIsCastingNow(false);
-			return false;
 		}
 		
 		// Check if the target is correct and Notify the AI with AI_INTENTION_CAST and target

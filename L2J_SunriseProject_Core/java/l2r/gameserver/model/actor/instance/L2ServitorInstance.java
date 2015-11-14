@@ -264,40 +264,6 @@ public class L2ServitorInstance extends L2Summon
 	
 	}
 	
-	/**
-	 * Servitors' skills automatically change their level based on the servitor's level.<br>
-	 * Until level 70, the servitor gets 1 lv of skill per 10 levels.<br>
-	 * After that, it is 1 skill level per 5 servitor levels.<br>
-	 * If the resulting skill level doesn't exist use the max that does exist!
-	 */
-	@Override
-	public void doCast(L2Skill skill)
-	{
-		final int petLevel = getLevel();
-		int skillLevel = petLevel / 10;
-		if (petLevel >= 70)
-		{
-			skillLevel += (petLevel - 65) / 10;
-		}
-		
-		// Adjust the level for servitors less than level 1.
-		if (skillLevel < 1)
-		{
-			skillLevel = 1;
-		}
-		
-		final L2Skill skillToCast = SkillData.getInstance().getInfo(skill.getId(), skillLevel);
-		
-		if (skillToCast != null)
-		{
-			super.doCast(skillToCast);
-		}
-		else
-		{
-			super.doCast(skill);
-		}
-	}
-	
 	@Override
 	public void setRestoreSummon(boolean val)
 	{

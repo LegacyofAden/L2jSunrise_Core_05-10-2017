@@ -298,7 +298,10 @@ public class L2Npc extends L2Character
 			}
 			catch (Exception e)
 			{
-				LOG.error("There has been an error trying to perform a random animation for NPC {}!", _npc, e);
+				if (Config.DEBUG)
+				{
+					LOG.error("There has been an error trying to perform a random animation for NPC {}!", _npc, e);
+				}
 			}
 		}
 	}

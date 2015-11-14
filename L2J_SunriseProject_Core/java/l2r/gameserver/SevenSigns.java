@@ -881,9 +881,9 @@ public class SevenSigns
 				ps.setDouble(6, sevenDat.getDouble("ancient_adena_amount"));
 				ps.setDouble(7, sevenDat.getDouble("contribution_score"));
 				ps.setInt(8, sevenDat.getInt("charId"));
-				ps.execute();
-				ps.clearParameters();
+				ps.addBatch();
 			}
+			ps.executeBatch();
 		}
 		catch (SQLException e)
 		{
