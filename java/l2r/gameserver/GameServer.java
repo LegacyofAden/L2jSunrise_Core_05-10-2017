@@ -109,7 +109,6 @@ import l2r.gameserver.instancemanager.ItemsOnGroundManager;
 import l2r.gameserver.instancemanager.MailManager;
 import l2r.gameserver.instancemanager.MapRegionManager;
 import l2r.gameserver.instancemanager.MercTicketManager;
-import l2r.gameserver.instancemanager.PcCafePointsManager;
 import l2r.gameserver.instancemanager.PunishmentManager;
 import l2r.gameserver.instancemanager.QuestManager;
 import l2r.gameserver.instancemanager.RaidBossPointsManager;
@@ -222,10 +221,16 @@ public class GameServer
 		CategoryData.getInstance();
 		SecondaryAuthData.getInstance();
 		
-		printSection("Skills");
+		printSection("Effects");
 		EffectHandler.getInstance().executeScript();
+		
+		printSection("Enchant Skill Groups");
 		EnchantSkillGroupsData.getInstance();
+		
+		printSection("Skill Trees");
 		SkillTreesData.getInstance();
+		
+		printSection("Skills");
 		SkillData.getInstance();
 		SummonSkillsTable.getInstance();
 		
@@ -245,6 +250,8 @@ public class GameServer
 		FishingMonstersData.getInstance();
 		FishingRodsData.getInstance();
 		HennaData.getInstance();
+		
+		printSection("Product Items");
 		ProductItemData.getInstance();
 		
 		printSection("Characters");
@@ -275,12 +282,14 @@ public class GameServer
 		StaticObjectsData.getInstance();
 		ZoneManager.getInstance();
 		DoorData.getInstance();
-		ItemAuctionManager.getInstance();
 		CastleManager.getInstance().loadInstances();
 		FortManager.getInstance().loadInstances();
 		NpcBufferTable.getInstance();
 		GrandBossManager.getInstance().initZones();
 		EventDroplist.getInstance();
+		
+		printSection("Auction Manager");
+		ItemAuctionManager.getInstance();
 		
 		printSection("Olympiad");
 		if (Config.ENABLE_OLYMPIAD)
@@ -352,6 +361,8 @@ public class GameServer
 		CastleManorManager.getInstance();
 		MercTicketManager.getInstance();
 		
+		QuestManager.getInstance().report();
+		
 		printSection("Others");
 		MonsterRace.getInstance();
 		
@@ -363,6 +374,13 @@ public class GameServer
 		TaskManager.getInstance();
 		AntiFeedManager.getInstance().registerEvent(AntiFeedManager.GAME_ID);
 		PunishmentManager.getInstance();
+		
+		// Sunrise systems section
+		printSection("Event Engine");
+		SunriseEvents.start();
+		
+		printSection("Sunrise Systems");
+		SunriseServerMods.getInstance().checkSunriseMods();
 		
 		if (Config.SAVE_DROPPED_ITEM)
 		{
@@ -383,16 +401,6 @@ public class GameServer
 		{
 			MailManager.getInstance();
 		}
-		
-		// Sunrise systems section
-		printSection("Event Engine");
-		SunriseEvents.start();
-		
-		printSection("Sunrise Systems");
-		PcCafePointsManager.getInstance();
-		SunriseServerMods.getInstance().checkSunriseMods();
-		// System.out.println("Loading static images....");
-		// CustomServerMods.getInstance().loadStaticImages();
 		
 		Runtime.getRuntime().addShutdownHook(Shutdown.getInstance());
 		
