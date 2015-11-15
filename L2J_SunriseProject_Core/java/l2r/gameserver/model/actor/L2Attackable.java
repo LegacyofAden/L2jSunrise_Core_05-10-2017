@@ -536,7 +536,7 @@ public class L2Attackable extends L2Npc
 								if (addexp > 0)
 								{
 									attacker.updateVitalityPoints(getVitalityPoints(damage), true, false);
-									PcCafePointsManager.getInstance().givePcCafePoint(attacker, addexp);
+									PcCafePointsManager.givePcCafePoint(attacker, addexp);
 								}
 							}
 						}

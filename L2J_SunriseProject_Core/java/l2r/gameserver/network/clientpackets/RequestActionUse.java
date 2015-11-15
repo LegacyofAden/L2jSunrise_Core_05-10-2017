@@ -288,10 +288,10 @@ public final class RequestActionUse extends L2GameClientPacket
 				activeChar.tryOpenPrivateBuyStore();
 				break;
 			case 32: // Wild Hog Cannon - Wild Cannon
-				useSkill("DDMagic", false);
+				useSkill(4230, false);
 				break;
 			case 36: // Soulless - Toxic Smoke
-				useSkill("RangeDebuff", false);
+				useSkill(4259, false);
 				break;
 			case 37: // Dwarven Manufacture
 				if (activeChar.isAlikeDead())
@@ -337,25 +337,25 @@ public final class RequestActionUse extends L2GameClientPacket
 				}
 				break;
 			case 42: // Kai the Cat - Self Damage Shield
-				useSkill("HealMagic", false);
+				useSkill(4378, activeChar, false);
 				break;
 			case 43: // Merrow the Unicorn - Hydro Screw
-				useSkill("DDMagic", false);
+				useSkill(4137, false);
 				break;
 			case 44: // Big Boom - Boom Attack
-				useSkill("DDMagic", false);
+				useSkill(4139, false);
 				break;
 			case 45: // Boxer the Unicorn - Master Recharge
-				useSkill("HealMagic", activeChar, false);
+				useSkill(4025, activeChar, false);
 				break;
 			case 46: // Mew the Cat - Mega Storm Strike
-				useSkill("DDMagic", false);
+				useSkill(4261, false);
 				break;
 			case 47: // Silhouette - Steal Blood
-				useSkill("DDMagic", false);
+				useSkill(4260, false);
 				break;
 			case 48: // Mechanic Golem - Mech. Cannon
-				useSkill("DDMagic", false);
+				useSkill(4068, false);
 				break;
 			case 51: // General Manufacture
 				// Player shouldn't be able to set stores if he/she is alike dead (dead or fake death)
@@ -493,73 +493,73 @@ public final class RequestActionUse extends L2GameClientPacket
 				}
 				break;
 			case 1003: // Wind Hatchling/Strider - Wild Stun
-				useSkill("PhysicalSpecial", true);
+				useSkill(4710, true);
 				break;
 			case 1004: // Wind Hatchling/Strider - Wild Defense
-				useSkill("Buff", activeChar, true);
+				useSkill(4711, activeChar, true);
 				break;
 			case 1005: // Star Hatchling/Strider - Bright Burst
-				useSkill("DDMagic", true);
+				useSkill(4712, true);
 				break;
 			case 1006: // Star Hatchling/Strider - Bright Heal
-				useSkill("Heal", activeChar, true);
+				useSkill(4713, activeChar, true);
 				break;
 			case 1007: // Feline Queen - Blessing of Queen
-				useSkill("Buff1", activeChar, false);
+				useSkill(4699, activeChar, false);
 				break;
 			case 1008: // Feline Queen - Gift of Queen
-				useSkill("Buff2", activeChar, false);
+				useSkill(4700, activeChar, false);
 				break;
 			case 1009: // Feline Queen - Cure of Queen
-				useSkill("DDMagic", false);
+				useSkill(4701, false);
 				break;
 			case 1010: // Unicorn Seraphim - Blessing of Seraphim
-				useSkill("Buff1", activeChar, false);
+				useSkill(4702, activeChar, false);
 				break;
 			case 1011: // Unicorn Seraphim - Gift of Seraphim
-				useSkill("Buff2", activeChar, false);
+				useSkill(4703, activeChar, false);
 				break;
 			case 1012: // Unicorn Seraphim - Cure of Seraphim
-				useSkill("DDMagic", false);
+				useSkill(4704, false);
 				break;
 			case 1013: // Nightshade - Curse of Shade
-				useSkill("DeBuff1", false);
+				useSkill(4705, false);
 				break;
 			case 1014: // Nightshade - Mass Curse of Shade
-				useSkill("DeBuff2", false);
+				useSkill(4706, false);
 				break;
 			case 1015: // Nightshade - Shade Sacrifice
-				useSkill("Heal", false);
+				useSkill(4707, false);
 				break;
 			case 1016: // Cursed Man - Cursed Blow
-				useSkill("PhysicalSpecial1", false);
+				useSkill(4709, false);
 				break;
 			case 1017: // Cursed Man - Cursed Strike
-				useSkill("PhysicalSpecial2", false);
+				useSkill(4708, false);
 				break;
 			case 1031: // Feline King - Slash
-				useSkill("PhysicalSpecial1", false);
+				useSkill(5135, false);
 				break;
 			case 1032: // Feline King - Spinning Slash
-				useSkill("PhysicalSpecial2", false);
+				useSkill(5136, false);
 				break;
 			case 1033: // Feline King - Hold of King
-				useSkill("PhysicalSpecial3", false);
+				useSkill(5137, false);
 				break;
 			case 1034: // Magnus the Unicorn - Whiplash
-				useSkill("PhysicalSpecial1", false);
+				useSkill(5138, false);
 				break;
 			case 1035: // Magnus the Unicorn - Tridal Wave
-				useSkill("PhysicalSpecial2", false);
+				useSkill(5139, false);
 				break;
 			case 1036: // Spectral Lord - Corpse Kaboom
-				useSkill("PhysicalSpecial1", false);
+				useSkill(5142, false);
 				break;
 			case 1037: // Spectral Lord - Dicing Death
-				useSkill("PhysicalSpecial2", false);
+				useSkill(5141, false);
 				break;
 			case 1038: // Spectral Lord - Dark Curse
-				useSkill("PhysicalSpecial3", false);
+				useSkill(5140, false);
 				break;
 			case 1039: // Swoop Cannon - Cannon Fodder
 				useSkill(5110, false);
@@ -568,16 +568,16 @@ public final class RequestActionUse extends L2GameClientPacket
 				useSkill(5111, false);
 				break;
 			case 1041: // Great Wolf - Bite Attack
-				useSkill("Skill01", true);
+				useSkill(5442, true);
 				break;
 			case 1042: // Great Wolf - Maul
-				useSkill("Skill03", true);
+				useSkill(5444, true);
 				break;
 			case 1043: // Great Wolf - Cry of the Wolf
-				useSkill("Skill02", true);
+				useSkill(5443, true);
 				break;
 			case 1044: // Great Wolf - Awakening
-				useSkill("Skill04", true);
+				useSkill(5445, true);
 				break;
 			case 1045: // Great Wolf - Howl
 				useSkill(5584, true);
@@ -598,34 +598,34 @@ public final class RequestActionUse extends L2GameClientPacket
 				useSkill(5583, false);
 				break;
 			case 1051: // Feline Queen - Bless The Body
-				useSkill("buff3", false);
+				useSkill(5638, false);
 				break;
 			case 1052: // Feline Queen - Bless The Soul
-				useSkill("buff4", false);
+				useSkill(5639, false);
 				break;
 			case 1053: // Feline Queen - Haste
-				useSkill("buff5", false);
+				useSkill(5640, false);
 				break;
 			case 1054: // Unicorn Seraphim - Acumen
-				useSkill("buff3", false);
+				useSkill(5643, false);
 				break;
 			case 1055: // Unicorn Seraphim - Clarity
-				useSkill("buff4", false);
+				useSkill(5647, false);
 				break;
 			case 1056: // Unicorn Seraphim - Empower
-				useSkill("buff5", false);
+				useSkill(5648, false);
 				break;
 			case 1057: // Unicorn Seraphim - Wild Magic
-				useSkill("buff6", false);
+				useSkill(5646, false);
 				break;
 			case 1058: // Nightshade - Death Whisper
-				useSkill("buff3", false);
+				useSkill(5652, false);
 				break;
 			case 1059: // Nightshade - Focus
-				useSkill("buff4", false);
+				useSkill(5653, false);
 				break;
 			case 1060: // Nightshade - Guidance
-				useSkill("buff5", false);
+				useSkill(5654, false);
 				break;
 			case 1061: // Wild Beast Fighter, White Weasel - Death blow
 				useSkill(5745, true);
@@ -658,7 +658,7 @@ public final class RequestActionUse extends L2GameClientPacket
 				useSkill(5771, true);
 				break;
 			case 1071: // Tigress - Power Strike
-				useSkill("DDMagic", true);
+				useSkill(5761, true);
 				break;
 			case 1072: // Toy Knight - Piercing attack
 				useSkill(6046, true);
@@ -1005,6 +1005,7 @@ public final class RequestActionUse extends L2GameClientPacket
 	 * @param skillName the skill name to use
 	 * @param pet if {@code true} it'll validate a pet, if {@code false} it will validate a servitor
 	 */
+	@SuppressWarnings("unused")
 	private void useSkill(String skillName, boolean pet)
 	{
 		final L2PcInstance activeChar = getActiveChar();

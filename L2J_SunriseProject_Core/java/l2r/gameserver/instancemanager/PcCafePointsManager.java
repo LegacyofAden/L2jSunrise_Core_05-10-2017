@@ -12,22 +12,7 @@ import gr.sr.configsEngine.configs.impl.PcBangConfigs;
 
 public class PcCafePointsManager
 {
-	private static PcCafePointsManager _instance;
-	
-	public static PcCafePointsManager getInstance()
-	{
-		if (_instance == null)
-		{
-			_instance = new PcCafePointsManager();
-		}
-		return _instance;
-	}
-	
-	public PcCafePointsManager()
-	{
-	}
-	
-	public void givePcCafePoint(final L2PcInstance player, final long givedexp)
+	public static void givePcCafePoint(final L2PcInstance player, final long givedexp)
 	{
 		if (!PcBangConfigs.PC_BANG_ENABLED)
 		{

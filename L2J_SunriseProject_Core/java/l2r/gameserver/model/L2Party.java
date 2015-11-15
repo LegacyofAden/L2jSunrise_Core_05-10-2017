@@ -917,7 +917,7 @@ public class L2Party extends AbstractPlayerGroup
 				if (addexp > 0)
 				{
 					member.updateVitalityPoints(vitalityPoints, true, false);
-					PcCafePointsManager.getInstance().givePcCafePoint(member, addexp);
+					PcCafePointsManager.givePcCafePoint(member, addexp);
 				}
 			}
 			else
