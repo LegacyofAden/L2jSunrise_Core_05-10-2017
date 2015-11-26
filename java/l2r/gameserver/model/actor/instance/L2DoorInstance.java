@@ -29,6 +29,7 @@ import l2r.gameserver.ai.L2CharacterAI;
 import l2r.gameserver.ai.L2DoorAI;
 import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.enums.InstanceType;
+import l2r.gameserver.enums.Race;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.ClanHallManager;
 import l2r.gameserver.instancemanager.FortManager;
@@ -61,13 +62,9 @@ import l2r.util.Rnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This class ...
- * @version $Revision: 1.3.2.2.2.5 $ $Date: 2005/03/27 15:29:32 $
- */
 public class L2DoorInstance extends L2Character
 {
-	protected static final Logger log = LoggerFactory.getLogger(L2DoorInstance.class);
+	private static final Logger LOG = LoggerFactory.getLogger(L2DoorInstance.class);
 	
 	public static final byte OPEN_BY_CLICK = 1;
 	public static final byte OPEN_BY_TIME = 2;
@@ -261,7 +258,7 @@ public class L2DoorInstance extends L2Character
 			}
 			else
 			{
-				_log.warn(getClass().getSimpleName() + ": cannot find child id: " + getChildId());
+				LOG.warn(getClass().getSimpleName() + ": cannot find child id: " + getChildId());
 			}
 		}
 	}
@@ -454,7 +451,7 @@ public class L2DoorInstance extends L2Character
 		OnEventTrigger oe = null;
 		if (getEmitter() > 0)
 		{
-			oe = new OnEventTrigger(this, getOpen());
+			oe = new OnEventTrigger(getEmitter(), getOpen());
 		}
 		
 		for (L2PcInstance player : knownPlayers)
@@ -634,9 +631,18 @@ public class L2DoorInstance extends L2Character
 	@Override
 	public void reduceCurrentHp(double damage, L2Character attacker, boolean awake, boolean isDOT, L2Skill skill)
 	{
-		if (isWall() && !(attacker instanceof L2SiegeSummonInstance) && (getInstanceId() == 0))
+		if (isWall() && (getInstanceId() == 0))
 		{
-			return;
+			if (!attacker.isServitor())
+			{
+				return;
+			}
+			
+			final L2ServitorInstance servitor = (L2ServitorInstance) attacker;
+			if (servitor.getTemplate().getRace() != Race.SIEGE_WEAPON)
+			{
+				return;
+			}
 		}
 		
 		super.reduceCurrentHp(damage, attacker, awake, isDOT, skill);
@@ -694,7 +700,7 @@ public class L2DoorInstance extends L2Character
 		{
 			if (getEmitter() > 0)
 			{
-				activeChar.sendPacket(new OnEventTrigger(this, getOpen()));
+				activeChar.sendPacket(new OnEventTrigger(getEmitter(), getOpen()));
 			}
 			
 			activeChar.sendPacket(new StaticObject(this, activeChar.isGM()));

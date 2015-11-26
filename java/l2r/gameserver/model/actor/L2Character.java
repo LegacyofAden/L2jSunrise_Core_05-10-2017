@@ -1368,6 +1368,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	private boolean doAttackHitByPole(Attack attack, L2Character target, int sAtk)
 	{
+		boolean hitted = doAttackHitSimple(attack, target, 100, sAtk);
+		
+		if (isAffected(EffectFlag.SINGLE_TARGET))
+		{
+			return hitted;
+		}
+		
 		// double angleChar;
 		int maxRadius = getStat().getPhysicalAttackRange();
 		int maxAngleDiff = getStat().getPhysicalAttackAngle();
@@ -1401,8 +1408,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		int attackcount = 0;
 		
 		// if (angleChar <= 0) angleChar += 360;
-		
-		boolean hitted = doAttackHitSimple(attack, target, 100, sAtk);
 		double attackpercent = 85;
 		L2Character temp;
 		Collection<L2Object> objs = getKnownList().getKnownObjects().values();
@@ -3392,10 +3397,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			getActingPlayer().setRecentFakeDeath(true);
 		}
 		
-		ChangeWaitType revive = new ChangeWaitType(this, ChangeWaitType.WT_STOP_FAKEDEATH);
-		broadcastPacket(revive);
-		// TODO: Temp hack: players see FD on ppl that are moving: Teleport to someone who uses FD - if he gets up he will fall down again for that client -
-		// even tho he is actually standing... Probably bad info in CharInfo packet?
+		broadcastPacket(new ChangeWaitType(this, ChangeWaitType.WT_STOP_FAKEDEATH));
 		broadcastPacket(new Revive(this));
 	}
 	
@@ -4666,7 +4668,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						// them to move along with their leader
 						if (isPlayer() || (!isPlayable() && !isMinion() && (Math.abs(z - curZ) > 140)) || (isSummon() && !((L2Summon) this).getFollowStatus()))
 						{
-							getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+							final Location destination = GeoData.getInstance().moveCheck(curX, curY, curZ, originalX, originalY, originalZ, getInstanceId());
+							getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, destination);
 							return;
 						}
 						

@@ -38,7 +38,6 @@ import l2r.gameserver.model.L2Party;
 import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.actor.instance.L2NpcInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
-import l2r.gameserver.model.actor.instance.L2SiegeSummonInstance;
 import l2r.gameserver.model.actor.knownlist.SummonKnownList;
 import l2r.gameserver.model.actor.stat.SummonStat;
 import l2r.gameserver.model.actor.status.SummonStatus;
@@ -71,6 +70,7 @@ import l2r.gameserver.network.serverpackets.TeleportToLocation;
 import l2r.gameserver.pathfinding.PathFinding;
 import l2r.gameserver.taskmanager.DecayTaskManager;
 import l2r.gameserver.util.Util;
+import l2r.util.Rnd;
 
 public abstract class L2Summon extends L2Playable
 {
@@ -99,14 +99,12 @@ public abstract class L2Summon extends L2Playable
 	{
 		super(template);
 		setInstanceType(InstanceType.L2Summon);
-		
 		setInstanceId(owner.getInstanceId()); // set instance to same as owner
-		
-		_showSummonAnimation = true;
+		setShowSummonAnimation(true);
 		_owner = owner;
 		getAI();
 		
-		setXYZInvisible(owner.getX() + 20, owner.getY() + 20, owner.getZ() + 100);
+		setXYZInvisible(owner.getX() + Rnd.get(-100, 100), owner.getY() + Rnd.get(-100, 100), owner.getZ());
 	}
 	
 	@Override
@@ -314,7 +312,6 @@ public abstract class L2Summon extends L2Playable
 		}
 		
 		final L2PcInstance owner = getOwner();
-		
 		if (owner != null)
 		{
 			for (L2Character TgMob : getKnownList().getKnownCharacters())
@@ -322,7 +319,7 @@ public abstract class L2Summon extends L2Playable
 				// get the mobs which have aggro on the this instance
 				if (TgMob instanceof L2Attackable)
 				{
-					if (((L2Attackable) TgMob).isDead())
+					if (TgMob.isDead())
 					{
 						continue;
 					}
@@ -430,7 +427,6 @@ public abstract class L2Summon extends L2Playable
 					getOwner().setPetInvItems(false);
 				}
 			}
-			
 			abortAttack();
 			abortCast();
 			store();
@@ -576,11 +572,7 @@ public abstract class L2Summon extends L2Playable
 	@Override
 	public boolean isInParty()
 	{
-		if (_owner == null)
-		{
-			return false;
-		}
-		return _owner.getParty() != null;
+		return (_owner != null) && _owner.isInParty();
 	}
 	
 	/**
@@ -1003,12 +995,6 @@ public abstract class L2Summon extends L2Playable
 			final L2Object target = getOwner().getTarget();
 			if (target != null)
 			{
-				if ((getOwner().getTarget() != null) && !getOwner().getTarget().canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
-				{
-					getOwner().sendPacket(ActionFailed.STATIC_PACKET);
-					return;
-				}
-				
 				setTarget(target);
 				getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
 			}
@@ -1045,13 +1031,6 @@ public abstract class L2Summon extends L2Playable
 		{
 			sendPacket(SystemMessageId.PET_REFUSING_ORDER);
 			sendPacket(ActionFailed.STATIC_PACKET);
-			return false;
-		}
-		
-		if ((getOwner().getTarget() != null) && !getOwner().getTarget().canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
-		{
-			getAI().setIntention(CtrlIntention.AI_INTENTION_FOLLOW, target);
-			getOwner().sendPacket(ActionFailed.STATIC_PACKET);
 			return false;
 		}
 		
@@ -1116,12 +1095,12 @@ public abstract class L2Summon extends L2Playable
 			return false;
 		}
 		
-		// TODO: Unhardcode it.
 		// Siege golems AI doesn't support attacking other than doors/walls at the moment.
-		if (!target.isDoor() && ((npcId == L2SiegeSummonInstance.SWOOP_CANNON_ID) || (npcId == L2SiegeSummonInstance.SIEGE_GOLEM_ID)))
+		if (target.isDoor() && (getTemplate().getRace() != Race.SIEGE_WEAPON))
 		{
 			return false;
 		}
+		
 		return true;
 	}
 	

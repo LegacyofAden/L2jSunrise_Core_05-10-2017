@@ -179,31 +179,26 @@ public final class QuestManager extends ScriptManager<Quest>
 	 */
 	public void addQuest(Quest quest)
 	{
+		// Quest does not exist, return.
 		if (quest == null)
 		{
-			throw new IllegalArgumentException("Quest argument cannot be null");
+			return;
 		}
 		
-		// FIXME: unloading the old quest at this point is a tad too late.
-		// the new quest has already initialized itself and read the data, starting
-		// an unpredictable number of tasks with that data. The old quest will now
-		// save data which will never be read.
-		// However, requesting the newQuest to re-read the data is not necessarily a
-		// good option, since the newQuest may have already started timers, spawned NPCs
-		// or taken any other action which it might re-take by re-reading the data.
-		// the current solution properly closes the running tasks of the old quest but
-		// ignores the data; perhaps the least of all evils...
-		final Quest old = _quests.put(quest.getName(), quest);
+		// Quest already loaded, unload id.
+		Quest old = getQuest(quest.getName());
 		if (old != null)
 		{
 			old.unload();
-			_log.info(getClass().getSimpleName() + ": Replaced quest " + old.getName() + " (" + old.getId() + ") with a new version!");
 		}
+		
+		// Add new quest.
+		_quests.put(quest.getName(), quest);
 		
 		if (Config.ALT_DEV_SHOW_QUESTS_LOAD_IN_LOGS)
 		{
 			final String questName = quest.getName().contains("_") ? quest.getName().substring(quest.getName().indexOf('_') + 1) : quest.getName();
-			_log.info("Loaded quest " + Util.splitWords(questName) + ".");
+			_log.info(getClass().getSimpleName() + ": Loaded quest " + Util.splitWords(questName) + ".");
 		}
 	}
 	
@@ -261,16 +256,19 @@ public final class QuestManager extends ScriptManager<Quest>
 	 */
 	public void addScript(Quest script)
 	{
+		// Script already loaded, unload id.
 		final Quest old = _scripts.put(script.getClass().getSimpleName(), script);
 		if (old != null)
 		{
 			old.unload();
-			_log.info(getClass().getSimpleName() + ": Replaced script " + old.getName() + " with a new version!");
 		}
+		
+		// Add new script.
+		_scripts.put(script.getClass().getSimpleName(), script);
 		
 		if (Config.ALT_DEV_SHOW_SCRIPTS_LOAD_IN_LOGS)
 		{
-			_log.info("Loaded script " + Util.splitWords(script.getClass().getSimpleName()) + ".");
+			_log.info(getClass().getSimpleName() + ": Loaded script " + Util.splitWords(script.getClass().getSimpleName()) + ".");
 		}
 	}
 	

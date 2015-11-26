@@ -46,9 +46,12 @@ import l2r.gameserver.network.serverpackets.SetSummonRemainTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author vGodFather
+ */
 public class L2ServitorInstance extends L2Summon
 {
-	protected static final Logger _log = LoggerFactory.getLogger(L2ServitorInstance.class);
+	private static final Logger LOG = LoggerFactory.getLogger(L2ServitorInstance.class);
 	
 	private static final String ADD_SKILL_SAVE = "INSERT INTO character_summon_skills_save (ownerId,ownerClassIndex,summonSkillId,skill_id,skill_level,effect_count,effect_cur_time,buff_index) VALUES (?,?,?,?,?,?,?,?)";
 	private static final String RESTORE_SKILL_SAVE = "SELECT skill_id,skill_level,effect_count,effect_cur_time,buff_index FROM character_summon_skills_save WHERE ownerId=? AND ownerClassIndex=? AND summonSkillId=? ORDER BY buff_index ASC";
@@ -64,7 +67,6 @@ public class L2ServitorInstance extends L2Summon
 	private int _timeRemaining;
 	private int _nextItemConsumeTime;
 	public int lastShowntimeRemaining; // Following FbiAgent's example to avoid sending useless packets
-	
 	protected Future<?> _summonLifeTask;
 	
 	private int _referenceSkill;
@@ -241,11 +243,6 @@ public class L2ServitorInstance extends L2Summon
 			return false;
 		}
 		
-		if (Config.DEBUG)
-		{
-			_log.warn(getClass().getSimpleName() + ": " + getTemplate().getName() + " (" + getOwner().getName() + ") has been killed.");
-		}
-		
 		if (_summonLifeTask != null)
 		{
 			_summonLifeTask.cancel(false);
@@ -253,9 +250,7 @@ public class L2ServitorInstance extends L2Summon
 		}
 		
 		CharSummonTable.getInstance().removeServitor(getOwner());
-		
 		return true;
-		
 	}
 	
 	@Override
@@ -308,13 +303,13 @@ public class L2ServitorInstance extends L2Summon
 		SummonEffectsTable.getInstance().clearServitorEffects(getOwner(), getReferenceSkill());
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(DELETE_SKILL_SAVE))
+			PreparedStatement ps = con.prepareStatement(DELETE_SKILL_SAVE))
 		{
 			// Delete all current stored effects for summon to avoid dupe
-			statement.setInt(1, getOwner().getObjectId());
-			statement.setInt(2, getOwner().getClassIndex());
-			statement.setInt(3, getReferenceSkill());
-			statement.execute();
+			ps.setInt(1, getOwner().getObjectId());
+			ps.setInt(2, getOwner().getClassIndex());
+			ps.setInt(3, getReferenceSkill());
+			ps.execute();
 			
 			int buff_index = 0;
 			
@@ -374,7 +369,7 @@ public class L2ServitorInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			_log.warn("Could not store summon effect data");
+			LOG.error("Could not store summon effect data: {}", e);
 		}
 	}
 	
@@ -505,11 +500,6 @@ public class L2ServitorInstance extends L2Summon
 	@Override
 	public void unSummon(L2PcInstance owner)
 	{
-		if (Config.DEBUG)
-		{
-			_log.info(getClass().getSimpleName() + ": " + getTemplate().getName() + " (" + owner.getName() + ") unsummoned.");
-		}
-		
 		if (_summonLifeTask != null)
 		{
 			_summonLifeTask.cancel(false);
@@ -533,11 +523,6 @@ public class L2ServitorInstance extends L2Summon
 	@Override
 	public boolean destroyItemByItemId(String process, int itemId, long count, L2Object reference, boolean sendMessage)
 	{
-		if (Config.DEBUG)
-		{
-			_log.warn(getClass().getSimpleName() + ": " + getTemplate().getName() + " (" + getOwner().getName() + ") consume.");
-		}
-		
 		return getOwner().destroyItemByItemId(process, itemId, count, reference, sendMessage);
 	}
 	
@@ -566,7 +551,7 @@ public class L2ServitorInstance extends L2Summon
 	{
 		if (isSharingElementals() && (getOwner() != null))
 		{
-			return (int) (getOwner().getAttackElementValue(attackAttribute) * sharedElementalsPercent());
+			return (getOwner().getAttackElementValue(attackAttribute));
 		}
 		return super.getAttackElementValue(attackAttribute);
 	}
@@ -576,7 +561,7 @@ public class L2ServitorInstance extends L2Summon
 	{
 		if (isSharingElementals() && (getOwner() != null))
 		{
-			return (int) (getOwner().getDefenseElementValue(defenseAttribute) * sharedElementalsPercent());
+			return (getOwner().getDefenseElementValue(defenseAttribute));
 		}
 		return super.getDefenseElementValue(defenseAttribute);
 	}

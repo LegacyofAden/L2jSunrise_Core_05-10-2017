@@ -28,11 +28,20 @@ public class ItemHolder implements IIdentifiable
 {
 	private final int _id;
 	private final long _count;
+	private final boolean _fromPlayer;
 	
 	public ItemHolder(int id, long count)
 	{
 		_id = id;
 		_count = count;
+		_fromPlayer = false;
+	}
+	
+	public ItemHolder(int id, long count, boolean fromMob)
+	{
+		_id = id;
+		_count = count;
+		_fromPlayer = fromMob;
 	}
 	
 	/**
@@ -50,6 +59,11 @@ public class ItemHolder implements IIdentifiable
 	public long getCount()
 	{
 		return _count;
+	}
+	
+	public boolean isfromMob()
+	{
+		return _fromPlayer;
 	}
 	
 	@Override

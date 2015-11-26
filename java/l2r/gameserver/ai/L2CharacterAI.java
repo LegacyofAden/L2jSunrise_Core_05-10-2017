@@ -1088,7 +1088,6 @@ public class L2CharacterAI extends AbstractAI
 			// Caller should be L2Playable and thinkAttack/thinkCast/thinkInteract/thinkPickUp
 			if (getFollowTarget() != null)
 			{
-				
 				// allow larger hit range when the target is moving (check is run only once per second)
 				if (!_actor.isInsideRadius(target, offset + 100, false, false))
 				{
@@ -1212,11 +1211,9 @@ public class L2CharacterAI extends AbstractAI
 		// check if player is fakedeath
 		if (target instanceof L2PcInstance)
 		{
-			L2PcInstance target2 = (L2PcInstance) target; // convert object to chara
-			
-			if (target2.isFakeDeath())
+			if (target.getActingPlayer().isFakeDeath())
 			{
-				target2.stopFakeDeath(true);
+				target.getActingPlayer().stopFakeDeath(true);
 				return false;
 			}
 		}
@@ -1667,5 +1664,38 @@ public class L2CharacterAI extends AbstractAI
 	public boolean isParty(L2Skill sk)
 	{
 		return (sk.getTargetType() == L2TargetType.PARTY);
+	}
+	
+	@Override
+	protected void onIntentionMoveAndInteract(L2Object object, Location loc)
+	{
+		if (getIntention() == AI_INTENTION_REST)
+		{
+			// Cancel action client side by sending Server->Client packet ActionFailed to the L2PcInstance actor
+			clientActionFailed();
+			return;
+		}
+		
+		if (_actor.isAllSkillsDisabled() || _actor.isCastingNow())
+		{
+			// Cancel action client side by sending Server->Client packet ActionFailed to the L2PcInstance actor
+			clientActionFailed();
+			return;
+		}
+		
+		// Set the Intention of this AbstractAI to AI_INTENTION_MOVE_TO
+		changeIntention(CtrlIntention.AI_INTENTION_MOVE_AND_INTERACT, object, loc);
+		
+		// Stop the actor auto-attack client side by sending Server->Client packet AutoAttackStop (broadcast)
+		clientStopAutoAttack();
+		
+		// Abort the attack of the L2Character and send Server->Client ActionFailed packet
+		_actor.abortAttack();
+		
+		// Set the AI interact target
+		setTarget(object);
+		
+		// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
+		moveTo(loc.getX(), loc.getY(), loc.getZ());
 	}
 }

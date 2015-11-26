@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
 
 public class L2PetInstance extends L2Summon
 {
-	protected static final Logger _logPet = LoggerFactory.getLogger(L2PetInstance.class);
+	private static final Logger LOG = LoggerFactory.getLogger(L2PetInstance.class);
 	
 	private static final String ADD_SKILL_SAVE = "INSERT INTO character_pet_skills_save (petObjItemId,skill_id,skill_level,effect_count,effect_cur_time,buff_index) VALUES (?,?,?,?,?,?)";
 	private static final String RESTORE_SKILL_SAVE = "SELECT petObjItemId,skill_id,skill_level,effect_count,effect_cur_time,buff_index FROM character_pet_skills_save WHERE petObjItemId=? ORDER BY buff_index ASC";
@@ -163,6 +163,8 @@ public class L2PetInstance extends L2Summon
 	 */
 	class FeedTask implements Runnable
 	{
+		private final Logger LOG = LoggerFactory.getLogger(FeedTask.class);
+		
 		@Override
 		public void run()
 		{
@@ -233,7 +235,7 @@ public class L2PetInstance extends L2Summon
 			}
 			catch (Exception e)
 			{
-				_logPet.error("Pet [ObjectId: " + getObjectId() + "] a feed task error has occurred", e);
+				LOG.error("Pet [ObjectId: {}] a feed task error has occurred", getObjectId(), e);
 			}
 		}
 		
@@ -486,7 +488,7 @@ public class L2PetInstance extends L2Summon
 		if (!(object instanceof L2ItemInstance))
 		{
 			// dont try to pickup anything that is not an item :)
-			_logPet.warn(this + " trying to pickup wrong target." + object);
+			LOG.warn(this + " trying to pickup wrong target." + object);
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}
@@ -577,7 +579,7 @@ public class L2PetInstance extends L2Summon
 			IItemHandler handler = ItemHandler.getInstance().getHandler(target.getEtcItem());
 			if (handler == null)
 			{
-				_log.warn("No item handler registered for item ID: " + target.getId() + ".");
+				LOG.warn("No item handler registered for item ID: {}.", target.getId());
 			}
 			else
 			{
@@ -772,7 +774,7 @@ public class L2PetInstance extends L2Summon
 			
 			if (removedItem == null)
 			{
-				_log.warn("Couldn't destroy pet control item for " + owner + " pet: " + this + " evolve: " + evolve);
+				LOG.warn("Couldn't destroy pet control item for " + owner + " pet: " + this + " evolve: " + evolve);
 			}
 			else
 			{
@@ -792,19 +794,19 @@ public class L2PetInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			_logPet.warn("Error while destroying control item: " + e.getMessage(), e);
+			LOG.error("Destroying control item: {}", e);
 		}
 		
 		// pet control item no longer exists, delete the pet from the db
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("DELETE FROM pets WHERE item_obj_id = ?"))
+			PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id = ?"))
 		{
-			statement.setInt(1, getControlObjectId());
-			statement.execute();
+			ps.setInt(1, getControlObjectId());
+			ps.execute();
 		}
 		catch (Exception e)
 		{
-			_logPet.error("Failed to delete Pet [ObjectId: " + getObjectId() + "]", e);
+			LOG.error("Failed to delete Pet [ObjectId: {}] {}", getObjectId(), e);
 		}
 	}
 	
@@ -819,7 +821,7 @@ public class L2PetInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			_logPet.warn("Pet Drop Error: " + e.getMessage(), e);
+			LOG.warn("Pet Drop Error: {}", e);
 		}
 	}
 	
@@ -833,7 +835,7 @@ public class L2PetInstance extends L2Summon
 			{
 				dropit.getDropProtection().protect(getOwner());
 			}
-			_logPet.info("Item id to drop: " + dropit.getId() + " amount: " + dropit.getCount());
+			LOG.info("Item id to drop: {} amount: {}", dropit.getId(), dropit.getCount());
 			dropit.dropMe(this, getX(), getY(), getZ() + 100);
 		}
 	}
@@ -855,11 +857,11 @@ public class L2PetInstance extends L2Summon
 	private static L2PetInstance restore(L2ItemInstance control, L2NpcTemplate template, L2PcInstance owner)
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?"))
+			PreparedStatement ps = con.prepareStatement("SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?"))
 		{
 			L2PetInstance pet;
-			statement.setInt(1, control.getObjectId());
-			try (ResultSet rset = statement.executeQuery())
+			ps.setInt(1, control.getObjectId());
+			try (ResultSet rset = ps.executeQuery())
 			{
 				if (!rset.next())
 				{
@@ -913,7 +915,7 @@ public class L2PetInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			_logPet.warn("Could not restore pet data for owner: " + owner + " - " + e.getMessage(), e);
+			LOG.error("Could not restore pet data for owner: {}, {}", owner, e);
 		}
 		return null;
 	}
@@ -956,19 +958,19 @@ public class L2PetInstance extends L2Summon
 		}
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(req))
+			PreparedStatement ps = con.prepareStatement(req))
 		{
-			statement.setString(1, getName());
-			statement.setInt(2, getStat().getLevel());
-			statement.setDouble(3, getStatus().getCurrentHp());
-			statement.setDouble(4, getStatus().getCurrentMp());
-			statement.setLong(5, getStat().getExp());
-			statement.setInt(6, getStat().getSp());
-			statement.setInt(7, getCurrentFed());
-			statement.setInt(8, getOwner().getObjectId());
-			statement.setString(9, String.valueOf(_restoreSummon)); // True restores pet on login
-			statement.setInt(10, getControlObjectId());
-			statement.executeUpdate();
+			ps.setString(1, getName());
+			ps.setInt(2, getStat().getLevel());
+			ps.setDouble(3, getStatus().getCurrentHp());
+			ps.setDouble(4, getStatus().getCurrentMp());
+			ps.setLong(5, getStat().getExp());
+			ps.setInt(6, getStat().getSp());
+			ps.setInt(7, getCurrentFed());
+			ps.setInt(8, getOwner().getObjectId());
+			ps.setString(9, String.valueOf(_restoreSummon)); // True restores pet on login
+			ps.setInt(10, getControlObjectId());
+			ps.executeUpdate();
 			
 			_respawned = true;
 			
@@ -983,7 +985,7 @@ public class L2PetInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			_logPet.error("Failed to store Pet [ObjectId: " + getObjectId() + "] data", e);
+			LOG.error("Failed to store Pet [ObjectId: {}] data {}", getObjectId(), e);
 		}
 		
 		L2ItemInstance itemInst = getControlItem();
@@ -1292,7 +1294,7 @@ public class L2PetInstance extends L2Summon
 				_curWeightPenalty = newWeightPenalty;
 				if (newWeightPenalty > 0)
 				{
-					addSkill(SkillData.getInstance().getInfo(4270, newWeightPenalty));
+					addSkill(SkillData.getInstance().getSkill(4270, newWeightPenalty));
 					setIsOverloaded(getCurrentLoad() >= maxLoad);
 				}
 				else
@@ -1389,7 +1391,7 @@ public class L2PetInstance extends L2Summon
 		}
 		else
 		{
-			_log.warn("Pet control item null, for pet: " + toString());
+			LOG.warn("Pet control item null, for pet: {}", toString());
 		}
 		super.setName(name);
 	}

@@ -26,8 +26,13 @@ import java.sql.SQLException;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.StatsSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ServerVariables
 {
+	protected static final Logger _log = LoggerFactory.getLogger(ServerVariables.class);
+	
 	private static StatsSet server_vars = null;
 	
 	private static StatsSet getVars()
@@ -53,8 +58,7 @@ public class ServerVariables
 		}
 		catch (SQLException e)
 		{
-			System.out.println("ServerVariables: Could not load table");
-			e.printStackTrace();
+			_log.error("ServerVariables: Could not load table", e);
 		}
 	}
 	
@@ -79,8 +83,7 @@ public class ServerVariables
 		}
 		catch (SQLException e)
 		{
-			System.out.println("ServerVariables: Could not save table");
-			e.printStackTrace();
+			_log.error("ServerVariables: Could not save table", e);
 		}
 	}
 	

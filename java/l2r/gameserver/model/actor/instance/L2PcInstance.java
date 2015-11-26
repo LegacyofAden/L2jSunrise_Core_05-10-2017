@@ -4610,7 +4610,6 @@ public final class L2PcInstance extends L2Playable
 			{
 				sendPacket(new RecipeShopSellList(this, temp));
 			}
-			
 		}
 		else
 		{
@@ -4868,15 +4867,6 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void doCast(L2Skill skill)
 	{
-		if (getCurrentSkill() != null)
-		{
-			if (!checkUseMagicConditions(skill, getCurrentSkill().isCtrlPressed(), getCurrentSkill().isShiftPressed()))
-			{
-				setIsCastingNow(false);
-				return;
-			}
-		}
-		
 		super.doCast(skill);
 		setRecentFakeDeath(false);
 	}
@@ -5572,14 +5562,7 @@ public final class L2PcInstance extends L2Playable
 					// If player is Lucky shouldn't get penalized.
 					if (!isLucky() && (insideSiegeZone || !insidePvpZone) && !getNevitSystem().isAdventBlessingActive())
 					{
-						if (Config.ALT_GAME_DELEVEL)
-						{
-							calculateDeathExpPenalty(killer, isAtWarWith(pk));
-						}
-						else
-						{
-							calculateDeathExpPenalty(killer, isAtWarWith(pk), false);
-						}
+						calculateDeathExpPenalty(killer, isAtWarWith(pk), Config.ALT_GAME_DELEVEL);
 					}
 				}
 			}
@@ -7073,7 +7056,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		else if (level > 0)
 		{
-			_log.warn(_accessLevel.getName() + " access level set for character " + getName() + "! Just a warning to be careful ;)");
+			_log.warn(_accessLevel.getName() + " access level set for character " + getName());
 		}
 	}
 	
@@ -9020,6 +9003,12 @@ public final class L2PcInstance extends L2Playable
 		if (getQueuedSkill() != null)
 		{
 			setQueuedSkill(null, false, false);
+		}
+		
+		if (!checkUseMagicConditions(skill, forceUse, dontMove))
+		{
+			setIsCastingNow(false);
+			return false;
 		}
 		
 		// Check if the target is correct and Notify the AI with AI_INTENTION_CAST and target

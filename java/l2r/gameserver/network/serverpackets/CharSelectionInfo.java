@@ -105,7 +105,7 @@ public class CharSelectionInfo extends L2GameServerPacket
 			writeS(_loginName);
 			writeD(_sessionId);
 			writeD(charInfoPackage.getClanId());
-			writeD(0x00); // ??
+			writeD(0x00); // Builder Level
 			
 			writeD(charInfoPackage.getSex());
 			writeD(charInfoPackage.getRace());
@@ -157,18 +157,18 @@ public class CharSelectionInfo extends L2GameServerPacket
 			writeD(i == _activeId ? 0x01 : 0x00); // c3 auto-select char
 			
 			writeC(Math.min(charInfoPackage.getEnchantEffect(), 127));
-			writeD(charInfoPackage.getAugmentationId()); // Can we see this on retail??
+			writeD(charInfoPackage.getAugmentationId());
 			
 			// writeD(charInfoPackage.getTransformId()); // Used to display Transformations
 			writeD(0x00); // Currently on retail when you are on character select you don't see your transformation.
 			
-			// Freya by Vistall:
-			writeD(0x00); // npdid - 16024 Tame Tiny Baby Kookaburra A9E89C
-			writeD(0x00); // level
-			writeD(0x00); // ?
-			writeD(0x00); // food? - 1200
-			writeF(0x00); // max Hp
-			writeF(0x00); // cur Hp
+			// Implementing it will be waster of resources.
+			writeD(0x00); // Pet ID
+			writeD(0x00); // Pet Level
+			writeD(0x00); // Pet Max Food
+			writeD(0x00); // Pet Current Food
+			writeF(0x00); // Pet Max HP
+			writeF(0x00); // Pet Max MP
 			
 			// High Five by Vistall:
 			writeD(charInfoPackage.getVitalityPoints()); // H5 Vitality

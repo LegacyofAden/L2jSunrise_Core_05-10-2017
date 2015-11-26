@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
+import l2r.gameserver.GeoData;
 import l2r.gameserver.data.sql.BotReportTable;
 import l2r.gameserver.model.BlockList;
 import l2r.gameserver.model.L2Object;
@@ -169,7 +170,7 @@ public final class TradeRequest extends L2GameClientPacket
 			return;
 		}
 		
-		if (player.calculateDistance(partner, true, false) > 150)
+		if ((player.calculateDistance(partner, true, false) > 150) || !GeoData.getInstance().canSeeTarget(player, partner))
 		{
 			player.sendPacket(SystemMessageId.TARGET_TOO_FAR);
 			return;

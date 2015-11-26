@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.logging.LogManager;
 
 import l2r.Config;
+import l2r.FloodProtectorsConfig;
 import l2r.L2DatabaseFactory;
 import l2r.Server;
 import l2r.UPnPService;
@@ -515,6 +516,7 @@ public class GameServer
 		
 		// Initialize config
 		Config.load();
+		FloodProtectorsConfig.load();
 		// Sunrise configs load section
 		ConfigsController.getInstance().reloadSunriseConfigs();
 		// Check binding address
