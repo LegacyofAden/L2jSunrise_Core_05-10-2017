@@ -147,7 +147,6 @@ public class OfflineTradersTable
 	
 	public void restoreOfflineTraders()
 	{
-		_log.info(getClass().getSimpleName() + ": Loading offline traders...");
 		int nTraders = 0;
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			Statement stm = con.createStatement();

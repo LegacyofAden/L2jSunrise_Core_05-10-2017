@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -39,6 +40,7 @@ import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.MercTicketManager;
 import l2r.gameserver.instancemanager.SiegeGuardManager;
 import l2r.gameserver.instancemanager.SiegeManager;
+import l2r.gameserver.instancemanager.ZoneManager;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.L2ClanMember;
 import l2r.gameserver.model.L2Object;
@@ -54,8 +56,10 @@ import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.sieges.castle.OnCastleSiegeFinish;
 import l2r.gameserver.model.events.impl.sieges.castle.OnCastleSiegeOwnerChange;
 import l2r.gameserver.model.events.impl.sieges.castle.OnCastleSiegeStart;
+import l2r.gameserver.model.zone.type.L2SwampZone;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
+import l2r.gameserver.network.serverpackets.OnEventTrigger;
 import l2r.gameserver.network.serverpackets.RelationChanged;
 import l2r.gameserver.network.serverpackets.SiegeInfo;
 import l2r.gameserver.network.serverpackets.SystemMessage;
@@ -339,6 +343,10 @@ public class Siege implements Siegable
 			getCastle().getZone().setIsActive(false);
 			getCastle().getZone().updateZoneStatusForCharactersInside();
 			getCastle().getZone().setSiegeInstance(null);
+			
+			// vGodFather effect zones
+			Collection<L2SwampZone> zones = ZoneManager.getInstance().getAllZones(L2SwampZone.class);
+			zones.stream().filter(zone -> !zone.isEnabled()).forEach(zone -> Broadcast.toAllOnlinePlayers(new OnEventTrigger(zone._eventId, false)));
 			
 			// Notify to scripts.
 			EventDispatcher.getInstance().notifyEventAsync(new OnCastleSiegeFinish(this), getCastle());

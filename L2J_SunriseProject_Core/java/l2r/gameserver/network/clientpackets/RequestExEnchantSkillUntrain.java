@@ -73,6 +73,13 @@ public final class RequestExEnchantSkillUntrain extends L2GameClientPacket
 			return;
 		}
 		
+		// Flood protect EnchantSkill
+		if (!getClient().getFloodProtectors().getEnchantSkill().tryPerformAction("enchant skill"))
+		{
+			player.sendMessage("Cool dude take a break.");
+			return;
+		}
+		
 		if (!player.isInsideZone(ZoneIdType.PEACE))
 		{
 			player.sendMessage("You cannot use the skill enhancing function outside of peace zones.");

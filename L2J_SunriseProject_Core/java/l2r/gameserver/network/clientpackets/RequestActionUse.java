@@ -101,8 +101,8 @@ public final class RequestActionUse extends L2GameClientPacket
 			_log.info(activeChar + " requested action use Id: " + _actionId + " Ctrl pressed:" + _ctrlPressed + " Shift pressed:" + _shiftPressed);
 		}
 		
-		// Don't do anything if player is dead
-		if (activeChar.isAlikeDead() || activeChar.isDead())
+		// Don't do anything if player is dead or confused
+		if ((activeChar.isFakeDeath() && (_actionId != 0)) || activeChar.isDead() || activeChar.isOutOfControl())
 		{
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return;
@@ -140,7 +140,7 @@ public final class RequestActionUse extends L2GameClientPacket
 		switch (_actionId)
 		{
 			case 0: // Sit/Stand
-				if (activeChar.isSitting() || !activeChar.isMoving())
+				if (activeChar.isSitting() || !activeChar.isMoving() || activeChar.isFakeDeath())
 				{
 					useSit(activeChar, target);
 				}
@@ -860,7 +860,11 @@ public final class RequestActionUse extends L2GameClientPacket
 			return true;
 		}
 		
-		if (activeChar.isSitting())
+		if (activeChar.isFakeDeath())
+		{
+			activeChar.stopEffects(L2EffectType.FAKE_DEATH);
+		}
+		else if (activeChar.isSitting())
 		{
 			activeChar.standUp();
 		}

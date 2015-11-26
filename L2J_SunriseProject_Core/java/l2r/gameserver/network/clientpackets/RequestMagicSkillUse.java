@@ -55,6 +55,12 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 			return;
 		}
 		
+		if (activeChar.isDead())
+		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
 		// Get the level of the used skill
 		L2Skill skill = activeChar.getKnownSkill(_magicId);
 		if (skill == null)

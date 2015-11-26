@@ -27,7 +27,6 @@ import l2r.gameserver.model.actor.L2Character;
  */
 public final class L2CastleZone extends L2ResidenceZone
 {
-	
 	public L2CastleZone(int id)
 	{
 		super(id);

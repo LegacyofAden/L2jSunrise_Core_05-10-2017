@@ -39,6 +39,7 @@ import l2r.gameserver.instancemanager.GrandBossManager;
 import l2r.gameserver.instancemanager.SiegeManager;
 import l2r.gameserver.instancemanager.TownManager;
 import l2r.gameserver.model.ClanPrivilege;
+import l2r.gameserver.model.Elementals;
 import l2r.gameserver.model.L2Augmentation;
 import l2r.gameserver.model.actor.FakePc;
 import l2r.gameserver.model.actor.L2Npc;
@@ -66,6 +67,7 @@ import l2r.gameserver.network.serverpackets.PartySmallWindowDeleteAll;
 import l2r.gameserver.network.serverpackets.SiegeInfo;
 import l2r.gameserver.network.serverpackets.SortedWareHouseWithdrawalList;
 import l2r.gameserver.network.serverpackets.SortedWareHouseWithdrawalList.WarehouseListType;
+import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.network.serverpackets.WareHouseDepositList;
 import l2r.gameserver.network.serverpackets.WareHouseWithdrawalList;
@@ -1014,6 +1016,89 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Clan name box cannot be empty.");
 			}
 		}
+		// Attribute system
+		else if (command.startsWith("element"))
+		{
+			int armorType = -1;
+			
+			if (command.startsWith("elementhead"))
+			{
+				armorType = Inventory.PAPERDOLL_HEAD;
+			}
+			else if (command.startsWith("elementchest"))
+			{
+				armorType = Inventory.PAPERDOLL_CHEST;
+			}
+			else if (command.startsWith("elementgloves"))
+			{
+				armorType = Inventory.PAPERDOLL_GLOVES;
+			}
+			else if (command.startsWith("elementboots"))
+			{
+				armorType = Inventory.PAPERDOLL_FEET;
+			}
+			else if (command.startsWith("elementlegs"))
+			{
+				armorType = Inventory.PAPERDOLL_LEGS;
+			}
+			else if (command.startsWith("elementwep"))
+			{
+				armorType = Inventory.PAPERDOLL_RHAND;
+			}
+			
+			itemIdToGet = AioItemsConfigs.ELEMENT_COIN;
+			price = AioItemsConfigs.ELEMENT_PRICE;
+			
+			if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
+			{
+				return;
+			}
+			
+			L2ItemInstance itemInstance = null;
+			L2ItemInstance parmorInstance = player.getInventory().getPaperdollItem(armorType);
+			if (parmorInstance == null)
+			{
+				player.sendMessage("Equip the item for element.");
+				return;
+			}
+			
+			if (parmorInstance.isHeroItem() || (parmorInstance.isShadowItem() || (parmorInstance.isCommonItem() || (parmorInstance.isEtcItem() || (parmorInstance.isTimeLimitedItem())))))
+			{
+				player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.THIS_IS_NOT_A_SUITABLE_ITEM));
+				return;
+			}
+			
+			if ((armorType == Inventory.PAPERDOLL_RHAND) && !AioItemsConfigs.ELEMENT_ALLOW_MORE_ATT_FOR_WEAPONS)
+			{
+				player.getInventory().getPaperdollItem(Inventory.PAPERDOLL_RHAND).clearElementAttr((byte) -1);
+			}
+			
+			if (parmorInstance.getLocationSlot() == armorType)
+			{
+				itemInstance = parmorInstance;
+			}
+			
+			if (itemInstance != null)
+			{
+				String[] types = command.split(" ");
+				byte element = Elementals.getElementId(types[1]);
+				
+				// set element
+				player.destroyItemByItemId("element", itemIdToGet, price, player, true);
+				player.getInventory().unEquipItemInSlot(armorType);
+				itemInstance.setElementAttr(element, armorType == Inventory.PAPERDOLL_RHAND ? AioItemsConfigs.ELEMENT_VALUE_WEAPON : AioItemsConfigs.ELEMENT_VALUE_ARMOR);
+				player.getInventory().equipItem(itemInstance);
+				player.sendMessage("You have successfully added attribute value.");
+				
+				// send packets
+				InventoryUpdate iu = new InventoryUpdate();
+				iu.addModifiedItem(itemInstance);
+				player.sendPacket(iu);
+				player.broadcastPacket(new CharInfo(player));
+				player.sendPacket(new UserInfo(player));
+				player.broadcastPacket(new ExBrExtraUserInfo(player));
+			}
+		}
 		// Method to add specific augment to a weapon
 		else if (command.startsWith("addaugment"))
 		{
@@ -1064,8 +1149,7 @@ public final class L2AioNpcInstance extends L2Npc
 			}
 			
 			pskill = pskill + 8358;
-			int armorType = -1;
-			armorType = Inventory.PAPERDOLL_RHAND;
+			int armorType = Inventory.PAPERDOLL_RHAND;
 			itemIdToGet = AioItemsConfigs.AUGMENT_COIN;
 			price = AioItemsConfigs.AUGMENT_PRICE;
 			
@@ -1081,16 +1165,19 @@ public final class L2AioNpcInstance extends L2Npc
 				player.sendMessage("Equip the weapon for augmentation.");
 				return;
 			}
+			
 			if (parmorInstance.isAugmented())
 			{
 				player.sendPacket(SystemMessageId.ONCE_AN_ITEM_IS_AUGMENTED_IT_CANNOT_BE_AUGMENTED_AGAIN);
 				return;
 			}
+			
 			if (parmorInstance.isHeroItem() || (parmorInstance.isShadowItem() || (parmorInstance.isCommonItem() || (parmorInstance.isEtcItem() || (parmorInstance.isTimeLimitedItem())))))
 			{
 				player.sendPacket(SystemMessageId.THIS_IS_NOT_A_SUITABLE_ITEM);
 				return;
 			}
+			
 			if (parmorInstance.getLocationSlot() == armorType)
 			{
 				itemInstance = parmorInstance;

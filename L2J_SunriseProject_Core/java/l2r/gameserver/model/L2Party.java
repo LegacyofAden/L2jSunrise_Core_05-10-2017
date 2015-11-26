@@ -781,11 +781,25 @@ public class L2Party extends AbstractPlayerGroup
 				{
 					long tempCount = count;
 					tempCount *= member.calcPremiumDropMultipliers(57);
-					member.addAdena("Party", tempCount, player, true);
+					if (member.getInventory().getAdenaInstance() != null)
+					{
+						member.addAdena("Party", tempCount, player, true);
+					}
+					else
+					{
+						member.addItem("Party", 57, tempCount, player, true);
+					}
 				}
 				else
 				{
-					member.addAdena("Party", count, player, true);
+					if (member.getInventory().getAdenaInstance() != null)
+					{
+						member.addAdena("Party", count, player, true);
+					}
+					else
+					{
+						member.addItem("Party", 57, count, player, true);
+					}
 				}
 			}
 		}

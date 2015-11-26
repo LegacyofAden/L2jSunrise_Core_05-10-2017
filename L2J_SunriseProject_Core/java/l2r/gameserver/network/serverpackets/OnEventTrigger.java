@@ -18,30 +18,16 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import l2r.gameserver.model.actor.instance.L2DoorInstance;
-
-/**
- ** @author Gnacik
- */
 public class OnEventTrigger extends L2GameServerPacket
 {
 	private final int _emitterId;
 	private final int _enabled;
 	
-	public OnEventTrigger(L2DoorInstance door, boolean enabled)
-	{
-		_emitterId = door.getEmitter();
-		_enabled = enabled ? 1 : 0;
-	}
-	
-	// Add IQ by pmq Start
 	public OnEventTrigger(int id, boolean enabled)
 	{
 		_emitterId = id;
 		_enabled = enabled ? 1 : 0;
 	}
-	
-	// Add IQ by pmq End
 	
 	@Override
 	protected final void writeImpl()

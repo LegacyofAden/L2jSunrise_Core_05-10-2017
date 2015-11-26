@@ -20,9 +20,11 @@ package l2r.gameserver.model.zone.type;
 
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.CastleManager;
+import l2r.gameserver.instancemanager.SiegeManager;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Castle;
+import l2r.gameserver.model.entity.Siege;
 import l2r.gameserver.model.zone.L2ZoneType;
 
 /**
@@ -35,6 +37,7 @@ public class L2SwampZone extends L2ZoneType
 	
 	private int _castleId;
 	private Castle _castle;
+	public int _eventId;
 	
 	public L2SwampZone(int id)
 	{
@@ -46,6 +49,9 @@ public class L2SwampZone extends L2ZoneType
 		// no castle by default
 		_castleId = 0;
 		_castle = null;
+		
+		// no event by default
+		_eventId = 0;
 	}
 	
 	@Override
@@ -59,13 +65,17 @@ public class L2SwampZone extends L2ZoneType
 		{
 			_castleId = Integer.parseInt(value);
 		}
+		else if (name.equals("eventId"))
+		{
+			_eventId = Integer.parseInt(value);
+		}
 		else
 		{
 			super.setParameter(name, value);
 		}
 	}
 	
-	private Castle getCastle()
+	protected Castle getCastle()
 	{
 		if ((_castleId > 0) && (_castle == null))
 		{
@@ -88,9 +98,13 @@ public class L2SwampZone extends L2ZoneType
 			
 			// defenders not affected
 			final L2PcInstance player = character.getActingPlayer();
-			if ((player != null) && player.isInSiege() && (player.getSiegeState() == 2))
+			if ((player != null) && (player.getClan() != null))
 			{
-				return;
+				Siege siege = SiegeManager.getInstance().getSiege(player.getX(), player.getY(), player.getZ());
+				if (siege.checkIsDefender(player.getClan()))
+				{
+					return;
+				}
 			}
 		}
 		

@@ -71,17 +71,16 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	private EffectState _state;
 	
 	// period, seconds
-	private final int _abnormalTime;
+	private final int _period;
 	protected int _periodStartTicks;
 	protected int _periodFirstTime;
+	private int _rate;
 	
 	private final EffectTemplate _template;
 	
 	// function templates
 	private final FuncTemplate[] _funcTemplates;
 	
-	// initial count
-	private final int _totalCount;
 	// counter
 	private int _count;
 	
@@ -149,7 +148,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		_lambda = template.lambda;
 		_funcTemplates = template.funcTemplates;
 		_count = template.counter;
-		_totalCount = _count;
 		
 		// Support for retail herbs duration when _effected has a Summon
 		int temp = template.abnormalTime;
@@ -167,7 +165,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			temp *= 2;
 		}
 		
-		_abnormalTime = temp;
+		_period = temp;
 		_abnormalEffect = template.abnormalEffect;
 		_specialEffect = template.specialEffect;
 		_abnormalType = template.abnormalType;
@@ -194,9 +192,8 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		_effector = env.getCharacter();
 		_lambda = _template.lambda;
 		_funcTemplates = _template.funcTemplates;
-		_count = effect.getCount();
-		_totalCount = _template.counter;
-		_abnormalTime = _template.abnormalTime;
+		_count = _template.counter;
+		_period = _template.abnormalTime;
 		_abnormalEffect = _template.abnormalEffect;
 		_specialEffect = _template.specialEffect;
 		_abnormalType = _template.abnormalType;
@@ -217,17 +214,17 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	
 	public int getTotalCount()
 	{
-		return _totalCount;
+		return _template.counter;
 	}
 	
 	public void setCount(int newcount)
 	{
-		_count = Math.min(newcount, _totalCount); // sanity check
+		_count = newcount;
 	}
 	
 	public void setFirstTime(int newFirstTime)
 	{
-		_periodFirstTime = Math.min(newFirstTime, _abnormalTime);
+		_periodFirstTime = Math.min(newFirstTime, _period);
 		_periodStartTicks -= _periodFirstTime * GameTimeController.TICKS_PER_SECOND;
 	}
 	
@@ -238,7 +235,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	
 	public int getAbnormalTime()
 	{
-		return _abnormalTime;
+		return _period;
 	}
 	
 	public int getTime()
@@ -250,13 +247,19 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	 * Returns the elapsed time of the task.
 	 * @return Time in seconds.
 	 */
-	public int getTaskTime()
+	public int getElapsedTaskTime()
 	{
-		if (_count == _totalCount)
-		{
-			return 0;
-		}
-		return (Math.abs((_count - _totalCount) + 1) * _abnormalTime) + getTime() + 1;
+		return ((getTotalCount() - _count) * _period) + getTime() + 1;
+	}
+	
+	public int getTotalTaskTime()
+	{
+		return getTotalCount() * _period;
+	}
+	
+	public int getRemainingTaskTime()
+	{
+		return getTotalTaskTime() - getElapsedTaskTime();
 	}
 	
 	public boolean getInUse()
@@ -333,33 +336,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		return _lambda.calc(env);
 	}
 	
-	private final void startEffectTask()
-	{
-		stopEffectTask();
-		
-		int initialDelay = Math.max((_abnormalTime - _periodFirstTime) * 1000, 5);
-		if (_count > 1)
-		{
-			_currentFuture = ThreadPoolManager.getInstance().scheduleEffectAtFixedRate(new EffectTask(), initialDelay, _abnormalTime * 1000);
-		}
-		else
-		{
-			_currentFuture = ThreadPoolManager.getInstance().scheduleEffect(new EffectTask(), initialDelay);
-		}
-		
-		if (_state == EffectState.ACTING)
-		{
-			if (isSelfEffectType())
-			{
-				_effector.addEffect(this);
-			}
-			else
-			{
-				_effected.addEffect(this);
-			}
-		}
-	}
-	
 	/**
 	 * Stop the L2Effect task and send Server->Client update packet.<br>
 	 * <B><U>Actions</U>:</B>
@@ -404,6 +380,45 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			else if (getEffected() != null)
 			{
 				getEffected().removeEffect(this);
+			}
+		}
+		_rate = -1;
+	}
+	
+	private synchronized void startEffectTask(long duration)
+	{
+		stopEffectTask();
+		_rate = -1;
+		_currentFuture = ThreadPoolManager.getInstance().scheduleEffect(new EffectTask(), duration);
+		
+		if (_state == EffectState.ACTING)
+		{
+			if (isSelfEffectType())
+			{
+				_effector.addEffect(this);
+			}
+			else
+			{
+				_effected.addEffect(this);
+			}
+		}
+	}
+	
+	private synchronized void startEffectTaskAtFixedRate(long delay, int rate)
+	{
+		stopEffectTask();
+		_rate = rate;
+		_currentFuture = ThreadPoolManager.getInstance().scheduleEffectAtFixedRate(new EffectTask(), delay, rate);
+		
+		if (_state == EffectState.ACTING)
+		{
+			if (isSelfEffectType())
+			{
+				_effector.addEffect(this);
+			}
+			else
+			{
+				_effected.addEffect(this);
 			}
 		}
 	}
@@ -478,19 +493,25 @@ public abstract class L2Effect implements IChanceSkillTrigger
 				// vGodFather Update abnormal effects just in case
 				getEffected().updateAbnormalEffect();
 				
-				if (_abnormalTime != 0)
+				if (_count > 1)
 				{
-					startEffectTask();
+					startEffectTaskAtFixedRate(5, _period * 1000);
 					return;
 				}
+				
+				if (_period > 0)
+				{
+					startEffectTask(_period * 1000);
+					return;
+				}
+				
 				// effects not having count or period should start
 				_startConditionsCorrect = onStart();
 			}
 			case ACTING:
 			{
-				if (_count > 0)
+				if (_count-- > 0)
 				{
-					_count--;
 					if (getInUse())
 					{
 						// effect has to be in use
@@ -501,7 +522,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 					}
 					else if (_count > 0)
 					{
-						// do not finish it yet, in case reactivated
 						return;
 					}
 				}
@@ -530,7 +550,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 				getEffected().updateAbnormalEffect();
 				
 				// Cancel the effect in the the abnormal effect map of the L2Character
-				if (getInUse() || !((_count > 1) || (_abnormalTime > 0)))
+				if (getInUse() || !((_count > 1) || (_period > 0)))
 				{
 					if (_startConditionsCorrect)
 					{
@@ -591,26 +611,14 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		}
 		
 		final ScheduledFuture<?> future = _currentFuture;
-		final L2Skill sk = getSkill();
-		if (_totalCount > 1)
+		if (future == null)
 		{
-			if (sk.isStatic())
-			{
-				mi.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), sk.getBuffDuration() - (getTaskTime() * 1000));
-			}
-			else
-			{
-				mi.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), -1);
-			}
+			return;
 		}
-		else if (future != null)
-		{
-			mi.addEffect(sk.getDisplayId(), getLevel(), (int) future.getDelay(TimeUnit.MILLISECONDS));
-		}
-		else if (_abnormalTime == -1)
-		{
-			mi.addEffect(sk.getDisplayId(), getLevel(), _abnormalTime);
-		}
+		
+		int time = _rate > 0 ? getRemainingTaskTime() * 1000 : (int) future.getDelay(TimeUnit.MILLISECONDS);
+		
+		mi.addEffect(_skill.getDisplayId(), _skill.getLevel(), time);
 	}
 	
 	public final void addPartySpelledIcon(PartySpelled ps)
@@ -626,9 +634,9 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		{
 			ps.addPartySpelledEffect(sk.getDisplayId(), getLevel(), (int) future.getDelay(TimeUnit.MILLISECONDS));
 		}
-		else if (_abnormalTime == -1)
+		else if (_period == -1)
 		{
-			ps.addPartySpelledEffect(sk.getDisplayId(), getLevel(), _abnormalTime);
+			ps.addPartySpelledEffect(sk.getDisplayId(), getLevel(), _period);
 		}
 	}
 	
@@ -645,9 +653,9 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		{
 			os.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), (int) future.getDelay(TimeUnit.MILLISECONDS));
 		}
-		else if (_abnormalTime == -1)
+		else if (_period == -1)
 		{
-			os.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), _abnormalTime);
+			os.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), _period);
 		}
 	}
 	
@@ -697,7 +705,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	@Override
 	public String toString()
 	{
-		return "L2Effect [_skill=" + _skill + ", _state=" + _state + ", _period=" + _abnormalTime + "]";
+		return "L2Effect [_skill=" + _skill + ", _state=" + _state + ", _period=" + _period + "]";
 	}
 	
 	public boolean isSelfEffectType()

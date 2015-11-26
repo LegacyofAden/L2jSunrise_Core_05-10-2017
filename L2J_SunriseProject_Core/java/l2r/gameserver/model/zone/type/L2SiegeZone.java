@@ -18,6 +18,8 @@
  */
 package l2r.gameserver.model.zone.type;
 
+import java.util.Collection;
+
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.enums.MountType;
@@ -39,6 +41,7 @@ import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.zone.AbstractZoneSettings;
 import l2r.gameserver.model.zone.L2ZoneType;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.OnEventTrigger;
 
 /**
  * A siege zone
@@ -183,6 +186,10 @@ public class L2SiegeZone extends L2ZoneType
 					plyer.sendPacket(SystemMessageId.AREA_CANNOT_BE_ENTERED_WHILE_MOUNTED_WYVERN);
 					plyer.enteredNoLanding(DISMOUNT_DELAY);
 				}
+				
+				// vGodFather effect zones
+				Collection<L2SwampZone> zones = ZoneManager.getInstance().getAllZones(L2SwampZone.class);
+				zones.stream().filter(zone -> zone.isEnabled()).forEach(zone -> character.sendPacket(new OnEventTrigger(zone._eventId, true)));
 			}
 		}
 	}
@@ -308,7 +315,6 @@ public class L2SiegeZone extends L2ZoneType
 				{
 					((L2SiegeSummonInstance) character).unSummon(((L2SiegeSummonInstance) character).getOwner());
 				}
-				
 			}
 		}
 	}

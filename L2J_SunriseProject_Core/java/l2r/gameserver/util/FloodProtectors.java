@@ -18,7 +18,7 @@
  */
 package l2r.gameserver.util;
 
-import l2r.Config;
+import l2r.FloodProtectorsConfig;
 import l2r.gameserver.network.L2GameClient;
 
 /**
@@ -31,6 +31,10 @@ public final class FloodProtectors
 	 * Use-item flood protector.
 	 */
 	private final FloodProtectorAction _useItem;
+	/**
+	 * Enchant-skill flood protector.
+	 */
+	private final FloodProtectorAction _enchantSkill;
 	/**
 	 * Roll-dice flood protector.
 	 */
@@ -115,26 +119,27 @@ public final class FloodProtectors
 	public FloodProtectors(final L2GameClient client)
 	{
 		super();
-		_useItem = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_USE_ITEM);
-		_rollDice = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_ROLL_DICE);
-		_firework = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_FIREWORK);
-		_itemPetSummon = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_ITEM_PET_SUMMON);
-		_heroVoice = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_HERO_VOICE);
-		_globalChat = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_GLOBAL_CHAT);
-		_subclass = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_SUBCLASS);
-		_dropItem = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_DROP_ITEM);
-		_serverBypass = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_SERVER_BYPASS);
-		_multiSell = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_MULTISELL);
-		_transaction = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_TRANSACTION);
-		_manufacture = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_MANUFACTURE);
-		_manor = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_MANOR);
-		_sendMail = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_SENDMAIL);
-		_characterSelect = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_CHARACTER_SELECT);
-		_itemAuction = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_ITEM_AUCTION);
-		_shoutChat = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_SHOUT_CHAT);
-		_tradeChat = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_TRADE_CHAT);
-		_clanChat = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_CLAN_CHAT);
-		_allyChat = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_ALLY_CHAT);
+		_useItem = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_USE_ITEM);
+		_enchantSkill = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_ENCHANT_SKILL);
+		_rollDice = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_ROLL_DICE);
+		_firework = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_FIREWORK);
+		_itemPetSummon = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_ITEM_PET_SUMMON);
+		_heroVoice = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_HERO_VOICE);
+		_globalChat = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_GLOBAL_CHAT);
+		_subclass = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_SUBCLASS);
+		_dropItem = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_DROP_ITEM);
+		_serverBypass = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_SERVER_BYPASS);
+		_multiSell = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_MULTISELL);
+		_transaction = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_TRANSACTION);
+		_manufacture = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_MANUFACTURE);
+		_manor = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_MANOR);
+		_sendMail = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_SENDMAIL);
+		_characterSelect = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_CHARACTER_SELECT);
+		_itemAuction = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_ITEM_AUCTION);
+		_shoutChat = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_SHOUT_CHAT);
+		_tradeChat = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_TRADE_CHAT);
+		_clanChat = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_CLAN_CHAT);
+		_allyChat = new FloodProtectorAction(client, FloodProtectorsConfig.FLOOD_PROTECTOR_ALLY_CHAT);
 	}
 	
 	/**
@@ -144,6 +149,15 @@ public final class FloodProtectors
 	public FloodProtectorAction getUseItem()
 	{
 		return _useItem;
+	}
+	
+	/**
+	 * Returns {@link #_useItem}.
+	 * @return {@link #_useItem}
+	 */
+	public FloodProtectorAction getEnchantSkill()
+	{
+		return _enchantSkill;
 	}
 	
 	/**
