@@ -195,8 +195,19 @@ public final class RequestExEnchantSkillRouteChange extends L2GameClientPacket
 					_logEnchant.log(record);
 				}
 				
+				// vGodFather
+				L2Skill oldSkill = player.getAllSkills().stream().filter(z -> z.getId() == _skillId).findFirst().orElse(null);
+				long remainingTime = oldSkill != null ? player.getSkillRemainingReuseTime(oldSkill.getReuseHashCode()) : 0;
+				
 				player.addSkill(skill, true);
 				player.sendPacket(ExEnchantSkillResult.valueOf(true));
+				
+				// vGodFather
+				if (remainingTime > 0)
+				{
+					player.addTimeStamp(skill, remainingTime);
+					player.disableSkill(skill, remainingTime);
+				}
 			}
 			
 			if (Config.DEBUG)

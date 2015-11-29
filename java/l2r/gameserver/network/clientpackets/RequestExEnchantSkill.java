@@ -176,8 +176,19 @@ public final class RequestExEnchantSkill extends L2GameClientPacket
 					_logEnchant.log(record);
 				}
 				
+				// vGodFather
+				L2Skill oldSkill = player.getAllSkills().stream().filter(z -> z.getId() == _skillId).findFirst().orElse(null);
+				long remainingTime = oldSkill != null ? player.getSkillRemainingReuseTime(oldSkill.getReuseHashCode()) : 0;
+				
 				player.addSkill(skill, true);
 				player.sendPacket(ExEnchantSkillResult.valueOf(true));
+				
+				// vGodFather
+				if (remainingTime > 0)
+				{
+					player.addTimeStamp(skill, remainingTime);
+					player.disableSkill(skill, remainingTime);
+				}
 				
 				final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.YOU_HAVE_SUCCEEDED_IN_ENCHANTING_THE_SKILL_S1);
 				sm.addSkillName(_skillId);
