@@ -157,8 +157,6 @@ import gr.sr.interf.SunriseEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javolution.util.FastList;
-
 /**
  * Mother class of all character objects of the world (PC, NPC...)<br>
  * L2Character:<br>
@@ -5842,7 +5840,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			int skipRange = 0;
 			int skipLOS = 0;
 			int skipPeaceZone = 0;
-			List<L2Character> targetList = new FastList<>(targets.length);
+			List<L2Character> targetList = new ArrayList<>();
 			for (L2Object target : targets)
 			{
 				if (target.isCharacter())
@@ -6487,18 +6485,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						}
 						else
 						{
-							
-							// vGodFather
-							boolean flagAttacker = true; // This must be always true
-							switch (skill.getId())
-							{
-								case 42: // Sweeper
-								case 444: // Sweeper Festival
-									// Make that false to avoid flag attacker when use sweep skills
-									flagAttacker = false;
-									break;
-							}
-							
 							if (target.isPlayer())
 							{
 								// Casting non offensive skill on player with pvp flag set or with karma
@@ -6526,10 +6512,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 									case UNLOCK_SPECIAL:
 										break;
 									default:
-										if (flagAttacker)
-										{
-											player.updatePvPStatus();
-										}
+										player.updatePvPStatus();
 								}
 							}
 						}
