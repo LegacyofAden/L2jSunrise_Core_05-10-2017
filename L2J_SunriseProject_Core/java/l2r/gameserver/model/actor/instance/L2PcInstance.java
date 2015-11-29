@@ -9039,8 +9039,6 @@ public final class L2PcInstance extends L2Playable
 	
 	private boolean checkUseMagicConditions(L2Skill skill, boolean forceUse, boolean dontMove)
 	{
-		L2SkillType sklType = skill.getSkillType();
-		
 		// ************************************* Check Player State *******************************************
 		
 		// Abnormal effects(ex : Stun, Sleep...) are checked in L2Character useMagic()
@@ -9164,6 +9162,7 @@ public final class L2PcInstance extends L2Playable
 			{
 				if (!((L2DoorInstance) target).getCastle().getSiege().isInProgress())
 				{
+					sendPacket(SystemMessageId.INCORRECT_TARGET);
 					return false;
 				}
 			}
@@ -9171,6 +9170,7 @@ public final class L2PcInstance extends L2Playable
 			{
 				if (!((L2DoorInstance) target).getFort().getSiege().isInProgress())
 				{
+					sendPacket(SystemMessageId.INCORRECT_TARGET);
 					return false;
 				}
 			}
@@ -9304,6 +9304,7 @@ public final class L2PcInstance extends L2Playable
 					case AURA_FRIENDLY:
 						break;
 					default: // Send a Server->Client packet ActionFailed to the L2PcInstance
+						sendPacket(SystemMessageId.INCORRECT_TARGET);
 						sendPacket(ActionFailed.STATIC_PACKET);
 						return false;
 				}
@@ -9340,6 +9341,7 @@ public final class L2PcInstance extends L2Playable
 		// Check if the skill is defensive
 		if (!skill.isOffensive() && target.isMonster() && !forceUse)
 		{
+			L2SkillType sklType = skill.getSkillType();
 			// check if the target is a monster and if force attack is set.. if not then we don't want to cast.
 			switch (sklTargetType)
 			{

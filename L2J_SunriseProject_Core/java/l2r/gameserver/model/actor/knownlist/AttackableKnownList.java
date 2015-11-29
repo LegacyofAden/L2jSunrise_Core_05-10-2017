@@ -52,7 +52,14 @@ public class AttackableKnownList extends NpcKnownList
 		// FIXME: This is a temporary solution && support for Walking Manager
 		if (getActiveChar().hasAI() && ((known == null) || known.isEmpty()) && !getActiveChar().isWalker() && !getActiveChar().isRunner())
 		{
-			getActiveChar().getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE, null);
+			try
+			{
+				getActiveChar().getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE, null);
+			}
+			catch (Exception e)
+			{
+			
+			}
 		}
 		
 		return true;
