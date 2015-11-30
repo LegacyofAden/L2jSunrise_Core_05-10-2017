@@ -71,10 +71,9 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	private EffectState _state;
 	
 	// period, seconds
-	private final int _period;
+	private int _period;
 	protected int _periodStartTicks;
 	protected int _periodFirstTime;
-	private int _rate;
 	
 	private final EffectTemplate _template;
 	
@@ -219,7 +218,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	
 	public void setCount(int newcount)
 	{
-		_count = newcount;
+		_count = Math.min(newcount, getTotalCount()); // sanity check
 	}
 	
 	public void setFirstTime(int newFirstTime)
@@ -241,6 +240,29 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	public int getTime()
 	{
 		return (GameTimeController.getInstance().getGameTicks() - _periodStartTicks) / GameTimeController.TICKS_PER_SECOND;
+	}
+	
+	/**
+	 * Returns the elapsed time of the task.
+	 * @return Time in seconds.
+	 */
+	public int getTaskTime()
+	{
+		if (_count == getTotalCount())
+		{
+			return 0;
+		}
+		return (Math.abs((_count - getTotalCount()) + 1) * _period) + getTime() + 1;
+	}
+	
+	public int getRemainingTime()
+	{
+		return _period - ((GameTimeController.getInstance().getGameTicks() - _periodStartTicks) / GameTimeController.TICKS_PER_SECOND);
+	}
+	
+	public void setPeriod(int period)
+	{
+		_period = period;
 	}
 	
 	/**
@@ -336,6 +358,33 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		return _lambda.calc(env);
 	}
 	
+	private final void startEffectTask()
+	{
+		stopEffectTask();
+		
+		int initialDelay = Math.max((_period - _periodFirstTime) * 1000, 5);
+		if (_count > 1)
+		{
+			_currentFuture = ThreadPoolManager.getInstance().scheduleEffectAtFixedRate(new EffectTask(), initialDelay, _period * 1000);
+		}
+		else
+		{
+			_currentFuture = ThreadPoolManager.getInstance().scheduleEffect(new EffectTask(), initialDelay);
+		}
+		
+		if (_state == EffectState.ACTING)
+		{
+			if (isSelfEffectType())
+			{
+				_effector.addEffect(this);
+			}
+			else
+			{
+				_effected.addEffect(this);
+			}
+		}
+	}
+	
 	/**
 	 * Stop the L2Effect task and send Server->Client update packet.<br>
 	 * <B><U>Actions</U>:</B>
@@ -380,45 +429,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			else if (getEffected() != null)
 			{
 				getEffected().removeEffect(this);
-			}
-		}
-		_rate = -1;
-	}
-	
-	private synchronized void startEffectTask(long duration)
-	{
-		stopEffectTask();
-		_rate = -1;
-		_currentFuture = ThreadPoolManager.getInstance().scheduleEffect(new EffectTask(), duration);
-		
-		if (_state == EffectState.ACTING)
-		{
-			if (isSelfEffectType())
-			{
-				_effector.addEffect(this);
-			}
-			else
-			{
-				_effected.addEffect(this);
-			}
-		}
-	}
-	
-	private synchronized void startEffectTaskAtFixedRate(long delay, int rate)
-	{
-		stopEffectTask();
-		_rate = rate;
-		_currentFuture = ThreadPoolManager.getInstance().scheduleEffectAtFixedRate(new EffectTask(), delay, rate);
-		
-		if (_state == EffectState.ACTING)
-		{
-			if (isSelfEffectType())
-			{
-				_effector.addEffect(this);
-			}
-			else
-			{
-				_effected.addEffect(this);
 			}
 		}
 	}
@@ -493,18 +503,11 @@ public abstract class L2Effect implements IChanceSkillTrigger
 				// vGodFather Update abnormal effects just in case
 				getEffected().updateAbnormalEffect();
 				
-				if (_count > 1)
+				if (_period != 0)
 				{
-					startEffectTaskAtFixedRate(5, _period * 1000);
+					startEffectTask();
 					return;
 				}
-				
-				if (_period > 0)
-				{
-					startEffectTask(_period * 1000);
-					return;
-				}
-				
 				// effects not having count or period should start
 				_startConditionsCorrect = onStart();
 			}
@@ -611,14 +614,27 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		}
 		
 		final ScheduledFuture<?> future = _currentFuture;
-		if (future == null)
+		final L2Skill sk = getSkill();
+		int time = getRemainingTaskTime() * 1000;
+		if (getTotalCount() > 1)
 		{
-			return;
+			if (sk.isStatic())
+			{
+				mi.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), sk.getBuffDuration() - (getTaskTime() * 1000));
+			}
+			else
+			{
+				mi.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), time);
+			}
 		}
-		
-		int time = _rate > 0 ? getRemainingTaskTime() * 1000 : (int) future.getDelay(TimeUnit.MILLISECONDS);
-		
-		mi.addEffect(_skill.getDisplayId(), _skill.getLevel(), time);
+		else if (future != null)
+		{
+			mi.addEffect(sk.getDisplayId(), getLevel(), (int) future.getDelay(TimeUnit.MILLISECONDS));
+		}
+		else if (_period == -1)
+		{
+			mi.addEffect(sk.getDisplayId(), getLevel(), _period);
+		}
 	}
 	
 	public final void addPartySpelledIcon(PartySpelled ps)
