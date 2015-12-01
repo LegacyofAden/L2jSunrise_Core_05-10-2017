@@ -93,6 +93,12 @@ public final class TradeRequest extends L2GameClientPacket
 		}
 		
 		final L2PcInstance partner = target.getActingPlayer();
+		if (!GeoData.getInstance().canSeeTarget(player, partner))
+		{
+			player.sendPacket(SystemMessageId.CANT_SEE_TARGET);
+			return;
+		}
+		
 		if (partner.isInOlympiadMode() || player.isInOlympiadMode())
 		{
 			player.sendMessage("A user currently participating in the Olympiad cannot accept or request a trade.");
@@ -170,7 +176,7 @@ public final class TradeRequest extends L2GameClientPacket
 			return;
 		}
 		
-		if ((player.calculateDistance(partner, true, false) > 150) || !GeoData.getInstance().canSeeTarget(player, partner))
+		if (player.calculateDistance(partner, true, false) > 150)
 		{
 			player.sendPacket(SystemMessageId.TARGET_TOO_FAR);
 			return;
