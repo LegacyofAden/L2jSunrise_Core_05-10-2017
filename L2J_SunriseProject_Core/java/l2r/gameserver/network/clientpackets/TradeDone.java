@@ -98,8 +98,8 @@ public final class TradeDone extends L2GameClientPacket
 			
 			if (!GeoData.getInstance().canSeeTarget(player, trade.getPartner()))
 			{
-				player.sendPacket(SystemMessageId.CANT_SEE_TARGET);
 				player.cancelActiveTrade();
+				player.sendPacket(SystemMessageId.CANT_SEE_TARGET);
 				return;
 			}
 			
