@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.pathfinding.cellnodes;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -356,7 +355,7 @@ public class CellPathFinding extends PathFinding
 		{
 			mapSize = size;
 			count = cnt;
-			bufs = new ArrayList<>(count);
+			bufs = new CopyOnWriteArrayList<>();
 		}
 		
 		@Override
