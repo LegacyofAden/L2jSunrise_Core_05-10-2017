@@ -19,6 +19,7 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
+import l2r.gameserver.GeoData;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.TradeList;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -91,6 +92,13 @@ public final class TradeDone extends L2GameClientPacket
 			
 			if ((player.getInstanceId() != trade.getPartner().getInstanceId()) && (player.getInstanceId() != -1))
 			{
+				player.cancelActiveTrade();
+				return;
+			}
+			
+			if (!GeoData.getInstance().canSeeTarget(player, trade.getPartner()))
+			{
+				player.sendPacket(SystemMessageId.CANT_SEE_TARGET);
 				player.cancelActiveTrade();
 				return;
 			}
