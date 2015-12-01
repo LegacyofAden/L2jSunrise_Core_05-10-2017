@@ -326,10 +326,9 @@ public final class L2BabyPetInstance extends L2PetInstance
 					// buffs found, checking owner buffs
 					if (!_currentBuffs.isEmpty())
 					{
-						L2Effect[] effects = owner.getAllEffects();
 						Iterator<L2Skill> iter;
 						L2Skill currentSkill;
-						for (L2Effect e : effects)
+						for (L2Effect e : owner.getAllEffects())
 						{
 							if (e == null)
 							{
