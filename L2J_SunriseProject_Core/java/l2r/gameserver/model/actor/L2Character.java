@@ -3555,7 +3555,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * The Integer key of _effects is the L2Skill Identifier that has created the effect.
 	 * @return A table containing all active skills effect in progress on the L2Character
 	 */
-	public final L2Effect[] getAllEffects()
+	public final List<L2Effect> getAllEffects()
 	{
 		return _effects.getAllEffects();
 	}

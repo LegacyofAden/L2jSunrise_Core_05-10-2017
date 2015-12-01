@@ -102,9 +102,7 @@ public class CubicAction implements Runnable
 			L2Skill skill = null;
 			if ((_cubic.getId() >= L2CubicInstance.SMART_CUBIC_EVATEMPLAR) && (_cubic.getId() <= L2CubicInstance.SMART_CUBIC_SPECTRALMASTER))
 			{
-				L2Effect[] effects = _cubic.getOwner().getAllEffects();
-				
-				for (L2Effect e : effects)
+				for (L2Effect e : _cubic.getOwner().getAllEffects())
 				{
 					if ((e != null) && e.getSkill().isDebuff() && e.getSkill().canBeDispeled())
 					{

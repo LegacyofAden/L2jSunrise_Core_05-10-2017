@@ -9647,13 +9647,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public final void stopAllEffectsNotStayOnSubclassChange()
 	{
-		for (L2Effect effect : _effects.getAllEffects())
-		{
-			if ((effect != null) && !effect.getSkill().isStayOnSubclassChange())
-			{
-				effect.exit(true);
-			}
-		}
+		_effects.getAllEffects().stream().filter(e -> (e != null) && !e.getSkill().isStayOnSubclassChange()).forEach(e -> e.exit(true));
 		updateAndBroadcastStatus(2);
 	}
 	
