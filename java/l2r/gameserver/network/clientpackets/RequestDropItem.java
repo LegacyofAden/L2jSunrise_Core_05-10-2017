@@ -19,11 +19,9 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
-import l2r.gameserver.GeoData;
 import l2r.gameserver.data.xml.impl.AdminData;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.enums.ZoneIdType;
-import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.L2Item;
@@ -168,7 +166,7 @@ public final class RequestDropItem extends L2GameClientPacket
 			return;
 		}
 		
-		if ((!activeChar.isInsideRadius(_x, _y, 0, 150, false, false) || (Math.abs(_z - activeChar.getZ()) > 50)) || !GeoData.getInstance().canSeeTarget(activeChar, new Location(_x, _y, _z)))
+		if (!activeChar.isInsideRadius(_x, _y, 0, 150, false, false) || (Math.abs(_z - activeChar.getZ()) > 50))
 		{
 			if (Config.DEBUG)
 			{
@@ -211,8 +209,6 @@ public final class RequestDropItem extends L2GameClientPacket
 		{
 			_log.info("dropping " + _objectId + " item(" + _count + ") at: " + _x + " " + _y + " " + _z);
 		}
-		
-		// activeChar.broadcastUserInfo();
 		
 		if (activeChar.isGM())
 		{
