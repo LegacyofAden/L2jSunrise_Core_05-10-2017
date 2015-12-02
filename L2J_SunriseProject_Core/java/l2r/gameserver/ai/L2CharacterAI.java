@@ -46,7 +46,6 @@ import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2DoorInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
-import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.npc.OnNpcMoveFinished;
@@ -1649,18 +1648,9 @@ public class L2CharacterAI extends AbstractAI
 				if ((actors.getFactionId() != null) && targets.getFactionId().equals(actors.getFactionId()))
 				{
 					count++;
-					for (L2Effect effect : target.getAllEffects())
+					if (target.isAffectedBySkill(sk.getId()))
 					{
-						if (effect == null)
-						{
-							continue;
-						}
-						
-						if (effect.getSkill() == sk)
-						{
-							ccount++;
-							break;
-						}
+						ccount++;
 					}
 				}
 			}
