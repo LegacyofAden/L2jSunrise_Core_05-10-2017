@@ -808,7 +808,7 @@ public class CharEffectList
 		}
 		
 		// Remove the active skill L2effect from _effects of the L2Character
-		if (effectList.remove(effect) && _owner.isPlayer() && effect.getShowIcon())
+		if (effectList.remove(effect) && _owner.isPlayer() && effect.getShowIcon() && !effect.isInstant())
 		{
 			SystemMessage sm;
 			if (effect.getSkill().isToggle())
@@ -1222,17 +1222,7 @@ public class CharEffectList
 		{
 			for (L2Effect e : getBuffs())
 			{
-				if (e == null)
-				{
-					continue;
-				}
-				
-				if (!e.getShowIcon())
-				{
-					continue;
-				}
-				
-				if (e.getEffectType() == L2EffectType.SIGNET_GROUND)
+				if ((e == null) || !e.getShowIcon() || e.isInstant() || (e.getEffectType() == L2EffectType.SIGNET_GROUND))
 				{
 					continue;
 				}
@@ -1272,17 +1262,7 @@ public class CharEffectList
 		{
 			for (L2Effect e : getDebuffs())
 			{
-				if (e == null)
-				{
-					continue;
-				}
-				
-				if (!e.getShowIcon())
-				{
-					continue;
-				}
-				
-				if (e.getEffectType() == L2EffectType.SIGNET_GROUND)
+				if ((e == null) || !e.getShowIcon() || e.isInstant() || (e.getEffectType() == L2EffectType.SIGNET_GROUND))
 				{
 					continue;
 				}
