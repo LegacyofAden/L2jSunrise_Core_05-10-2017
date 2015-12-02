@@ -493,7 +493,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			{
 				_state = EffectState.ACTING;
 				
-				if (_skill.isOffensive() && _icon && getEffected().isPlayer())
+				if (_skill.isOffensive() && _icon && !isInstant() && getEffected().isPlayer())
 				{
 					SystemMessage smsg = SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
 					smsg.addSkillName(_skill);
@@ -533,7 +533,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			case FINISHING:
 			{
 				// If the time left is equal to zero, send the message
-				if ((_count == 0) && _icon && getEffected().isPlayer())
+				if ((_count == 0) && _icon && !isInstant() && getEffected().isPlayer())
 				{
 					SystemMessage smsg3 = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WORN_OFF);
 					smsg3.addSkillName(_skill);
@@ -781,7 +781,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		return null;
 	}
 	
-	// TODO implemente me
+	// TODO Partially Done
 	public boolean isInstant()
 	{
 		return false;
