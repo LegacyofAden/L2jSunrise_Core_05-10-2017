@@ -57,14 +57,13 @@ public class CubicAction implements Runnable
 	@Override
 	public void run()
 	{
-		if (_cubic == null)
+		if ((_cubic == null) || (_cubic.getOwner() == null))
 		{
 			return;
 		}
 		
 		try
 		{
-			
 			if (_cubic.getOwner().isDead() || !_cubic.getOwner().isOnline())
 			{
 				_cubic.stopAction();
