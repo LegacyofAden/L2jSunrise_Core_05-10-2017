@@ -629,7 +629,7 @@ public abstract class AbstractAI implements Ctrl
 	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : Low level function, used by AI subclasses</B></FONT>
 	 * @param pos
 	 */
-	protected void clientStopMoving(Location pos)
+	public void clientStopMoving(Location pos)
 	{
 		// Stop movement of the L2Character
 		if (_actor.isMoving())

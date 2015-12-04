@@ -1629,11 +1629,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				setIsCastingNow(false);
 			}
-			if (isPlayer())
-			{
-				sendPacket(ActionFailed.STATIC_PACKET);
-				getAI().setIntention(AI_INTENTION_ACTIVE);
-			}
 			return;
 		}
 		
@@ -1784,6 +1779,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				}
 				return;
 			}
+		}
+		
+		if ((skill.getHitTime() > 50) && !skill.isSimultaneousCast())
+		{
+			getAI().clientStopMoving(null);
 		}
 		
 		// Get the Identifier of the skill

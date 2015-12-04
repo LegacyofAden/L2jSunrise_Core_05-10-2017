@@ -9026,10 +9026,16 @@ public final class L2PcInstance extends L2Playable
 				target = this;
 				break;
 			default:
-				
 				// Get the first target of the list
 				target = skill.getFirstOfTargetList(this);
 				break;
+		}
+		
+		if (target == null)
+		{
+			setIsCastingNow(false);
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
 		}
 		
 		// Notify the AI with AI_INTENTION_CAST and target
@@ -9368,6 +9374,7 @@ public final class L2PcInstance extends L2Playable
 						case UNLOCK:
 							break;
 						default:
+							sendPacket(SystemMessageId.INCORRECT_TARGET);
 							sendPacket(ActionFailed.STATIC_PACKET);
 							return false;
 					}
