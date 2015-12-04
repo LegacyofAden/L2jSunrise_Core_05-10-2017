@@ -57,7 +57,7 @@ public class CubicAction implements Runnable
 	@Override
 	public void run()
 	{
-		if ((_cubic == null) || (_cubic.getOwner() == null))
+		if (_cubic == null)
 		{
 			return;
 		}
@@ -101,9 +101,9 @@ public class CubicAction implements Runnable
 			L2Skill skill = null;
 			if ((_cubic.getId() >= L2CubicInstance.SMART_CUBIC_EVATEMPLAR) && (_cubic.getId() <= L2CubicInstance.SMART_CUBIC_SPECTRALMASTER))
 			{
-				for (L2Effect e : _cubic.getOwner().getAllEffects())
+				for (L2Effect e : _cubic.getOwner().getEffectList().getDebuffs())
 				{
-					if ((e != null) && e.getSkill().isDebuff() && e.getSkill().canBeDispeled())
+					if ((e != null) && e.getSkill().canBeDispeled())
 					{
 						UseCubicCure = true;
 						e.exit();

@@ -2547,7 +2547,7 @@ public final class Formulas
 		int negatedEffectCount = calcNegatedEffectCount(skill);
 		boolean result = calcStealSuccess(activeChar, target, skill, power);
 		
-		final List<L2Effect> effects = target.getAllEffects();
+		final L2Effect[] effects = target.getAllEffects();
 		List<L2Effect> canceled = new ArrayList<>();
 		
 		if (result)
