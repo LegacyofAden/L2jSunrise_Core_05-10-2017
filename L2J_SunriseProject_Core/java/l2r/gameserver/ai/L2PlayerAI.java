@@ -282,11 +282,6 @@ public class L2PlayerAI extends L2PlayableAI
 			}
 		}
 		
-		if ((_skill.getHitTime() > 50) && !_skill.isSimultaneousCast())
-		{
-			clientStopMoving(null);
-		}
-		
 		L2Object oldTarget = _actor.getTarget();
 		if ((oldTarget != null) && (target != null) && (oldTarget != target))
 		{

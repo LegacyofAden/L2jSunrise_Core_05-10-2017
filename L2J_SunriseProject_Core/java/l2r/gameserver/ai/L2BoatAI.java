@@ -52,7 +52,7 @@ public class L2BoatAI extends L2VehicleAI
 	}
 	
 	@Override
-	protected void clientStopMoving(Location pos)
+	public void clientStopMoving(Location pos)
 	{
 		if (_actor.isMoving())
 		{
