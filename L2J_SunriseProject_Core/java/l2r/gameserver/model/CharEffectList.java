@@ -53,7 +53,7 @@ import javolution.util.FastMap;
 public class CharEffectList
 {
 	protected static final Logger _log = LoggerFactory.getLogger(CharEffectList.class);
-	private static final List<L2Effect> EMPTY_EFFECTS = new ArrayList<>();
+	private static final L2Effect[] EMPTY_EFFECTS = new L2Effect[0];
 	
 	/** Map containing all effects from buffs for this effect list. */
 	private FastList<L2Effect> _buffs;
@@ -78,7 +78,7 @@ public class CharEffectList
 	/** The owner of this effect list. */
 	private final L2Character _owner;
 	
-	private List<L2Effect> _effectCache;
+	private L2Effect[] _effectCache;
 	private volatile boolean _rebuildCache = true;
 	private final Object _buildEffectLock = new Object();
 	
@@ -91,7 +91,7 @@ public class CharEffectList
 	 * Returns all effects affecting stored in this CharEffectList
 	 * @return
 	 */
-	public final List<L2Effect> getAllEffects()
+	public final L2Effect[] getAllEffects()
 	{
 		// If no effect is active, return EMPTY_EFFECTS
 		if (isEmpty())
@@ -122,7 +122,10 @@ public class CharEffectList
 				temp.addAll(getDebuffs());
 			}
 			
-			return temp;
+			// Return all effects in an array
+			L2Effect[] tempArray = new L2Effect[temp.size()];
+			temp.toArray(tempArray);
+			return (_effectCache = tempArray);
 		}
 	}
 	
