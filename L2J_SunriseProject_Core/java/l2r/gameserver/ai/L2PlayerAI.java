@@ -350,6 +350,10 @@ public class L2PlayerAI extends L2PlayableAI
 		{
 			return;
 		}
+		if (checkDistanceAndMove(target))
+		{
+			return;
+		}
 		if (!(target instanceof L2StaticObjectInstance))
 		{
 			_actor.getActingPlayer().doInteract((L2Character) target);
