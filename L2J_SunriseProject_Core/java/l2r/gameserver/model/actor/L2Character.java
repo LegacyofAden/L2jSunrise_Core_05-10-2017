@@ -1791,42 +1791,35 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		// Get the Identifier of the skill
 		int magicId = skill.getId();
 		
-		// Get the casting time of the skill (base)
-		int hitTime = skill.getHitTime();
-		int coolTime = skill.getCoolTime();
+		// Get the Base Casting Time of the Skills.
+		int skillTime = (skill.getHitTime() + skill.getCoolTime());
 		
 		boolean effectWhileCasting = (skill.getSkillType() == L2SkillType.FUSION) || (skill.getSkillType() == L2SkillType.SIGNET_CASTTIME);
 		// Don't modify the skill time for FORCE_BUFF skills. The skill time for those skills represent the buff time.
 		if (!effectWhileCasting)
 		{
-			hitTime = Formulas.calcAtkSpd(this, skill, hitTime);
-			if (coolTime > 0)
+			// Calculate the Casting Time of the "Non-Static" Skills (with caster PAtk/MAtkSpd).
+			if (!skill.isStatic())
 			{
-				coolTime = Formulas.calcAtkSpd(this, skill, coolTime);
+				skillTime = Formulas.calcAtkSpd(this, skill, skillTime);
+			}
+			// Calculate the Casting Time of Magic Skills (reduced in 40% if using SPS/BSPS)
+			if (skill.isMagic() && (isChargedShot(ShotType.SPIRITSHOTS) || isChargedShot(ShotType.BLESSED_SPIRITSHOTS)))
+			{
+				skillTime = (int) (0.6 * skillTime);
 			}
 		}
 		
-		// Calculate altered Cast Speed due to BSpS/SpS
-		if (skill.isMagic() && !effectWhileCasting)
+		// Avoid broken Casting Animation.
+		// Client can't handle less than 550ms Casting Animation in Magic Skills with more than 550ms base.
+		if (skill.isMagic() && ((skill.getHitTime() + skill.getCoolTime()) > 550) && (skillTime < 550))
 		{
-			// Only takes 70% of the time to cast a BSpS/SpS cast
-			if (isChargedShot(ShotType.SPIRITSHOTS) || isChargedShot(ShotType.BLESSED_SPIRITSHOTS))
-			{
-				hitTime = (int) (0.70 * hitTime);
-				coolTime = (int) (0.70 * coolTime);
-			}
+			skillTime = 550;
 		}
-		
-		// Don't modify skills HitTime if staticHitTime is specified for skill in datapack.
-		if (skill.isStatic())
+		// Client can't handle less than 500ms Casting Animation in Physical Skills with 500ms base or more.
+		else if (!skill.isStatic() && ((skill.getHitTime() + skill.getCoolTime()) >= 500) && (skillTime < 500))
 		{
-			hitTime = skill.getHitTime();
-			coolTime = skill.getCoolTime();
-		}
-		// if basic hitTime is higher than 500 than the min hitTime is 500
-		else if ((skill.getHitTime() >= 500) && (hitTime < 500))
-		{
-			hitTime = 500;
+			skillTime = 500;
 		}
 		
 		// queue herbs and potions
@@ -1844,7 +1837,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		else
 		{
 			setIsCastingNow(true);
-			_castInterruptTime = -2 + GameTimeController.getInstance().getGameTicks() + (hitTime / GameTimeController.MILLIS_IN_TICK);
+			_castInterruptTime = -2 + GameTimeController.getInstance().getGameTicks() + (skillTime / GameTimeController.MILLIS_IN_TICK);
 			setLastSkillCast(skill);
 		}
 		
@@ -1962,7 +1955,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		// Send a Server->Client packet MagicSkillUser with target, displayId, level, skillTime, reuseDelay
 		// to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
-		broadcastPacket(new MagicSkillUse(this, target, skill.getDisplayId(), skill.getDisplayLevel(), hitTime, reuseDelay));
+		broadcastPacket(new MagicSkillUse(this, target, skill.getDisplayId(), skill.getDisplayLevel(), skillTime, reuseDelay));
 		
 		// Send a system message USE_S1 to the L2Character
 		if (isPlayer())
@@ -2028,20 +2021,20 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			ThreadPoolManager.getInstance().scheduleEffect(new FlyToLocationTask(this, target, skill), 50);
 		}
 		
-		MagicUseTask mut = new MagicUseTask(this, targets, skill, hitTime, simultaneously);
+		MagicUseTask mut = new MagicUseTask(this, targets, skill, skillTime, simultaneously);
 		
 		// launch the magic in skillTime milliseconds
-		if (hitTime > 410)
+		if (skillTime > 0)
 		{
 			// Send a Server->Client packet SetupGauge with the color of the gauge and the casting time
 			if (isPlayer() && !effectWhileCasting)
 			{
-				sendPacket(new SetupGauge(SetupGauge.BLUE, hitTime));
+				sendPacket(new SetupGauge(SetupGauge.BLUE, skillTime));
 			}
 			
 			if (skill.getHitCounts() > 0)
 			{
-				hitTime = (hitTime * skill.getHitTimings()[0]) / 100;
+				skillTime = (skillTime * skill.getHitTimings()[0]) / 100;
 			}
 			
 			if (effectWhileCasting)
@@ -2060,7 +2053,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				
 				// Create a task MagicUseTask to launch the MagicSkill at the end of the casting time (skillTime)
 				// For client animation reasons (party buffs especially) 400 ms before!
-				_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, hitTime - 400);
+				_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime - 400);
 			}
 			else
 			{
@@ -2073,7 +2066,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				
 				// Create a task MagicUseTask to launch the MagicSkill at the end of the casting time (skillTime)
 				// For client animation reasons (party buffs especially) 400 ms before!
-				_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, hitTime - 400);
+				_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime - 400);
 			}
 		}
 		else
