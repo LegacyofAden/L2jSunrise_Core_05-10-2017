@@ -1666,6 +1666,17 @@ public class L2CharacterAI extends AbstractAI
 		return (sk.getTargetType() == L2TargetType.PARTY);
 	}
 	
+	protected boolean checkDistanceAndMove(L2Object target)
+	{
+		if ((int) _actor.calculateDistance(target, false, false) > 150)
+		{
+			final Location destination = GeoData.getInstance().moveCheck(_actor, target);
+			changeIntention(CtrlIntention.AI_INTENTION_MOVE_AND_INTERACT, target, destination);
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	protected void onIntentionMoveAndInteract(L2Object object, Location loc)
 	{
@@ -1696,6 +1707,6 @@ public class L2CharacterAI extends AbstractAI
 		setTarget(object);
 		
 		// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
-		moveTo(loc.getX(), loc.getY(), loc.getZ());
+		moveTo(loc);
 	}
 }

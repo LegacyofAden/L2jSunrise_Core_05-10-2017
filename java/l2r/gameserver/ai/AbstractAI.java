@@ -595,14 +595,30 @@ public abstract class AbstractAI implements Ctrl
 		}
 	}
 	
+	protected void moveTo(Location loc, int offset)
+	{
+		moveTo(loc.getX(), loc.getY(), loc.getZ(), offset);
+	}
+	
+	protected void moveTo(Location loc)
+	{
+		moveTo(loc.getX(), loc.getY(), loc.getZ(), 0);
+	}
+	
+	protected void moveTo(int x, int y, int z)
+	{
+		moveTo(x, y, z, 0);
+	}
+	
 	/**
 	 * Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation <I>(broadcast)</I>.<br>
 	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : Low level function, used by AI subclasses</B></FONT>
 	 * @param x
 	 * @param y
 	 * @param z
+	 * @param offset
 	 */
-	protected void moveTo(int x, int y, int z)
+	protected void moveTo(int x, int y, int z, int offset)
 	{
 		// Chek if actor can move
 		if (!_actor.isMovementDisabled())
@@ -612,11 +628,10 @@ public abstract class AbstractAI implements Ctrl
 			_clientMovingToPawnOffset = 0;
 			
 			// Calculate movement data for a move to location action and add the actor to movingObjects of GameTimeController
-			_actor.moveToLocation(x, y, z, 0);
+			_actor.moveToLocation(x, y, z, offset);
 			
 			// Send a Server->Client packet CharMoveToLocation to the actor and all L2PcInstance in its _knownPlayers
 			_actor.broadcastPacket(new MoveToLocation(_actor));
-			
 		}
 		else
 		{
