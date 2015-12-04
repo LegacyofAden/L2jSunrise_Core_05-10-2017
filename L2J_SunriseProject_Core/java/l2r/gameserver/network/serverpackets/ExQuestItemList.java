@@ -56,14 +56,7 @@ public class ExQuestItemList extends L2GameServerPacket
 			writeD(item.getItem().getBodyPart());
 			writeH(item.getEnchantLevel()); // enchant level
 			writeH(item.getCustomType2()); // item type3
-			if (item.isAugmented())
-			{
-				writeD(item.getAugmentation().getAugmentationId());
-			}
-			else
-			{
-				writeD(0x00);
-			}
+			writeD(item.isAugmented() ? item.getAugmentation().getAugmentationId() : 0x00);
 			writeD(item.getMana());
 			writeD(item.isTimeLimitedItem() ? (int) (item.getRemainingTime() / 1000) : -9999);
 			writeH(item.getAttackElementType());

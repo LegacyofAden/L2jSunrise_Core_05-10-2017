@@ -57,9 +57,9 @@ public final class TradeStart extends L2GameServerPacket
 			writeD(item.getItem().getBodyPart());
 			writeH(item.getEnchantLevel());
 			writeH(item.getCustomType2());
-			writeD(item.isAugmented() ? item.getAugmentation().getAugmentationId() : 0); // Augment
-			writeD(-1); // Mana
-			writeD(-9999); // Time
+			writeD(item.isAugmented() ? item.getAugmentation().getAugmentationId() : 0x00);
+			writeD(item.getMana());
+			writeD(item.isTimeLimitedItem() ? (int) (item.getRemainingTime() / 1000) : -9999);
 			writeH(item.getAttackElementType());
 			writeH(item.getAttackElementPower());
 			for (byte i = 0; i < 6; i++)

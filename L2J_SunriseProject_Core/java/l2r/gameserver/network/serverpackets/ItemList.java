@@ -79,14 +79,7 @@ public final class ItemList extends L2GameServerPacket
 			writeH(temp.getEnchantLevel()); // enchant level
 			// race tickets
 			writeH(temp.getCustomType2()); // item type3
-			if (temp.isAugmented())
-			{
-				writeD(temp.getAugmentation().getAugmentationId());
-			}
-			else
-			{
-				writeD(0x00);
-			}
+			writeD(temp.isAugmented() ? temp.getAugmentation().getAugmentationId() : 0x00);
 			writeD(temp.getMana());
 			writeD(temp.isTimeLimitedItem() ? (int) (temp.getRemainingTime() / 1000) : -9999);
 			writeH(temp.getAttackElementType());
