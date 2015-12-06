@@ -109,8 +109,8 @@ public class ExStartScenePlayer extends L2GameServerPacket
 	public static final int SCENE_SI_ARKAN_ENTER = 104; // 30300.00000000
 	public static final int SCENE_SI_BARLOG_OPENING = 105; // 19300.00000000
 	public static final int SCENE_SI_BARLOG_STORY = 106; // 67500.00000000
-	public static final int SCENE_SI_ILLUSION_04_QUE = 107; // 10100.00000000 НЕ understandably
-	public static final int SCENE_SI_ILLUSION_05_QUE = 108; // 10100.00000000 НЕ understandably (camera falls down from somewhere)
+	public static final int SCENE_SI_ILLUSION_04_QUE = 107; // 10100.00000000 HE understandably
+	public static final int SCENE_SI_ILLUSION_05_QUE = 108; // 10100.00000000 HE understandably (camera falls down from somewhere)
 	public static final int SCENE_SC_BLOODVEIN_OPENING = 109; // 13000.00000000
 	public static final int SCENE_LAND_KSERTH_A = 1000; // 10000.00000000
 	public static final int SCENE_LAND_KSERTH_B = 1001; // 10000.00000000
