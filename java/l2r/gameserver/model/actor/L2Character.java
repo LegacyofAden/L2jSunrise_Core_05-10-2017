@@ -1885,7 +1885,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				}
 			}
 			
-			disableSkill(skill, reuseDelay);
+			disableSkill(skill, Config.RETAIL_SKILL_REUSE && (reuseDelay > 1010) ? reuseDelay - 1000 : reuseDelay);
 		}
 		
 		// Make sure that char is facing selected target

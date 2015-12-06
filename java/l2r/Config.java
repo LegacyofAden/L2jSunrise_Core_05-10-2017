@@ -149,6 +149,7 @@ public final class Config
 	public static double RESPAWN_RESTORE_HP;
 	public static double RESPAWN_RESTORE_MP;
 	public static boolean ENABLE_MODIFY_SKILL_DURATION;
+	public static boolean RETAIL_SKILL_REUSE;
 	public static Map<Integer, Integer> SKILL_DURATION_LIST;
 	public static boolean ENABLE_MODIFY_SKILL_REUSE;
 	public static Map<Integer, Integer> SKILL_REUSE_LIST;
@@ -1472,6 +1473,7 @@ public final class Config
 			MP_REGEN_MULTIPLIER = Character.getDouble("MpRegenMultiplier", 100) / 100;
 			CP_REGEN_MULTIPLIER = Character.getDouble("CpRegenMultiplier", 100) / 100;
 			ENABLE_MODIFY_SKILL_DURATION = Character.getBoolean("EnableModifySkillDuration", false);
+			RETAIL_SKILL_REUSE = Character.getBoolean("RetailSkillReuse", true);
 			
 			// Create Map only if enabled
 			if (ENABLE_MODIFY_SKILL_DURATION)
