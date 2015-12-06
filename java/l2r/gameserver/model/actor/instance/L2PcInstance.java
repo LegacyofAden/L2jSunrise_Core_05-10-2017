@@ -8801,9 +8801,9 @@ public final class L2PcInstance extends L2Playable
 		
 		if (attacker.isPlayable())
 		{
-			if (isFriend(attacker.getActingPlayer()))
+			if (!isFriend(attacker.getActingPlayer()))
 			{
-				return false;
+				return true;
 			}
 		}
 		else if (attacker instanceof L2DefenderInstance)
