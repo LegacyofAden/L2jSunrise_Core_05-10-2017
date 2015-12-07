@@ -171,7 +171,7 @@ import l2r.gameserver.model.actor.tasks.player.InventoryEnableTask;
 import l2r.gameserver.model.actor.tasks.player.LookingForFishTask;
 import l2r.gameserver.model.actor.tasks.player.PetFeedTask;
 import l2r.gameserver.model.actor.tasks.player.PvPFlagTask;
-import l2r.gameserver.model.actor.tasks.player.RecoBonusTaskEnd;
+import l2r.gameserver.model.actor.tasks.player.RecoBonusTask;
 import l2r.gameserver.model.actor.tasks.player.RecoGiveTask;
 import l2r.gameserver.model.actor.tasks.player.RentPetTask;
 import l2r.gameserver.model.actor.tasks.player.ResetChargesTask;
@@ -198,6 +198,7 @@ import l2r.gameserver.model.entity.Fort;
 import l2r.gameserver.model.entity.Hero;
 import l2r.gameserver.model.entity.Instance;
 import l2r.gameserver.model.entity.NevitSystem;
+import l2r.gameserver.model.entity.RecoBonus;
 import l2r.gameserver.model.entity.Siege;
 import l2r.gameserver.model.entity.olympiad.OlympiadGameManager;
 import l2r.gameserver.model.entity.olympiad.OlympiadGameTask;
@@ -592,8 +593,8 @@ public final class L2PcInstance extends L2Playable
 	private int _recomLeft; // how many recommendations I can give to others
 	/** Recommendation Bonus task **/
 	private ScheduledFuture<?> _recoBonusTask;
-	private boolean _isRecoBonusActive = false;
-	private int _recoBonusMode = 0;
+	private int _recoBonusTime = 0;
+	private boolean _isHourglassEffected, _isRecomTimerActive;
 	/** Recommendation task **/
 	private ScheduledFuture<?> _recoGiveTask;
 	/** Recommendation Two Hours bonus **/
@@ -1990,10 +1991,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	protected void decRecomLeft()
 	{
-		if (_recomLeft > 0)
-		{
-			_recomLeft--;
-		}
+		_recomLeft--;
 	}
 	
 	public void giveRecom(L2PcInstance target)
@@ -10951,6 +10949,12 @@ public final class L2PcInstance extends L2Playable
 			checkPlayerSkills();
 		}
 		
+		// Load player's recommendations and bonus time
+		loadRecommendations();
+		
+		// Starting recommendations give task
+		startRecoGiveTask();
+		
 		EventDispatcher.getInstance().notifyEventAsync(new OnPlayerLogin(this), this);
 		
 		// Load the saved categorized buffs
@@ -14605,11 +14609,9 @@ public final class L2PcInstance extends L2Playable
 	
 	/**
 	 * Load L2PcInstance Recommendations data.
-	 * @return
 	 */
-	private long loadRecommendations()
+	private void loadRecommendations()
 	{
-		long _time_left = 0;
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement("SELECT rec_have,rec_left,time_left FROM character_reco_bonus WHERE charId=? LIMIT 1"))
 		{
@@ -14620,11 +14622,11 @@ public final class L2PcInstance extends L2Playable
 				{
 					setRecomHave(rset.getInt("rec_have"));
 					setRecomLeft(rset.getInt("rec_left"));
-					_time_left = rset.getLong("time_left");
+					setRecomBonusTime(rset.getInt("time_left"));
 				}
 				else
 				{
-					_time_left = 3600000;
+					setRecomBonusTime(3600);
 				}
 			}
 		}
@@ -14632,7 +14634,6 @@ public final class L2PcInstance extends L2Playable
 		{
 			_log.error("Could not restore Recommendations for player: " + getObjectId(), e);
 		}
-		return _time_left;
 	}
 	
 	/**
@@ -14640,23 +14641,18 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void storeRecommendations()
 	{
-		long _recoTaskEnd = 0;
-		if (_recoBonusTask != null)
-		{
-			_recoTaskEnd = Math.max(0, _recoBonusTask.getDelay(TimeUnit.MILLISECONDS));
-		}
-		
+		int recTimeToSave = _recoBonusTask != null ? (int) Math.max(0, _recoBonusTask.getDelay(TimeUnit.SECONDS)) : getRecomBonusTime();
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement("INSERT INTO character_reco_bonus (charId,rec_have,rec_left,time_left) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE rec_have=?, rec_left=?, time_left=?"))
 		{
 			statement.setInt(1, getObjectId());
 			statement.setInt(2, getRecomHave());
 			statement.setInt(3, getRecomLeft());
-			statement.setLong(4, _recoTaskEnd);
+			statement.setLong(4, recTimeToSave);
 			// Update part
 			statement.setInt(5, getRecomHave());
 			statement.setInt(6, getRecomLeft());
-			statement.setLong(7, _recoTaskEnd);
+			statement.setLong(7, recTimeToSave);
 			statement.execute();
 		}
 		catch (Exception e)
@@ -14665,45 +14661,74 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	public boolean RecoBonusActive()
+	public void startRecoGiveTask()
 	{
-		return _isRecoBonusActive;
+		_recoGiveTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new RecoGiveTask(this), 7200000, 3600000);
 	}
 	
-	public void setRecoBonusActive(boolean mode)
+	public void startRecoBonusTask()
 	{
-		_isRecoBonusActive = mode;
+		if ((_recoBonusTask == null) && (_recoBonusTime > 0) && isRecomTimerActive() && !isHourglassEffected())
+		{
+			_recoBonusTask = ThreadPoolManager.getInstance().scheduleGeneral(new RecoBonusTask(this), _recoBonusTime * 1000);
+		}
+	}
+	
+	public boolean isHourglassEffected()
+	{
+		return _isHourglassEffected;
+	}
+	
+	public void setHourlassEffected(boolean val)
+	{
+		_isHourglassEffected = val;
+	}
+	
+	public void startHourglassEffect()
+	{
+		setHourlassEffected(true);
+		stopRecoBonusTask();
 		sendPacket(new ExVoteSystemInfo(this));
 	}
 	
-	public void checkRecoBonusTask()
+	public void stopHourglassEffect()
 	{
-		// Load data
-		long taskTime = loadRecommendations();
-		
-		if (taskTime > 0)
+		setHourlassEffected(false);
+		startRecoBonusTask();
+		sendPacket(new ExVoteSystemInfo(this));
+	}
+	
+	public boolean isRecomTimerActive()
+	{
+		return _isRecomTimerActive;
+	}
+	
+	public void setRecomTimerActive(boolean val)
+	{
+		if (_isRecomTimerActive == val)
 		{
-			// Add 20 recos on first login
-			if (taskTime == 3600000)
-			{
-				setRecomLeft(getRecomLeft() + 20);
-			}
-			
-			// If player have some timeleft, start bonus task
-			_recoBonusTask = ThreadPoolManager.getInstance().scheduleGeneral(new RecoBonusTaskEnd(this), taskTime);
+			return;
 		}
 		
-		// Create task to give new recommendations
-		_recoGiveTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new RecoGiveTask(this), 7200000, 3600000);
+		_isRecomTimerActive = val;
 		
-		// Store new data
-		storeRecommendations();
+		if (val)
+		{
+			startRecoBonusTask();
+		}
+		else
+		{
+			stopRecoBonusTask();
+		}
+		
+		sendPacket(new ExVoteSystemInfo(this));
 	}
 	
 	public void stopRecoBonusTask()
 	{
 		if (_recoBonusTask != null)
 		{
+			_recoBonusTime = (int) Math.max(0, _recoBonusTask.getDelay(TimeUnit.SECONDS));
 			_recoBonusTask.cancel(false);
 			_recoBonusTask = null;
 		}
@@ -14728,27 +14753,32 @@ public final class L2PcInstance extends L2Playable
 		_recoTwoHoursGiven = val;
 	}
 	
+	public void setRecomBonusTime(int time)
+	{
+		_recoBonusTime = time;
+	}
+	
 	public int getRecomBonusTime()
 	{
-		if (_recoBonusTask != null)
+		return _recoBonusTime;
+	}
+	
+	public int getRecomBonus()
+	{
+		if ((getRecomBonusTime() > 0) || isHourglassEffected())
 		{
-			return (int) Math.max(0, _recoBonusTask.getDelay(TimeUnit.SECONDS));
+			return RecoBonus.getRecoBonus(this);
 		}
-		
 		return 0;
 	}
 	
-	public int getRecomBonusType()
+	public double getRecomBonusMul()
 	{
-		// Maintain = 1, nomal 0
-		return _recoBonusMode;
-	}
-	
-	public L2PcInstance setRecomBonusType(int mode)
-	{
-		// Maintain = 1, normal 0
-		_recoBonusMode = mode;
-		return this;
+		if ((getRecomBonusTime() > 0) || isHourglassEffected())
+		{
+			return RecoBonus.getRecoMultiplier(this);
+		}
+		return 1;
 	}
 	
 	@Override

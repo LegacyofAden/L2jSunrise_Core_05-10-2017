@@ -370,8 +370,6 @@ public class EnterWorld extends L2GameClientPacket
 			}
 		}
 		
-		activeChar.checkRecoBonusTask();
-		
 		activeChar.broadcastUserInfo();
 		
 		// Send Macro List

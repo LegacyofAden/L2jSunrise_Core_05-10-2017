@@ -22,14 +22,14 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.ExVoteSystemInfo;
 
 /**
- * Task dedicated to end player's recommendation bonus.
- * @author UnAfraid
+ * Task dedicated to clear recommendation bonus.
+ * @author vGodFather
  */
-public class RecoBonusTaskEnd implements Runnable
+public class RecoBonusTask implements Runnable
 {
 	private final L2PcInstance _player;
 	
-	public RecoBonusTaskEnd(L2PcInstance player)
+	public RecoBonusTask(L2PcInstance player)
 	{
 		_player = player;
 	}
@@ -39,6 +39,7 @@ public class RecoBonusTaskEnd implements Runnable
 	{
 		if (_player != null)
 		{
+			_player.setRecomBonusTime(0);
 			_player.sendPacket(new ExVoteSystemInfo(_player));
 		}
 	}
