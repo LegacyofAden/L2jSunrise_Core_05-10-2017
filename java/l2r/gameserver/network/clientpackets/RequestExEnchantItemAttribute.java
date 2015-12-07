@@ -25,10 +25,8 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ExAttributeEnchantResult;
-import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.InventoryUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
-import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
 
@@ -250,9 +248,8 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 		}
 		
 		player.sendPacket(new ExAttributeEnchantResult(powerToAdd));
-		player.sendPacket(new UserInfo(player));
-		player.sendPacket(new ExBrExtraUserInfo(player));
 		player.setActiveEnchantAttrItemId(L2PcInstance.ID_NONE);
+		player.sendUserInfo(true);
 	}
 	
 	public int getLimit(L2ItemInstance item, int sotneId)

@@ -65,7 +65,7 @@ public abstract class L2Decoy extends L2Character
 		{
 			if (player != null)
 			{
-				player.sendPacket(new CharInfo(this));
+				sendInfo(player);
 			}
 		}
 	}
@@ -132,7 +132,6 @@ public abstract class L2Decoy extends L2Character
 	
 	public synchronized void unSummon(L2PcInstance owner)
 	{
-		
 		if (isVisible() && !isDead())
 		{
 			if (getWorldRegion() != null)

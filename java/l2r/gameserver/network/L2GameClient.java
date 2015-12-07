@@ -55,6 +55,7 @@ import l2r.gameserver.util.FloodProtectors;
 import l2r.gameserver.util.Util;
 
 import gr.sr.interf.SunriseEvents;
+import gr.sr.main.PacketsDebugger;
 import gr.sr.protection.Protection;
 import gr.sr.securityEngine.SecurityActions;
 import gr.sr.securityEngine.SecurityType;
@@ -262,6 +263,8 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 		{
 			return;
 		}
+		
+		PacketsDebugger.checkDebugger(gsp);
 		
 		getConnection().sendPacket(gsp);
 		gsp.runImpl();

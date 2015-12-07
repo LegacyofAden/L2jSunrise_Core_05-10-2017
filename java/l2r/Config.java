@@ -137,6 +137,8 @@ public final class Config
 	// sunrise
 	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
 	
+	public static final int packetsDelay = 150;// in ms
+	
 	// --------------------------------------------------
 	// L2J Variable Definitions
 	// --------------------------------------------------
@@ -973,6 +975,9 @@ public final class Config
 	// Debug Settings
 	// --------------------------------------------------
 	public static boolean DEBUG;
+	public static boolean DEBUG_PACKETS_COUNT;
+	public static boolean DEBUG_PACKETS_NAMES;
+	public static int DEBUG_PACKETS_INTERVAL;
 	public static boolean HTML_ACTION_CACHE_DEBUG;
 	public static boolean DEBUG_POSSIBLE_ITEMS_DUPE;
 	public static boolean DEBUG_INSTANCES;
@@ -2459,6 +2464,9 @@ public final class Config
 			final PropertiesParser Debug = new PropertiesParser(DEBUG_CONFIG_FILE);
 			
 			DEBUG = Debug.getBoolean("Debug", false);
+			DEBUG_PACKETS_COUNT = Debug.getBoolean("DebugPacketsCount", false);
+			DEBUG_PACKETS_NAMES = Debug.getBoolean("DebugPacketsName", false);
+			DEBUG_PACKETS_INTERVAL = Debug.getInt("DebugPacketInterval", 5);
 			HTML_ACTION_CACHE_DEBUG = Debug.getBoolean("HtmlActionCacheDebug", false);
 			DEBUG_POSSIBLE_ITEMS_DUPE = Debug.getBoolean("DebugPossibleItemsDupe", false);
 			DEBUG_INSTANCES = Debug.getBoolean("InstanceDebug", false);

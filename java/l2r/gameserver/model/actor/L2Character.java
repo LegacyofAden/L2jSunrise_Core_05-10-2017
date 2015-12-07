@@ -3933,11 +3933,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				if (broadcastFull)
 				{
-					getActingPlayer().updateAndBroadcastStatus(2);
+					getActingPlayer().updateAndBroadcastStatus();
 				}
 				else
 				{
-					getActingPlayer().updateAndBroadcastStatus(1);
+					getActingPlayer().updateAndBroadcastStatus();
 					if (su.hasAttributes())
 					{
 						broadcastPacket(su);
