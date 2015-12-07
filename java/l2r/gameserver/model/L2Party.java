@@ -265,6 +265,21 @@ public class L2Party extends AbstractPlayerGroup
 	}
 	
 	/**
+	 * Broadcasts packet to every party member
+	 * @param msg
+	 */
+	public void broadcastToPartyMembers(L2GameServerPacket msg)
+	{
+		for (L2PcInstance member : getMembers())
+		{
+			if (member != null)
+			{
+				member.sendPacket(msg);
+			}
+		}
+	}
+	
+	/**
 	 * Send a Server->Client packet to all other L2PcInstance of the Party.<BR>
 	 * <BR>
 	 * @param player
@@ -315,8 +330,9 @@ public class L2Party extends AbstractPlayerGroup
 		
 		msg = SystemMessage.getSystemMessage(SystemMessageId.C1_JOINED_PARTY);
 		msg.addString(player.getName());
-		broadcastPacket(msg);
-		broadcastPacket(new PartySmallWindowAdd(player, this));
+		broadcastToPartyMembers(msg);
+		
+		broadcastToPartyMembers(new PartySmallWindowAdd(player, this));
 		// send the position of all party members to the new party member
 		// player.sendPacket(new PartyMemberPosition(this));
 		// send the position of the new party member to all party members (except the new one - he knows his own position)

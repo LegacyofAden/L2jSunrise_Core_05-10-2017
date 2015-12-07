@@ -30,6 +30,7 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ExCloseMPCC;
 import l2r.gameserver.network.serverpackets.ExMPCCPartyInfoUpdate;
 import l2r.gameserver.network.serverpackets.ExOpenMPCC;
+import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
 /**
@@ -68,7 +69,7 @@ public class L2CommandChannel extends AbstractPlayerGroup
 			return;
 		}
 		// Update the CCinfo for existing players
-		broadcastPacket(new ExMPCCPartyInfoUpdate(party, 1));
+		broadcastToChannelMembers(new ExMPCCPartyInfoUpdate(party, 1));
 		
 		_parties.add(party);
 		if (party.getLevel() > _channelLvl)
@@ -76,8 +77,8 @@ public class L2CommandChannel extends AbstractPlayerGroup
 			_channelLvl = party.getLevel();
 		}
 		party.setCommandChannel(this);
-		party.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.JOINED_COMMAND_CHANNEL));
-		party.broadcastPacket(ExOpenMPCC.STATIC_PACKET);
+		party.broadcastToPartyMembers(SystemMessage.getSystemMessage(SystemMessageId.JOINED_COMMAND_CHANNEL));
+		party.broadcastToPartyMembers(ExOpenMPCC.STATIC_PACKET);
 	}
 	
 	/**
@@ -267,5 +268,19 @@ public class L2CommandChannel extends AbstractPlayerGroup
 	public boolean equals(L2CommandChannel cc)
 	{
 		return (getLeaderObjectId() == cc.getLeaderObjectId());
+	}
+	
+	public void broadcastToChannelMembers(L2GameServerPacket gsp)
+	{
+		if (!_parties.isEmpty())
+		{
+			for (L2Party party : _parties)
+			{
+				if (party != null)
+				{
+					party.broadcastToPartyMembers(gsp);
+				}
+			}
+		}
 	}
 }
