@@ -2162,7 +2162,7 @@ public final class Config
 					String[] itemSplit = item.split(",");
 					if (itemSplit.length != 2)
 					{
-						_log.warn("Config.load(): invalid config property -> RateDropItemsById {}", item);
+						_log.warn("Config.load(): invalid config property -> DropAmountMultiplierByItemId {}", item);
 					}
 					else
 					{
@@ -2174,7 +2174,7 @@ public final class Config
 						{
 							if (!item.isEmpty())
 							{
-								_log.warn("Config.load(): invalid config property -> RateDropItemsById {}", item);
+								_log.warn("Config.load(): invalid config property -> DropAmountMultiplierByItemId {}", item);
 							}
 						}
 					}
@@ -2190,7 +2190,7 @@ public final class Config
 					String[] itemSplit = item.split(",");
 					if (itemSplit.length != 2)
 					{
-						_log.warn("Config.load(): invalid config property -> RateDropItemsById {}", item);
+						_log.warn("Config.load(): invalid config property -> DropChanceMultiplierByItemId {}", item);
 					}
 					else
 					{
@@ -2202,7 +2202,7 @@ public final class Config
 						{
 							if (!item.isEmpty())
 							{
-								_log.warn("Config.load(): invalid config property -> RateDropItemsById {}", item);
+								_log.warn("Config.load(): invalid config property -> DropChanceMultiplierByItemId {}", item);
 							}
 						}
 					}
