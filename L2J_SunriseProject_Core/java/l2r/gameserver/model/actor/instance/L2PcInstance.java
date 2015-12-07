@@ -169,6 +169,7 @@ import l2r.gameserver.model.actor.tasks.player.FameTask;
 import l2r.gameserver.model.actor.tasks.player.GameGuardCheckTask;
 import l2r.gameserver.model.actor.tasks.player.InventoryEnableTask;
 import l2r.gameserver.model.actor.tasks.player.LookingForFishTask;
+import l2r.gameserver.model.actor.tasks.player.PacketSenderTask;
 import l2r.gameserver.model.actor.tasks.player.PetFeedTask;
 import l2r.gameserver.model.actor.tasks.player.PvPFlagTask;
 import l2r.gameserver.model.actor.tasks.player.RecoBonusTask;
@@ -263,8 +264,6 @@ import l2r.gameserver.network.serverpackets.CharInfo;
 import l2r.gameserver.network.serverpackets.ConfirmDlg;
 import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExAutoSoulShot;
-import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
-import l2r.gameserver.network.serverpackets.ExDominionWarStart;
 import l2r.gameserver.network.serverpackets.ExDuelUpdateUserInfo;
 import l2r.gameserver.network.serverpackets.ExFishingEnd;
 import l2r.gameserver.network.serverpackets.ExFishingStart;
@@ -324,7 +323,6 @@ import l2r.gameserver.network.serverpackets.TargetUnselected;
 import l2r.gameserver.network.serverpackets.TradeDone;
 import l2r.gameserver.network.serverpackets.TradeOtherDone;
 import l2r.gameserver.network.serverpackets.TradeStart;
-import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.network.serverpackets.ValidateLocation;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
 import l2r.gameserver.util.Broadcast;
@@ -1749,8 +1747,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		setPvpFlag(value);
 		
-		sendPacket(new UserInfo(this));
-		sendPacket(new ExBrExtraUserInfo(this));
+		sendUserInfo(true);
 		
 		// If this player has a pet update the pets pvp flag as well
 		if (hasSummon())
@@ -2097,6 +2094,15 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void refreshOverloaded()
 	{
+		refreshOverloaded(true);
+	}
+	
+	/**
+	 * Update the overloaded status of the L2PcInstance.
+	 * @param broadcast
+	 */
+	public void refreshOverloaded(boolean broadcast)
+	{
 		int maxLoad = getMaxLoad();
 		if (maxLoad > 0)
 		{
@@ -2136,15 +2142,20 @@ public final class L2PcInstance extends L2Playable
 					removeSkill(getKnownSkill(4270), false, true);
 					setIsOverloaded(false);
 				}
-				sendPacket(new UserInfo(this));
-				sendPacket(new EtcStatusUpdate(this));
-				broadcastPacket(new CharInfo(this));
-				broadcastPacket(new ExBrExtraUserInfo(this));
+				if (broadcast)
+				{
+					sendUserInfo(true);
+				}
 			}
 		}
 	}
 	
 	public void refreshExpertisePenalty()
+	{
+		refreshExpertisePenalty(true);
+	}
+	
+	public void refreshExpertisePenalty(boolean broadcast)
 	{
 		if (!Config.EXPERTISE_PENALTY)
 		{
@@ -2215,7 +2226,7 @@ public final class L2PcInstance extends L2Playable
 			changed = true;
 		}
 		
-		if (changed)
+		if (changed && broadcast)
 		{
 			sendPacket(new EtcStatusUpdate(this));
 		}
@@ -2288,7 +2299,6 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		refreshExpertisePenalty();
-		
 		broadcastUserInfo();
 		
 		InventoryUpdate iu = new InventoryUpdate();
@@ -4417,32 +4427,20 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	/**
-	 * Send a Server->Client packet UserInfo to this L2PcInstance and CharInfo to all L2PcInstance in its _KnownPlayers. <B><U> Concept</U> :</B> Others L2PcInstance in the detection area of the L2PcInstance are identified in <B>_knownPlayers</B>. In order to inform other players of this
-	 * L2PcInstance state modifications, server just need to go through _knownPlayers to send Server->Client Packet <B><U> Actions</U> :</B>
-	 * <li>Send a Server->Client packet UserInfo to this L2PcInstance (Public and Private Data)</li>
-	 * <li>Send a Server->Client packet CharInfo to all L2PcInstance in _KnownPlayers of the L2PcInstance (Public data only)</li> <FONT COLOR=#FF0000><B> <U>Caution</U> : DON'T SEND UserInfo packet to other players instead of CharInfo packet. Indeed, UserInfo packet contains PRIVATE DATA as MaxHP,
-	 * STR, DEX...</B></FONT>
-	 */
 	public final void broadcastUserInfo()
 	{
-		// Send a Server->Client packet UserInfo to this L2PcInstance
-		sendPacket(new UserInfo(this));
-		
-		// Send a Server->Client packet CharInfo to all L2PcInstance in _KnownPlayers of the L2PcInstance
-		broadcastPacket(new CharInfo(this));
-		broadcastPacket(new ExBrExtraUserInfo(this));
-		if (TerritoryWarManager.getInstance().isTWInProgress() && (TerritoryWarManager.getInstance().checkIsRegistered(-1, getObjectId()) || TerritoryWarManager.getInstance().checkIsRegistered(-1, getClan())))
-		{
-			broadcastPacket(new ExDominionWarStart(this));
-		}
+		broadcastUserInfo(true);
+	}
+	
+	public final void broadcastUserInfo(boolean force)
+	{
+		PacketSenderTask.broadcastUserInfo(this, force);
 	}
 	
 	public final void broadcastTitleInfo()
 	{
 		// Send a Server->Client packet UserInfo to this L2PcInstance
-		sendPacket(new UserInfo(this));
-		sendPacket(new ExBrExtraUserInfo(this));
+		sendUserInfo(true);
 		
 		// Send a Server->Client packet TitleUpdate to all L2PcInstance in _KnownPlayers of the L2PcInstance
 		
@@ -5841,8 +5839,7 @@ public final class L2PcInstance extends L2Playable
 				setPvpKills(getPvpKills() + 1);
 				
 				// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
-				sendPacket(new UserInfo(this));
-				sendPacket(new ExBrExtraUserInfo(this));
+				sendUserInfo(true);
 			}
 		}
 	}
@@ -5877,8 +5874,7 @@ public final class L2PcInstance extends L2Playable
 		ColorSystemHandler.getInstance().updateColor(this);
 		
 		// Update player's UI.
-		sendPacket(new UserInfo(this));
-		sendPacket(new ExBrExtraUserInfo(this));
+		sendUserInfo(true);
 	}
 	
 	public void updatePvPStatus()
@@ -7080,24 +7076,105 @@ public final class L2PcInstance extends L2Playable
 		return _accessLevel;
 	}
 	
+	// vGodFather packet system controlling packets
+	public boolean entering = true;
+	
+	private Future<?> _updateAndBroadcastStatus;
+	protected Future<?> _userInfoTask;
+	protected Future<?> _charInfoTask;
+	
 	/**
 	 * Update Stats of the L2PcInstance client side by sending Server->Client packet UserInfo/StatusUpdate to this L2PcInstance and CharInfo/StatusUpdate to all L2PcInstance in its _KnownPlayers (broadcast).
-	 * @param broadcastType
 	 */
-	public void updateAndBroadcastStatus(int broadcastType)
+	public void updateAndBroadcastStatus()
 	{
-		refreshOverloaded();
-		refreshExpertisePenalty();
-		// Send a Server->Client packet UserInfo to this L2PcInstance and CharInfo to all L2PcInstance in its _KnownPlayers (broadcast)
-		if (broadcastType == 1)
+		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
 		{
-			sendPacket(new UserInfo(this));
-			sendPacket(new ExBrExtraUserInfo(this));
+			return;
 		}
-		if (broadcastType == 2)
+		
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this), Config.packetsDelay);
+	}
+	
+	protected class UserInfoTask implements Runnable
+	{
+		L2PcInstance _player;
+		
+		protected UserInfoTask(L2PcInstance player)
 		{
-			broadcastUserInfo();
+			_player = player;
 		}
+		
+		@Override
+		public void run()
+		{
+			PacketSenderTask.sendUserInfoImpl(_player);
+			_userInfoTask = null;
+		}
+	}
+	
+	public void sendUserInfo(boolean force)
+	{
+		if ((Config.packetsDelay == 0) || force)
+		{
+			if (_userInfoTask != null)
+			{
+				_userInfoTask.cancel(false);
+				_userInfoTask = null;
+			}
+			PacketSenderTask.sendUserInfoImpl(this);
+			return;
+		}
+		
+		if (_userInfoTask != null)
+		{
+			return;
+		}
+		
+		_userInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new UserInfoTask(this), Config.packetsDelay);
+	}
+	
+	protected class CharInfoTask implements Runnable
+	{
+		L2PcInstance _player;
+		
+		protected CharInfoTask(L2PcInstance player)
+		{
+			_player = player;
+		}
+		
+		@Override
+		public void run()
+		{
+			PacketSenderTask.sendCharInfoImpl(_player);
+			_charInfoTask = null;
+		}
+	}
+	
+	public void sendCharInfo()
+	{
+		sendCharInfo(false);
+	}
+	
+	public void sendCharInfo(boolean force)
+	{
+		if ((Config.packetsDelay == 0) || force)
+		{
+			if (_charInfoTask != null)
+			{
+				_charInfoTask.cancel(false);
+				_charInfoTask = null;
+			}
+			PacketSenderTask.sendCharInfoImpl(this);
+			return;
+		}
+		
+		if (_charInfoTask != null)
+		{
+			return;
+		}
+		
+		_charInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new CharInfoTask(this), Config.packetsDelay);
 	}
 	
 	/**
@@ -7106,8 +7183,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void setKarmaFlag(int flag)
 	{
-		sendPacket(new UserInfo(this));
-		sendPacket(new ExBrExtraUserInfo(this));
+		sendUserInfo(true);
 		for (L2PcInstance player : getKnownList().getKnownPlayers().values())
 		{
 			player.sendPacket(new RelationChanged(this, getRelation(player), isAutoAttackable(player)));
@@ -8601,8 +8677,7 @@ public final class L2PcInstance extends L2Playable
 		sendPacket(new HennaInfo(this));
 		
 		// Send Server->Client UserInfo packet to this L2PcInstance
-		sendPacket(new UserInfo(this));
-		sendPacket(new ExBrExtraUserInfo(this));
+		sendUserInfo(true);
 		// Add the recovered dyes to the player's inventory and notify them.
 		getInventory().addItem("Henna", henna.getDyeItemId(), henna.getCancelCount(), this, null);
 		reduceAdena("Henna", henna.getCancelFee(), this, false);
@@ -8652,8 +8727,7 @@ public final class L2PcInstance extends L2Playable
 				sendPacket(new HennaInfo(this));
 				
 				// Send Server->Client UserInfo packet to this L2PcInstance
-				sendPacket(new UserInfo(this));
-				sendPacket(new ExBrExtraUserInfo(this));
+				sendUserInfo(true);
 				
 				// Notify to scripts
 				EventDispatcher.getInstance().notifyEventAsync(new OnPlayerHennaRemove(this, henna), this);
@@ -9533,14 +9607,14 @@ public final class L2PcInstance extends L2Playable
 	public final void stopAllEffects()
 	{
 		super.stopAllEffects();
-		updateAndBroadcastStatus(2);
+		updateAndBroadcastStatus();
 	}
 	
 	@Override
 	public final void stopAllEffectsExceptThoseThatLastThroughDeath()
 	{
 		super.stopAllEffectsExceptThoseThatLastThroughDeath();
-		updateAndBroadcastStatus(2);
+		updateAndBroadcastStatus();
 	}
 	
 	public final void stopAllEffectsNotStayOnSubclassChange()
@@ -9552,7 +9626,7 @@ public final class L2PcInstance extends L2Playable
 				effect.exit(true);
 			}
 		}
-		updateAndBroadcastStatus(2);
+		updateAndBroadcastStatus();
 	}
 	
 	/**
@@ -9617,7 +9691,13 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void updateAbnormalEffect()
 	{
-		broadcastUserInfo();
+		// vGodFather
+		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+		{
+			return;
+		}
+		
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(true), Config.packetsDelay);
 	}
 	
 	/**
@@ -10766,7 +10846,7 @@ public final class L2PcInstance extends L2Playable
 				setCurrentCp(getMaxCp());
 			}
 			
-			refreshOverloaded();
+			refreshOverloaded(false);
 			refreshExpertisePenalty();
 			broadcastUserInfo();
 			
@@ -13583,8 +13663,7 @@ public final class L2PcInstance extends L2Playable
 		if (isInBoat())
 		{
 			setXYZ(getBoat().getLocation());
-			activeChar.sendPacket(new CharInfo(this));
-			activeChar.sendPacket(new ExBrExtraUserInfo(this));
+			activeChar.broadcastUserInfo();
 			int relation1 = getRelation(activeChar);
 			int relation2 = activeChar.getRelation(this);
 			Integer oldrelation = getKnownList().getKnownRelations().get(activeChar.getObjectId());
@@ -13610,8 +13689,7 @@ public final class L2PcInstance extends L2Playable
 		else if (isInAirShip())
 		{
 			setXYZ(getAirShip().getLocation());
-			activeChar.sendPacket(new CharInfo(this));
-			activeChar.sendPacket(new ExBrExtraUserInfo(this));
+			broadcastUserInfo();
 			int relation1 = getRelation(activeChar);
 			int relation2 = activeChar.getRelation(this);
 			Integer oldrelation = getKnownList().getKnownRelations().get(activeChar.getObjectId());
@@ -13636,8 +13714,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		else
 		{
-			activeChar.sendPacket(new CharInfo(this));
-			activeChar.sendPacket(new ExBrExtraUserInfo(this));
+			broadcastUserInfo();
 			int relation1 = getRelation(activeChar);
 			int relation2 = activeChar.getRelation(this);
 			Integer oldrelation = getKnownList().getKnownRelations().get(activeChar.getObjectId());
@@ -13678,7 +13755,7 @@ public final class L2PcInstance extends L2Playable
 		if (isTransformed())
 		{
 			// Required double send for fix Mounted H5+
-			sendPacket(new CharInfo(activeChar));
+			broadcastUserInfo();
 		}
 	}
 	

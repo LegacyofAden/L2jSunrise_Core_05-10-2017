@@ -23,8 +23,10 @@ import static l2r.gameserver.enums.CtrlIntention.AI_INTENTION_ATTACK;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.model.L2Object;
@@ -55,6 +57,8 @@ public final class L2ControllableMobAI extends L2AttackableAI
 	public static final int AI_CAST = 5;
 	public static final int AI_ATTACK_GROUP = 6;
 	
+	private Future<?> followTask;
+	
 	private int _alternateAI;
 	
 	private boolean _isThinking; // to prevent thinking recursively
@@ -71,17 +75,23 @@ public final class L2ControllableMobAI extends L2AttackableAI
 	
 	protected void thinkFollow()
 	{
-		L2Attackable me = (L2Attackable) _actor;
-		
-		if (!Util.checkIfInRange(MobGroupTable.FOLLOW_RANGE, me, getForcedTarget(), true))
+		if ((followTask != null) && !followTask.isDone())
 		{
-			int signX = (Rnd.nextInt(2) == 0) ? -1 : 1;
-			int signY = (Rnd.nextInt(2) == 0) ? -1 : 1;
-			int randX = Rnd.nextInt(MobGroupTable.FOLLOW_RANGE);
-			int randY = Rnd.nextInt(MobGroupTable.FOLLOW_RANGE);
-			
-			moveTo(getForcedTarget().getX() + (signX * randX), getForcedTarget().getY() + (signY * randY), getForcedTarget().getZ());
+			return;
 		}
+		
+		followTask = ThreadPoolManager.getInstance().scheduleGeneral(() ->
+		{
+			if (!Util.checkIfInRange(MobGroupTable.FOLLOW_RANGE, _actor, getForcedTarget(), true))
+			{
+				int signX = (Rnd.nextInt(2) == 0) ? -1 : 1;
+				int signY = (Rnd.nextInt(2) == 0) ? -1 : 1;
+				int randX = Rnd.nextInt(MobGroupTable.FOLLOW_RANGE);
+				int randY = Rnd.nextInt(MobGroupTable.FOLLOW_RANGE);
+				
+				moveTo(getForcedTarget().getX() + (signX * randX), getForcedTarget().getY() + (signY * randY), getForcedTarget().getZ());
+			}
+		} , 200);
 	}
 	
 	@Override

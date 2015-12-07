@@ -38,14 +38,12 @@ import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.MoveType;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExVitalityPointInfo;
 import l2r.gameserver.network.serverpackets.ExVoteSystemInfo;
 import l2r.gameserver.network.serverpackets.PledgeShowMemberListUpdate;
 import l2r.gameserver.network.serverpackets.SocialAction;
 import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
-import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 
 import gr.sr.configsEngine.configs.impl.FormulasConfigs;
@@ -131,9 +129,7 @@ public class PcStat extends PlayableStat
 		
 		decreaseKarma(value);
 		
-		// EXP status update currently not used in retail
-		activeChar.sendPacket(new UserInfo(activeChar));
-		activeChar.sendPacket(new ExBrExtraUserInfo(activeChar));
+		activeChar.sendUserInfo(true);
 		return true;
 	}
 	
@@ -356,12 +352,11 @@ public class PcStat extends PlayableStat
 		getActiveChar().sendPacket(su);
 		
 		// Update the overloaded status of the L2PcInstance
-		getActiveChar().refreshOverloaded();
+		getActiveChar().refreshOverloaded(false);
 		// Update the expertise status of the L2PcInstance
 		getActiveChar().refreshExpertisePenalty();
 		// Send a Server->Client packet UserInfo to the L2PcInstance
-		getActiveChar().sendPacket(new UserInfo(getActiveChar()));
-		getActiveChar().sendPacket(new ExBrExtraUserInfo(getActiveChar()));
+		getActiveChar().broadcastUserInfo();
 		getActiveChar().sendPacket(new ExVoteSystemInfo(getActiveChar()));
 		// Nevit Points For Level
 		getActiveChar().getNevitSystem().addPoints(2000);

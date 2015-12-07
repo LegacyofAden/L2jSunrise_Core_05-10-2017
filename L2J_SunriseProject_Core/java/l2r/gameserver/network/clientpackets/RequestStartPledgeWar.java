@@ -141,15 +141,8 @@ public final class RequestStartPledgeWar extends L2GameClientPacket
 		// leader.sendPacket(new StartPledgeWar(_clan.getName(),player.getName()));
 		
 		ClanTable.getInstance().storeclanswars(player.getClanId(), clan.getId());
-		for (L2PcInstance member : _clan.getOnlineMembers(0))
-		{
-			member.broadcastUserInfo();
-		}
-		
-		for (L2PcInstance member : clan.getOnlineMembers(0))
-		{
-			member.broadcastUserInfo();
-		}
+		_clan.getOnlineMembers(0).forEach(member -> member.broadcastUserInfo());
+		clan.getOnlineMembers(0).forEach(member -> member.broadcastUserInfo());
 	}
 	
 	@Override

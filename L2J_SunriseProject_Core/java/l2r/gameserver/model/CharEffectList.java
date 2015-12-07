@@ -23,10 +23,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import l2r.Config;
+import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -47,20 +51,17 @@ import l2r.gameserver.network.serverpackets.SystemMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javolution.util.FastList;
-import javolution.util.FastMap;
-
 public class CharEffectList
 {
 	protected static final Logger _log = LoggerFactory.getLogger(CharEffectList.class);
 	private static final L2Effect[] EMPTY_EFFECTS = new L2Effect[0];
 	
 	/** Map containing all effects from buffs for this effect list. */
-	private FastList<L2Effect> _buffs;
+	private List<L2Effect> _buffs;
 	/** Map containing all debuffs for this effect list. */
-	private FastList<L2Effect> _debuffs;
+	private List<L2Effect> _debuffs;
 	/** They bypass most of the actions, they are not included in most operations. */
-	private FastList<L2Effect> _passives;
+	private List<L2Effect> _passives;
 	/** Map containing the all stacked effect in progress for each abnormal type. */
 	private Map<String, List<L2Effect>> _stackedEffects;
 	private volatile boolean _hasBuffsRemovedOnAnyAction = false;
@@ -110,7 +111,7 @@ public class CharEffectList
 			_rebuildCache = false;
 			
 			// Create a copy of the effects
-			FastList<L2Effect> temp = FastList.newInstance();
+			List<L2Effect> temp = new ArrayList<>();
 			
 			// Add all buffs and all debuffs
 			if (hasBuffs())
@@ -439,17 +440,8 @@ public class CharEffectList
 	 */
 	public final void stopAllEffects()
 	{
-		// Get all active skills effects from this list
-		List<L2Effect> effects = getEffects();
-		
-		// Exit them
-		for (L2Effect e : effects)
-		{
-			if (e != null)
-			{
-				e.exit(true);
-			}
-		}
+		// Get all active skills effects from this list and exit them
+		getEffects().stream().filter(e -> e != null).forEach(e -> e.exit(true));
 	}
 	
 	/**
@@ -457,17 +449,8 @@ public class CharEffectList
 	 */
 	public final void stopAllEffectsExceptThoseThatLastThroughDeath()
 	{
-		// Get all active skills effects from this list
-		List<L2Effect> effects = getEffects();
-		
-		// Exit them
-		for (L2Effect e : effects)
-		{
-			if ((e != null) && !e.getSkill().isStayAfterDeath())
-			{
-				e.exit(true);
-			}
-		}
+		// Get all active skills effects from this list and exit them
+		getEffects().stream().filter(e -> (e != null) && !e.getSkill().isStayAfterDeath()).forEach(e -> e.exit(true));
 	}
 	
 	/**
@@ -475,16 +458,7 @@ public class CharEffectList
 	 */
 	public void stopAllToggles()
 	{
-		if (hasBuffs())
-		{
-			for (L2Effect e : getBuffs())
-			{
-				if ((e != null) && e.getSkill().isToggle())
-				{
-					e.exit();
-				}
-			}
-		}
+		getBuffs().stream().filter(e -> (e != null) && e.getSkill().isToggle()).forEach(e -> e.exit());
 	}
 	
 	/**
@@ -493,29 +467,8 @@ public class CharEffectList
 	 */
 	public final void stopEffects(L2EffectType type)
 	{
-		if (hasBuffs())
-		{
-			for (L2Effect e : getBuffs())
-			{
-				// Get active skills effects of the selected type
-				if ((e != null) && (e.getEffectType() == type))
-				{
-					e.exit();
-				}
-			}
-		}
-		
-		if (hasDebuffs())
-		{
-			for (L2Effect e : getDebuffs())
-			{
-				// Get active skills effects of the selected type
-				if ((e != null) && (e.getEffectType() == type))
-				{
-					e.exit();
-				}
-			}
-		}
+		getBuffs().stream().filter(e -> (e != null) && (e.getEffectType() == type)).forEach(e -> e.exit());
+		getDebuffs().stream().filter(e -> (e != null) && (e.getEffectType() == type)).forEach(e -> e.exit());
 	}
 	
 	/**
@@ -524,26 +477,8 @@ public class CharEffectList
 	 */
 	public final void stopSkillEffects(int skillId)
 	{
-		if (hasBuffs())
-		{
-			for (L2Effect e : getBuffs())
-			{
-				if ((e != null) && (e.getSkill().getId() == skillId))
-				{
-					e.exit();
-				}
-			}
-		}
-		if (hasDebuffs())
-		{
-			for (L2Effect e : getDebuffs())
-			{
-				if ((e != null) && (e.getSkill().getId() == skillId))
-				{
-					e.exit();
-				}
-			}
-		}
+		getBuffs().stream().filter(e -> (e != null) && (e.getSkill().getId() == skillId)).forEach(e -> e.exit());
+		getDebuffs().stream().filter(e -> (e != null) && (e.getSkill().getId() == skillId)).forEach(e -> e.exit());
 	}
 	
 	/**
@@ -582,16 +517,7 @@ public class CharEffectList
 	{
 		if (_hasBuffsRemovedOnAnyAction)
 		{
-			if (hasBuffs())
-			{
-				for (L2Effect e : getBuffs())
-				{
-					if ((e != null) && e.getSkill().isRemovedOnAnyActionExceptMove())
-					{
-						e.exit(true);
-					}
-				}
-			}
+			getBuffs().stream().filter(e -> (e != null) && e.getSkill().isRemovedOnAnyActionExceptMove()).forEach(e -> e.exit(true));
 		}
 	}
 	
@@ -729,7 +655,7 @@ public class CharEffectList
 			}
 		}
 		
-		FastList<L2Effect> effectList;
+		List<L2Effect> effectList;
 		
 		// array modified, then rebuild on next request
 		_rebuildCache = true;
@@ -765,7 +691,6 @@ public class CharEffectList
 			
 			// Get the list of all stacked effects corresponding to the stack type of the L2Effect to add
 			List<L2Effect> stackQueue = _stackedEffects.get(effect.getAbnormalType());
-			
 			if ((stackQueue == null) || stackQueue.isEmpty())
 			{
 				return;
@@ -857,7 +782,6 @@ public class CharEffectList
 						{
 							eff.exit();
 						}
-						
 					}
 					
 					// Add Funcs of this effect to the Calculator set of the L2Character
@@ -883,7 +807,7 @@ public class CharEffectList
 					return;
 				}
 			}
-			getDebuffs().addLast(newEffect);
+			getDebuffs().add(newEffect);
 		}
 		else
 		{
@@ -985,7 +909,7 @@ public class CharEffectList
 			// Icons order: buffs, 7s, toggles, dances, activation buffs
 			if (newSkill.isTriggeredSkill())
 			{
-				getBuffs().addLast(newEffect);
+				getBuffs().add(newEffect);
 			}
 			else
 			{
@@ -1055,65 +979,60 @@ public class CharEffectList
 			return;
 		}
 		
-		List<L2Effect> stackQueue;
 		L2Effect effectToAdd = null;
 		L2Effect effectToRemove = null;
 		if (_stackedEffects == null)
 		{
-			_stackedEffects = new FastMap<>();
+			_stackedEffects = new ConcurrentHashMap<>();
 		}
 		
 		// Get the list of all stacked effects corresponding to the stack type of the L2Effect to add
-		stackQueue = _stackedEffects.get(newEffect.getAbnormalType());
-		
-		if (stackQueue != null)
+		List<L2Effect> stackQueue = _stackedEffects.get(newEffect.getAbnormalType());
+		if (stackQueue == null)
 		{
+			stackQueue = new ArrayList<>();
+		}
+		
+		if (!stackQueue.isEmpty())
+		{
+			// Get the first stacked effect of the Stack group selected
+			effectToRemove = listsContains(stackQueue.get(0));
+			
+			// Create an Iterator to go through the list of stacked effects in progress on the L2Character
+			Iterator<L2Effect> queueIterator = stackQueue.iterator();
+			
 			int pos = 0;
-			if (!stackQueue.isEmpty())
+			while (queueIterator.hasNext())
 			{
-				// Get the first stacked effect of the Stack group selected
-				effectToRemove = listsContains(stackQueue.get(0));
-				
-				// Create an Iterator to go through the list of stacked effects in progress on the L2Character
-				Iterator<L2Effect> queueIterator = stackQueue.iterator();
-				
-				while (queueIterator.hasNext())
+				if (newEffect.getAbnormalLvl() < queueIterator.next().getAbnormalLvl())
 				{
-					if (newEffect.getAbnormalLvl() < queueIterator.next().getAbnormalLvl())
-					{
-						pos++;
-					}
-					else
-					{
-						break;
-					}
+					pos++;
 				}
-				// Add the new effect to the Stack list in function of its position in the Stack group
-				stackQueue.add(pos, newEffect);
-				
-				// skill.exit() could be used, if the users don't wish to see "effect
-				// removed" always when a timer goes off, even if the buff isn't active
-				// any more (has been replaced). but then check e.g. npc hold and raid petrification.
-				if (Config.EFFECT_CANCELING && (stackQueue.size() > 1))
+				else
 				{
-					if (newSkill.isDebuff() || newSkill.isOffensive())
-					{
-						getDebuffs().remove(stackQueue.remove(1));
-					}
-					else
-					{
-						getBuffs().remove(stackQueue.remove(1));
-					}
+					break;
 				}
 			}
-			else
+			// Add the new effect to the Stack list in function of its position in the Stack group
+			stackQueue.add(pos, newEffect);
+			
+			// skill.exit() could be used, if the users don't wish to see "effect
+			// removed" always when a timer goes off, even if the buff isn't active
+			// any more (has been replaced). but then check e.g. npc hold and raid petrification.
+			if (Config.EFFECT_CANCELING && (stackQueue.size() > 1))
 			{
-				stackQueue.add(0, newEffect);
+				if (newSkill.isDebuff() || newSkill.isOffensive())
+				{
+					getDebuffs().remove(stackQueue.remove(1));
+				}
+				else
+				{
+					getBuffs().remove(stackQueue.remove(1));
+				}
 			}
 		}
 		else
 		{
-			stackQueue = new FastList<>();
 			stackQueue.add(0, newEffect);
 		}
 		
@@ -1173,7 +1092,26 @@ public class CharEffectList
 		}
 	}
 	
+	private ScheduledFuture<?> _effectIconsUpdate;
+	
 	protected void updateEffectIcons()
+	{
+		if (_owner == null)
+		{
+			return;
+		}
+		
+		// Check if the previous call hasn't finished, if so, don't send packets uselessly again.
+		if ((_effectIconsUpdate != null) && !_effectIconsUpdate.isDone())
+		{
+			return;
+		}
+		
+		// Schedule the icon update packets 500miliseconds ahead, so it can gather-up most of the changes.
+		_effectIconsUpdate = ThreadPoolManager.getInstance().scheduleGeneral(() -> updateEffectIconsTask(), Config.packetsDelay);
+	}
+	
+	private void updateEffectIconsTask()
 	{
 		if (_owner == null)
 		{
@@ -1464,18 +1402,11 @@ public class CharEffectList
 	 * Gets buff skills.
 	 * @return the buff skills
 	 */
-	public FastList<L2Effect> getBuffs()
+	public List<L2Effect> getBuffs()
 	{
 		if (_buffs == null)
 		{
-			synchronized (this)
-			{
-				if (_buffs == null)
-				{
-					_buffs = new FastList<>();
-					_buffs.shared();
-				}
-			}
+			_buffs = new CopyOnWriteArrayList<>();
 		}
 		return _buffs;
 	}
@@ -1484,18 +1415,11 @@ public class CharEffectList
 	 * Gets debuff skills.
 	 * @return the debuff skills
 	 */
-	public FastList<L2Effect> getDebuffs()
+	public List<L2Effect> getDebuffs()
 	{
 		if (_debuffs == null)
 		{
-			synchronized (this)
-			{
-				if (_debuffs == null)
-				{
-					_debuffs = new FastList<>();
-					_debuffs.shared();
-				}
-			}
+			_debuffs = new CopyOnWriteArrayList<>();
 		}
 		return _debuffs;
 	}
@@ -1504,18 +1428,11 @@ public class CharEffectList
 	 * Gets passive skills.
 	 * @return the passive skills
 	 */
-	public FastList<L2Effect> getPassives()
+	public List<L2Effect> getPassives()
 	{
 		if (_passives == null)
 		{
-			synchronized (this)
-			{
-				if (_passives == null)
-				{
-					_passives = new FastList<>();
-					_passives.shared();
-				}
-			}
+			_passives = new CopyOnWriteArrayList<>();
 		}
 		return _passives;
 	}

@@ -33,12 +33,10 @@ import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillInfo;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillInfoDetail;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillResult;
 import l2r.gameserver.network.serverpackets.SystemMessage;
-import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.util.Rnd;
 
 /**
@@ -220,13 +218,13 @@ public final class RequestExEnchantSkill extends L2GameClientPacket
 				}
 			}
 			
-			player.sendPacket(new UserInfo(player));
-			player.sendPacket(new ExBrExtraUserInfo(player));
 			player.sendSkillList();
 			final int afterEnchantSkillLevel = player.getSkillLevel(_skillId);
 			player.sendPacket(new ExEnchantSkillInfo(_skillId, afterEnchantSkillLevel));
 			player.sendPacket(new ExEnchantSkillInfoDetail(0, _skillId, afterEnchantSkillLevel + 1, player));
 			player.updateShortCuts(_skillId, afterEnchantSkillLevel);
+			
+			player.sendUserInfo(true);
 		}
 		else
 		{
