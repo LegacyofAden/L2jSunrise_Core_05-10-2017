@@ -85,14 +85,7 @@ public class NevitSystem implements IUniqueId
 	
 	public void addPoints(int val)
 	{
-		if (getEffectTime() > 0)
-		{
-			setAdventPoints(0);
-		}
-		else
-		{
-			setAdventPoints(getAdventPoints() + val);
-		}
+		setAdventPoints(getEffectTime() > 0 ? 0 : getAdventPoints() + val);
 		
 		if (getAdventPoints() > MAX_POINTS)
 		{
@@ -168,6 +161,7 @@ public class NevitSystem implements IUniqueId
 			_adventTask.cancel(true);
 			_adventTask = null;
 		}
+		
 		if (sendPacket)
 		{
 			getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), true));
@@ -181,6 +175,7 @@ public class NevitSystem implements IUniqueId
 			stopNevitEffectTask(false);
 			time += getEffectTime();
 		}
+		
 		if ((getAdventTime() < ADVENT_TIME) && (time > 0))
 		{
 			getPlayer().getVariables().set("nevit_b", time);
@@ -239,11 +234,7 @@ public class NevitSystem implements IUniqueId
 	
 	private int getEffectTime()
 	{
-		if (_nevitEffectTask == null)
-		{
-			return 0;
-		}
-		return (int) Math.max(0, _nevitEffectTask.getDelay(TimeUnit.SECONDS));
+		return _nevitEffectTask == null ? 0 : (int) Math.max(0, _nevitEffectTask.getDelay(TimeUnit.SECONDS));
 	}
 	
 	public boolean isAdventBlessingActive()

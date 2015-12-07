@@ -31,7 +31,6 @@ import l2r.gameserver.model.actor.instance.L2ClassMasterInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
 import l2r.gameserver.model.actor.transform.TransformTemplate;
-import l2r.gameserver.model.entity.RecoBonus;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerLevelChanged;
 import l2r.gameserver.model.quest.QuestState;
@@ -183,6 +182,11 @@ public class PcStat extends PlayableStat
 		if ((addToExp > 0) && !activeChar.isInsideZone(ZoneIdType.PEACE))
 		{
 			activeChar.getNevitSystem().startAdventTask();
+		}
+		
+		if (!activeChar.isInsideZone(ZoneIdType.PEACE))
+		{
+			activeChar.setRecomTimerActive(true);
 		}
 		
 		addToExp *= bonusExp;
@@ -887,7 +891,7 @@ public class PcStat extends PlayableStat
 		vitality = getVitalityMultiplier();
 		
 		// Bonus from Nevit's Blessing
-		nevits = RecoBonus.getRecoMultiplier(getActiveChar());
+		nevits = getActiveChar().getRecomBonusMul();
 		
 		// Bonus from Nevit's Hunting
 		// TODO: Nevit's hunting bonus
@@ -934,7 +938,7 @@ public class PcStat extends PlayableStat
 		vitality = getVitalityMultiplier();
 		
 		// Bonus from Nevit's Blessing
-		nevits = RecoBonus.getRecoMultiplier(getActiveChar());
+		nevits = getActiveChar().getRecomBonusMul();
 		
 		// Bonus from Nevit's Hunting
 		// TODO: Nevit's hunting bonus

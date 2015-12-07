@@ -19,27 +19,23 @@
 package l2r.gameserver.network.serverpackets;
 
 import l2r.gameserver.model.actor.instance.L2PcInstance;
-import l2r.gameserver.model.entity.RecoBonus;
 
 /**
- * ExVoteSystemInfo packet implemetation.
- * @author Gnacik
+ * ExVoteSystemInfo packet implementation.
+ * @author vGodFather
  */
 public class ExVoteSystemInfo extends L2GameServerPacket
 {
-	private final int _recomLeft;
-	private final int _recomHave;
-	private final int _bonusTime;
-	private final int _bonusVal;
-	private final int _bonusType;
+	private final int _receivedRec, _givingRec, _bonusTimeLeft, _bonusPercent;
+	private final boolean _showTimer;
 	
 	public ExVoteSystemInfo(L2PcInstance player)
 	{
-		_recomLeft = player.getRecomLeft();
-		_recomHave = player.getRecomHave();
-		_bonusTime = player.getRecomBonusTime();
-		_bonusVal = RecoBonus.getRecoBonus(player);
-		_bonusType = player.getRecomBonusType();
+		_receivedRec = player.getRecomLeft();
+		_givingRec = player.getRecomHave();
+		_bonusTimeLeft = player.getRecomBonusTime();
+		_bonusPercent = player.getRecomBonus();
+		_showTimer = !player.isRecomTimerActive() || player.isHourglassEffected();
 	}
 	
 	@Override
@@ -47,10 +43,10 @@ public class ExVoteSystemInfo extends L2GameServerPacket
 	{
 		writeC(0xFE);
 		writeH(0xC9);
-		writeD(_recomLeft);
-		writeD(_recomHave);
-		writeD(_bonusTime);
-		writeD(_bonusVal);
-		writeD(_bonusType);
+		writeD(_receivedRec);
+		writeD(_givingRec);
+		writeD(_bonusTimeLeft);
+		writeD(_bonusPercent);
+		writeD(_showTimer ? 0x01 : 0x00); // 0-show timer, 1-paused (if _bonusTime > 0) otherwise Quit
 	}
 }
