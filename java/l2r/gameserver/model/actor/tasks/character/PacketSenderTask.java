@@ -16,14 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.model.actor.tasks.player;
+package l2r.gameserver.model.actor.tasks.character;
 
 import l2r.gameserver.instancemanager.TerritoryWarManager;
+import l2r.gameserver.model.L2Party;
+import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.network.serverpackets.AbstractNpcInfo.SummonInfo;
 import l2r.gameserver.network.serverpackets.CharInfo;
 import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExDominionWarStart;
+import l2r.gameserver.network.serverpackets.ExPartyPetWindowUpdate;
+import l2r.gameserver.network.serverpackets.PetInfo;
+import l2r.gameserver.network.serverpackets.PetItemList;
+import l2r.gameserver.network.serverpackets.PetStatusUpdate;
 import l2r.gameserver.network.serverpackets.UserInfo;
 
 /**
@@ -32,6 +39,7 @@ import l2r.gameserver.network.serverpackets.UserInfo;
  */
 public class PacketSenderTask
 {
+	// Players
 	public static void sendUserInfoImpl(L2PcInstance player)
 	{
 		if (player.entering)
@@ -75,5 +83,39 @@ public class PacketSenderTask
 		// Send a Server->Client packet CharInfo to all L2PcInstance in _KnownPlayers of the L2PcInstance
 		player.broadcastPacket(new CharInfo(player));
 		player.broadcastPacket(new ExBrExtraUserInfo(player));
+	}
+	
+	// Summons
+	public static void updateAndBroadcastStatusSummon(L2PcInstance activeChar, L2Summon summon, int val)
+	{
+		if (summon.getOwner() == null)
+		{
+			return;
+		}
+		
+		if ((activeChar != null) && (summon.getOwner() == activeChar))
+		{
+			activeChar.sendPacket(new SummonInfo(summon, activeChar, val));
+			return;
+		}
+		
+		summon.sendPacket(new PetInfo(summon, val));
+		summon.sendPacket(new PetStatusUpdate(summon));
+		
+		if (summon.isPet())
+		{
+			summon.getOwner().sendPacket(new PetItemList(summon.getInventory().getItems()));
+		}
+		
+		if (summon.isVisible())
+		{
+			summon.broadcastNpcInfo(val);
+		}
+		L2Party party = summon.getOwner().getParty();
+		if (party != null)
+		{
+			party.broadcastToPartyMembers(summon.getOwner(), new ExPartyPetWindowUpdate(summon));
+		}
+		summon.updateEffectIcons(true);
 	}
 }

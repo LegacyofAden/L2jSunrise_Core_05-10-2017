@@ -125,7 +125,6 @@ import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.model.stats.functions.AbstractFunction;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.AbstractNpcInfo;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.Attack;
 import l2r.gameserver.network.serverpackets.ChangeMoveType;
@@ -2868,7 +2867,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		else if (isSummon())
 		{
-			((L2Summon) this).broadcastStatusUpdate();
+			broadcastStatusUpdate();
 		}
 		else if (isNpc())
 		{
@@ -2885,7 +2884,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				}
 				else
 				{
-					player.sendPacket(new AbstractNpcInfo.NpcInfo((L2Npc) this, player));
+					((L2Npc) this).sendInfo(player);
 				}
 			}
 		}
@@ -3965,7 +3964,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						}
 						else
 						{
-							player.sendPacket(new AbstractNpcInfo.NpcInfo((L2Npc) this, player));
+							((L2Npc) this).sendInfo(player);
 						}
 					}
 				}

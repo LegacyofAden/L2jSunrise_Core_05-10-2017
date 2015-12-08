@@ -1,6 +1,6 @@
 package gr.sr.main;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -24,7 +24,7 @@ public class PacketsDebugger
 	private final static int refreshTime = Config.DEBUG_PACKETS_INTERVAL;
 	private static boolean started = false;
 	private static int sendPacketTrace = 0;
-	private final static List<String> packetName = new LinkedList<>();
+	private final static List<String> packetName = new ArrayList<>();
 	private static ScheduledFuture<?> _packetsTask = null;
 	
 	public static void checkDebugger(L2GameServerPacket gsp)
@@ -65,9 +65,16 @@ public class PacketsDebugger
 		{
 			if (detailedDebugPackets)
 			{
-				for (int i = 0; i <= (packetName.size() - 1); i++)
+				for (int i = 0; i < packetName.size(); i++)
 				{
-					_log.info(PacketsDebugger.class.getSimpleName() + ": Packet Name sent: " + packetName.get(i).replace("l2r.gameserver.network.serverpackets", ""));
+					try
+					{
+						_log.info(PacketsDebugger.class.getSimpleName() + ": Packet Name sent: " + packetName.get(i).replace("l2r.gameserver.network.serverpackets", ""));
+					}
+					catch (Exception e)
+					{
+						startTask();
+					}
 				}
 				packetName.clear();
 			}
@@ -78,16 +85,19 @@ public class PacketsDebugger
 		else
 		{
 			started = true;
-			
-			// Just in case
-			if (_packetsTask != null)
-			{
-				_packetsTask.cancel(true);
-				_packetsTask = null;
-			}
-			
 			_log.info(PacketsDebugger.class.getSimpleName() + ": Packets debugging started.");
-			_packetsTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(() -> sendPacketsInfo(false, false), 1000, refreshTime * 1000);
+			startTask();
 		}
+	}
+	
+	private static void startTask()
+	{
+		if (_packetsTask != null)
+		{
+			_packetsTask.cancel(true);
+			_packetsTask = null;
+		}
+		
+		_packetsTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(() -> sendPacketsInfo(false, false), 1000, refreshTime * 1000);
 	}
 }

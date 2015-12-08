@@ -164,12 +164,12 @@ import l2r.gameserver.model.actor.knownlist.PcKnownList;
 import l2r.gameserver.model.actor.stat.PcStat;
 import l2r.gameserver.model.actor.stat.Rates;
 import l2r.gameserver.model.actor.status.PcStatus;
+import l2r.gameserver.model.actor.tasks.character.PacketSenderTask;
 import l2r.gameserver.model.actor.tasks.player.DismountTask;
 import l2r.gameserver.model.actor.tasks.player.FameTask;
 import l2r.gameserver.model.actor.tasks.player.GameGuardCheckTask;
 import l2r.gameserver.model.actor.tasks.player.InventoryEnableTask;
 import l2r.gameserver.model.actor.tasks.player.LookingForFishTask;
-import l2r.gameserver.model.actor.tasks.player.PacketSenderTask;
 import l2r.gameserver.model.actor.tasks.player.PetFeedTask;
 import l2r.gameserver.model.actor.tasks.player.PvPFlagTask;
 import l2r.gameserver.model.actor.tasks.player.RecoBonusTask;
@@ -826,6 +826,7 @@ public final class L2PcInstance extends L2Playable
 	private int _reviveRequested = 0;
 	private double _revivePower = 0;
 	private boolean _revivePet = false;
+	private boolean _restoreStatsOnRevive = false;
 	
 	private double _cpUpdateIncCheck = .0;
 	private double _cpUpdateDecCheck = .0;
@@ -4389,9 +4390,14 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void broadcastStatusUpdate()
 	{
-		// TODO We mustn't send these informations to other players
-		// Send the Server->Client packet StatusUpdate with current HP and MP to all L2PcInstance that must be informed of HP/MP updates of this L2PcInstance
-		// super.broadcastStatusUpdate();
+		final boolean needCpUpdate = needCpUpdate();
+		final boolean needHpUpdate = needHpUpdate();
+		final boolean needMpUpdate = needMpUpdate();
+		
+		if (!needCpUpdate && !needHpUpdate && !needMpUpdate)
+		{
+			return;
+		}
 		
 		// Send the Server->Client packet StatusUpdate with current HP, MP and CP to this L2PcInstance
 		StatusUpdate su = new StatusUpdate(this);
@@ -4403,11 +4409,8 @@ public final class L2PcInstance extends L2Playable
 		su.addAttribute(StatusUpdate.CUR_CP, (int) getCurrentCp());
 		sendPacket(su);
 		
-		final boolean needCpUpdate = needCpUpdate();
-		final boolean needHpUpdate = needHpUpdate();
-		
-		// Check if a party is in progress and party window update is usefull
-		if (isInParty() && (needCpUpdate || needHpUpdate || needMpUpdate()))
+		// Check if a party is in progress
+		if (isInParty() && (needCpUpdate || needHpUpdate || needMpUpdate))
 		{
 			getParty().broadcastToPartyMembers(this, new PartySmallWindowUpdate(this));
 		}
@@ -7094,7 +7097,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this), Config.packetsDelay);
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this), Config.user_char_info_packetsDelay);
 	}
 	
 	protected class UserInfoTask implements Runnable
@@ -7116,7 +7119,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void sendUserInfo(boolean force)
 	{
-		if ((Config.packetsDelay == 0) || force)
+		if ((Config.user_char_info_packetsDelay == 0) || force)
 		{
 			if (_userInfoTask != null)
 			{
@@ -7132,7 +7135,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		_userInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new UserInfoTask(this), Config.packetsDelay);
+		_userInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new UserInfoTask(this), Config.user_char_info_packetsDelay);
 	}
 	
 	protected class CharInfoTask implements Runnable
@@ -7159,7 +7162,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void sendCharInfo(boolean force)
 	{
-		if ((Config.packetsDelay == 0) || force)
+		if ((Config.user_char_info_packetsDelay == 0) || force)
 		{
 			if (_charInfoTask != null)
 			{
@@ -7175,7 +7178,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		_charInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new CharInfoTask(this), Config.packetsDelay);
+		_charInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new CharInfoTask(this), Config.user_char_info_packetsDelay);
 	}
 	
 	/**
@@ -9699,7 +9702,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(true), Config.packetsDelay);
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(true), Config.user_char_info_packetsDelay);
 	}
 	
 	/**
@@ -11060,9 +11063,6 @@ public final class L2PcInstance extends L2Playable
 		super.doRevive();
 		updateEffectIcons();
 		sendPacket(new EtcStatusUpdate(this));
-		_revivePet = false;
-		_reviveRequested = 0;
-		_revivePower = 0;
 		
 		if (isMounted())
 		{
@@ -11106,6 +11106,11 @@ public final class L2PcInstance extends L2Playable
 	
 	public void reviveRequest(L2PcInstance reviver, L2Skill skill, boolean Pet, int power)
 	{
+		reviveRequest(reviver, skill, Pet, power, false);
+	}
+	
+	public void reviveRequest(L2PcInstance reviver, L2Skill skill, boolean Pet, int power, boolean heal)
+	{
 		if (isResurrectionBlocked())
 		{
 			return;
@@ -11134,6 +11139,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			_reviveRequested = 1;
 			int restoreExp = 0;
+			_restoreStatsOnRevive = heal;
 			
 			_revivePower = Formulas.calculateSkillResurrectRestorePercent(power, reviver);
 			restoreExp = (int) Math.round(((getExpBeforeDeath() - getExp()) * _revivePower) / 100);
@@ -11157,6 +11163,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		if ((_reviveRequested != 1) || (!isDead() && !_revivePet) || (_revivePet && hasSummon() && !getSummon().isDead()))
 		{
+			_restoreStatsOnRevive = false;
 			return;
 		}
 		
@@ -11172,6 +11179,12 @@ public final class L2PcInstance extends L2Playable
 				{
 					doRevive();
 				}
+				
+				if (_restoreStatsOnRevive)
+				{
+					setCurrentHpMp(getMaxHp(), getMaxMp());
+					setCurrentCp(getMaxCp());
+				}
 			}
 			else if (hasSummon())
 			{
@@ -11183,11 +11196,18 @@ public final class L2PcInstance extends L2Playable
 				{
 					getSummon().doRevive();
 				}
+				
+				if (_restoreStatsOnRevive)
+				{
+					getSummon().setCurrentHpMp(getSummon().getMaxHp(), getSummon().getMaxMp());
+					getSummon().setCurrentCp(getSummon().getMaxCp());
+				}
 			}
 		}
 		_revivePet = false;
 		_reviveRequested = 0;
 		_revivePower = 0;
+		_restoreStatsOnRevive = false;
 	}
 	
 	public boolean isReviveRequested()
@@ -15180,12 +15200,18 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Duel
-		if (isInDuel() && target.isInDuel())
+		if ((getDuelState() == DuelState.DUELLING) && (getDuelId() == target.getActingPlayer().getDuelId()))
 		{
-			if (getDuelId() == target.getDuelId())
+			Duel duel = DuelManager.getInstance().getDuel(getDuelId());
+			if (duel.getTeamA().contains(this) && duel.getTeamA().contains(target))
 			{
-				return false;
+				return true;
 			}
+			else if (duel.getTeamB().contains(this) && duel.getTeamB().contains(target))
+			{
+				return true;
+			}
+			return false;
 		}
 		
 		// Party
@@ -15274,7 +15300,7 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
-		// is AutoAttackable if both players are in the same duel and the duel is still going on
+		// Duel
 		if (attacker.isPlayable() && (getDuelState() == DuelState.DUELLING) && (getDuelId() == attacker.getActingPlayer().getDuelId()))
 		{
 			Duel duel = DuelManager.getInstance().getDuel(getDuelId());
