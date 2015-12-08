@@ -36,7 +36,6 @@ import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
-import l2r.gameserver.network.serverpackets.AbstractNpcInfo;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.SocialAction;
 import l2r.gameserver.network.serverpackets.StopMove;
@@ -261,7 +260,7 @@ public final class L2TamedBeastInstance extends L2FeedableBeastInstance
 			setTitle(owner.getName());
 			// broadcast the new title
 			setShowSummonAnimation(true);
-			broadcastPacket(new AbstractNpcInfo.NpcInfo(this, owner));
+			sendInfo(owner);
 			
 			owner.addTrainedBeast(this);
 			

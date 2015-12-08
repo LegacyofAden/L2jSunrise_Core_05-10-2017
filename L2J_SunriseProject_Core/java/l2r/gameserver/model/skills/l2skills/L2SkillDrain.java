@@ -35,7 +35,6 @@ import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.targets.L2TargetType;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
 public class L2SkillDrain extends L2Skill
@@ -109,10 +108,6 @@ public class L2SkillDrain extends L2Skill
 			double hp = ((activeChar.getCurrentHp() + hpAdd) > activeChar.getMaxHp() ? activeChar.getMaxHp() : (activeChar.getCurrentHp() + hpAdd));
 			
 			activeChar.setCurrentHp(hp);
-			
-			StatusUpdate suhp = new StatusUpdate(activeChar);
-			suhp.addAttribute(StatusUpdate.CUR_HP, (int) hp);
-			activeChar.sendPacket(suhp);
 			
 			// Check to see if we should damage the target
 			if ((damage > 0) && (!target.isDead() || (getTargetType() != L2TargetType.CORPSE_MOB)))
@@ -232,10 +227,6 @@ public class L2SkillDrain extends L2Skill
 			double hp = ((owner.getCurrentHp() + hpAdd) > owner.getMaxHp() ? owner.getMaxHp() : (owner.getCurrentHp() + hpAdd));
 			
 			owner.setCurrentHp(hp);
-			
-			StatusUpdate suhp = new StatusUpdate(owner);
-			suhp.addAttribute(StatusUpdate.CUR_HP, (int) hp);
-			owner.sendPacket(suhp);
 			
 			// Check to see if we should damage the target
 			if ((damage > 0) && (!target.isDead() || (getTargetType() != L2TargetType.CORPSE_MOB)))

@@ -28,10 +28,12 @@ import l2r.Config;
 import l2r.gameserver.GeoData;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.data.xml.impl.SkillTreesData;
+import l2r.gameserver.enums.DuelState;
 import l2r.gameserver.enums.PcCondOverride;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.handler.ITargetTypeHandler;
 import l2r.gameserver.handler.TargetHandler;
+import l2r.gameserver.instancemanager.DuelManager;
 import l2r.gameserver.model.ChanceCondition;
 import l2r.gameserver.model.L2ExtractableProductItem;
 import l2r.gameserver.model.L2ExtractableSkill;
@@ -49,6 +51,7 @@ import l2r.gameserver.model.conditions.Condition;
 import l2r.gameserver.model.effects.EffectTemplate;
 import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.effects.L2EffectType;
+import l2r.gameserver.model.entity.Duel;
 import l2r.gameserver.model.holders.ItemHolder;
 import l2r.gameserver.model.interfaces.IChanceSkillTrigger;
 import l2r.gameserver.model.interfaces.IIdentifiable;
@@ -1367,6 +1370,25 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 				
 				if (skill.isOffensive() && target.isInsideZone(ZoneIdType.PEACE))
 				{
+					return false;
+				}
+				
+				// Duel
+				if (caster.isPlayable() && (caster.getActingPlayer().getDuelState() == DuelState.DUELLING))
+				{
+					if (caster.getDuelId() == target.getActingPlayer().getDuelId())
+					{
+						Duel duel = DuelManager.getInstance().getDuel(caster.getDuelId());
+						if (duel.getTeamA().contains(caster) && duel.getTeamA().contains(target))
+						{
+							return false;
+						}
+						else if (duel.getTeamB().contains(caster) && duel.getTeamB().contains(target))
+						{
+							return false;
+						}
+						return true;
+					}
 					return false;
 				}
 				

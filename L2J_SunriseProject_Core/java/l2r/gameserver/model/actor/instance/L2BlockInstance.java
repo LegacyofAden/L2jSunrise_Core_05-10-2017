@@ -24,7 +24,6 @@ import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.entity.BlockCheckerEngine;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
-import l2r.gameserver.network.serverpackets.AbstractNpcInfo;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.ExCubeGameChangePoints;
 import l2r.gameserver.network.serverpackets.ExCubeGameExtendedChangePoints;
@@ -63,7 +62,7 @@ public class L2BlockInstance extends L2MonsterInstance
 				// Change color
 				_colorEffect = 0x00;
 				// BroadCast to all known players
-				this.broadcastPacket(new AbstractNpcInfo.NpcInfo(this, attacker));
+				sendInfo(attacker);
 				increaseTeamPointsAndSend(attacker, team, event);
 			}
 			else
@@ -71,7 +70,7 @@ public class L2BlockInstance extends L2MonsterInstance
 				// Change color
 				_colorEffect = 0x53;
 				// BroadCast to all known players
-				this.broadcastPacket(new AbstractNpcInfo.NpcInfo(this, attacker));
+				sendInfo(attacker);
 				increaseTeamPointsAndSend(attacker, team, event);
 			}
 			// 30% chance to drop the event items
