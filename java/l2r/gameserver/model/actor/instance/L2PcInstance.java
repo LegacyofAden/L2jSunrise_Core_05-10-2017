@@ -195,6 +195,7 @@ import l2r.gameserver.model.effects.EffectTemplate;
 import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.model.entity.Castle;
+import l2r.gameserver.model.entity.Duel;
 import l2r.gameserver.model.entity.Fort;
 import l2r.gameserver.model.entity.Hero;
 import l2r.gameserver.model.entity.Instance;
@@ -8873,10 +8874,11 @@ public final class L2PcInstance extends L2Playable
 		
 		if (attacker.isPlayable())
 		{
-			if (!isFriend(attacker.getActingPlayer()))
+			if (isEnemy(attacker.getActingPlayer()))
 			{
 				return true;
 			}
+			return false;
 		}
 		else if (attacker instanceof L2DefenderInstance)
 		{
@@ -15254,6 +15256,116 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		return true;
+	}
+	
+	public boolean isEnemy(L2PcInstance attacker)
+	{
+		if (attacker == this)
+		{
+			return false;
+		}
+		
+		if (SunriseEvents.isInEvent(this))
+		{
+			if (SunriseEvents.canAttack(this, attacker))
+			{
+				return true;
+			}
+			return false;
+		}
+		
+		// is AutoAttackable if both players are in the same duel and the duel is still going on
+		if (attacker.isPlayable() && (getDuelState() == DuelState.DUELLING) && (getDuelId() == attacker.getActingPlayer().getDuelId()))
+		{
+			Duel duel = DuelManager.getInstance().getDuel(getDuelId());
+			if (duel.getTeamA().contains(this) && duel.getTeamA().contains(attacker))
+			{
+				return false;
+			}
+			else if (duel.getTeamB().contains(this) && duel.getTeamB().contains(attacker))
+			{
+				return false;
+			}
+			return true;
+		}
+		
+		// Party
+		if (isInSameParty(attacker) || isInSameChannel(attacker))
+		{
+			return false;
+		}
+		
+		// Check if the attacker is in olympia and olympia start
+		if (attacker.isPlayer() && attacker.getActingPlayer().isInOlympiadMode())
+		{
+			if (isInOlympiadMode() && isOlympiadStart() && (attacker.getOlympiadGameId() == getOlympiadGameId()))
+			{
+				return true;
+			}
+			return false;
+		}
+		
+		if (isInsideZone(ZoneIdType.PEACE))
+		{
+			return false;
+		}
+		
+		if (getClan() != null)
+		{
+			Siege siege = SiegeManager.getInstance().getSiege(getX(), getY(), getZ());
+			if (siege != null)
+			{
+				// Check if a siege is in progress and if attacker and the L2PcInstance aren't in the Defender clan
+				if (siege.checkIsDefender(attacker.getClan()) && siege.checkIsDefender(getClan()))
+				{
+					return false;
+				}
+				
+				// Check if a siege is in progress and if attacker and the L2PcInstance aren't in the Attacker clan
+				if (siege.checkIsAttacker(attacker.getClan()) && siege.checkIsAttacker(getClan()))
+				{
+					return false;
+				}
+			}
+		}
+		
+		// Two side war
+		if (isInTwoSidedWar(attacker))
+		{
+			return true;
+		}
+		
+		if (isInsideZone(ZoneIdType.FLAG) && attacker.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
+		{
+			return true;
+		}
+		
+		// Check if the L2PcInstance is in an arena, but NOT siege zone. NOTE: This check comes before clan/ally checks, but after party checks.
+		// This is done because in arenas, clan/ally members can autoattack if they arent in party.
+		if ((isInsideZone(ZoneIdType.PVP) && attacker.isInsideZone(ZoneIdType.PVP)) && !(isInsideZone(ZoneIdType.SIEGE) && attacker.isInsideZone(ZoneIdType.SIEGE)))
+		{
+			return true;
+		}
+		
+		// Ally
+		if (isInSameClan(attacker) || isInSameAlly(attacker))
+		{
+			return false;
+		}
+		
+		// Now check again if the L2PcInstance is in pvp zone, but this time at siege PvP zone, applying clan/ally checks
+		if ((isInsideZone(ZoneIdType.PVP) && attacker.isInsideZone(ZoneIdType.PVP)) && (isInsideZone(ZoneIdType.SIEGE) && attacker.isInsideZone(ZoneIdType.SIEGE)))
+		{
+			return true;
+		}
+		
+		// Check if the L2PcInstance has Karma
+		if ((getKarma() > 0) || (getPvpFlag() > 0))
+		{
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean isInSameClan(L2PcInstance target)
