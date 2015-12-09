@@ -18,10 +18,7 @@
  */
 package l2r.gameserver.model.actor;
 
-import java.util.concurrent.Future;
-
 import l2r.Config;
-import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.ai.L2CharacterAI;
 import l2r.gameserver.ai.L2SummonAI;
 import l2r.gameserver.data.xml.impl.ExperienceData;
@@ -44,7 +41,6 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.knownlist.SummonKnownList;
 import l2r.gameserver.model.actor.stat.SummonStat;
 import l2r.gameserver.model.actor.status.SummonStatus;
-import l2r.gameserver.model.actor.tasks.character.PacketSenderTask;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.model.entity.olympiad.OlympiadGameManager;
@@ -62,8 +58,12 @@ import l2r.gameserver.network.serverpackets.AbstractNpcInfo.SummonInfo;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.ExPartyPetWindowAdd;
 import l2r.gameserver.network.serverpackets.ExPartyPetWindowDelete;
+import l2r.gameserver.network.serverpackets.ExPartyPetWindowUpdate;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
 import l2r.gameserver.network.serverpackets.PetDelete;
+import l2r.gameserver.network.serverpackets.PetInfo;
+import l2r.gameserver.network.serverpackets.PetItemList;
+import l2r.gameserver.network.serverpackets.PetStatusUpdate;
 import l2r.gameserver.network.serverpackets.RelationChanged;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.TeleportToLocation;
@@ -879,21 +879,25 @@ public abstract class L2Summon extends L2Playable
 		super.broadcastPacket(mov, radiusInKnownlist);
 	}
 	
-	private Future<?> _updateAndBroadcastStatus;
-	
 	public void updateAndBroadcastStatus(int val)
 	{
-		updateAndBroadcastStatus(null, val);
-	}
-	
-	public void updateAndBroadcastStatus(L2PcInstance activeChar, int val)
-	{
-		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+		if (getOwner() == null)
 		{
 			return;
 		}
 		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatusSummon(activeChar, this, val), Config.user_char_info_packetsDelay);
+		sendPacket(new PetInfo(this, val));
+		sendPacket(new PetStatusUpdate(this));
+		if (isVisible())
+		{
+			broadcastNpcInfo(val);
+		}
+		L2Party party = getOwner().getParty();
+		if (party != null)
+		{
+			party.broadcastToPartyMembers(getOwner(), new ExPartyPetWindowUpdate(this));
+		}
+		updateEffectIcons(true);
 	}
 	
 	public void broadcastNpcInfo(int val)
@@ -926,7 +930,21 @@ public abstract class L2Summon extends L2Playable
 	@Override
 	public void sendInfo(L2PcInstance activeChar)
 	{
-		updateAndBroadcastStatus(activeChar, 0);
+		// Check if the L2PcInstance is the owner of the Pet
+		if (activeChar == getOwner())
+		{
+			activeChar.sendPacket(new PetInfo(this, 0));
+			// The PetInfo packet wipes the PartySpelled (list of active spells' icons). Re-add them
+			updateEffectIcons(true);
+			if (isPet())
+			{
+				activeChar.sendPacket(new PetItemList(getInventory().getItems()));
+			}
+		}
+		else
+		{
+			activeChar.sendPacket(new SummonInfo(this, activeChar, 0));
+		}
 	}
 	
 	@Override

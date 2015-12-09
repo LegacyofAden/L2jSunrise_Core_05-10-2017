@@ -721,38 +721,17 @@ public class L2Attackable extends L2Npc
 			return;
 		}
 		
-		L2PcInstance targetPlayer = attacker.getActingPlayer();
-		
-		// Trying to get trap owner if there is
-		if ((targetPlayer == null) && attacker.isTrap())
-		{
-			targetPlayer = ((L2TrapInstance) attacker).getOwner();
-		}
-		
+		// Get the attacker, if is trap get trap owner
+		L2PcInstance targetPlayer = attacker.isTrap() ? ((L2TrapInstance) attacker).getOwner() : attacker.getActingPlayer();
 		// Get the AggroInfo of the attacker L2Character from the _aggroList of the L2Attackable
-		AggroInfo ai = null;
-		if (attacker.isTrap())
-		{
-			ai = _aggroList.computeIfAbsent(targetPlayer, AggroInfo::new);
-		}
-		else
-		{
-			ai = _aggroList.computeIfAbsent(attacker, AggroInfo::new);
-		}
+		AggroInfo ai = attacker.isTrap() ? _aggroList.computeIfAbsent(targetPlayer != null ? targetPlayer : attacker, AggroInfo::new) : _aggroList.computeIfAbsent(attacker, AggroInfo::new);
 		
 		ai.addDamage(damage);
 		ai.addHate(aggro);
 		
 		if ((targetPlayer != null) && (aggro == 0))
 		{
-			if (attacker.isTrap())
-			{
-				addDamageHate(targetPlayer, 0, 1);
-			}
-			else
-			{
-				addDamageHate(attacker, 0, 1);
-			}
+			addDamageHate(attacker.isTrap() ? targetPlayer : attacker, 0, 1);
 			
 			// Set the intention to the L2Attackable to AI_INTENTION_ACTIVE
 			if (getAI().getIntention() == CtrlIntention.AI_INTENTION_IDLE)

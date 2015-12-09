@@ -142,7 +142,7 @@ public class L2Npc extends L2Character
 	/** Time of last social packet broadcast */
 	private long _lastSocialBroadcast = 0;
 	/** Minimum interval between social packets */
-	private final int MINIMUM_SOCIAL_INTERVAL = 15000;
+	private final int MINIMUM_SOCIAL_INTERVAL = 10000;
 	/** Support for random animation switching */
 	private boolean _isRandomAnimationEnabled = true;
 	private boolean _isTalking = true;
@@ -471,7 +471,7 @@ public class L2Npc extends L2Character
 			}
 			else
 			{
-				sendInfo(player);
+				player.sendPacket(new AbstractNpcInfo.NpcInfo(this, player));
 			}
 		}
 	}
@@ -1507,45 +1507,7 @@ public class L2Npc extends L2Character
 			}
 			else
 			{
-				broadcastCharInfo();
-			}
-		}
-	}
-	
-	protected ScheduledFuture<?> _broadcastCharInfoTask;
-	
-	public class BroadcastCharInfoTask implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			broadcastCharInfoImpl();
-			_broadcastCharInfoTask = null;
-		}
-	}
-	
-	private void broadcastCharInfo()
-	{
-		if (!isVisible())
-		{
-			return;
-		}
-		
-		if (_broadcastCharInfoTask != null)
-		{
-			return;
-		}
-		
-		_broadcastCharInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new BroadcastCharInfoTask(), Config.npcInfo_packetsDelay);
-	}
-	
-	protected void broadcastCharInfoImpl()
-	{
-		for (L2Object obj : getKnownList().getKnownObjects().values())
-		{
-			if ((obj != null) && obj.isPlayer())
-			{
-				obj.sendPacket(new AbstractNpcInfo.NpcInfo(this, obj.getActingPlayer()));
+				activeChar.sendPacket(new AbstractNpcInfo.NpcInfo(this, activeChar));
 			}
 		}
 	}
@@ -2088,5 +2050,44 @@ public class L2Npc extends L2Character
 	public boolean isBlocked()
 	{
 		return _blocked;
+	}
+	
+	protected ScheduledFuture<?> _broadcastCharInfoTask;
+	
+	public class BroadcastCharInfoTask implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			broadcastCharInfoImpl();
+			_broadcastCharInfoTask = null;
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	private void broadcastCharInfo()
+	{
+		if (!isVisible())
+		{
+			return;
+		}
+		
+		if (_broadcastCharInfoTask != null)
+		{
+			return;
+		}
+		
+		_broadcastCharInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new BroadcastCharInfoTask(), Config.npcInfo_packetsDelay);
+	}
+	
+	protected void broadcastCharInfoImpl()
+	{
+		for (L2Object obj : getKnownList().getKnownObjects().values())
+		{
+			if ((obj != null) && obj.isPlayer())
+			{
+				obj.sendPacket(new AbstractNpcInfo.NpcInfo(this, obj.getActingPlayer()));
+			}
+		}
 	}
 }
