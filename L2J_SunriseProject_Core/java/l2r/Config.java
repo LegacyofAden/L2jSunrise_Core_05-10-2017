@@ -94,6 +94,7 @@ public final class Config
 	public static final String ORFEN_CONFIG = "./config/bosses/Orfen.ini";
 	public static final String QUEEN_ANT_CONFIG = "./config/bosses/QueenAnt.ini";
 	public static final String SAILREN_CONFIG = "./config/bosses/Sailren.ini";
+	public static final String TIAT_CONFIG = "./config/bosses/Tiat.ini";
 	public static final String VALAKAS_CONFIG = "./config/bosses/Valakas.ini";
 	public static final String VAN_HALTER_CONFIG = "./config/bosses/VanHalter.ini";
 	public static final String ZAKEN_CONFIG = "./config/bosses/Zaken.ini";
@@ -137,9 +138,9 @@ public final class Config
 	// sunrise
 	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
 	
-	public static final int user_char_info_packetsDelay = 100;// in ms
+	public static final int user_char_info_packetsDelay = 10;// in ms
 	public static final int effects_packetsDelay = 100;// in ms
-	public static final int npcInfo_packetsDelay = 100;// in ms
+	public static final int npcInfo_packetsDelay = 50;// in ms
 	
 	// --------------------------------------------------
 	// L2J Variable Definitions
@@ -1147,6 +1148,13 @@ public final class Config
 	public static int MIN_PLAYER_TO_FE;
 	public static int MAX_PLAYER_TO_FE;
 	public static int MIN_LEVEL_TO_FE;
+	
+	// --------------------------------------------------
+	// Tiat
+	// --------------------------------------------------
+	public static int MIN_PLAYER_TO_TIAT;
+	public static int MAX_PLAYER_TO_TIAT;
+	public static int MIN_LEVEL_TO_TIAT;
 	
 	// --------------------------------------------------
 	// Ekimus
@@ -2578,6 +2586,13 @@ public final class Config
 			MIN_PLAYER_TO_FE = frintezza_load.getInt("MinPlayers", 36);
 			MAX_PLAYER_TO_FE = frintezza_load.getInt("MaxPlayers", 45);
 			MIN_LEVEL_TO_FE = frintezza_load.getInt("MinLevel", 80);
+			
+			// Load TIAT_CONFIG L2Properties file (if exists)
+			final PropertiesParser tiat_load = new PropertiesParser(TIAT_CONFIG);
+			
+			MIN_PLAYER_TO_TIAT = tiat_load.getInt("MinPlayers", 36);
+			MAX_PLAYER_TO_TIAT = tiat_load.getInt("MaxPlayers", 45);
+			MIN_LEVEL_TO_TIAT = tiat_load.getInt("MinLevel", 75);
 			
 			// Load SAILREN_CONFIG L2Properties file (if exists)
 			final PropertiesParser sailren_load = new PropertiesParser(SAILREN_CONFIG);

@@ -919,7 +919,17 @@ public class PcInventory extends Inventory
 	public boolean validateCapacity(L2ItemInstance item)
 	{
 		int slots = 0;
-		if (!item.isStackable() || (getInventoryItemCount(item.getId(), -1) <= 0) || !item.getItem().hasExImmediateEffect())
+		
+		if (item.isStackable())
+		{
+			if (getInventoryItemCount(item.getId(), -1) <= 0)
+			{
+				slots++;
+			}
+			return validateCapacity(slots, item.isQuestItem());
+		}
+		
+		if (!item.isStackable() && !item.getItem().hasExImmediateEffect())
 		{
 			slots++;
 		}
