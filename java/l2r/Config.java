@@ -138,6 +138,7 @@ public final class Config
 	// sunrise
 	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
 	
+	public static final boolean packetsSystem = false;
 	public static final int user_char_info_packetsDelay = 10;// in ms
 	public static final int effects_packetsDelay = 100;// in ms
 	public static final int npcInfo_packetsDelay = 50;// in ms

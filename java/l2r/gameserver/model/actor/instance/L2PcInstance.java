@@ -7084,6 +7084,7 @@ public final class L2PcInstance extends L2Playable
 	public boolean entering = true;
 	
 	private Future<?> _updateAndBroadcastStatus;
+	private Future<?> _effectsUpdateTask;
 	protected Future<?> _userInfoTask;
 	protected Future<?> _charInfoTask;
 	
@@ -7092,12 +7093,19 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void updateAndBroadcastStatus()
 	{
-		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+		if (!Config.packetsSystem)
 		{
-			return;
+			PacketSenderTask.updateAndBroadcastStatus(this);
 		}
-		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this), Config.user_char_info_packetsDelay);
+		else
+		{
+			if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+			{
+				return;
+			}
+			
+			_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this), Config.user_char_info_packetsDelay);
+		}
 	}
 	
 	protected class UserInfoTask implements Runnable
@@ -7119,23 +7127,30 @@ public final class L2PcInstance extends L2Playable
 	
 	public void sendUserInfo(boolean force)
 	{
-		if ((Config.user_char_info_packetsDelay == 0) || force)
+		if (!Config.packetsSystem)
 		{
+			PacketSenderTask.sendUserInfoImpl(this);
+		}
+		else
+		{
+			if ((Config.user_char_info_packetsDelay == 0) || force)
+			{
+				if (_userInfoTask != null)
+				{
+					_userInfoTask.cancel(false);
+					_userInfoTask = null;
+				}
+				PacketSenderTask.sendUserInfoImpl(this);
+				return;
+			}
+			
 			if (_userInfoTask != null)
 			{
-				_userInfoTask.cancel(false);
-				_userInfoTask = null;
+				return;
 			}
-			PacketSenderTask.sendUserInfoImpl(this);
-			return;
+			
+			_userInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new UserInfoTask(this), Config.user_char_info_packetsDelay);
 		}
-		
-		if (_userInfoTask != null)
-		{
-			return;
-		}
-		
-		_userInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new UserInfoTask(this), Config.user_char_info_packetsDelay);
 	}
 	
 	protected class CharInfoTask implements Runnable
@@ -7162,23 +7177,30 @@ public final class L2PcInstance extends L2Playable
 	
 	public void sendCharInfo(boolean force)
 	{
-		if ((Config.user_char_info_packetsDelay == 0) || force)
+		if (!Config.packetsSystem)
 		{
+			PacketSenderTask.sendCharInfoImpl(this);
+		}
+		else
+		{
+			if ((Config.user_char_info_packetsDelay == 0) || force)
+			{
+				if (_charInfoTask != null)
+				{
+					_charInfoTask.cancel(false);
+					_charInfoTask = null;
+				}
+				PacketSenderTask.sendCharInfoImpl(this);
+				return;
+			}
+			
 			if (_charInfoTask != null)
 			{
-				_charInfoTask.cancel(false);
-				_charInfoTask = null;
+				return;
 			}
-			PacketSenderTask.sendCharInfoImpl(this);
-			return;
+			
+			_charInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new CharInfoTask(this), Config.user_char_info_packetsDelay);
 		}
-		
-		if (_charInfoTask != null)
-		{
-			return;
-		}
-		
-		_charInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new CharInfoTask(this), Config.user_char_info_packetsDelay);
 	}
 	
 	/**
@@ -9697,12 +9719,12 @@ public final class L2PcInstance extends L2Playable
 	public void updateAbnormalEffect()
 	{
 		// vGodFather
-		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+		if ((_effectsUpdateTask != null) && !_effectsUpdateTask.isDone())
 		{
 			return;
 		}
 		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(true), Config.user_char_info_packetsDelay);
+		_effectsUpdateTask = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(true), Config.effects_packetsDelay);
 	}
 	
 	/**
