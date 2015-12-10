@@ -360,7 +360,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	
 	public int getAggroRange()
 	{
-		return _aggroRange;
+		return _aggroRange > Config.MAX_AGGRO_RANGE ? Config.MAX_AGGRO_RANGE : _aggroRange;
 	}
 	
 	public int getClanHelpRange()
