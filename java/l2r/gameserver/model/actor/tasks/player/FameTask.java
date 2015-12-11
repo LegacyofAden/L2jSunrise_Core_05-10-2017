@@ -22,6 +22,7 @@ import l2r.Config;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 
 /**
  * Task dedicated to reward player with fame while standing on siege zone.
@@ -53,6 +54,6 @@ public class FameTask implements Runnable
 		SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.ACQUIRED_S1_REPUTATION_SCORE);
 		sm.addInt(_value);
 		_player.sendPacket(sm);
-		_player.sendUserInfo(true);
+		_player.sendPacket(new UserInfo(_player));
 	}
 }

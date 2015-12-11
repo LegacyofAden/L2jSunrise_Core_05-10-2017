@@ -44,6 +44,7 @@ import l2r.gameserver.network.serverpackets.InventoryUpdate;
 import l2r.gameserver.network.serverpackets.ItemList;
 import l2r.gameserver.network.serverpackets.SocialAction;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Broadcast;
 import l2r.util.Rnd;
 
@@ -540,7 +541,7 @@ public class CursedWeapon
 		if ((_player != null) && _player.isOnline())
 		{
 			_player.setPkKills(_nbKills);
-			_player.sendUserInfo(true);
+			_player.sendPacket(new UserInfo(_player));
 			
 			if (((_nbKills % _stageKills) == 0) && (_nbKills <= (_stageKills * (_skillMaxLevel - 1))))
 			{

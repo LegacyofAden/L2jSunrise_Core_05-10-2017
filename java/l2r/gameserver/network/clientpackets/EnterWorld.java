@@ -208,6 +208,7 @@ public class EnterWorld extends L2GameClientPacket
 			if (Config.GM_STARTUP_DIET_MODE && AdminData.getInstance().hasAccess("admin_diet", activeChar.getAccessLevel()))
 			{
 				activeChar.setDietMode(true);
+				activeChar.refreshOverloaded();
 			}
 			
 			if (Config.GM_STARTUP_AUTO_LIST && AdminData.getInstance().hasAccess("admin_gmliston", activeChar.getAccessLevel()))
@@ -369,9 +370,7 @@ public class EnterWorld extends L2GameClientPacket
 			}
 		}
 		
-		activeChar.entering = false;
-		activeChar.sendUserInfo(true);
-		activeChar.sendPacket(new EtcStatusUpdate(activeChar));
+		activeChar.broadcastUserInfo();
 		
 		// Send Macro List
 		activeChar.getMacros().sendUpdate();
@@ -429,9 +428,7 @@ public class EnterWorld extends L2GameClientPacket
 		
 		activeChar.updateEffectIcons();
 		
-		// We will force server to send one more update with low priority
-		// Just in case to avoid invisible cartoons
-		activeChar.broadcastUserInfo(false);
+		activeChar.sendPacket(new EtcStatusUpdate(activeChar));
 		
 		// Expand Skill
 		activeChar.sendPacket(new ExStorageMaxCount(activeChar));

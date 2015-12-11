@@ -53,6 +53,8 @@ import l2r.gameserver.model.items.L2Henna;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+import l2r.gameserver.network.serverpackets.CharInfo;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExShowBaseAttributeCancelWindow;
 import l2r.gameserver.network.serverpackets.ExShowVariationCancelWindow;
 import l2r.gameserver.network.serverpackets.ExShowVariationMakeWindow;
@@ -66,6 +68,7 @@ import l2r.gameserver.network.serverpackets.SiegeInfo;
 import l2r.gameserver.network.serverpackets.SortedWareHouseWithdrawalList;
 import l2r.gameserver.network.serverpackets.SortedWareHouseWithdrawalList.WarehouseListType;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.network.serverpackets.WareHouseDepositList;
 import l2r.gameserver.network.serverpackets.WareHouseWithdrawalList;
 import l2r.gameserver.util.Util;
@@ -1091,7 +1094,9 @@ public final class L2AioNpcInstance extends L2Npc
 				InventoryUpdate iu = new InventoryUpdate();
 				iu.addModifiedItem(itemInstance);
 				player.sendPacket(iu);
-				player.sendUserInfo(true);
+				player.broadcastPacket(new CharInfo(player));
+				player.sendPacket(new UserInfo(player));
+				player.broadcastPacket(new ExBrExtraUserInfo(player));
 			}
 		}
 		// Method to add specific augment to a weapon
@@ -1191,7 +1196,9 @@ public final class L2AioNpcInstance extends L2Npc
 				InventoryUpdate iu = new InventoryUpdate();
 				iu.addModifiedItem(itemInstance);
 				player.sendPacket(iu);
-				player.sendUserInfo(true);
+				player.broadcastPacket(new CharInfo(player));
+				player.sendPacket(new UserInfo(player));
+				player.broadcastPacket(new ExBrExtraUserInfo(player));
 			}
 		}
 		// Teleport

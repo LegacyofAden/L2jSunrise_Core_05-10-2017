@@ -33,9 +33,11 @@ import l2r.gameserver.model.multisell.Ingredient;
 import l2r.gameserver.model.multisell.ListContainer;
 import l2r.gameserver.model.multisell.PreparedListContainer;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExPCCafePointInfo;
 import l2r.gameserver.network.serverpackets.MultiSellList;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 import l2r.util.data.xml.IXmlReader.IXmlReader;
 import l2r.util.file.filter.NumericNameFilter;
@@ -344,7 +346,8 @@ public final class MultisellData implements IXmlReader
 				return true;
 			case FAME:
 				player.setFame(player.getFame() - (int) amount);
-				player.sendUserInfo(true);
+				player.sendPacket(new UserInfo(player));
+				player.sendPacket(new ExBrExtraUserInfo(player));
 				return true;
 		}
 		return false;
@@ -359,7 +362,8 @@ public final class MultisellData implements IXmlReader
 				break;
 			case FAME:
 				player.setFame((int) (player.getFame() + amount));
-				player.sendUserInfo(true);
+				player.sendPacket(new UserInfo(player));
+				player.sendPacket(new ExBrExtraUserInfo(player));
 				break;
 		}
 	}

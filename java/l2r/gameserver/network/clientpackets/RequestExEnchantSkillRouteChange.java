@@ -33,10 +33,12 @@ import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillInfo;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillInfoDetail;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillResult;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.util.Rnd;
 
 /**
@@ -213,6 +215,9 @@ public final class RequestExEnchantSkillRouteChange extends L2GameClientPacket
 				_log.info("Learned skill ID: " + _skillId + " Level: " + _skillLvl + " for " + requiredSp + " SP, " + requireditems + " Adena.");
 			}
 			
+			player.sendPacket(new UserInfo(player));
+			player.sendPacket(new ExBrExtraUserInfo(player));
+			
 			if (levelPenalty == 0)
 			{
 				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.SKILL_ENCHANT_CHANGE_SUCCESSFUL_S1_LEVEL_WILL_REMAIN);
@@ -231,8 +236,6 @@ public final class RequestExEnchantSkillRouteChange extends L2GameClientPacket
 			player.sendPacket(new ExEnchantSkillInfo(_skillId, afterEnchantSkillLevel));
 			player.sendPacket(new ExEnchantSkillInfoDetail(3, _skillId, afterEnchantSkillLevel, player));
 			player.updateShortCuts(_skillId, afterEnchantSkillLevel);
-			
-			player.sendUserInfo(true);
 		}
 		else
 		{

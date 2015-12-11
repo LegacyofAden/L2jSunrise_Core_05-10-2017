@@ -21,8 +21,10 @@ package l2r.gameserver.network.clientpackets;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExVoteSystemInfo;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 
 public final class RequestVoteNew extends L2GameClientPacket
 {
@@ -98,8 +100,9 @@ public final class RequestVoteNew extends L2GameClientPacket
 		target.sendPacket(sm);
 		sm = null;
 		
-		activeChar.sendUserInfo(true);
-		target.sendUserInfo(true);
+		activeChar.sendPacket(new UserInfo(activeChar));
+		sendPacket(new ExBrExtraUserInfo(activeChar));
+		target.broadcastUserInfo();
 		
 		activeChar.sendPacket(new ExVoteSystemInfo(activeChar));
 		target.sendPacket(new ExVoteSystemInfo(target));

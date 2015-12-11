@@ -51,10 +51,12 @@ import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.AcquireSkillList;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.MagicSkillLaunched;
 import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 import l2r.util.StringUtil;
 
@@ -1082,7 +1084,8 @@ public class L2VillageMasterInstance extends L2NpcInstance
 			if (leaderPlayer != null)
 			{
 				leaderPlayer.setPledgeClass(L2ClanMember.calculatePledgeClass(leaderPlayer));
-				leaderPlayer.sendUserInfo(true);
+				leaderPlayer.sendPacket(new UserInfo(leaderPlayer));
+				leaderPlayer.sendPacket(new ExBrExtraUserInfo(leaderPlayer));
 			}
 		}
 	}
@@ -1168,7 +1171,8 @@ public class L2VillageMasterInstance extends L2NpcInstance
 		if (leaderPlayer != null)
 		{
 			leaderPlayer.setPledgeClass(L2ClanMember.calculatePledgeClass(leaderPlayer));
-			leaderPlayer.sendUserInfo(true);
+			leaderPlayer.sendPacket(new UserInfo(leaderPlayer));
+			leaderPlayer.sendPacket(new ExBrExtraUserInfo(leaderPlayer));
 		}
 		
 		clan.broadcastClanStatus();

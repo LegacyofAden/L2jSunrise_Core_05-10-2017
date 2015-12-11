@@ -39,6 +39,7 @@ import l2r.gameserver.model.items.type.WeaponType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.ShopPreviewInfo;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 
 /**
@@ -69,7 +70,7 @@ public final class RequestPreviewItem extends L2GameClientPacket
 			try
 			{
 				activeChar.sendPacket(SystemMessageId.NO_LONGER_TRYING_ON);
-				activeChar.sendUserInfo(true);
+				activeChar.sendPacket(new UserInfo(activeChar));
 			}
 			catch (Exception e)
 			{

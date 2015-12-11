@@ -23,7 +23,9 @@ import java.util.Collection;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.SpawnItem;
+import l2r.gameserver.network.serverpackets.UserInfo;
 
 public class RequestRecordInfo extends L2GameClientPacket
 {
@@ -44,7 +46,8 @@ public class RequestRecordInfo extends L2GameClientPacket
 			return;
 		}
 		
-		activeChar.sendUserInfo(true);
+		activeChar.sendPacket(new UserInfo(activeChar));
+		activeChar.sendPacket(new ExBrExtraUserInfo(activeChar));
 		
 		Collection<L2Object> objs = activeChar.getKnownList().getKnownObjects().values();
 		for (L2Object object : objs)

@@ -53,10 +53,12 @@ import l2r.gameserver.model.events.impl.character.player.clan.OnPlayerClanDestro
 import l2r.gameserver.model.events.impl.clan.OnClanWarFinish;
 import l2r.gameserver.model.events.impl.clan.OnClanWarStart;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.PledgeShowInfoUpdate;
 import l2r.gameserver.network.serverpackets.PledgeShowMemberListAll;
 import l2r.gameserver.network.serverpackets.PledgeShowMemberListUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 import l2r.util.EnumIntBitmask;
 
@@ -208,9 +210,10 @@ public class ClanTable
 		// should be update packet only
 		player.sendPacket(new PledgeShowInfoUpdate(clan));
 		player.sendPacket(new PledgeShowMemberListAll(clan, player));
+		player.sendPacket(new UserInfo(player));
+		player.sendPacket(new ExBrExtraUserInfo(player));
 		player.sendPacket(new PledgeShowMemberListUpdate(player));
 		player.sendPacket(SystemMessageId.CLAN_CREATED);
-		player.sendUserInfo(true);
 		
 		// Notify to scripts
 		EventDispatcher.getInstance().notifyEventAsync(new OnPlayerClanCreate(player, clan));
