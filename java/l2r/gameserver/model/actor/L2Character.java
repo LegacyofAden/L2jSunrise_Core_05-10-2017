@@ -79,6 +79,7 @@ import l2r.gameserver.model.actor.tasks.character.FlyToLocationTask;
 import l2r.gameserver.model.actor.tasks.character.HitTask;
 import l2r.gameserver.model.actor.tasks.character.MagicUseTask;
 import l2r.gameserver.model.actor.tasks.character.NotifyAITask;
+import l2r.gameserver.model.actor.tasks.character.PacketSenderTask;
 import l2r.gameserver.model.actor.tasks.character.QueuedMagicUseTask;
 import l2r.gameserver.model.actor.templates.L2CharTemplate;
 import l2r.gameserver.model.actor.transform.Transform;
@@ -124,7 +125,9 @@ import l2r.gameserver.model.stats.Calculator;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.model.stats.functions.AbstractFunction;
+import l2r.gameserver.network.NpcStringId;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.Attack;
 import l2r.gameserver.network.serverpackets.ChangeMoveType;
@@ -136,6 +139,7 @@ import l2r.gameserver.network.serverpackets.MagicSkillCanceld;
 import l2r.gameserver.network.serverpackets.MagicSkillLaunched;
 import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.MoveToLocation;
+import l2r.gameserver.network.serverpackets.NpcSay;
 import l2r.gameserver.network.serverpackets.Revive;
 import l2r.gameserver.network.serverpackets.ServerObjectInfo;
 import l2r.gameserver.network.serverpackets.SetupGauge;
@@ -3930,18 +3934,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			
 			if (isPlayer())
 			{
-				if (broadcastFull)
-				{
-					getActingPlayer().updateAndBroadcastStatus();
-				}
-				else
-				{
-					getActingPlayer().updateAndBroadcastStatus();
-					if (su.hasAttributes())
-					{
-						broadcastPacket(su);
-					}
-				}
+				startUpdate(su);
+				
 				if ((getSummon() != null) && isAffected(EffectFlag.SERVITOR_SHARE))
 				{
 					getSummon().broadcastStatusUpdate();
@@ -4847,8 +4841,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		// to destination by GameTimeController
 		
 		// Send a Server->Client packet CharMoveToLocation to the actor and all L2PcInstance in its _knownPlayers
-		MoveToLocation msg = new MoveToLocation(this);
-		broadcastPacket(msg);
+		broadcastPacket(new MoveToLocation(this));
 		
 		return true;
 	}
@@ -7449,6 +7442,42 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return 0;
 	}
 	
+	/**
+	 * Send a normal message to all L2PcInstance in the known list.<br>
+	 * @param msg String with message
+	 */
+	public void Say(String msg)
+	{
+		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_ALL, getId(), msg));
+	}
+	
+	/**
+	 * Send a client message to all L2PcInstance in the known list.<br>
+	 * @param msg NpcString from client
+	 */
+	public void Say(NpcStringId msg)
+	{
+		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_ALL, getId(), msg));
+	}
+	
+	/**
+	 * Send a shout message (orange chat) to all L2PcInstance in the known list.<br>
+	 * @param msg String with message
+	 */
+	public void Shout(String msg)
+	{
+		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_SHOUT, getId(), msg));
+	}
+	
+	/**
+	 * Send a shout message (orange chat) to all L2PcInstance in the known list.<br>
+	 * @param msg NpcString from client
+	 */
+	public void Shout(NpcStringId msg)
+	{
+		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_SHOUT, getId(), msg));
+	}
+	
 	public void addInvulAgainst(SkillHolder holder)
 	{
 		final InvulSkillHolder invulHolder = getInvulAgainstSkills().get(holder.getSkillId());
@@ -7601,5 +7630,22 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			stopEffects(L2EffectType.FEAR);
 		}
 		updateAbnormalEffect();
+	}
+	
+	private Future<?> _updateAndBroadcastStatus;
+	
+	public void startUpdate(StatusUpdate su)
+	{
+		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+		{
+			return;
+		}
+		
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(getActingPlayer()), Config.user_char_info_packetsDelay);
+		
+		if (su.hasAttributes())
+		{
+			broadcastPacket(su);
+		}
 	}
 }
