@@ -631,6 +631,8 @@ public final class L2PcInstance extends L2Playable
 	/** The table containing all Quests began by the L2PcInstance */
 	private final Map<String, QuestState> _quests = new ConcurrentHashMap<>();
 	
+	private final Map<String, String> _tempVariables = new ConcurrentHashMap<>(0);
+	
 	/** The list containing all shortCuts of this player. */
 	private final ShortCuts _shortCuts = new ShortCuts(this);
 	
@@ -1512,17 +1514,20 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * @return a table containing all Quest in progress from the table _quests.
+	 * Gets all the active quests.
+	 * @return a list of active quests
 	 */
-	public Quest[] getAllActiveQuests()
+	public List<Quest> getAllActiveQuests()
 	{
-		List<Quest> quests = new ArrayList<>();
+		final List<Quest> quests = new LinkedList<>();
 		for (QuestState qs : _quests.values())
 		{
 			if ((qs == null) || (qs.getQuest() == null) || (!qs.isStarted() && !Config.DEVELOPER))
 			{
 				continue;
 			}
+			
+			// Ignore other scripts.
 			final int questId = qs.getQuest().getId();
 			if ((questId > 19999) || (questId < 1))
 			{
@@ -1531,7 +1536,7 @@ public final class L2PcInstance extends L2Playable
 			quests.add(qs.getQuest());
 		}
 		
-		return quests.toArray(new Quest[quests.size()]);
+		return quests;
 	}
 	
 	public void processQuestEvent(String questName, String event)
@@ -15047,6 +15052,53 @@ public final class L2PcInstance extends L2Playable
 			return 1.0d;
 		}
 		return _servitorShare.get(stat);
+	}
+	
+	/**
+	 * Get variable from temp variables
+	 * @param var is variable key
+	 * @return if exist return they value otherwise null
+	 */
+	public String getTempVarieable(final String var)
+	{
+		return _tempVariables.get(var);
+	}
+	
+	/**
+	 * Store in temp variables value using key
+	 * @param key of the variable
+	 * @param value the variable
+	 */
+	public void addTempVariable(final String key, final String value)
+	{
+		_tempVariables.put(key, value);
+	}
+	
+	/**
+	 * Check if variable exist
+	 * @param key of variable
+	 * @return {true} if exist otherwise {false}
+	 */
+	public boolean hasTempVariable(final String key)
+	{
+		return _tempVariables.containsKey(key);
+	}
+	
+	/**
+	 * Remove specific variable
+	 * @param key of the variable
+	 */
+	public void removeTempVariable(final String key)
+	{
+		_tempVariables.remove(key);
+	}
+	
+	/**
+	 * Remove all temp variables
+	 */
+	public void clearTempVariables()
+	{
+		_tempVariables.clear();
 	}
 	
 	// ============================================== //

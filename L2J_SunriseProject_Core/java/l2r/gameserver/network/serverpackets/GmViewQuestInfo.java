@@ -18,6 +18,8 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import java.util.List;
+
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
@@ -41,9 +43,9 @@ public class GmViewQuestInfo extends L2GameServerPacket
 		writeC(0x99);
 		writeS(_activeChar.getName());
 		
-		Quest[] questList = _activeChar.getAllActiveQuests();
+		final List<Quest> questList = _activeChar.getAllActiveQuests();
 		
-		if (questList.length == 0)
+		if (questList.size() == 0)
 		{
 			writeC(0);
 			writeH(0);
@@ -51,7 +53,7 @@ public class GmViewQuestInfo extends L2GameServerPacket
 			return;
 		}
 		
-		writeH(questList.length); // quest count
+		writeH(questList.size()); // quest count
 		
 		for (Quest q : questList)
 		{
