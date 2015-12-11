@@ -26,6 +26,7 @@ import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ExBaseAttributeCancelResult;
 import l2r.gameserver.network.serverpackets.InventoryUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 
 public class RequestExRemoveItemAttribute extends L2GameClientPacket
 {
@@ -74,8 +75,7 @@ public class RequestExRemoveItemAttribute extends L2GameClientPacket
 				targetItem.getElemental(_element).removeBonus(activeChar);
 			}
 			targetItem.clearElementAttr(_element);
-			
-			activeChar.sendUserInfo(true);
+			activeChar.sendPacket(new UserInfo(activeChar));
 			
 			InventoryUpdate iu = new InventoryUpdate();
 			iu.addModifiedItem(targetItem);

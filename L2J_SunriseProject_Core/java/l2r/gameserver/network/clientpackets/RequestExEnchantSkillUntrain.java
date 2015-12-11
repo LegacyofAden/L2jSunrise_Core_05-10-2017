@@ -33,10 +33,12 @@ import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillInfo;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillInfoDetail;
 import l2r.gameserver.network.serverpackets.ExEnchantSkillResult;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 
 /**
  * Format (ch) dd c: (id) 0xD0 h: (subid) 0x33 d: skill id d: skill lvl
@@ -196,6 +198,9 @@ public final class RequestExEnchantSkillUntrain extends L2GameClientPacket
 			_log.info("Learned skill ID: " + _skillId + " Level: " + _skillLvl + " for " + requiredSp + " SP, " + requireditems + " Adena.");
 		}
 		
+		player.sendPacket(new UserInfo(player));
+		player.sendPacket(new ExBrExtraUserInfo(player));
+		
 		if (_skillLvl > 100)
 		{
 			SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.UNTRAIN_SUCCESSFUL_SKILL_S1_ENCHANT_LEVEL_DECREASED_BY_ONE);
@@ -213,8 +218,6 @@ public final class RequestExEnchantSkillUntrain extends L2GameClientPacket
 		player.sendPacket(new ExEnchantSkillInfo(_skillId, afterUntrainSkillLevel));
 		player.sendPacket(new ExEnchantSkillInfoDetail(2, _skillId, afterUntrainSkillLevel - 1, player));
 		player.updateShortCuts(_skillId, afterUntrainSkillLevel);
-		
-		player.sendUserInfo(true);
 	}
 	
 	@Override

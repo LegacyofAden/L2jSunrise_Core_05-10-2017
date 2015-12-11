@@ -58,10 +58,12 @@ import l2r.gameserver.model.events.impl.sieges.castle.OnCastleSiegeOwnerChange;
 import l2r.gameserver.model.events.impl.sieges.castle.OnCastleSiegeStart;
 import l2r.gameserver.model.zone.type.L2SwampZone;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.OnEventTrigger;
 import l2r.gameserver.network.serverpackets.RelationChanged;
 import l2r.gameserver.network.serverpackets.SiegeInfo;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Broadcast;
 
 import org.slf4j.Logger;
@@ -603,7 +605,8 @@ public class Siege implements Siegable
 						member.startFameTask(Config.CASTLE_ZONE_FAME_TASK_FREQUENCY * 1000, Config.CASTLE_ZONE_FAME_AQUIRE_POINTS);
 					}
 				}
-				member.sendUserInfo(true);
+				member.sendPacket(new UserInfo(member));
+				member.sendPacket(new ExBrExtraUserInfo(member));
 				for (L2PcInstance player : member.getKnownList().getKnownPlayers().values())
 				{
 					if (player == null)
@@ -646,8 +649,8 @@ public class Siege implements Siegable
 						member.startFameTask(Config.CASTLE_ZONE_FAME_TASK_FREQUENCY * 1000, Config.CASTLE_ZONE_FAME_AQUIRE_POINTS);
 					}
 				}
-				
-				member.sendUserInfo(true);
+				member.sendPacket(new UserInfo(member));
+				member.sendPacket(new ExBrExtraUserInfo(member));
 				
 				for (L2PcInstance player : member.getKnownList().getKnownPlayers().values())
 				{

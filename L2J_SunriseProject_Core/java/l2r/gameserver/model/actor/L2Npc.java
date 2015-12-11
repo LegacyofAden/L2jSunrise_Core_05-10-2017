@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 import l2r.Config;
 import l2r.gameserver.ItemsAutoDestroy;
@@ -2127,44 +2126,5 @@ public class L2Npc extends L2Character
 	public boolean isBlocked()
 	{
 		return _blocked;
-	}
-	
-	protected ScheduledFuture<?> _broadcastCharInfoTask;
-	
-	public class BroadcastCharInfoTask implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			broadcastCharInfoImpl();
-			_broadcastCharInfoTask = null;
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private void broadcastCharInfo()
-	{
-		if (!isVisible())
-		{
-			return;
-		}
-		
-		if (_broadcastCharInfoTask != null)
-		{
-			return;
-		}
-		
-		_broadcastCharInfoTask = ThreadPoolManager.getInstance().scheduleGeneral(new BroadcastCharInfoTask(), Config.npcInfo_packetsDelay);
-	}
-	
-	protected void broadcastCharInfoImpl()
-	{
-		for (L2Object obj : getKnownList().getKnownObjects().values())
-		{
-			if ((obj != null) && obj.isPlayer())
-			{
-				obj.sendPacket(new AbstractNpcInfo.NpcInfo(this, obj.getActingPlayer()));
-			}
-		}
 	}
 }

@@ -19,6 +19,8 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
+import l2r.gameserver.network.serverpackets.UserInfo;
 
 /**
  * Appearing Packet Handler
@@ -52,7 +54,8 @@ public final class Appearing extends L2GameClientPacket
 			activeChar.onTeleported();
 		}
 		
-		activeChar.sendUserInfo(true);
+		sendPacket(new UserInfo(activeChar));
+		sendPacket(new ExBrExtraUserInfo(activeChar));
 	}
 	
 	@Override

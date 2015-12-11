@@ -61,6 +61,7 @@ import l2r.gameserver.model.itemcontainer.ItemContainer;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.CreatureSay;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExSubPledgeSkillAdd;
 import l2r.gameserver.network.serverpackets.ItemList;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
@@ -74,6 +75,7 @@ import l2r.gameserver.network.serverpackets.PledgeSkillList.SubPledgeSkill;
 import l2r.gameserver.network.serverpackets.PledgeSkillListAdd;
 import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
+import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.util.Util;
 import l2r.util.EnumIntBitmask;
 
@@ -2072,7 +2074,8 @@ public class L2Clan implements IIdentifiable, INamable
 						if (cm.getPlayerInstance() != null)
 						{
 							cm.getPlayerInstance().getClanPrivileges().setBitmask(privs);
-							cm.getPlayerInstance().sendUserInfo(true);
+							cm.getPlayerInstance().sendPacket(new UserInfo(cm.getPlayerInstance()));
+							cm.getPlayerInstance().sendPacket(new ExBrExtraUserInfo(cm.getPlayerInstance()));
 						}
 					}
 				}
@@ -2490,7 +2493,8 @@ public class L2Clan implements IIdentifiable, INamable
 		setAllyPenaltyExpiryTime(0, 0);
 		updateClanInDB();
 		
-		player.sendUserInfo(true);
+		player.sendPacket(new UserInfo(player));
+		player.sendPacket(new ExBrExtraUserInfo(player));
 		
 		// TODO: Need correct message id
 		player.sendMessage("Alliance " + allyName + " has been created.");
