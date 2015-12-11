@@ -22,6 +22,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import l2r.L2DatabaseFactory;
+import l2r.gameserver.model.L2World;
+import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.network.serverpackets.ExVoteSystemInfo;
 import l2r.gameserver.taskmanager.Task;
 import l2r.gameserver.taskmanager.TaskManager;
 import l2r.gameserver.taskmanager.TaskManager.ExecutedTask;
@@ -43,18 +46,31 @@ public class TaskRecom extends Task
 	@Override
 	public void onTimeElapsed(ExecutedTask task)
 	{
+		for (L2PcInstance player : L2World.getInstance().getPlayers())
+		{
+			if ((player != null) && player.isOnline() && (player.getClient() != null) && !player.getClient().isDetached())
+			{
+				player.stopRecoBonusTask();
+				player.setRecomBonusTime(3600);
+				player.setRecomLeft(20);
+				player.setRecomHave(player.getRecomHave() - 20);
+				player.sendUserInfo(true);
+				player.sendPacket(new ExVoteSystemInfo(player));
+			}
+		}
+		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			try (PreparedStatement ps = con.prepareStatement("UPDATE character_reco_bonus SET rec_left=?, time_left=?, rec_have=0 WHERE rec_have <=  20"))
 			{
-				ps.setInt(1, 0); // Rec left = 0
+				ps.setInt(1, 20); // Rec left = 20
 				ps.setInt(2, 3600); // Timer = 1 hour
 				ps.execute();
 			}
 			
 			try (PreparedStatement ps = con.prepareStatement("UPDATE character_reco_bonus SET rec_left=?, time_left=?, rec_have=GREATEST(rec_have-20,0) WHERE rec_have > 20"))
 			{
-				ps.setInt(1, 0); // Rec left = 0
+				ps.setInt(1, 20); // Rec left = 20
 				ps.setInt(2, 3600); // Timer = 1 hour
 				ps.execute();
 			}
@@ -63,7 +79,8 @@ public class TaskRecom extends Task
 		{
 			_log.error(getClass().getSimpleName() + ": Could not reset Recommendations System: " + e);
 		}
-		_log.info("Recommendations System reseted");
+		
+		_log.info("Recommendations System reseted.");
 	}
 	
 	@Override
