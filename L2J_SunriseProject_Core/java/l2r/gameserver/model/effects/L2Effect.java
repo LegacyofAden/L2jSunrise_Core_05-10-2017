@@ -415,21 +415,28 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	 */
 	public final void stopEffectTask()
 	{
-		if (_currentFuture != null)
+		try
 		{
-			// Cancel the task
-			_currentFuture.cancel(false);
-			// ThreadPoolManager.getInstance().removeEffect(_currentTask);
-			_currentFuture = null;
-			
-			if (isSelfEffectType() && (getEffector() != null))
+			if (_currentFuture != null)
 			{
-				getEffector().removeEffect(this);
+				// Cancel the task
+				_currentFuture.cancel(false);
+				// ThreadPoolManager.getInstance().removeEffect(_currentTask);
+				_currentFuture = null;
+				
+				if (isSelfEffectType() && (getEffector() != null))
+				{
+					getEffector().removeEffect(this);
+				}
+				else if (getEffected() != null)
+				{
+					getEffected().removeEffect(this);
+				}
 			}
-			else if (getEffected() != null)
-			{
-				getEffected().removeEffect(this);
-			}
+		}
+		catch (Exception e)
+		{
+			// nothing to log
 		}
 	}
 	
