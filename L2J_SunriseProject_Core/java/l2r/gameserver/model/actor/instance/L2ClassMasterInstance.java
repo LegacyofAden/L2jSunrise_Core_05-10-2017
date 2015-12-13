@@ -26,12 +26,10 @@ import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.base.ClassId;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.NpcHtmlMessage;
 import l2r.gameserver.network.serverpackets.TutorialCloseHtml;
 import l2r.gameserver.network.serverpackets.TutorialShowHtml;
 import l2r.gameserver.network.serverpackets.TutorialShowQuestionMark;
-import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.util.StringUtil;
 
 /**
@@ -99,8 +97,7 @@ public final class L2ClassMasterInstance extends L2MerchantInstance
 			if (!player.isNoble())
 			{
 				player.setNoble(true);
-				player.sendPacket(new UserInfo(player));
-				player.sendPacket(new ExBrExtraUserInfo(player));
+				player.sendUserInfo(true);
 				NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 				html.setFile(player.getHtmlPrefix(), "data/html/classmaster/nobleok.htm");
 				player.sendPacket(html);

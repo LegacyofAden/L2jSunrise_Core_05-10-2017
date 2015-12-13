@@ -138,6 +138,11 @@ public final class Config
 	// sunrise
 	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
 	
+	public static final boolean packets_noDelay = true; // will affect only stats update not effect
+	public static final int user_char_info_packetsDelay = 100;// in ms
+	public static final int effects_packetsDelay = 100;// in ms
+	public static final int stats_update_packetsDelay = 100; // in ms
+	
 	// --------------------------------------------------
 	// L2J Variable Definitions
 	// --------------------------------------------------

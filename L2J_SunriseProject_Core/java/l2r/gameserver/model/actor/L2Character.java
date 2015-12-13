@@ -79,6 +79,7 @@ import l2r.gameserver.model.actor.tasks.character.FlyToLocationTask;
 import l2r.gameserver.model.actor.tasks.character.HitTask;
 import l2r.gameserver.model.actor.tasks.character.MagicUseTask;
 import l2r.gameserver.model.actor.tasks.character.NotifyAITask;
+import l2r.gameserver.model.actor.tasks.character.PacketSenderTask;
 import l2r.gameserver.model.actor.tasks.character.QueuedMagicUseTask;
 import l2r.gameserver.model.actor.templates.L2CharTemplate;
 import l2r.gameserver.model.actor.transform.Transform;
@@ -127,7 +128,6 @@ import l2r.gameserver.model.stats.functions.AbstractFunction;
 import l2r.gameserver.network.NpcStringId;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.clientpackets.Say2;
-import l2r.gameserver.network.serverpackets.AbstractNpcInfo;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.Attack;
 import l2r.gameserver.network.serverpackets.ChangeMoveType;
@@ -3936,18 +3936,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			
 			if (isPlayer())
 			{
-				if (broadcastFull)
-				{
-					getActingPlayer().updateAndBroadcastStatus(2);
-				}
-				else
-				{
-					getActingPlayer().updateAndBroadcastStatus(1);
-					if (su.hasAttributes())
-					{
-						broadcastPacket(su);
-					}
-				}
+				startUpdate(su, broadcastFull);
 				if ((getSummon() != null) && isAffected(EffectFlag.SERVITOR_SHARE))
 				{
 					getSummon().broadcastStatusUpdate();
@@ -3970,7 +3959,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						}
 						else
 						{
-							player.sendPacket(new AbstractNpcInfo.NpcInfo((L2Npc) this, player));
+							((L2Npc) this).sendInfo(player);
 						}
 					}
 				}
@@ -7626,5 +7615,30 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			stopEffects(L2EffectType.FEAR);
 		}
 		updateAbnormalEffect();
+	}
+	
+	public boolean entering = true;
+	private Future<?> _updateAndBroadcastStatus;
+	
+	public void startUpdate(StatusUpdate su, boolean fullUpdate)
+	{
+		if (Config.packets_noDelay && !entering)
+		{
+			PacketSenderTask.updateAndBroadcastStatus(getActingPlayer(), fullUpdate);
+		}
+		else
+		{
+			if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
+			{
+				return;
+			}
+			
+			_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(getActingPlayer(), fullUpdate), Config.stats_update_packetsDelay);
+		}
+		
+		if (su.hasAttributes())
+		{
+			broadcastPacket(su);
+		}
 	}
 }
