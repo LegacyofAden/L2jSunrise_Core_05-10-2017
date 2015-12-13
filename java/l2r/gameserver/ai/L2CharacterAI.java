@@ -1358,7 +1358,7 @@ public class L2CharacterAI extends AbstractAI
 					case COREDONE:
 						continue; // won't be considered something for fighting
 					default:
-						if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE))
+						if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 						{
 							cancelSkills.add(sk);
 						}
@@ -1502,7 +1502,7 @@ public class L2CharacterAI extends AbstractAI
 	
 	public boolean canAOE(L2Skill sk)
 	{
-		if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE))
+		if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 		{
 			if ((sk.getTargetType() == L2TargetType.AURA) || (sk.getTargetType() == L2TargetType.BEHIND_AURA) || (sk.getTargetType() == L2TargetType.FRONT_AURA) || (sk.getTargetType() == L2TargetType.AURA_CORPSE_MOB))
 			{

@@ -808,7 +808,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 						addRangeSkill(skill);
 						break;
 					default:
-						if (skill.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE))
+						if (skill.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 						{
 							addNegativeSkill(skill);
 							addRangeSkill(skill);
