@@ -1665,7 +1665,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 			default:
 			{
-				if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE))
+				if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 				{
 					// decrease cancel probability
 					if (Rnd.get(50) != 0)
@@ -2088,7 +2088,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			return null;
 		}
 		L2Attackable actor = getActiveChar();
-		if (!sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE))
+		if (!sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 		{
 			if (!positive)
 			{

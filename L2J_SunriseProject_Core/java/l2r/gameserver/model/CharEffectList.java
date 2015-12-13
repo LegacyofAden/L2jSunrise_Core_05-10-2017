@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -80,6 +81,9 @@ public class CharEffectList
 	private L2Effect[] _effectCache;
 	private volatile boolean _rebuildCache = true;
 	private final Object _buildEffectLock = new Object();
+	
+	/** Set containing all abnormal types that shouldn't be added to this creature effect list. */
+	private volatile Set<String> _blockedBuffSlots = null;
 	
 	public CharEffectList(L2Character owner)
 	{
@@ -757,7 +761,12 @@ public class CharEffectList
 			return;
 		}
 		
+		// Support for blocked buff slots.
 		L2Skill newSkill = newEffect.getSkill();
+		if ((_blockedBuffSlots != null) && _blockedBuffSlots.contains(newEffect.getAbnormalType()))
+		{
+			return;
+		}
 		
 		// Passive effects are treated specially
 		if (newEffect.isPassiveEffect())
@@ -1002,7 +1011,7 @@ public class CharEffectList
 			int pos = 0;
 			while (queueIterator.hasNext())
 			{
-				if (newEffect.getAbnormalLvl() < queueIterator.next().getAbnormalLvl())
+				if ((newEffect.getAbnormalLvl() < queueIterator.next().getAbnormalLvl()) && !newEffect.getSkill().isStatic())
 				{
 					pos++;
 				}
@@ -1017,7 +1026,7 @@ public class CharEffectList
 			// skill.exit() could be used, if the users don't wish to see "effect
 			// removed" always when a timer goes off, even if the buff isn't active
 			// any more (has been replaced). but then check e.g. npc hold and raid petrification.
-			if (Config.EFFECT_CANCELING && (stackQueue.size() > 1))
+			if (Config.EFFECT_CANCELING && !newEffect.getSkill().isStatic() && (stackQueue.size() > 1))
 			{
 				if (newSkill.isDebuff() || newSkill.isOffensive())
 				{
@@ -1505,5 +1514,47 @@ public class CharEffectList
 		{
 			_log.warn(String.valueOf(e));
 		}
+	}
+	
+	/**
+	 * Adds abnormal types to the blocked buff slot set.
+	 * @param blockedBuffSlots the blocked buff slot set to add
+	 */
+	public void addBlockedBuffSlots(Set<String> blockedBuffSlots)
+	{
+		if (_blockedBuffSlots == null)
+		{
+			synchronized (this)
+			{
+				if (_blockedBuffSlots == null)
+				{
+					_blockedBuffSlots = ConcurrentHashMap.newKeySet(blockedBuffSlots.size());
+				}
+			}
+		}
+		_blockedBuffSlots.addAll(blockedBuffSlots);
+	}
+	
+	/**
+	 * Removes abnormal types from the blocked buff slot set.
+	 * @param blockedBuffSlots the blocked buff slot set to remove
+	 * @return {@code true} if the blocked buff slots set has been modified, {@code false} otherwise
+	 */
+	public boolean removeBlockedBuffSlots(Set<String> blockedBuffSlots)
+	{
+		if (_blockedBuffSlots != null)
+		{
+			return _blockedBuffSlots.removeAll(blockedBuffSlots);
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets all the blocked abnormal types for this creature effect list.
+	 * @return the current blocked buff slots set
+	 */
+	public Set<String> getAllBlockedBuffSlots()
+	{
+		return _blockedBuffSlots;
 	}
 }
