@@ -369,10 +369,6 @@ public class EnterWorld extends L2GameClientPacket
 			}
 		}
 		
-		activeChar.entering = false;
-		activeChar.sendUserInfo(true);
-		activeChar.sendPacket(new EtcStatusUpdate(activeChar));
-		
 		// Send Macro List
 		activeChar.getMacros().sendUpdate();
 		
@@ -411,6 +407,10 @@ public class EnterWorld extends L2GameClientPacket
 			activeChar.setProtection(true);
 		}
 		
+		activeChar.entering = false;
+		activeChar.broadcastUserInfo();
+		activeChar.sendPacket(new EtcStatusUpdate(activeChar));
+		
 		activeChar.spawnMe(activeChar.getX(), activeChar.getY(), activeChar.getZ());
 		
 		activeChar.getInventory().applyItemSkills();
@@ -428,10 +428,6 @@ public class EnterWorld extends L2GameClientPacket
 		}
 		
 		activeChar.updateEffectIcons();
-		
-		// We will force server to send one more update with low priority
-		// Just in case to avoid invisible cartoons
-		activeChar.broadcastUserInfo(false);
 		
 		// Expand Skill
 		activeChar.sendPacket(new ExStorageMaxCount(activeChar));

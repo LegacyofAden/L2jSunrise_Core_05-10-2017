@@ -265,6 +265,7 @@ import l2r.gameserver.network.serverpackets.CharInfo;
 import l2r.gameserver.network.serverpackets.ConfirmDlg;
 import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExAutoSoulShot;
+import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExDuelUpdateUserInfo;
 import l2r.gameserver.network.serverpackets.ExFishingEnd;
 import l2r.gameserver.network.serverpackets.ExFishingStart;
@@ -7097,19 +7098,12 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void updateAndBroadcastStatus(boolean fullUpdate)
 	{
-		if (Config.packets_noDelay && !entering)
+		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
 		{
-			PacketSenderTask.updateAndBroadcastStatus(this, fullUpdate);
+			return;
 		}
-		else
-		{
-			if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
-			{
-				return;
-			}
-			
-			_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this, fullUpdate), Config.user_char_info_packetsDelay);
-		}
+		
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this, fullUpdate), Config.user_char_info_packetsDelay);
 	}
 	
 	protected class UserInfoTask implements Runnable
@@ -7576,9 +7570,9 @@ public final class L2PcInstance extends L2Playable
 			}
 			
 			// Update the overloaded status of the L2PcInstance
-			player.refreshOverloaded();
+			player.refreshOverloaded(false);
 			// Update the expertise status of the L2PcInstance
-			player.refreshExpertisePenalty();
+			player.refreshExpertisePenalty(false);
 			
 			player.restoreFriendList();
 			
@@ -9709,7 +9703,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		_effectsUpdateTask = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(true), Config.effects_packetsDelay);
+		_effectsUpdateTask = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastUserInfo(), Config.effects_packetsDelay);
 	}
 	
 	/**
@@ -13692,7 +13686,8 @@ public final class L2PcInstance extends L2Playable
 		if (isInBoat())
 		{
 			setXYZ(getBoat().getLocation());
-			activeChar.broadcastUserInfo(false);
+			activeChar.sendPacket(new CharInfo(this));
+			activeChar.sendPacket(new ExBrExtraUserInfo(this));
 			int relation1 = getRelation(activeChar);
 			int relation2 = activeChar.getRelation(this);
 			Integer oldrelation = getKnownList().getKnownRelations().get(activeChar.getObjectId());
@@ -13718,7 +13713,8 @@ public final class L2PcInstance extends L2Playable
 		else if (isInAirShip())
 		{
 			setXYZ(getAirShip().getLocation());
-			activeChar.broadcastUserInfo(false);
+			activeChar.sendPacket(new CharInfo(this));
+			activeChar.sendPacket(new ExBrExtraUserInfo(this));
 			int relation1 = getRelation(activeChar);
 			int relation2 = activeChar.getRelation(this);
 			Integer oldrelation = getKnownList().getKnownRelations().get(activeChar.getObjectId());
@@ -13743,7 +13739,8 @@ public final class L2PcInstance extends L2Playable
 		}
 		else
 		{
-			activeChar.broadcastUserInfo(false);
+			activeChar.sendPacket(new CharInfo(this));
+			activeChar.sendPacket(new ExBrExtraUserInfo(this));
 			int relation1 = getRelation(activeChar);
 			int relation2 = activeChar.getRelation(this);
 			Integer oldrelation = getKnownList().getKnownRelations().get(activeChar.getObjectId());
@@ -13784,7 +13781,7 @@ public final class L2PcInstance extends L2Playable
 		if (isTransformed())
 		{
 			// Required double send for fix Mounted H5+
-			broadcastUserInfo(false);
+			broadcastUserInfo();
 		}
 	}
 	

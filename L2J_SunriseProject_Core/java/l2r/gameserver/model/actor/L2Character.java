@@ -7622,19 +7622,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	
 	public void startUpdate(StatusUpdate su, boolean fullUpdate)
 	{
-		if (Config.packets_noDelay && !entering)
+		if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
 		{
-			PacketSenderTask.updateAndBroadcastStatus(getActingPlayer(), fullUpdate);
+			return;
 		}
-		else
-		{
-			if ((_updateAndBroadcastStatus != null) && !_updateAndBroadcastStatus.isDone())
-			{
-				return;
-			}
-			
-			_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(getActingPlayer(), fullUpdate), Config.stats_update_packetsDelay);
-		}
+		
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(getActingPlayer(), fullUpdate), Config.stats_update_packetsDelay);
 		
 		if (su.hasAttributes())
 		{

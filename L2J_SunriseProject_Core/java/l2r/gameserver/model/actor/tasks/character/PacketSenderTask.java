@@ -21,6 +21,7 @@ package l2r.gameserver.model.actor.tasks.character;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.CharInfo;
+import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExDominionWarStart;
 import l2r.gameserver.network.serverpackets.UserInfo;
@@ -51,7 +52,7 @@ public class PacketSenderTask
 	public static void updateAndBroadcastStatus(L2PcInstance player, boolean fullUpdate)
 	{
 		player.refreshOverloaded(false);
-		player.refreshExpertisePenalty();
+		player.refreshExpertisePenalty(false);
 		
 		if (player.entering)
 		{
@@ -67,6 +68,7 @@ public class PacketSenderTask
 		{
 			player.sendUserInfo(true);
 		}
+		player.sendPacket(new EtcStatusUpdate(player));
 	}
 	
 	public static void broadcastUserInfo(L2PcInstance player, boolean force)
