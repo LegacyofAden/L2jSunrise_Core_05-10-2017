@@ -644,7 +644,6 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 		character = L2PcInstance.load(objId);
 		if (character != null)
 		{
-			
 			// preinit some values for each login
 			character.setRunning(); // running is default
 			character.standUp(); // standing is default
