@@ -24,9 +24,7 @@ import java.sql.PreparedStatement;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
-import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExVoteSystemInfo;
-import l2r.gameserver.network.serverpackets.UserInfo;
 import l2r.gameserver.taskmanager.Task;
 import l2r.gameserver.taskmanager.TaskManager;
 import l2r.gameserver.taskmanager.TaskManager.ExecutedTask;
@@ -56,8 +54,7 @@ public class TaskRecom extends Task
 				player.setRecomBonusTime(3600);
 				player.setRecomLeft(20);
 				player.setRecomHave(player.getRecomHave() - 20);
-				player.sendPacket(new UserInfo(player));
-				player.sendPacket(new ExBrExtraUserInfo(player));
+				player.sendUserInfo(true);
 				player.sendPacket(new ExVoteSystemInfo(player));
 			}
 		}

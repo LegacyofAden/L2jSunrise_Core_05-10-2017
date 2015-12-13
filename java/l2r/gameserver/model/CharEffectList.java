@@ -27,9 +27,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import l2r.Config;
+import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -1099,7 +1101,26 @@ public class CharEffectList
 		}
 	}
 	
+	private ScheduledFuture<?> _effectIconsUpdate;
+	
 	protected void updateEffectIcons()
+	{
+		if (_owner == null)
+		{
+			return;
+		}
+		
+		// Check if the previous call hasn't finished, if so, don't send packets uselessly again.
+		if ((_effectIconsUpdate != null) && !_effectIconsUpdate.isDone())
+		{
+			return;
+		}
+		
+		// Schedule the icon update packets 500miliseconds ahead, so it can gather-up most of the changes.
+		_effectIconsUpdate = ThreadPoolManager.getInstance().scheduleGeneral(() -> updateEffectIconsTask(), Config.effects_packetsDelay);
+	}
+	
+	private void updateEffectIconsTask()
 	{
 		if (_owner == null)
 		{
