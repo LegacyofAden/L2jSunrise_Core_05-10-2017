@@ -5764,7 +5764,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// If in Arena, do nothing
-		if (isInsideZone(ZoneIdType.PVP) || targetPlayer.isInsideZone(ZoneIdType.PVP))
+		if (isInsideZone(ZoneIdType.PVP) && targetPlayer.isInsideZone(ZoneIdType.PVP))
 		{
 			if ((getSiegeState() > 0) && (targetPlayer.getSiegeState() > 0) && (getSiegeState() != targetPlayer.getSiegeState()))
 			{
