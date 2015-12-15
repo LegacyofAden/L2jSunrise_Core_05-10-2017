@@ -353,6 +353,7 @@ import gr.sr.protection.network.ProtectionManager;
 import gr.sr.pvpColorEngine.ColorSystemHandler;
 import gr.sr.pvpRewardEngine.pvpRewardHandler;
 import gr.sr.spreeEngine.SpreeHandler;
+import gr.sr.utils.Tools;
 import gr.sr.zones.FlagZoneHandler;
 
 /**
@@ -5464,41 +5465,30 @@ public final class L2PcInstance extends L2Playable
 				}
 			}
 			
-			// Rank Arena (For Dual Box)
-			if ((killer instanceof L2PcInstance) && isInsideZone(ZoneIdType.PVP) && !isInSiege() && LeaderboardsConfigs.RANK_ARENA_ENABLED)
-			{
-				L2PcInstance k = (L2PcInstance) killer;
-				String killIp = k.getClient().getConnection().getInetAddress().getHostAddress();
-				String DeathIp = getClient().getConnection().getInetAddress().getHostAddress();
-				if (!killIp.equals(DeathIp) || LeaderboardsConfigs.RANK_ARENA_ACCEPT_SAME_IP || (!killer.isGM() && !isGM()))
-				{
-					ArenaLeaderboard.getInstance().onKill(killer.getObjectId(), killer.getName());
-					ArenaLeaderboard.getInstance().onDeath(getObjectId(), getName());
-				}
-			}
-			
-			// Rank Arena
-			if (LeaderboardsConfigs.RANK_ARENA_ENABLED && (killer instanceof L2PcInstance) && isInsideZone(ZoneIdType.PVP) && !isInSiege())
-			{
-				if (!killer.isGM() && !isGM())
-				{
-					ArenaLeaderboard.getInstance().onKill(killer.getObjectId(), killer.getName());
-					ArenaLeaderboard.getInstance().onDeath(getObjectId(), getName());
-				}
-			}
-			
-			// Rank TvT
-			if (LeaderboardsConfigs.RANK_TVT_ENABLED && (killer instanceof L2PcInstance))
-			{
-				if (!killer.isGM() && !isGM())
-				{
-					TvTLeaderboard.getInstance().onKill(killer.getObjectId(), killer.getName());
-					TvTLeaderboard.getInstance().onDeath(getObjectId(), getName());
-				}
-			}
-			
 			if (pk != null)
 			{
+				// Rank Arena
+				if (LeaderboardsConfigs.RANK_ARENA_ENABLED && isInsideZone(ZoneIdType.PVP) && !isInSiege() && !pk.isGM() && !isGM())
+				{
+					if (LeaderboardsConfigs.RANK_ARENA_ACCEPT_SAME_IP)
+					{
+						ArenaLeaderboard.getInstance().onKill(pk.getObjectId(), pk.getName());
+						ArenaLeaderboard.getInstance().onDeath(getObjectId(), getName());
+					}
+					else if (!Tools.isDualBox(pk, this))
+					{
+						ArenaLeaderboard.getInstance().onKill(pk.getObjectId(), pk.getName());
+						ArenaLeaderboard.getInstance().onDeath(getObjectId(), getName());
+					}
+				}
+				
+				// Rank TvT
+				if (LeaderboardsConfigs.RANK_TVT_ENABLED && !pk.isGM() && !isGM())
+				{
+					TvTLeaderboard.getInstance().onKill(pk.getObjectId(), pk.getName());
+					TvTLeaderboard.getInstance().onDeath(getObjectId(), getName());
+				}
+				
 				EventDispatcher.getInstance().notifyEventAsync(new OnPlayerPvPKill(pk, this), this);
 			}
 			

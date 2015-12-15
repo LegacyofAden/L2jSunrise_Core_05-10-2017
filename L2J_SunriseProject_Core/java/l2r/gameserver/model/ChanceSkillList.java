@@ -18,6 +18,9 @@
  */
 package l2r.gameserver.model;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.handler.ISkillHandler;
 import l2r.gameserver.handler.SkillHandler;
@@ -34,13 +37,11 @@ import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javolution.util.FastMap;
-
 /**
  * CT2.3: Added support for allowing effect as a chance skill trigger (DrHouse)
  * @author kombat
  */
-public class ChanceSkillList extends FastMap<IChanceSkillTrigger, ChanceCondition>
+public class ChanceSkillList extends ConcurrentHashMap<IChanceSkillTrigger, ChanceCondition>
 {
 	protected static final Logger _log = LoggerFactory.getLogger(ChanceSkillList.class);
 	private static final long serialVersionUID = 1L;
@@ -50,7 +51,6 @@ public class ChanceSkillList extends FastMap<IChanceSkillTrigger, ChanceConditio
 	public ChanceSkillList(L2Character owner)
 	{
 		super();
-		shared();
 		_owner = owner;
 	}
 	
@@ -137,17 +137,20 @@ public class ChanceSkillList extends FastMap<IChanceSkillTrigger, ChanceConditio
 		}
 		
 		final boolean playable = target instanceof L2Playable;
-		for (Entry<IChanceSkillTrigger, ChanceCondition> e = head(), end = tail(); (e = e.getNext()) != end;)
+		for (Map.Entry<IChanceSkillTrigger, ChanceCondition> entry : entrySet())
 		{
-			if ((e.getValue() != null) && e.getValue().trigger(event, damage, element, playable, skill))
+			IChanceSkillTrigger trigger = entry.getKey();
+			ChanceCondition cond = entry.getValue();
+			
+			if ((cond != null) && cond.trigger(event, damage, element, playable, skill))
 			{
-				if (e.getKey() instanceof L2Skill)
+				if (trigger instanceof L2Skill)
 				{
-					_owner.makeTriggerCast((L2Skill) e.getKey(), target);
+					_owner.makeTriggerCast((L2Skill) trigger, target);
 				}
 				else
 				{
-					makeCast((L2Effect) e.getKey(), target);
+					makeCast((L2Effect) trigger, target);
 				}
 			}
 		}
