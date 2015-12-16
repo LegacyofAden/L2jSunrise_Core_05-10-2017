@@ -91,7 +91,7 @@ public class L2Party extends AbstractPlayerGroup
 	public static final byte ITEM_ORDER = 3;
 	public static final byte ITEM_ORDER_SPOIL = 4;
 	
-	private final List<L2PcInstance> _members = new CopyOnWriteArrayList<>();
+	private final List<L2PcInstance> _members;
 	private boolean _pendingInvitation = false;
 	private long _pendingInviteTimeout;
 	private int _partyLvl = 0;
@@ -113,6 +113,7 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public L2Party(L2PcInstance leader, PartyDistributionType partyDistributionType)
 	{
+		_members = new CopyOnWriteArrayList<>();
 		_members.add(leader);
 		_partyLvl = leader.getLevel();
 		_distributionType = partyDistributionType;
@@ -121,6 +122,7 @@ public class L2Party extends AbstractPlayerGroup
 	// vGodFather: used only for event engine
 	public L2Party(L2PcInstance leader)
 	{
+		_members = new CopyOnWriteArrayList<>();
 		_members.add(leader);
 		_partyLvl = leader.getLevel();
 		_distributionType = PartyDistributionType.RANDOM;
