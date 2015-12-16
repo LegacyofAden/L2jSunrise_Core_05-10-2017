@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -141,7 +142,10 @@ public class L2ContactList
 		}
 		catch (Exception e)
 		{
-			_log.warn("Error found in " + activeChar.getName() + "'s ContactsList: " + e.getMessage(), e);
+			if (Config.DEBUG)
+			{
+				_log.warn("Error found in " + activeChar.getName() + "'s ContactsList: " + e.getMessage(), e);
+			}
 		}
 		return true;
 	}
