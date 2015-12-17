@@ -7965,7 +7965,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		catch (Exception e)
 		{
-			_log.warn("Could not store char base data: " + this + " - " + e.getMessage(), e);
+			// _log.warn("Could not store char base data: " + this + " - " + e.getMessage(), e);
 		}
 	}
 	
