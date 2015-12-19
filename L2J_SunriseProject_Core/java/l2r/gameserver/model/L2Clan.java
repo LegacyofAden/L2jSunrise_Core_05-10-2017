@@ -551,45 +551,33 @@ public class L2Clan implements IIdentifiable, INamable
 	 */
 	public int getMaxNrOfMembers(int pledgeType)
 	{
-		int limit = 0;
-		
 		switch (pledgeType)
 		{
 			case 0:
 				switch (getLevel())
 				{
 					case 3:
-						limit = 30;
-						break;
+						return 30;
 					case 2:
-						limit = 20;
-						break;
+						return 20;
 					case 1:
-						limit = 15;
-						break;
+						return 15;
 					case 0:
-						limit = 10;
-						break;
+						return 10;
 					default:
-						limit = 40;
-						break;
+						return 40;
 				}
-				break;
 			case -1:
-				limit = 20;
-				break;
+				return 20;
 			case 100:
 			case 200:
 				switch (getLevel())
 				{
 					case 11:
-						limit = 30;
-						break;
+						return 30;
 					default:
-						limit = 20;
-						break;
+						return 20;
 				}
-				break;
 			case 1001:
 			case 1002:
 			case 2001:
@@ -599,18 +587,13 @@ public class L2Clan implements IIdentifiable, INamable
 					case 9:
 					case 10:
 					case 11:
-						limit = 25;
-						break;
+						return 25;
 					default:
-						limit = 10;
-						break;
+						return 10;
 				}
-				break;
 			default:
-				break;
+				return 0;
 		}
-		
-		return limit;
 	}
 	
 	/**
