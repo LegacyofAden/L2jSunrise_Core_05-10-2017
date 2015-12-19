@@ -351,6 +351,10 @@ public final class L2BabyPetInstance extends L2PetInstance
 								{
 									iter.remove();
 								}
+								else if ((owner.getEffectList().getAllBlockedBuffSlots() != null) && owner.getEffectList().getAllBlockedBuffSlots().contains(skill.getEffectTemplates()[0].abnormalType))
+								{
+									iter.remove();
+								}
 								else
 								{
 									// effect with same stacktype and greater or equal stackorder

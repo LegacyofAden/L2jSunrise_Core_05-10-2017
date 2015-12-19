@@ -263,6 +263,12 @@ public class L2DoorInstance extends L2Character
 		}
 	}
 	
+	@Override
+	public boolean canBeAttacked()
+	{
+		return _isAttackableDoor;
+	}
+	
 	public boolean getIsAttackableDoor()
 	{
 		return _isAttackableDoor;

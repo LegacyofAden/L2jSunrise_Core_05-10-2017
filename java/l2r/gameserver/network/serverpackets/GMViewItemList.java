@@ -78,5 +78,6 @@ public class GMViewItemList extends L2GameServerPacket
 				writeH(op);
 			}
 		}
+		writeH(0x00);
 	}
 }

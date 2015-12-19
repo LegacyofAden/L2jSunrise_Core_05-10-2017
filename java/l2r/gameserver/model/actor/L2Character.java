@@ -2216,6 +2216,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				{
 					// Send a System Message to the caster
 					sendPacket(SystemMessageId.THERE_ARE_NOT_ENOUGH_NECESSARY_ITEMS_TO_USE_THE_SKILL);
+					getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 				}
 				return false;
 			}
