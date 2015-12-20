@@ -788,9 +788,6 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 					case BLOW:
 					case DRAIN:
 					case CHARGEDAM:
-					case FATAL:
-					case DEATHLINK:
-					case MANADAM:
 						addAtkSkill(skill);
 						addUniversalSkill(skill);
 						addRangeSkill(skill);
@@ -808,7 +805,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 						addRangeSkill(skill);
 						break;
 					default:
-						if (skill.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
+						if (skill.hasEffectType(L2EffectType.CANCEL, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 						{
 							addNegativeSkill(skill);
 							addRangeSkill(skill);
@@ -821,7 +818,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 						{
 							addResSkill(skill);
 						}
-						else if (skill.hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+						else if (skill.hasEffectType(L2EffectType.MAGICAL_ATTACK_MP, L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK, L2EffectType.DEATH_LINK))
 						{
 							addAtkSkill(skill);
 							addUniversalSkill(skill);

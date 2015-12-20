@@ -1187,7 +1187,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.hasSoulshot());
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.hasSoulshot());
 			
 			// Bows Ranged Damage Formula (Damage gradually decreases when 60% or lower than full hit range, and increases when 60% or higher).
 			// full hit range is 500 which is the base bow range, and the 60% of this is 800.
@@ -1256,7 +1256,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.hasSoulshot());
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.hasSoulshot());
 		}
 		
 		// Check if the L2Character is a L2PcInstance
@@ -1322,7 +1322,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages of hit 1
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, true, attack.hasSoulshot());
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.hasSoulshot());
 			damage1 /= 2;
 		}
 		
@@ -1336,7 +1336,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			crit2 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages of hit 2
-			damage2 = (int) Formulas.calcPhysDam(this, target, null, shld2, crit2, true, attack.hasSoulshot());
+			damage2 = (int) Formulas.calcPhysDam(this, target, null, shld2, crit2, attack.hasSoulshot());
 			damage2 /= 2;
 		}
 		
@@ -1517,7 +1517,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			crit1 = Formulas.calcCrit(this, target);
 			
 			// Calculate physical damages
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.hasSoulshot());
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.hasSoulshot());
 			
 			if (attackpercent != 100)
 			{
@@ -2937,6 +2937,16 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public boolean isInvul()
 	{
 		return _isInvul || _isTeleporting || isAffected(EffectFlag.INVUL);
+	}
+	
+	public boolean isBuffBlocked()
+	{
+		return isAffected(EffectFlag.BLOCK_BUFF);
+	}
+	
+	public boolean isDebuffBlocked()
+	{
+		return isAffected(EffectFlag.BLOCK_DEBUFF);
 	}
 	
 	public void setIsMortal(boolean b)
@@ -6155,7 +6165,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
 			}
 		}
-		if (skill.isOffensive() && !(skill.getSkillType() == L2SkillType.UNLOCK) && !(skill.getSkillType() == L2SkillType.DELUXE_KEY_UNLOCK))
+		if (skill.isOffensive() && !(skill.getSkillType() == L2SkillType.UNLOCK))
 		{
 			getAI().clientStartAutoAttack();
 		}
@@ -6498,7 +6508,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 								{
 									case SUMMON:
 									case UNLOCK:
-									case DELUXE_KEY_UNLOCK:
 									case UNLOCK_SPECIAL:
 										break;
 									default:
@@ -7446,7 +7455,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * Send a normal message to all L2PcInstance in the known list.<br>
 	 * @param msg String with message
 	 */
-	public void Say(String msg)
+	public void say(String msg)
 	{
 		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_ALL, getId(), msg));
 	}
@@ -7455,7 +7464,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * Send a client message to all L2PcInstance in the known list.<br>
 	 * @param msg NpcString from client
 	 */
-	public void Say(NpcStringId msg)
+	public void say(NpcStringId msg)
 	{
 		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_ALL, getId(), msg));
 	}
@@ -7464,7 +7473,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * Send a shout message (orange chat) to all L2PcInstance in the known list.<br>
 	 * @param msg String with message
 	 */
-	public void Shout(String msg)
+	public void shout(String msg)
 	{
 		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_SHOUT, getId(), msg));
 	}
@@ -7473,7 +7482,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * Send a shout message (orange chat) to all L2PcInstance in the known list.<br>
 	 * @param msg NpcString from client
 	 */
-	public void Shout(NpcStringId msg)
+	public void shout(NpcStringId msg)
 	{
 		broadcastPacket(new NpcSay(getObjectId(), Say2.NPC_SHOUT, getId(), msg));
 	}

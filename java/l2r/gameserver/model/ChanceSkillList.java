@@ -142,16 +142,12 @@ public class ChanceSkillList extends ConcurrentHashMap<IChanceSkillTrigger, Chan
 			IChanceSkillTrigger trigger = entry.getKey();
 			ChanceCondition cond = entry.getValue();
 			
-			if ((cond != null) && cond.trigger(event, damage, element, playable, skill))
+			if (cond != null && cond.trigger(event, damage, element, playable, skill))
 			{
 				if (trigger instanceof L2Skill)
-				{
 					_owner.makeTriggerCast((L2Skill) trigger, target);
-				}
 				else
-				{
 					makeCast((L2Effect) trigger, target);
-				}
 			}
 		}
 	}

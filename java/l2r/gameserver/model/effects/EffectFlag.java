@@ -24,6 +24,8 @@ package l2r.gameserver.model.effects;
 public enum EffectFlag
 {
 	NONE,
+	BLOCK_BUFF,
+	BLOCK_DEBUFF,
 	RESURRECTION_SPECIAL,
 	NOBLESS_BLESSING,
 	SILENT_MOVE,

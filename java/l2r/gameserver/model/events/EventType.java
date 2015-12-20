@@ -20,6 +20,7 @@ package l2r.gameserver.model.events;
 
 import l2r.gameserver.model.events.impl.IBaseEvent;
 import l2r.gameserver.model.events.impl.character.OnCreatureAttack;
+import l2r.gameserver.model.events.impl.character.OnCreatureAttackAvoid;
 import l2r.gameserver.model.events.impl.character.OnCreatureAttacked;
 import l2r.gameserver.model.events.impl.character.OnCreatureDamageDealt;
 import l2r.gameserver.model.events.impl.character.OnCreatureDamageReceived;
@@ -122,6 +123,7 @@ public enum EventType
 	
 	// Creature events
 	ON_CREATURE_ATTACK(OnCreatureAttack.class, void.class, TerminateReturn.class),
+	ON_CREATURE_ATTACK_AVOID(OnCreatureAttackAvoid.class, void.class, void.class),
 	ON_CREATURE_ATTACKED(OnCreatureAttacked.class, void.class, TerminateReturn.class),
 	ON_CREATURE_DAMAGE_RECEIVED(OnCreatureDamageReceived.class, void.class),
 	ON_CREATURE_DAMAGE_DEALT(OnCreatureDamageDealt.class, void.class),

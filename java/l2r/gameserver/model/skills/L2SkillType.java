@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -39,14 +38,11 @@ public enum L2SkillType
 	// Damage
 	PDAM,
 	MDAM,
-	MANADAM,
-	CHAIN_HEAL,
 	DOT,
 	MDOT,
 	DRAIN(L2SkillDrain.class),
-	DEATHLINK,
-	FATAL,
 	BLOW,
+	CHARGEDAM(L2SkillChargeDmg.class),
 	SIGNET(L2SkillSignet.class),
 	SIGNET_CASTTIME(L2SkillSignetCasttime.class),
 	// Disablers
@@ -64,9 +60,9 @@ public enum L2SkillType
 	AGGDAMAGE,
 	AGGDEBUFF,
 	// Misc
+	CHAIN_HEAL,
 	UNLOCK,
 	UNLOCK_SPECIAL,
-	DELUXE_KEY_UNLOCK,
 	SOW,
 	DUMMY,
 	// Creation
@@ -82,7 +78,6 @@ public enum L2SkillType
 	CONT,
 	FUSION,
 	
-	CHARGEDAM(L2SkillChargeDmg.class),
 	RECALL(L2SkillTeleport.class),
 	TELEPORT(L2SkillTeleport.class),
 	TRANSFORMDISPEL,

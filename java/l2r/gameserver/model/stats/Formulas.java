@@ -772,11 +772,10 @@ public final class Formulas
 	 * @param skill
 	 * @param shld
 	 * @param crit if the ATTACK have critical success
-	 * @param dual if dual weapon is used
 	 * @param ss if weapon item was charged by soulshot
 	 * @return
 	 */
-	public static final double calcPhysDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean crit, boolean dual, boolean ss)
+	public static final double calcPhysDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean crit, boolean ss)
 	{
 		final boolean isPvP = attacker.isPlayable() && target.isPlayable();
 		final boolean isPvE = attacker.isPlayable() && target.isAttackable();
@@ -1730,6 +1729,7 @@ public final class Formulas
 		}
 		
 		final double activateRate = (skill.getActivateRate() > 0) && (effect.effectPower < 0) ? skill.getPower() : effect.effectPower;
+		// Force success some cancel effects cause they use other calculations
 		if ((activateRate == -1) || skill.hasEffectType(L2EffectType.CANCEL) || skill.hasEffectType(L2EffectType.STEAL_ABNORMAL))
 		{
 			return true;
@@ -2127,22 +2127,13 @@ public final class Formulas
 		return restorePercent;
 	}
 	
-	public static boolean calcPhysicalSkillEvasion(L2Character target, L2Skill skill)
+	public static boolean calcPhysicalSkillEvasion(L2Character activeChar, L2Character target, L2Skill skill)
 	{
 		if ((skill.isMagic() && (skill.getSkillType() != L2SkillType.BLOW)) || skill.isDebuff())
 		{
 			return false;
 		}
 		
-		return Rnd.get(1000) < (target.calcStat(Stats.P_SKILL_EVASION, 0, null, skill) * 10);
-	}
-	
-	public static boolean calcPhysicalSkillEvasion(L2Character activeChar, L2Character target, L2Skill skill)
-	{
-		if (skill.isMagic() || skill.isDebuff())
-		{
-			return false;
-		}
 		if (Rnd.get(100) < target.calcStat(Stats.P_SKILL_EVASION, 0, null, skill))
 		{
 			if (activeChar.isPlayer())
@@ -2414,7 +2405,7 @@ public final class Formulas
 		byte reflect = SKILL_REFLECT_FAILED;
 		// Check for non-reflected skilltypes, need additional retail check
 		
-		if (skill.hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+		if (skill.hasEffectType(L2EffectType.MAGICAL_ATTACK_MP, L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK, L2EffectType.DEATH_LINK))
 		{
 			final Stats stat = skill.isMagic() ? Stats.VENGEANCE_SKILL_MAGIC_DAMAGE : Stats.VENGEANCE_SKILL_PHYSICAL_DAMAGE;
 			final double venganceChance = target.getStat().calcStat(stat, 0, target, skill);
@@ -2441,9 +2432,6 @@ public final class Formulas
 			case BLOW:
 			case DRAIN:
 			case CHARGEDAM:
-			case FATAL:
-			case DEATHLINK:
-			case MANADAM:
 				final Stats stat = skill.isMagic() ? Stats.VENGEANCE_SKILL_MAGIC_DAMAGE : Stats.VENGEANCE_SKILL_PHYSICAL_DAMAGE;
 				final double venganceChance = target.getStat().calcStat(stat, 0, target, skill);
 				if (venganceChance > Rnd.get(100))
