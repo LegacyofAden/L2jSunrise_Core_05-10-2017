@@ -130,6 +130,7 @@ public final class Config
 	public static final String MMO_CONFIG_FILE = "./config/network/MMO.ini";
 	public static final String LOGIN_CONFIGURATION_FILE = "./config/network/LoginServer.ini";
 	public static final String CONFIGURATION_FILE = "./config/network/Server.ini";
+	public static final String SERVER_PACKETS_FILE = "./config/network/ServerPackets.ini";
 	public static final String TELNET_FILE = "./config/network/Telnet.ini";
 	
 	/** Network settings */
@@ -137,10 +138,6 @@ public final class Config
 	
 	// sunrise
 	public static final String CHAMPION_MOBS_CONFIG = "./config/sunrise/ChampionMobs.ini";
-	
-	public static final int user_char_info_packetsDelay = 100;// in ms
-	public static final int effects_packetsDelay = 100;// in ms
-	public static final int stats_update_packetsDelay = 100; // in ms
 	
 	// --------------------------------------------------
 	// L2J Variable Definitions
@@ -927,6 +924,14 @@ public final class Config
 	// --------------------------------------------------
 	public static int MOVE_PACKET_DELAY;
 	public static int ATTACK_PACKET_DELAY;
+	
+	// --------------------------------------------------
+	// Server Packets Settings
+	// --------------------------------------------------
+	public static int user_char_info_packetsDelay;
+	public static int effects_packetsDelay;
+	public static int stats_update_packetsDelay;
+	public static int moveToPawn_packetsDelay;
 	
 	// --------------------------------------------------
 	// Vitality Settings
@@ -1782,6 +1787,14 @@ public final class Config
 			
 			MOVE_PACKET_DELAY = clientPacketsSettings.getInt("MovePacketDelay", 100);
 			ATTACK_PACKET_DELAY = clientPacketsSettings.getInt("AttackPacketDelay", 500);
+			
+			// Load ServerPackets L2Properties file (if exists)
+			final PropertiesParser serverPacketsSettings = new PropertiesParser(SERVER_PACKETS_FILE);
+			
+			user_char_info_packetsDelay = serverPacketsSettings.getInt("UserAndCharInfoPacketsDelay", 100);
+			effects_packetsDelay = serverPacketsSettings.getInt("EffectsPacketsDelay", 100);
+			stats_update_packetsDelay = serverPacketsSettings.getInt("StatsUpdatePacketsDelay", 100);
+			moveToPawn_packetsDelay = serverPacketsSettings.getInt("MoveToPawnPacketsDelay", 70);
 			
 			// Load Telnet L2Properties file (if exists)
 			final PropertiesParser telnetSettings = new PropertiesParser(TELNET_FILE);

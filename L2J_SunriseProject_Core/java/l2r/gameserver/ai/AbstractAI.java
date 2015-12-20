@@ -39,7 +39,6 @@ import l2r.gameserver.network.serverpackets.AutoAttackStart;
 import l2r.gameserver.network.serverpackets.AutoAttackStop;
 import l2r.gameserver.network.serverpackets.Die;
 import l2r.gameserver.network.serverpackets.MoveToLocation;
-import l2r.gameserver.network.serverpackets.MoveToPawn;
 import l2r.gameserver.network.serverpackets.StopMove;
 import l2r.gameserver.network.serverpackets.StopRotation;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
@@ -581,7 +580,7 @@ public abstract class AbstractAI implements Ctrl
 				}
 				else if (sendPacket)
 				{
-					_actor.broadcastPacket(new MoveToPawn(_actor, (L2Character) pawn, offset));
+					_actor.moveToPawn(_actor, (L2Character) pawn, offset);
 				}
 			}
 			else
@@ -792,7 +791,7 @@ public abstract class AbstractAI implements Ctrl
 				if ((_clientMovingToPawnOffset != 0) && (_followTarget != null))
 				{
 					// Send a Server->Client packet MoveToPawn to the actor and all L2PcInstance in its _knownPlayers
-					player.sendPacket(new MoveToPawn(_actor, _followTarget, _clientMovingToPawnOffset));
+					player.moveToPawn(_actor, _followTarget, _clientMovingToPawnOffset);
 				}
 				else
 				{

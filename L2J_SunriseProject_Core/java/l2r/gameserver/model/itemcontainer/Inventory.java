@@ -294,6 +294,7 @@ public abstract class Inventory extends ItemContainer
 				item.getAugmentation().removeBonus(player);
 			}
 			
+			item.unChargeAllShots();
 			item.removeElementAttrBonus(player);
 			
 			// Remove skills bestowed from +4 armor
@@ -427,6 +428,7 @@ public abstract class Inventory extends ItemContainer
 				item.getAugmentation().applyBonus(player);
 			}
 			
+			item.rechargeShots(true, true);
 			item.updateElementAttrBonus(player);
 			
 			// Add skills bestowed from +4 armor
@@ -1046,7 +1048,7 @@ public abstract class Inventory extends ItemContainer
 	 */
 	public synchronized void addPaperdollListener(PaperdollListener listener)
 	{
-		assert!_paperdollListeners.contains(listener);
+		assert !_paperdollListeners.contains(listener);
 		_paperdollListeners.add(listener);
 	}
 	
