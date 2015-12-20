@@ -194,7 +194,6 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final BaseStats _basicProperty;
 	
 	private final int _condition;
-	private final int _conditionValue;
 	private final boolean _overhit;
 	
 	private final int _minPledgeClass;
@@ -462,7 +461,6 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_basicProperty = set.getEnum("basicProperty", BaseStats.class, BaseStats.NONE);
 		
 		_condition = set.getInt("condition", 0);
-		_conditionValue = set.getInt("conditionValue", 0);
 		_overhit = set.getBoolean("overHit", false);
 		_isSuicideAttack = set.getBoolean("isSuicideAttack", false);
 		
@@ -526,11 +524,6 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	
 	public abstract void useSkill(L2Character caster, L2Object[] targets);
 	
-	public final int getConditionValue()
-	{
-		return _conditionValue;
-	}
-	
 	public final L2SkillType getSkillType()
 	{
 		return _skillType;
@@ -565,6 +558,42 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return _condition;
 	}
 	
+	public boolean isAOE()
+	{
+		switch (_targetType)
+		{
+			case AREA:
+			case AURA:
+			case BEHIND_AREA:
+			case BEHIND_AURA:
+			case FRONT_AREA:
+			case FRONT_AURA:
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isDamage()
+	{
+		switch (getSkillType())
+		{
+			case PDAM:
+			case MDAM:
+			case CHARGEDAM:
+			case DOT:
+			case MDOT:
+			case DRAIN:
+			case BLOW:
+			case SIGNET:
+			case SIGNET_CASTTIME:
+				return true;
+		}
+		
+		return hasEffectType(L2EffectType.MAGICAL_ATTACK_MP, L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK);
+	}
+	
 	public final boolean isOverhit()
 	{
 		return _overhit;
@@ -595,21 +624,16 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 			return getPower(isPvP, isPvE);
 		}
 		
-		switch (_skillType)
+		if (hasEffectType(L2EffectType.DEATH_LINK))
 		{
-			case DEATHLINK:
-			{
-				return getPower(isPvP, isPvE) * (-((activeChar.getCurrentHp() * 2) / activeChar.getMaxHp()) + 2);
-			}
-			case FATAL:
-			{
-				return getPower(isPvP, isPvE) * (-((target.getCurrentHp() * 2) / target.getMaxHp()) + 2);
-			}
-			default:
-			{
-				return getPower(isPvP, isPvE);
-			}
+			return getPower(isPvP, isPvE) * (-((activeChar.getCurrentHp() * 2) / activeChar.getMaxHp()) + 2);
 		}
+		
+		if (hasEffectType(L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+		{
+			return getPower(isPvP, isPvE) * (-((target.getCurrentHp() * 2) / target.getMaxHp()) + 2);
+		}
+		return getPower(isPvP, isPvE);
 	}
 	
 	public final double getPower()
@@ -1061,7 +1085,6 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		switch (getSkillType())
 		{
 			case PDAM:
-			case FATAL:
 			case CHARGEDAM:
 			case BLOW:
 				return true;
@@ -1088,6 +1111,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public final boolean isOffensive()
 	{
 		return _isOffensive;
+	}
+	
+	public boolean isBad()
+	{
+		return (_isOffensive) && (_targetType != L2TargetType.SELF);
 	}
 	
 	public final boolean isHeroSkill()
@@ -1560,6 +1588,21 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 			return _emptyEffectSet;
 		}
 		
+		if (isDebuff())
+		{
+			if (effected.isDebuffBlocked())
+			{
+				return _emptyEffectSet;
+			}
+		}
+		else
+		{
+			if (effected.isBuffBlocked() && !isBad())
+			{
+				return _emptyEffectSet;
+			}
+		}
+		
 		if (effected.isInvulAgainst(getId(), getLevel()))
 		{
 			effected.sendDebugMessage("Skill " + toString() + " has been ignored (invul against)");
@@ -1641,6 +1684,21 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		
 		if (effector.getOwner() != effected)
 		{
+			if (isDebuff())
+			{
+				if (effected.isDebuffBlocked())
+				{
+					return _emptyEffectSet;
+				}
+			}
+			else
+			{
+				if (effected.isBuffBlocked() && !isBad())
+				{
+					return _emptyEffectSet;
+				}
+			}
+			
 			if (isDebuff() || isOffensive())
 			{
 				if (effected.isInvul())

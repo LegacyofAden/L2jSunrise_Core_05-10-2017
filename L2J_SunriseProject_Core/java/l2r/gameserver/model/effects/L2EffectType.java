@@ -24,70 +24,55 @@ package l2r.gameserver.model.effects;
  */
 public enum L2EffectType
 {
-	ABORT_CAST,
-	BETRAY,
 	ACTION_BLOCK,
-	BLOCK_RESURRECTION,
-	BLUFF,
-	BUFF,
-	CALLPC,
+	BLOCK_BUFF, // confirmed
+	BLOCK_DEBUFF, // confirmed
+	BUFF, // confirmed
 	CANCEL,
-	CANCEL_ALL,
-	CANCEL_DEBUFF,
-	CHAT_BLOCK,
-	CLAN_GATE,
-	CONFUSE_MOB_ONLY,
-	CONFUSION,
-	CPHEAL,
+	CHAT_BLOCK, // confirmed
+	CPHEAL, // confirmed
 	CPHEAL_OVER_TIME,
-	CPHEAL_PERCENT,
-	CUBIC_MASTERY,
-	DAMAGE_TRANSFER,
-	DEBUFF,
-	DISPEL,
-	DISPEL_BY_SLOT,
-	DMG_OVER_TIME,
-	DMG_OVER_TIME_PERCENT,
-	FAKE_DEATH,
-	FEAR,
-	FISHING,
-	FISHING_START,
-	FOCUS_SOULS,
-	FUSION,
-	HARVESTING,
-	HATE,
-	HEAL,
+	DEBUFF, // confirmed
+	DISPEL, // confirmed
+	DISPEL_BY_SLOT, // confirmed
+	DMG_OVER_TIME, // confirmed
+	DMG_OVER_TIME_PERCENT, // confirmed
+	DEATH_LINK, // confirmed
+	FAKE_DEATH, // confirmed
+	FEAR, // confirmed
+	FISHING, // confirmed
+	FISHING_START, // confirmed
+	HATE, // confirmed
+	HEAL, // confirmed
 	HEAL_OVER_TIME,
 	HEAL_PERCENT,
 	HIDE,
-	INCREASE_CHARGES,
 	INVINCIBLE,
-	LUCKY,
 	MANA_HEAL_OVER_TIME,
-	MANAHEAL_BY_LEVEL,
-	MANAHEAL_PERCENT,
-	MUTE,
-	NEGATE,
-	NOBLESSE_BLESSING,
-	NONE,
-	PARALYZE,
-	PHYSICAL_ATTACK,
-	PHYSICAL_ATTACK_HP_LINK,
-	REBALANCE_HP,
-	REFUEL_AIRSHIP,
-	RELAXING,
-	RESURRECTION,
-	RESURRECTION_SPECIAL,
-	ROOT,
+	MAGICAL_ATTACK_MP, // confirmed
+	MANAHEAL_BY_LEVEL, // confirmed
+	MANAHEAL_PERCENT, // confirmed
+	MUTE, // confirmed
+	NOBLESSE_BLESSING, // confirmed
+	NONE, // confirmed
+	PARALYZE, // confirmed
+	PHYSICAL_ATTACK, // confirmed
+	PHYSICAL_ATTACK_HP_LINK, // confirmed
+	REBALANCE_HP, // confirmed
+	REFUEL_AIRSHIP, // confirmed
+	RELAXING, // confirmed
+	RESURRECTION, // confirmed
+	RESURRECTION_SPECIAL, // confirmed
+	ROOT, // confirmed
 	SIGNET_EFFECT,
 	SIGNET_GROUND,
-	SLEEP,
+	SLEEP, // confirmed
 	SPOIL,
-	STUN,
-	SINGLE_TARGET,
-	SUMMON_PET,
-	SUMMON_NPC,
+	STUN, // confirmed
+	SINGLE_TARGET, // confirmed
+	SUMMON_PET, // confirmed
+	SUMMON_NPC, // confirmed
 	TRANSFORMATION,
-	TELEPORT_TO_TARGET,
+	TELEPORT_TO_TARGET, // confirmed
 	STEAL_ABNORMAL
 }

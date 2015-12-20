@@ -724,16 +724,13 @@ public final class L2GamePacketHandler implements IPacketHandler<L2GameClient>, 
 								msg = new RequestWriteHeroWords();
 								break;
 							case 0x5F:
-								/**
-								 * Server Packets: ExMpccRoomInfo FE:9B ExListMpccWaiting FE:9C ExDissmissMpccRoom FE:9D ExManageMpccRoomMember FE:9E ExMpccRoomMember FE:9F
-								 */
-								// TODO: RequestJoinMpccRoom chdd
+								// TODO msg = new RequestExJoinMpccRoom();
 								break;
 							case 0x5D:
-								// TODO: RequestListMpccWaiting chddd
+								// TODO msg = new RequestExListMpccWaiting();
 								break;
 							case 0x5E:
-								// TODO: RequestManageMpccRoom chdddddS
+								// TODO msg = new RequestExManageMpccRoom();
 								break;
 							case 0x06:
 								msg = new RequestExAskJoinMPCC();

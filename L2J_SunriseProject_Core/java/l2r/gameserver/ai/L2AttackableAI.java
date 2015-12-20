@@ -1435,7 +1435,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 		}
 		
-		if (sk.hasEffectType(L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK))
+		if (sk.hasEffectType(L2EffectType.MAGICAL_ATTACK_MP, L2EffectType.PHYSICAL_ATTACK, L2EffectType.PHYSICAL_ATTACK_HP_LINK, L2EffectType.DEATH_LINK))
 		{
 			if (!canAura(sk))
 			{
@@ -1635,9 +1635,6 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			case BLOW:
 			case DRAIN:
 			case CHARGEDAM:
-			case FATAL:
-			case DEATHLINK:
-			case MANADAM:
 			{
 				if (!canAura(sk))
 				{
@@ -1668,7 +1665,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 			default:
 			{
-				if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
+				if (sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 				{
 					// decrease cancel probability
 					if (Rnd.get(50) != 0)
@@ -2091,7 +2088,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			return null;
 		}
 		L2Attackable actor = getActiveChar();
-		if (!sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.CANCEL_ALL, L2EffectType.NEGATE, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
+		if (!sk.hasEffectType(L2EffectType.CANCEL, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 		{
 			if (!positive)
 			{
