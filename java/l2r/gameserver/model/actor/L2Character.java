@@ -139,6 +139,7 @@ import l2r.gameserver.network.serverpackets.MagicSkillCanceld;
 import l2r.gameserver.network.serverpackets.MagicSkillLaunched;
 import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.MoveToLocation;
+import l2r.gameserver.network.serverpackets.MoveToPawn;
 import l2r.gameserver.network.serverpackets.NpcSay;
 import l2r.gameserver.network.serverpackets.Revive;
 import l2r.gameserver.network.serverpackets.ServerObjectInfo;
@@ -1415,12 +1416,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		for (L2Object obj : objs)
 		{
-			if (obj == target)
+			if ((obj == null) || (obj == target))
 			{
 				continue; // do not hit twice
 			}
 			// Check if the L2Object is a L2Character
-			if (obj instanceof L2Character)
+			if (obj.isCharacter())
 			{
 				if (obj.isPet() && isPlayer() && (((L2PetInstance) obj).getOwner() == getActingPlayer()))
 				{
@@ -7657,5 +7658,17 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		{
 			broadcastPacket(su);
 		}
+	}
+	
+	private Future<?> _moveToPawnTask;
+	
+	public void moveToPawn(L2Character _actor, L2Character _followTarget, int _clientMovingToPawnOffset)
+	{
+		if ((_moveToPawnTask != null) && !_moveToPawnTask.isDone())
+		{
+			return;
+		}
+		
+		_moveToPawnTask = ThreadPoolManager.getInstance().scheduleGeneral(() -> broadcastPacket(new MoveToPawn(_actor, _followTarget, _clientMovingToPawnOffset)), Config.moveToPawn_packetsDelay);
 	}
 }

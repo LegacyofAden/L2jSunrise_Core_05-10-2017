@@ -24,6 +24,7 @@ public class PacketsDebugger
 	private final static int refreshTime = Config.DEBUG_PACKETS_INTERVAL;
 	private static boolean started = false;
 	private static int sendPacketTrace = 0;
+	private static int maxPacketsInList = 200;
 	private final static List<String> packetName = new ArrayList<>();
 	private static ScheduledFuture<?> _packetsTask = null;
 	
@@ -32,7 +33,7 @@ public class PacketsDebugger
 		if (debugPacket)
 		{
 			sendPacketTrace++;
-			if (detailedDebugPackets)
+			if (detailedDebugPackets && (packetName.size() < maxPacketsInList))
 			{
 				packetName.add(gsp.toString());
 			}
@@ -73,6 +74,7 @@ public class PacketsDebugger
 					}
 					catch (Exception e)
 					{
+						packetName.clear();
 						startTask();
 					}
 				}

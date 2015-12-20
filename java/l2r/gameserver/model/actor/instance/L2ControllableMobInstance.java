@@ -84,6 +84,12 @@ public class L2ControllableMobInstance extends L2MonsterInstance
 	}
 	
 	@Override
+	public boolean hasRandomAnimation()
+	{
+		return false;
+	}
+	
+	@Override
 	public void detachAI()
 	{
 		// do nothing, AI of controllable mobs can't be detached automatically
