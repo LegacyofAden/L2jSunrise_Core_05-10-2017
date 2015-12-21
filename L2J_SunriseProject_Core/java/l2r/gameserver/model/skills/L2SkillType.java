@@ -80,7 +80,6 @@ public enum L2SkillType
 	
 	RECALL(L2SkillTeleport.class),
 	TELEPORT(L2SkillTeleport.class),
-	TRANSFORMDISPEL,
 	
 	// Skill is done within the core.
 	COREDONE,
