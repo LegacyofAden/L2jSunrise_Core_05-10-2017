@@ -48,13 +48,13 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.stream.IntStream;
 
-import l2r.gameserver.engines.DocumentParser;
 import l2r.gameserver.enums.IllegalActionPunishmentType;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.util.Util;
 import l2r.util.PropertiesParser;
 import l2r.util.StringUtil;
+import l2r.util.data.xml.IXmlReader.IXmlReader;
 
 import com.l2jserver.mmocore.SelectorConfig;
 
@@ -3870,7 +3870,7 @@ public final class Config
 		return result;
 	}
 	
-	private static class IPConfigData implements DocumentParser
+	private static class IPConfigData implements IXmlReader
 	{
 		private static final List<String> _subnets = new ArrayList<>(5);
 		private static final List<String> _hosts = new ArrayList<>(5);
