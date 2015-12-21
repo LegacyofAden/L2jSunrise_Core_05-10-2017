@@ -42,6 +42,8 @@ import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.PartySpelled;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
+import gr.sr.configsEngine.configs.impl.PremiumServiceConfigs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,7 +151,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		_count = template.counter;
 		
 		// Support for retail herbs duration when _effected has a Summon
-		int temp = template.abnormalTime;
+		int temp = (_effected != null) && _effected.isPlayer() && _effected.getActingPlayer().isPremium() && PremiumServiceConfigs.PR_SKILL_DURATION_LIST.containsKey(_skill.getId()) ? PremiumServiceConfigs.PR_SKILL_DURATION_LIST.get(_skill.getId()) : template.abnormalTime;
 		if ((_effected != null) && (((_skill.getId() > 2277) && (_skill.getId() < 2286)) || ((_skill.getId() >= 2512) && (_skill.getId() <= 2514))))
 		{
 			final L2Summon summon = _effected.getSummon();
