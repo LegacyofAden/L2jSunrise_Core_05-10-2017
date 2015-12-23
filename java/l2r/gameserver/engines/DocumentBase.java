@@ -346,6 +346,7 @@ public abstract class DocumentBase
 				self = true;
 			}
 		}
+		
 		boolean icon = true;
 		if (attrs.getNamedItem("noicon") != null)
 		{
@@ -354,6 +355,7 @@ public abstract class DocumentBase
 				icon = false;
 			}
 		}
+		
 		final StatsSet parameters = parseParameters(n.getFirstChild(), template);
 		Lambda lambda = getLambda(n, template);
 		Condition applayCond = parseCondition(n.getFirstChild(), template);
@@ -363,6 +365,7 @@ public abstract class DocumentBase
 			String abn = attrs.getNamedItem("abnormalVisualEffect").getNodeValue();
 			abnormalVisualEffect = AbnormalEffect.getByName(abn);
 		}
+		
 		AbnormalEffect[] special = null;
 		if (attrs.getNamedItem("special") != null)
 		{
@@ -373,12 +376,14 @@ public abstract class DocumentBase
 				special[s] = AbnormalEffect.getByName(specials[s]);
 			}
 		}
+		
 		AbnormalEffect event = AbnormalEffect.NULL;
 		if (attrs.getNamedItem("event") != null)
 		{
 			String spc = attrs.getNamedItem("event").getNodeValue();
 			event = AbnormalEffect.getByName(spc);
 		}
+		
 		byte abnormalLvl = 0;
 		String abnormalType = "none";
 		if (attrs.getNamedItem("abnormalType") != null)
@@ -428,28 +433,8 @@ public abstract class DocumentBase
 		{
 			activationChance = Integer.parseInt(getValue(attrs.getNamedItem("activationChance").getNodeValue(), template));
 		}
-		int activationMinDamage = -1;
-		if (attrs.getNamedItem("activationMinDamage") != null)
-		{
-			activationMinDamage = Integer.parseInt(getValue(attrs.getNamedItem("activationMinDamage").getNodeValue(), template));
-		}
-		String activationElements = null;
-		if (attrs.getNamedItem("activationElements") != null)
-		{
-			activationElements = getValue(attrs.getNamedItem("activationElements").getNodeValue(), template);
-		}
-		String activationSkills = null;
-		if (attrs.getNamedItem("activationSkills") != null)
-		{
-			activationSkills = getValue(attrs.getNamedItem("activationSkills").getNodeValue(), template);
-		}
-		boolean pvpOnly = false;
-		if (attrs.getNamedItem("pvpChanceOnly") != null)
-		{
-			pvpOnly = Boolean.parseBoolean(getValue(attrs.getNamedItem("pvpChanceOnly").getNodeValue(), template));
-		}
 		
-		ChanceCondition chance = ChanceCondition.parse(chanceCond, activationChance, activationMinDamage, activationElements, activationSkills, pvpOnly);
+		ChanceCondition chance = ChanceCondition.parse(chanceCond, activationChance);
 		
 		if ((chance == null) && isChanceSkillTrigger)
 		{

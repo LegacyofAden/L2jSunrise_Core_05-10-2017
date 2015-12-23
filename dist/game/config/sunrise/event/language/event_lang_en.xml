@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<localization lang="English" version="2.21" author="L2][Sunrise Team">
+<localization lang="English" version="2.21" author="L2][Sunrise Team" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./event_lang_en.xsd">
 
 	<!-- ============================================ -->
 	<!-- Basic engine messages and names added in 2.0 -->

@@ -140,10 +140,13 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 				if ((townId != 33) && (townId != 22))
 				{
 					L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
-					_clanCrest = clan.getCrestId();
-					_clanId = clan.getId();
-					_allyCrest = clan.getAllyCrestId();
-					_allyId = clan.getAllyId();
+					if (clan != null)
+					{
+						_clanCrest = clan.getCrestId();
+						_clanId = clan.getId();
+						_allyCrest = clan.getAllyCrestId();
+						_allyId = clan.getAllyId();
+					}
 				}
 			}
 			

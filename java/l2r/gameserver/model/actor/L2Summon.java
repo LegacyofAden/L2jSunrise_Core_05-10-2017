@@ -114,7 +114,10 @@ public abstract class L2Summon extends L2Playable
 		
 		if (Config.SUMMON_STORE_SKILL_COOLTIME && !isTeleporting())
 		{
-			restoreEffects();
+			if ((getOwner() != null) && !getOwner().isInOlympiad() && !getOwner().isInOlympiadMode())
+			{
+				restoreEffects();
+			}
 		}
 		
 		setFollowStatus(true);
