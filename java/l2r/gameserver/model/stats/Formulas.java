@@ -20,6 +20,7 @@ package l2r.gameserver.model.stats;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import l2r.Config;
@@ -2561,8 +2562,8 @@ public final class Formulas
 			}
 			else
 			{
-				List<L2Effect> _musicList = new ArrayList<>();
-				List<L2Effect> _buffList = new ArrayList<>();
+				List<L2Effect> _musicList = new LinkedList<>();
+				List<L2Effect> _buffList = new LinkedList<>();
 				
 				for (L2Effect eff : effects)
 				{
@@ -2584,7 +2585,7 @@ public final class Formulas
 				}
 				
 				// Reversing lists and adding to a new list
-				List<L2Effect> _effectList = new ArrayList<>();
+				List<L2Effect> _effectList = new LinkedList<>();
 				Collections.reverse(_musicList);
 				Collections.reverse(_buffList);
 				_effectList.addAll(_musicList);
