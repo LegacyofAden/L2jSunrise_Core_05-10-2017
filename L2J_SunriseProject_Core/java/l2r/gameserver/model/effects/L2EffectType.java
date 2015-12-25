@@ -26,6 +26,7 @@ public enum L2EffectType
 {
 	ACTION_BLOCK,
 	BLOCK_BUFF, // confirmed
+	BLOCK_DAMAGE, // confirmed
 	BLOCK_DEBUFF, // confirmed
 	BUFF, // confirmed
 	CANCEL,

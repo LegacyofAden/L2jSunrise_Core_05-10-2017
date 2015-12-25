@@ -93,6 +93,7 @@ import l2r.gameserver.model.events.Containers;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.EventType;
 import l2r.gameserver.model.events.impl.character.OnCreatureAttack;
+import l2r.gameserver.model.events.impl.character.OnCreatureAttackAvoid;
 import l2r.gameserver.model.events.impl.character.OnCreatureAttacked;
 import l2r.gameserver.model.events.impl.character.OnCreatureDamageDealt;
 import l2r.gameserver.model.events.impl.character.OnCreatureDamageReceived;
@@ -2942,6 +2943,16 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return _isInvul || _isTeleporting || isAffected(EffectFlag.INVUL);
 	}
 	
+	public boolean isHpBlocked()
+	{
+		return isAffected(EffectFlag.BLOCK_HP);
+	}
+	
+	public boolean isMpBlocked()
+	{
+		return isAffected(EffectFlag.BLOCK_MP);
+	}
+	
 	public boolean isBuffBlocked()
 	{
 		return isAffected(EffectFlag.BLOCK_BUFF);
@@ -3609,11 +3620,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public final L2Effect getFirstEffect(L2EffectType tp)
 	{
 		return _effects.getFirstEffect(tp);
-	}
-	
-	public final L2Effect getFirstPassiveEffect(L2EffectType type)
-	{
-		return _effects.getFirstPassiveEffect(type);
 	}
 	
 	/**
@@ -5099,6 +5105,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				target.getAI().notifyEvent(CtrlEvent.EVT_EVADED, this);
 			}
 			
+			notifyAttackAvoid(target, false);
+			
 			// ON_EVADED_HIT
 			if (target.getChanceSkills() != null)
 			{
@@ -5616,7 +5624,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			// Remove passive effects.
 			_effects.removePassiveEffects(skillId);
 			
-			if (cancelEffect || oldSkill.isToggle())
+			if (cancelEffect || oldSkill.isToggle() || oldSkill.isPassive())
 			{
 				// for now, to support transformations, we have to let their
 				// effects stay when skill is removed
@@ -7348,6 +7356,16 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	{
 		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageReceived(attacker, this, damage, skill, critical, damageOverTime), this);
 		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageDealt(attacker, this, damage, skill, critical, damageOverTime), attacker);
+	}
+	
+	/**
+	 * Notifies to listeners that current character avoid attack.
+	 * @param target
+	 * @param isDot
+	 */
+	public void notifyAttackAvoid(final L2Character target, final boolean isDot)
+	{
+		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureAttackAvoid(this, target, isDot), target);
 	}
 	
 	/**
