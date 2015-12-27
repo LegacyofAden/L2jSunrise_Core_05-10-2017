@@ -33,6 +33,7 @@ import l2r.gameserver.model.actor.instance.L2PetInstance;
 import l2r.gameserver.model.actor.transform.TransformTemplate;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerLevelChanged;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.MoveType;
@@ -299,7 +300,7 @@ public class PcStat extends PlayableStat
 		{
 			if (!Config.DISABLE_TUTORIAL)
 			{
-				QuestState qs = getActiveChar().getQuestState("255_Tutorial");
+				final QuestState qs = getActiveChar().getQuestState(Quest.TUTORIAL);
 				if (qs != null)
 				{
 					qs.getQuest().notifyEvent("CE40", null, getActiveChar());

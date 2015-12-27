@@ -71,6 +71,7 @@ import l2r.gameserver.model.items.type.EtcItemType;
 import l2r.gameserver.model.items.type.ItemType;
 import l2r.gameserver.model.options.EnchantOptions;
 import l2r.gameserver.model.options.Options;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.model.stats.functions.AbstractFunction;
 import l2r.gameserver.network.SystemMessageId;
@@ -244,8 +245,17 @@ public final class L2ItemInstance extends L2Object
 	 * <li>Send a Server->Client Packet GetItem to player that pick up and its _knowPlayers member</li>
 	 * <li>Remove the L2Object from the world</li><BR>
 	 * <BR>
-	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T REMOVE the object from _allObjects of L2World </B></FONT><BR> <BR> <B><U> Assert </U> :</B><BR> <BR> <li>this instanceof L2ItemInstance</li> <li>_worldRegion != null <I>(L2Object is visible at the beginning)</I></li><BR> <BR> <B><U>
-	 * Example of use </U> :</B><BR> <BR> <li>Do Pickup Item : PCInstance and Pet</li><BR> <BR>
+	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T REMOVE the object from _allObjects of L2World </B></FONT><BR>
+	 * <BR>
+	 * <B><U> Assert </U> :</B><BR>
+	 * <BR>
+	 * <li>this instanceof L2ItemInstance</li>
+	 * <li>_worldRegion != null <I>(L2Object is visible at the beginning)</I></li><BR>
+	 * <BR>
+	 * <B><U> Example of use </U> :</B><BR>
+	 * <BR>
+	 * <li>Do Pickup Item : PCInstance and Pet</li><BR>
+	 * <BR>
 	 * @param player Player that pick up the item
 	 */
 	public final void pickupMe(L2Character player)
@@ -279,7 +289,7 @@ public final class L2ItemInstance extends L2Object
 			L2PcInstance actor = player.getActingPlayer();
 			if (actor != null)
 			{
-				QuestState qs = actor.getQuestState("255_Tutorial");
+				final QuestState qs = actor.getQuestState(Quest.TUTORIAL);
 				if ((qs != null) && (qs.getQuest() != null))
 				{
 					qs.getQuest().notifyEvent("CE" + itemId, null, actor);
@@ -557,7 +567,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	public int getLocationSlot()
 	{
-		assert(_loc == ItemLocation.PAPERDOLL) || (_loc == ItemLocation.PET_EQUIP) || (_loc == ItemLocation.INVENTORY) || (_loc == ItemLocation.MAIL) || (_loc == ItemLocation.FREIGHT);
+		assert (_loc == ItemLocation.PAPERDOLL) || (_loc == ItemLocation.PET_EQUIP) || (_loc == ItemLocation.INVENTORY) || (_loc == ItemLocation.MAIL) || (_loc == ItemLocation.FREIGHT);
 		return _locData;
 	}
 	
@@ -1552,8 +1562,16 @@ public final class L2ItemInstance extends L2Object
 	 * <li>Add the L2ItemInstance dropped to _visibleObjects of its L2WorldRegion</li>
 	 * <li>Add the L2ItemInstance dropped in the world as a <B>visible</B> object</li><BR>
 	 * <BR>
-	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T ADD the object to _allObjects of L2World </B></FONT><BR> <BR> <B><U> Assert </U> :</B><BR> <BR> <li>_worldRegion == null <I>(L2Object is invisible at the beginning)</I></li><BR> <BR> <B><U> Example of use </U> :</B><BR> <BR>
-	 * <li>Drop item</li> <li>Call Pet</li><BR>
+	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T ADD the object to _allObjects of L2World </B></FONT><BR>
+	 * <BR>
+	 * <B><U> Assert </U> :</B><BR>
+	 * <BR>
+	 * <li>_worldRegion == null <I>(L2Object is invisible at the beginning)</I></li><BR>
+	 * <BR>
+	 * <B><U> Example of use </U> :</B><BR>
+	 * <BR>
+	 * <li>Drop item</li>
+	 * <li>Call Pet</li><BR>
 	 */
 	public class ItemDropTask implements Runnable
 	{
@@ -1676,7 +1694,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	private void insertIntoDb()
 	{
-		assert!_existsInDb && (getObjectId() != 0);
+		assert !_existsInDb && (getObjectId() != 0);
 		
 		if (_wear)
 		{

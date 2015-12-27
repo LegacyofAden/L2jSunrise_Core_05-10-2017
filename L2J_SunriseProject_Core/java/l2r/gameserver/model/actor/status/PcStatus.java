@@ -28,6 +28,7 @@ import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.stat.PcStat;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
@@ -320,7 +321,7 @@ public class PcStatus extends PlayableStatus
 			
 			if (!Config.DISABLE_TUTORIAL)
 			{
-				QuestState qs = getActiveChar().getQuestState("255_Tutorial");
+				final QuestState qs = getActiveChar().getQuestState(Quest.TUTORIAL);
 				if (qs != null)
 				{
 					qs.getQuest().notifyEvent("CE30", null, getActiveChar());
@@ -336,7 +337,7 @@ public class PcStatus extends PlayableStatus
 		
 		if (!Config.DISABLE_TUTORIAL && (getCurrentHp() <= (getActiveChar().getStat().getMaxHp() * .3)))
 		{
-			QuestState qs = getActiveChar().getQuestState("255_Tutorial");
+			final QuestState qs = getActiveChar().getQuestState(Quest.TUTORIAL);
 			if (qs != null)
 			{
 				qs.getQuest().notifyEvent("CE45", null, getActiveChar());

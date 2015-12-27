@@ -123,6 +123,7 @@ public abstract class L2Playable extends L2Character
 			// now reset currentHp to zero
 			setCurrentHp(0);
 			setIsDead(true);
+			setIsInvul(false);
 		}
 		
 		// Set target to null and cancel Attack or Cast

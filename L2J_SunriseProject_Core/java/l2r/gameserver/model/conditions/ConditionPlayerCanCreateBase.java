@@ -18,11 +18,15 @@
  */
 package l2r.gameserver.model.conditions;
 
+import java.util.List;
+
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.FortManager;
 import l2r.gameserver.instancemanager.FortSiegeManager;
 import l2r.gameserver.instancemanager.SiegeManager;
+import l2r.gameserver.instancemanager.TerritoryWarManager;
+import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Castle;
 import l2r.gameserver.model.entity.Fort;
@@ -57,44 +61,66 @@ public class ConditionPlayerCanCreateBase extends Condition
 		L2PcInstance player = env.getPlayer().getActingPlayer();
 		if ((castle == null) && (fort == null))
 		{
-			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
-			sm.addSkillName(env.getSkill());
-			player.sendPacket(sm);
 			canCreateBase = false;
 		}
 		else if (((castle != null) && !castle.getSiege().isInProgress()) || ((fort != null) && !fort.getSiege().isInProgress()))
 		{
-			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
-			sm.addSkillName(env.getSkill());
-			player.sendPacket(sm);
 			canCreateBase = false;
 		}
 		else if (((castle != null) && (castle.getSiege().getAttackerClan(player.getClan()) == null)) || ((fort != null) && (fort.getSiege().getAttackerClan(player.getClan()) == null)))
 		{
-			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
-			sm.addSkillName(env.getSkill());
-			player.sendPacket(sm);
 			canCreateBase = false;
 		}
 		else if (!player.isClanLeader())
 		{
-			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
-			sm.addSkillName(env.getSkill());
-			player.sendPacket(sm);
 			canCreateBase = false;
 		}
 		else if (((castle != null) && (castle.getSiege().getAttackerClan(player.getClan()).getNumFlags() >= SiegeManager.getInstance().getFlagMaxCount())) || ((fort != null) && (fort.getSiege().getAttackerClan(player.getClan()).getNumFlags() >= FortSiegeManager.getInstance().getFlagMaxCount())))
 		{
-			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
-			sm.addSkillName(env.getSkill());
-			player.sendPacket(sm);
 			canCreateBase = false;
 		}
 		else if (!player.isInsideZone(ZoneIdType.HQ))
 		{
 			player.sendPacket(SystemMessageId.NOT_SET_UP_BASE_HERE);
-			canCreateBase = false;
+			return false;
 		}
+		
+		// Territory War
+		if (castle != null)
+		{
+			List<L2Clan> sClan = TerritoryWarManager.getInstance().getRegisteredClans(castle.getResidenceId());
+			if ((castle.getSiege() == null) && TerritoryWarManager.getInstance().isTWInProgress() && (sClan != null) && sClan.contains(player.getClan()))
+			{
+				canCreateBase = true;
+			}
+			
+			// Will check again conditions
+			if (canCreateBase)
+			{
+				if (!player.isClanLeader())
+				{
+					canCreateBase = false;
+				}
+				else if (TerritoryWarManager.getInstance().getHQForClan(player.getClan()) != null)
+				{
+					player.sendPacket(SystemMessageId.NOT_ANOTHER_HEADQUARTERS);
+					return false;
+				}
+				else if (TerritoryWarManager.getInstance().getFlagForClan(player.getClan()) != null)
+				{
+					player.sendPacket(SystemMessageId.A_FLAG_IS_ALREADY_BEING_DISPLAYED_ANOTHER_FLAG_CANNOT_BE_DISPLAYED);
+					return false;
+				}
+			}
+		}
+		
+		if (!canCreateBase)
+		{
+			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
+			sm.addSkillName(env.getSkill());
+			player.sendPacket(sm);
+		}
+		
 		return (_val == canCreateBase);
 	}
 }

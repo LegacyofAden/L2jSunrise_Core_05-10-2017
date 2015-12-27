@@ -10812,7 +10812,7 @@ public final class L2PcInstance extends L2Playable
 			sendPacket(new EtcStatusUpdate(this));
 			
 			// if player has quest 422: Repent Your Sins, remove it
-			QuestState st = getQuestState("Q00422_RepentYourSins");
+			QuestState st = getQuestState(Quest.REPENT_YOUR_SINS);
 			if (st != null)
 			{
 				st.exitQuest(true);
