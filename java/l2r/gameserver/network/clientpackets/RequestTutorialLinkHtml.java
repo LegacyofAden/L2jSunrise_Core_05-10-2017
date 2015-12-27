@@ -20,6 +20,7 @@ package l2r.gameserver.network.clientpackets;
 
 import l2r.gameserver.model.actor.instance.L2ClassMasterInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 
 public class RequestTutorialLinkHtml extends L2GameClientPacket
@@ -45,7 +46,7 @@ public class RequestTutorialLinkHtml extends L2GameClientPacket
 		
 		L2ClassMasterInstance.onTutorialLink(player, _bypass);
 		
-		QuestState qs = player.getQuestState("255_Tutorial");
+		final QuestState qs = player.getQuestState(Quest.TUTORIAL);
 		if (qs != null)
 		{
 			qs.getQuest().notifyEvent(_bypass, null, player);

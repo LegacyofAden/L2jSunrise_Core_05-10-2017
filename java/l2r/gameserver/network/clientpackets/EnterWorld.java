@@ -107,6 +107,10 @@ public class EnterWorld extends L2GameClientPacket
 {
 	private static final String _C__11_ENTERWORLD = "[C] 11 EnterWorld";
 	
+	private static final double MIN_HP = 0.5;
+	
+	private static final int COMBAT_FLAG = 9819;
+	
 	private final int[][] tracert = new int[5][4];
 	
 	@Override
@@ -131,8 +135,7 @@ public class EnterWorld extends L2GameClientPacket
 	@Override
 	protected void runImpl()
 	{
-		L2PcInstance activeChar = getClient().getActiveChar();
-		
+		final L2PcInstance activeChar = getActiveChar();
 		if ((activeChar == null) || !PlayerValues.isPlayer())
 		{
 			_log.warn("EnterWorld failed! activeChar returned 'null'.");
@@ -140,13 +143,13 @@ public class EnterWorld extends L2GameClientPacket
 			return;
 		}
 		
-		String[] adress = new String[5];
+		final String[] address = new String[5];
 		for (int i = 0; i < 5; i++)
 		{
-			adress[i] = tracert[i][0] + "." + tracert[i][1] + "." + tracert[i][2] + "." + tracert[i][3];
+			address[i] = tracert[i][0] + "." + tracert[i][1] + "." + tracert[i][2] + "." + tracert[i][3];
 		}
 		
-		LoginServerThread.getInstance().sendClientTracert(activeChar.getAccountName(), adress);
+		LoginServerThread.getInstance().sendClientTracert(activeChar.getAccountName(), address);
 		
 		getClient().setClientTracert(tracert);
 		
@@ -164,9 +167,9 @@ public class EnterWorld extends L2GameClientPacket
 			}
 		}
 		
-		if (L2World.getInstance().findObject(activeChar.getObjectId()) != null)
+		if (Config.DEBUG)
 		{
-			if (Config.DEBUG)
+			if (L2World.getInstance().findObject(activeChar.getObjectId()) != null)
 			{
 				_log.warn("User already exists in Object ID map! User " + activeChar.getName() + " is a character clone.");
 			}
@@ -231,24 +234,23 @@ public class EnterWorld extends L2GameClientPacket
 		}
 		
 		// Set dead status if applies
-		if (activeChar.getCurrentHp() < 0.5)
+		if (activeChar.getCurrentHp() < MIN_HP)
 		{
 			activeChar.setIsDead(true);
 		}
 		
 		boolean showClanNotice = false;
 		
-		// Clan related checks are here
-		if (activeChar.getClan() != null)
+		final L2Clan clan = activeChar.getClan();
+		if (clan != null)
 		{
-			activeChar.sendPacket(new PledgeSkillList(activeChar.getClan()));
+			activeChar.sendPacket(new PledgeSkillList(clan));
 			
 			notifyClanMembers(activeChar);
 			
 			notifySponsorOrApprentice(activeChar);
 			
-			AuctionableHall clanHall = ClanHallManager.getInstance().getClanHallByOwner(activeChar.getClan());
-			
+			final AuctionableHall clanHall = ClanHallManager.getInstance().getClanHallByOwner(clan);
 			if (clanHall != null)
 			{
 				if (!clanHall.getPaid())
@@ -264,13 +266,12 @@ public class EnterWorld extends L2GameClientPacket
 					continue;
 				}
 				
-				if (siege.checkIsAttacker(activeChar.getClan()))
+				if (siege.checkIsAttacker(clan))
 				{
 					activeChar.setSiegeState((byte) 1);
 					activeChar.setSiegeSide(siege.getCastle().getResidenceId());
 				}
-				
-				else if (siege.checkIsDefender(activeChar.getClan()))
+				else if (siege.checkIsDefender(clan))
 				{
 					activeChar.setSiegeState((byte) 2);
 					activeChar.setSiegeSide(siege.getCastle().getResidenceId());
@@ -284,13 +285,12 @@ public class EnterWorld extends L2GameClientPacket
 					continue;
 				}
 				
-				if (siege.checkIsAttacker(activeChar.getClan()))
+				if (siege.checkIsAttacker(clan))
 				{
 					activeChar.setSiegeState((byte) 1);
 					activeChar.setSiegeSide(siege.getFort().getResidenceId());
 				}
-				
-				else if (siege.checkIsDefender(activeChar.getClan()))
+				else if (siege.checkIsDefender(clan))
 				{
 					activeChar.setSiegeState((byte) 2);
 					activeChar.setSiegeSide(siege.getFort().getResidenceId());
@@ -304,7 +304,7 @@ public class EnterWorld extends L2GameClientPacket
 					continue;
 				}
 				
-				if (hall.isRegistered(activeChar.getClan()))
+				if (hall.isRegistered(clan))
 				{
 					activeChar.setSiegeState((byte) 1);
 					activeChar.setSiegeSide(hall.getId());
@@ -312,21 +312,21 @@ public class EnterWorld extends L2GameClientPacket
 				}
 			}
 			
-			sendPacket(new PledgeShowMemberListAll(activeChar.getClan(), activeChar));
-			sendPacket(new PledgeStatusChanged(activeChar.getClan()));
+			sendPacket(new PledgeShowMemberListAll(clan, activeChar));
+			sendPacket(new PledgeStatusChanged(clan));
 			
 			// Residential skills support
-			if (activeChar.getClan().getCastleId() > 0)
+			if (clan.getCastleId() > 0)
 			{
-				CastleManager.getInstance().getCastleByOwner(activeChar.getClan()).giveResidentialSkills(activeChar);
+				CastleManager.getInstance().getCastleByOwner(clan).giveResidentialSkills(activeChar);
 			}
 			
-			if (activeChar.getClan().getFortId() > 0)
+			if (clan.getFortId() > 0)
 			{
-				FortManager.getInstance().getFortByOwner(activeChar.getClan()).giveResidentialSkills(activeChar);
+				FortManager.getInstance().getFortByOwner(clan).giveResidentialSkills(activeChar);
 			}
 			
-			showClanNotice = activeChar.getClan().isNoticeEnabled();
+			showClanNotice = clan.isNoticeEnabled();
 		}
 		
 		if (TerritoryWarManager.getInstance().getRegisteredTerritoryId(activeChar) > 0)
@@ -434,11 +434,11 @@ public class EnterWorld extends L2GameClientPacket
 		
 		sendPacket(new FriendList(activeChar));
 		
-		SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.FRIEND_S1_HAS_LOGGED_IN);
-		sm.addString(activeChar.getName());
+		final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.FRIEND_S1_HAS_LOGGED_IN);
+		sm.addCharName(activeChar);
 		for (int id : activeChar.getFriendList())
 		{
-			L2Object obj = L2World.getInstance().findObject(id);
+			final L2Object obj = L2World.getInstance().findObject(id);
 			if (obj != null)
 			{
 				obj.sendPacket(sm);
@@ -485,36 +485,36 @@ public class EnterWorld extends L2GameClientPacket
 		sendPacket(new ExVoteSystemInfo(activeChar));
 		sendPacket(new ExShowContactList(activeChar));
 		
-		for (L2ItemInstance i : activeChar.getInventory().getItems())
+		for (L2ItemInstance item : activeChar.getInventory().getItems())
 		{
 			if (!activeChar.isGM())
 			{
-				if (i.isEquipable())
+				if (item.isEquipable())
 				{
-					if ((i.getEnchantLevel() > SecuritySystemConfigs.MAX_ENCHANT_LEVEL) && (SecuritySystemConfigs.MAX_ENCHANT_LEVEL > 0))
+					if ((item.getEnchantLevel() > SecuritySystemConfigs.MAX_ENCHANT_LEVEL) && (SecuritySystemConfigs.MAX_ENCHANT_LEVEL > 0))
 					{
 						// Delete over enchanted item(s)
-						activeChar.getInventory().destroyItem(null, i, activeChar, null);
+						activeChar.destroyItem("Security", item, activeChar, true);
 						SecurityActions.startSecurity(activeChar, SecurityType.ENCHANT_EXPLOIT);
 					}
 				}
 			}
 			
-			if (i.isTimeLimitedItem())
+			if (item.isTimeLimitedItem())
 			{
-				i.scheduleLifeTimeTask();
+				item.scheduleLifeTimeTask();
 			}
-			if (i.isShadowItem() && i.isEquipped())
+			if (item.isShadowItem() && item.isEquipped())
 			{
-				i.decreaseMana(false);
+				item.decreaseMana(false);
 			}
 		}
 		
-		for (L2ItemInstance i : activeChar.getWarehouse().getItems())
+		for (L2ItemInstance whItem : activeChar.getWarehouse().getItems())
 		{
-			if (i.isTimeLimitedItem())
+			if (whItem.isTimeLimitedItem())
 			{
-				i.scheduleLifeTimeTask();
+				whItem.scheduleLifeTimeTask();
 			}
 		}
 		
@@ -529,19 +529,19 @@ public class EnterWorld extends L2GameClientPacket
 		}
 		
 		// remove combat flag before teleporting
-		if (activeChar.getInventory().getItemByItemId(9819) != null)
+		final L2ItemInstance combatFlag = activeChar.getInventory().getItemByItemId(COMBAT_FLAG);
+		if (combatFlag != null)
 		{
-			Fort fort = FortManager.getInstance().getFort(activeChar);
-			
+			final Fort fort = FortManager.getInstance().getFort(activeChar);
 			if (fort != null)
 			{
 				FortSiegeManager.getInstance().dropCombatFlag(activeChar, fort.getResidenceId());
 			}
 			else
 			{
-				int slot = activeChar.getInventory().getSlotFromItem(activeChar.getInventory().getItemByItemId(9819));
+				final int slot = activeChar.getInventory().getSlotFromItem(combatFlag);
 				activeChar.getInventory().unEquipItemInBodySlot(slot);
-				activeChar.destroyItem("CombatFlag", activeChar.getInventory().getItemByItemId(9819), null, true);
+				activeChar.destroyItem("CombatFlag", combatFlag, null, true);
 			}
 		}
 		
@@ -599,9 +599,9 @@ public class EnterWorld extends L2GameClientPacket
 		}
 		else if (birthday != -1)
 		{
-			sm = SystemMessage.getSystemMessage(SystemMessageId.THERE_ARE_S1_DAYS_UNTIL_YOUR_CHARACTERS_BIRTHDAY);
-			sm.addString(Integer.toString(birthday));
-			activeChar.sendPacket(sm);
+			final SystemMessage sm1 = SystemMessage.getSystemMessage(SystemMessageId.THERE_ARE_S1_DAYS_UNTIL_YOUR_CHARACTERS_BIRTHDAY);
+			sm1.addInt(birthday);
+			activeChar.sendPacket(sm1);
 		}
 		
 		if (!activeChar.getPremiumItemList().isEmpty())
@@ -633,11 +633,10 @@ public class EnterWorld extends L2GameClientPacket
 	
 	private void engage(L2PcInstance cha)
 	{
-		int _chaid = cha.getObjectId();
-		
+		final int chaId = cha.getObjectId();
 		for (Couple cl : CoupleManager.getInstance().getCouples())
 		{
-			if ((cl.getPlayer1Id() == _chaid) || (cl.getPlayer2Id() == _chaid))
+			if ((cl.getPlayer1Id() == chaId) || (cl.getPlayer2Id() == chaId))
 			{
 				if (cl.getMaried())
 				{
@@ -646,7 +645,7 @@ public class EnterWorld extends L2GameClientPacket
 				
 				cha.setCoupleId(cl.getId());
 				
-				if (cl.getPlayer1Id() == _chaid)
+				if (cl.getPlayer1Id() == chaId)
 				{
 					cha.setPartnerId(cl.getPlayer2Id());
 				}
@@ -664,25 +663,10 @@ public class EnterWorld extends L2GameClientPacket
 	 */
 	private void notifyPartner(L2PcInstance cha, int partnerId)
 	{
-		if (cha.getPartnerId() != 0)
+		final L2PcInstance partner = L2World.getInstance().getPlayer(cha.getPartnerId());
+		if (partner != null)
 		{
-			int objId = cha.getPartnerId();
-			
-			try
-			{
-				L2PcInstance partner = L2World.getInstance().getPlayer(objId);
-				
-				if (partner != null)
-				{
-					partner.sendMessage("Your Partner has logged in.");
-				}
-				
-				partner = null;
-			}
-			catch (ClassCastException cce)
-			{
-				_log.warn("Wedding Error: ID " + objId + " is now owned by a(n) " + L2World.getInstance().findObject(objId).getClass().getSimpleName());
-			}
+			partner.sendMessage("Your Partner has logged in.");
 		}
 	}
 	
@@ -691,16 +675,14 @@ public class EnterWorld extends L2GameClientPacket
 	 */
 	private void notifyClanMembers(L2PcInstance activeChar)
 	{
-		L2Clan clan = activeChar.getClan();
-		
-		// This null check may not be needed anymore since notifyClanMembers is called from within a null check already. Please remove if we're certain it's ok to do so.
+		final L2Clan clan = activeChar.getClan();
 		if (clan != null)
 		{
 			clan.getClanMember(activeChar.getObjectId()).setPlayerInstance(activeChar);
-			SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_LOGGED_IN);
+			
+			final SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_LOGGED_IN);
 			msg.addString(activeChar.getName());
 			clan.broadcastToOtherOnlineMembers(msg, activeChar);
-			msg = null;
 			clan.broadcastToOtherOnlineMembers(new PledgeShowMemberListUpdate(activeChar), activeChar);
 		}
 	}
@@ -712,32 +694,29 @@ public class EnterWorld extends L2GameClientPacket
 	{
 		if (activeChar.getSponsor() != 0)
 		{
-			L2PcInstance sponsor = L2World.getInstance().getPlayer(activeChar.getSponsor());
-			
+			final L2PcInstance sponsor = L2World.getInstance().getPlayer(activeChar.getSponsor());
 			if (sponsor != null)
 			{
-				SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.YOUR_APPRENTICE_S1_HAS_LOGGED_IN);
+				final SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.YOUR_APPRENTICE_S1_HAS_LOGGED_IN);
 				msg.addString(activeChar.getName());
 				sponsor.sendPacket(msg);
 			}
 		}
 		else if (activeChar.getApprentice() != 0)
 		{
-			L2PcInstance apprentice = L2World.getInstance().getPlayer(activeChar.getApprentice());
-			
+			final L2PcInstance apprentice = L2World.getInstance().getPlayer(activeChar.getApprentice());
 			if (apprentice != null)
 			{
-				SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.YOUR_SPONSOR_C1_HAS_LOGGED_IN);
+				final SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.YOUR_SPONSOR_C1_HAS_LOGGED_IN);
 				msg.addString(activeChar.getName());
 				apprentice.sendPacket(msg);
 			}
 		}
 	}
 	
-	private void loadTutorial(L2PcInstance player)
+	private static void loadTutorial(L2PcInstance player)
 	{
-		QuestState qs = player.getQuestState("255_Tutorial");
-		
+		final QuestState qs = player.getQuestState(Quest.TUTORIAL);
 		if (qs != null)
 		{
 			qs.getQuest().notifyEvent("UC", null, player);

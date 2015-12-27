@@ -1083,6 +1083,7 @@ public final class Config
 	// --------------------------------------------------
 	// Valakas
 	// --------------------------------------------------
+	public static int VALAKAS_MAX_PLAYERS;
 	public static int VALAKAS_WAIT_TIME;
 	public static int VALAKAS_SPAWN_INTERVAL;
 	public static int VALAKAS_SPAWN_RANDOM;
@@ -2586,6 +2587,7 @@ public final class Config
 			// Load VALAKAS_CONFIG L2Properties file (if exists)
 			final PropertiesParser valakas_load = new PropertiesParser(VALAKAS_CONFIG);
 			
+			VALAKAS_MAX_PLAYERS = valakas_load.getInt("ValakasMaxPlayers", 200);
 			VALAKAS_WAIT_TIME = valakas_load.getInt("ValakasWaitTime", 30);
 			VALAKAS_SPAWN_INTERVAL = valakas_load.getInt("IntervalOfValakasSpawn", 264);
 			VALAKAS_SPAWN_RANDOM = valakas_load.getInt("RandomOfValakasSpawn", 72);

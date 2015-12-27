@@ -22,6 +22,7 @@ import l2r.Config;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.base.PlayerClass;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 
 public final class L2VillageMasterKamaelInstance extends L2VillageMasterInstance
@@ -61,13 +62,13 @@ public final class L2VillageMasterKamaelInstance extends L2VillageMasterInstance
 			return true;
 		}
 		
-		QuestState qs = player.getQuestState("Q00234_FatesWhisper");
+		QuestState qs = player.getQuestState(Quest.FATES_WHISPER);
 		if ((qs == null) || !qs.isCompleted())
 		{
 			return false;
 		}
 		
-		qs = player.getQuestState("Q00236_SeedsOfChaos");
+		qs = player.getQuestState(Quest.SEEDS_OF_CHAOS);
 		if ((qs == null) || !qs.isCompleted())
 		{
 			return false;

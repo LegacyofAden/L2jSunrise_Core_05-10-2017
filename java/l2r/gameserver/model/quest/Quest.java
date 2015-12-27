@@ -75,6 +75,13 @@ import l2r.util.Rnd;
  */
 public class Quest extends AbstractScript implements IIdentifiable
 {
+	public static final String MORE_THAN_MEETS_THE_EYE = "Q00136_MoreThanMeetsTheEye";
+	public static final String TUTORIAL = "255_Tutorial";
+	public static final String FATES_WHISPER = "Q00234_FatesWhisper";
+	public static final String MIMIRS_ELIXIR = "Q00235_MimirsElixir";
+	public static final String SEEDS_OF_CHAOS = "Q00236_SeedsOfChaos";
+	public static final String REPENT_YOUR_SINS = "Q00422_RepentYourSins";
+	
 	/** Map containing lists of timers from the name of the timer. */
 	private volatile Map<String, List<QuestTimer>> _questTimers = null;
 	private final ReentrantReadWriteLock _rwLock = new ReentrantReadWriteLock();

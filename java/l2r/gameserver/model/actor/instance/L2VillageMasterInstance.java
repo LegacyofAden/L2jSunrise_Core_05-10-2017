@@ -47,6 +47,7 @@ import l2r.gameserver.model.base.SubClass;
 import l2r.gameserver.model.entity.Castle;
 import l2r.gameserver.model.entity.Fort;
 import l2r.gameserver.model.entity.olympiad.OlympiadManager;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.AcquireSkillList;
@@ -723,13 +724,13 @@ public class L2VillageMasterInstance extends L2NpcInstance
 			return true;
 		}
 		
-		QuestState qs = player.getQuestState("Q00234_FatesWhisper");
+		QuestState qs = player.getQuestState(Quest.FATES_WHISPER);
 		if ((qs == null) || !qs.isCompleted())
 		{
 			return false;
 		}
 		
-		qs = player.getQuestState("Q00235_MimirsElixir");
+		qs = player.getQuestState(Quest.MIMIRS_ELIXIR);
 		if ((qs == null) || !qs.isCompleted())
 		{
 			return false;

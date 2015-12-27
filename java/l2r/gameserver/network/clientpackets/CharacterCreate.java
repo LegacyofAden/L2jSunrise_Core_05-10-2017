@@ -48,7 +48,6 @@ import l2r.gameserver.model.events.impl.character.player.OnPlayerCreate;
 import l2r.gameserver.model.items.PcItemTemplate;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.quest.Quest;
-import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.model.quest.State;
 import l2r.gameserver.network.L2GameClient;
 import l2r.gameserver.network.serverpackets.CharCreateFail;
@@ -343,15 +342,13 @@ public final class CharacterCreate extends L2GameClientPacket
 	 */
 	public void startTutorialQuest(L2PcInstance player)
 	{
-		final QuestState qs = player.getQuestState("255_Tutorial");
-		Quest q = null;
-		if (qs == null)
+		if (player.getQuestState(Quest.TUTORIAL) == null)
 		{
-			q = QuestManager.getInstance().getQuest("255_Tutorial");
-		}
-		if (q != null)
-		{
-			q.newQuestState(player).setState(State.STARTED);
+			final Quest q = QuestManager.getInstance().getQuest(Quest.TUTORIAL);
+			if (q != null)
+			{
+				q.newQuestState(player).setState(State.STARTED);
+			}
 		}
 	}
 	

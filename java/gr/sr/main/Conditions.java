@@ -12,6 +12,7 @@ import l2r.gameserver.model.base.ClassId;
 import l2r.gameserver.model.base.PlayerClass;
 import l2r.gameserver.model.base.SubClass;
 import l2r.gameserver.model.entity.olympiad.OlympiadManager;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.network.SystemMessageId;
 
@@ -263,13 +264,13 @@ public class Conditions
 			return true;
 		}
 		
-		QuestState qs = player.getQuestState("Q00234_FatesWhisper");
+		QuestState qs = player.getQuestState(Quest.FATES_WHISPER);
 		if ((qs == null) || !qs.isCompleted())
 		{
 			return false;
 		}
 		
-		qs = player.getQuestState("Q00235_MimirsElixir");
+		qs = player.getQuestState(Quest.MIMIRS_ELIXIR);
 		if ((qs == null) || !qs.isCompleted())
 		{
 			return false;

@@ -1804,6 +1804,29 @@ public abstract class AbstractScript implements INamable
 		return null;
 	}
 	
+	public static L2Npc addSpawn(int npcId, int X, int Y, int Z, int head)
+	{
+		try
+		{
+			L2NpcTemplate template = NpcTable.getInstance().getTemplate(npcId);
+			if (template != null)
+			{
+				L2Spawn spawn = new L2Spawn(template);
+				spawn.setHeading(head);
+				spawn.setX(X);
+				spawn.setY(Y);
+				spawn.setZ(Z);
+				spawn.setAmount(spawn.getAmount() + 1);
+				return spawn.doSpawn();
+			}
+		}
+		catch (Exception e)
+		{
+			_log.warn("Could not spawn NPC #" + npcId + "; error: " + e.getMessage());
+		}
+		return null;
+	}
+	
 	/**
 	 * @param trapId
 	 * @param x
