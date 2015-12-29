@@ -100,7 +100,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	
 	protected static final int FEAR_TICKS = 5;
 	private static final int RANDOM_WALK_RATE = 30; // confirmed
-	// private static final int MAX_DRIFT_RANGE = 300;
+	private static final int MAX_DRIFT_RANGE = Config.MAX_DRIFT_RANGE;
 	private static final int MAX_ATTACK_TIMEOUT = 1200; // int ticks, i.e. 2min
 	/** The L2Attackable AI task executed every 1s (call onEvtThink method). */
 	private Future<?> _aiTask;
@@ -373,7 +373,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				{
 					if (npc.getSpawn() != null)
 					{
-						final int range = Config.MAX_DRIFT_RANGE;
+						final int range = MAX_DRIFT_RANGE;
 						if (!npc.isInsideRadius(npc.getSpawn().getX(), npc.getSpawn().getY(), npc.getSpawn().getZ(), range + range, true, false))
 						{
 							intention = AI_INTENTION_ACTIVE;
@@ -610,7 +610,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		if ((npc instanceof L2GuardInstance) && !npc.isWalker() && !npc.isRunner())
 		{
 			// Order to the L2GuardInstance to return to its home location because there's no target to attack
-			npc.returnHome();
+			npc.returnHome(true);
 		}
 		
 		// If this is a festival monster, then it remains in the same location.
@@ -670,9 +670,15 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				z1 = leader.getZ();
 				
 				// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
-				final Location moveLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
+				if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
+				{
+					moveTo(x1, y1, z1);
+				}
+				else
+				{
+					npc.returnHome(true);
+				}
 				
-				moveTo(moveLoc.getX(), moveLoc.getY(), moveLoc.getZ());
 				return;
 			}
 			else if (Rnd.nextInt(RANDOM_WALK_RATE) == 0)
@@ -687,12 +693,12 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 		}
 		// Order to the L2MonsterInstance to random walk (1/100)
-		else if ((npc.getSpawn() != null) && (Rnd.nextInt(RANDOM_WALK_RATE) == 0) && !npc.isNoRndWalk())
+		else if ((npc.getSpawn() != null) && (Rnd.nextInt(npc.RANDOM_WALK_RATE > 0 ? npc.RANDOM_WALK_RATE : RANDOM_WALK_RATE) == 0) && !npc.isNoRndWalk())
 		{
 			int x1 = 0;
 			int y1 = 0;
 			int z1 = 0;
-			final int range = Config.MAX_DRIFT_RANGE;
+			final int range = MAX_DRIFT_RANGE;
 			
 			for (L2Skill sk : npc.getTemplate().getBuffSkills())
 			{
@@ -702,6 +708,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 			}
 			
+			boolean useTeleport = false;
 			// If NPC with random coord in territory
 			if ((npc.getSpawn().getX() == 0) && (npc.getSpawn().getY() == 0) && (npc.getSpawn().getSpawnTerritory() == null))
 			{
@@ -737,8 +744,9 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				y1 = npc.getSpawn().getY(npc);
 				z1 = npc.getSpawn().getZ(npc);
 				
-				if (!npc.isInsideRadius(x1, y1, 0, range, false, false))
+				if (!npc.isInsideRadius(x1, y1, 0, range + 200, false, false))
 				{
+					useTeleport = true;
 					npc.setisReturningToSpawnPoint(true);
 				}
 				else
@@ -752,10 +760,24 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 			}
 			
-			// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
-			final Location moveLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
-			
-			moveTo(moveLoc.getX(), moveLoc.getY(), moveLoc.getZ());
+			npc.RANDOM_WALK_RATE = -1;
+			if (useTeleport)
+			{
+				if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
+				{
+					moveTo(x1, y1, z1);
+				}
+				else
+				{
+					npc.returnHome(true);
+				}
+			}
+			else
+			{
+				// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
+				final Location moveLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
+				moveTo(moveLoc.getX(), moveLoc.getY(), moveLoc.getZ());
+			}
 		}
 	}
 	
@@ -784,6 +806,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			npc.stopHating(originalAttackTarget);
 			
 			// Set the AI Intention to AI_INTENTION_ACTIVE
+			npc.RANDOM_WALK_RATE = 15;
 			setIntention(AI_INTENTION_ACTIVE);
 			
 			npc.setWalking();
