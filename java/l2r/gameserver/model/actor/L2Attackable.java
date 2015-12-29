@@ -71,6 +71,7 @@ import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.CreatureSay;
+import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.taskmanager.DecayTaskManager;
 import l2r.gameserver.util.Util;
@@ -111,6 +112,7 @@ public class L2Attackable extends L2Npc
 	// Misc
 	private volatile boolean _mustGiveExpSp;
 	private volatile boolean _doItemDrop;
+	public int RANDOM_WALK_RATE = -1;
 	
 	protected int _onKillDelay = 1000;
 	
@@ -1663,11 +1665,32 @@ public class L2Attackable extends L2Npc
 	
 	public void returnHome()
 	{
+		returnHome(false);
+	}
+	
+	public void returnHome(boolean teleport)
+	{
 		clearAggroList();
 		
-		if (hasAI() && (getSpawn() != null))
+		if (!teleport)
 		{
-			getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new Location(getSpawn().getX(), getSpawn().getY(), getSpawn().getZ(), 0));
+			if (hasAI() && (getSpawn() != null))
+			{
+				getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new Location(getSpawn().getX(), getSpawn().getY(), getSpawn().getZ(), 0));
+			}
+		}
+		else
+		{
+			stopMove(null);
+			clearAggroList();
+			getAttackByList().clear();
+			
+			setTarget(null);
+			
+			getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE, null, null);
+			
+			broadcastPacket(new MagicSkillUse(this, this, 2036, 1, 500, 0), 2500);
+			teleToLocation(getSpawn().getLocation());
 		}
 	}
 	
