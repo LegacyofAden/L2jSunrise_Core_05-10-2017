@@ -610,7 +610,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		if ((npc instanceof L2GuardInstance) && !npc.isWalker() && !npc.isRunner())
 		{
 			// Order to the L2GuardInstance to return to its home location because there's no target to attack
-			npc.returnHome(true);
+			npc.returnHome();
 		}
 		
 		// If this is a festival monster, then it remains in the same location.
