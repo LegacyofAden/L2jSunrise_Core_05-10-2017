@@ -1079,6 +1079,7 @@ public class CharEffectList
 			if (eff.getSkill().getId() == skillId)
 			{
 				eff.exit();
+				getPassives().remove(eff);
 			}
 		}
 	}
