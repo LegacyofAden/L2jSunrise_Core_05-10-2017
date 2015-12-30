@@ -1672,25 +1672,24 @@ public class L2Attackable extends L2Npc
 	{
 		clearAggroList();
 		
-		if (!teleport)
+		if (hasAI() && (getSpawn() != null))
 		{
-			if (hasAI() && (getSpawn() != null))
+			if (!teleport)
 			{
 				getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new Location(getSpawn().getX(), getSpawn().getY(), getSpawn().getZ(), 0));
 			}
-		}
-		else
-		{
-			stopMove(null);
-			clearAggroList();
-			getAttackByList().clear();
-			
-			setTarget(null);
-			
-			getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE, null, null);
-			
-			broadcastPacket(new MagicSkillUse(this, this, 2036, 1, 500, 0), 2500);
-			teleToLocation(getSpawn().getLocation());
+			else
+			{
+				stopMove(null);
+				getAttackByList().clear();
+				
+				setTarget(null);
+				
+				getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE, null, null);
+				
+				broadcastPacket(new MagicSkillUse(this, this, 2036, 1, 500, 0), 2500);
+				teleToLocation(getSpawn().getLocation());
+			}
 		}
 	}
 	
