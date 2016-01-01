@@ -453,8 +453,8 @@ public class CharEffectList
 	 */
 	public final void stopEffects(L2EffectType type)
 	{
-		getBuffs().stream().filter(e -> (e != null) && (e.getEffectType() == type)).forEach(e -> e.exit());
-		getDebuffs().stream().filter(e -> (e != null) && (e.getEffectType() == type)).forEach(e -> e.exit());
+		getBuffs().stream().filter(e -> (e != null) && (e.getEffectType() == type)).forEach(e -> stopSkillEffects(e.getSkill().getId()));
+		getDebuffs().stream().filter(e -> (e != null) && (e.getEffectType() == type)).forEach(e -> stopSkillEffects(e.getSkill().getId()));
 	}
 	
 	/**
@@ -465,35 +465,6 @@ public class CharEffectList
 	{
 		getBuffs().stream().filter(e -> (e != null) && (e.getSkill().getId() == skillId)).forEach(e -> e.exit());
 		getDebuffs().stream().filter(e -> (e != null) && (e.getSkill().getId() == skillId)).forEach(e -> e.exit());
-	}
-	
-	/**
-	 * Exits all effects created by a specific skill type
-	 * @param skillType skill type
-	 * @param negateLvl
-	 */
-	public final void stopSkillEffects(L2SkillType skillType, int negateLvl)
-	{
-		if (hasBuffs())
-		{
-			for (L2Effect e : getBuffs())
-			{
-				if ((e != null) && ((e.getSkill().getSkillType() == skillType) || ((e.getSkill().getEffectType() != null) && (e.getSkill().getEffectType() == skillType))) && ((negateLvl == -1) || ((e.getSkill().getEffectType() != null) && (e.getSkill().getEffectAbnormalLvl() >= 0) && (e.getSkill().getEffectAbnormalLvl() <= negateLvl)) || ((e.getSkill().getAbnormalLvl() >= 0) && (e.getSkill().getAbnormalLvl() <= negateLvl))))
-				{
-					e.exit();
-				}
-			}
-		}
-		if (hasDebuffs())
-		{
-			for (L2Effect e : getDebuffs())
-			{
-				if ((e != null) && ((e.getSkill().getSkillType() == skillType) || ((e.getSkill().getEffectType() != null) && (e.getSkill().getEffectType() == skillType))) && ((negateLvl == -1) || ((e.getSkill().getEffectType() != null) && (e.getSkill().getEffectAbnormalLvl() >= 0) && (e.getSkill().getEffectAbnormalLvl() <= negateLvl)) || ((e.getSkill().getAbnormalLvl() >= 0) && (e.getSkill().getAbnormalLvl() <= negateLvl))))
-				{
-					e.exit();
-				}
-			}
-		}
 	}
 	
 	/**
