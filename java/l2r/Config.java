@@ -585,10 +585,7 @@ public final class Config
 	public static int ALT_OLY_WAIT_TIME;
 	public static boolean ENABLE_OLY_ANTIFEED;
 	public static int[] ALT_OLY_END_DATE;
-	public static String OLYMPIAD_PERIOD;
-	public static int ALT_OLY_PERIOD_MULTIPLIER;
 	public static boolean ENABLE_OLYMPIAD;
-	public static int[] ALT_OLY_END_HOUR = new int[3];
 	public static int ALT_MANOR_REFRESH_TIME;
 	public static int ALT_MANOR_REFRESH_MIN;
 	public static int ALT_MANOR_APPROVE_TIME;
@@ -2477,14 +2474,7 @@ public final class Config
 			{
 				ALT_OLY_END_DATE[i] = Integer.parseInt(propertySplit[i]);
 			}
-			OLYMPIAD_PERIOD = Olympiad.getString("AltOlyPeriod", "MONTH");
-			ALT_OLY_PERIOD_MULTIPLIER = Olympiad.getInt("AltOlyPeriodMultiplier", 1);
 			ENABLE_OLYMPIAD = Olympiad.getBoolean("EnableOlympiad", true);
-			String[] times = Olympiad.getString("AltOlyEndHour", "12:00:00").split(":");
-			for (int i = 0; i < 3; i++)
-			{
-				ALT_OLY_END_HOUR[i] = Integer.parseInt(times[i]);
-			}
 			
 			// Load Debug L2Properties file (if exists)
 			final PropertiesParser Debug = new PropertiesParser(DEBUG_CONFIG_FILE);

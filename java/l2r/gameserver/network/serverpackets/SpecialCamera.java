@@ -106,6 +106,21 @@ public class SpecialCamera extends L2GameServerPacket
 		_unk = unk;
 	}
 	
+	public SpecialCamera(L2Character creature, int dist, int yaw, int pitch, int time, int duration)
+	{
+		_id = creature.getObjectId();
+		_force = dist;
+		_angle1 = yaw;
+		_angle2 = pitch;
+		_time = time;
+		_duration = duration;
+		_relYaw = 0;
+		_relPitch = 0;
+		_isWide = 0;
+		_relAngle = 0;
+		_unk = 0;
+	}
+	
 	@Override
 	public void writeImpl()
 	{

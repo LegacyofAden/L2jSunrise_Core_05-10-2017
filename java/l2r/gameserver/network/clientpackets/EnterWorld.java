@@ -413,6 +413,13 @@ public class EnterWorld extends L2GameClientPacket
 		
 		activeChar.spawnMe(activeChar.getX(), activeChar.getY(), activeChar.getZ());
 		
+		if (activeChar.isTransformed())
+		{
+			// Required double send for fix Mounted H5+
+			// We will force server to send update again with low priority
+			activeChar.broadcastUserInfo(false);
+		}
+		
 		activeChar.getInventory().applyItemSkills();
 		
 		// Wedding Checks

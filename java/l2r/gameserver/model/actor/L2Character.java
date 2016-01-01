@@ -3343,24 +3343,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	}
 	
 	/**
-	 * Stop and remove the L2Effects corresponding to the L2SkillType and update client magic icon.<br>
-	 * <B><U>Concept</U>:</B><br>
-	 * All active skills effects in progress on the L2Character are identified in ConcurrentHashMap(Integer,L2Effect) <B>_effects</B>.<br>
-	 * The Integer key of _effects is the L2Skill Identifier that has created the L2Effect.
-	 * @param skillType The L2SkillType of the L2Effect to remove from _effects
-	 * @param negateLvl
-	 */
-	public final void stopSkillEffects(L2SkillType skillType, int negateLvl)
-	{
-		_effects.stopSkillEffects(skillType, negateLvl);
-	}
-	
-	public final void stopSkillEffects(L2SkillType skillType)
-	{
-		_effects.stopSkillEffects(skillType, -1);
-	}
-	
-	/**
 	 * Stop and remove all L2Effect of the selected type (ex : BUFF, DMG_OVER_TIME...) from the L2Character and update client magic icon.<br>
 	 * <B><U>Concept</U>:</B><br>
 	 * All active skills effects in progress on the L2Character are identified in ConcurrentHashMap(Integer,L2Effect) <B>_effects</B>.<br>
