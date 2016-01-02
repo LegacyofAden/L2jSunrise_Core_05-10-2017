@@ -397,25 +397,27 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	 */
 	public final void exit()
 	{
-		exit(false);
+		exit(false, false);
 	}
 	
 	public final void exit(boolean preventUpdate)
 	{
-		preventExitUpdate = preventUpdate;
-		_state = EffectState.FINISHING;
-		scheduleEffect();
+		exit(preventUpdate, false);
 	}
 	
-	/**
-	 * Stop the task of the L2Effect, remove it and update client magic icon.<br>
-	 * <B><U>Actions</U>:</B>
-	 * <ul>
-	 * <li>Cancel the task</li>
-	 * <li>Stop and remove L2Effect from L2Character and update client magic icon</li>
-	 * </ul>
-	 */
+	public final void exit(boolean preventUpdate, boolean force)
+	{
+		preventExitUpdate = preventUpdate;
+		_state = EffectState.FINISHING;
+		scheduleEffect(force);
+	}
+	
 	public final void stopEffectTask()
+	{
+		stopEffectTask(false);
+	}
+	
+	public final void stopEffectTask(boolean force)
 	{
 		try
 		{
@@ -433,6 +435,10 @@ public abstract class L2Effect implements IChanceSkillTrigger
 				else if ((getEffected() != null) && !getSkill().isPassive())
 				{
 					getEffected().removeEffect(this);
+				}
+				else if (getSkill().isPassive() && force)
+				{
+					getEffector().removeEffect(this);
 				}
 			}
 		}
@@ -496,6 +502,11 @@ public abstract class L2Effect implements IChanceSkillTrigger
 	
 	public final void scheduleEffect()
 	{
+		scheduleEffect(false);
+	}
+	
+	public final void scheduleEffect(boolean force)
+	{
 		switch (_state)
 		{
 			case CREATED:
@@ -556,7 +567,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 				}
 				
 				// Stop the task of the L2Effect, remove it and update client magic icon
-				stopEffectTask();
+				stopEffectTask(force);
 				
 				// vGodFather Update abnormal effects just in case
 				getEffected().updateAbnormalEffect();
