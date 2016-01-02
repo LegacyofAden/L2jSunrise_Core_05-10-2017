@@ -214,7 +214,10 @@ public class Olympiad extends ListenersContainer
 			_period = Integer.parseInt(OlympiadProperties.getProperty("Period", "0"));
 			_validationEnd = Long.parseLong(OlympiadProperties.getProperty("ValidationEnd", "0"));
 			_nextWeeklyChange = Long.parseLong(OlympiadProperties.getProperty("NextWeeklyChange", "0"));
-			reloadOlympiadEnd();
+			if (Config.OLYMPIAD_PERIOD.equals("SUNRISE"))
+			{
+				reloadOlympiadEnd();
+			}
 		}
 		
 		switch (_period)
@@ -560,7 +563,7 @@ public class Olympiad extends ListenersContainer
 	
 	private long getMillisToOlympiadEnd()
 	{
-		return _olympiadEnd;
+		return (Config.OLYMPIAD_PERIOD.equals("SUNRISE") ? _olympiadEnd : _olympiadEnd - Calendar.getInstance().getTimeInMillis());
 	}
 	
 	protected void reloadOlympiadEnd()
@@ -598,11 +601,38 @@ public class Olympiad extends ListenersContainer
 		sm.addInt(_currentCycle);
 		Broadcast.toAllOnlinePlayers(sm);
 		
+		Calendar currentTime = Calendar.getInstance();
 		Calendar nextChange = Calendar.getInstance();
 		
-		reloadOlympiadEnd();
-		_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
+		currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
+		currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
+		currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
+		
+		switch (Config.OLYMPIAD_PERIOD)
+		{
+			case "MONTH": // retail
+				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.set(Calendar.DAY_OF_MONTH, 1); // last day is for validation
+				break;
+			case "WEEK":
+				currentTime.add(Calendar.WEEK_OF_YEAR, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.set(Calendar.DAY_OF_WEEK, 1); // last day is for validation
+				break;
+			case "SUNRISE":
+				reloadOlympiadEnd();
+				_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
+				scheduleWeeklyChange();
+				return;
+			default:
+				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				currentTime.set(Calendar.DAY_OF_MONTH, 1); // last day is for validation
+				_log.warn("Wrong configuration in Olympiad pediod. Check again your Olympiad settings. Auto set to retail values.");
+				break;
+		}
+		
+		_olympiadEnd = currentTime.getTimeInMillis();
 		scheduleWeeklyChange();
+		_nextWeeklyChange = nextChange.getTimeInMillis() + WEEKLY_PERIOD;
 	}
 	
 	public boolean inCompPeriod()
