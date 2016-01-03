@@ -752,7 +752,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 			
 			npc.RANDOM_WALK_RATE = -1;
-			if (useTeleport)
+			if (useTeleport && !npc.isRunner())
 			{
 				if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
 				{
