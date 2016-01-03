@@ -668,17 +668,8 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				
 				z1 = leader.getZ();
-				
 				// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
-				if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
-				{
-					moveTo(x1, y1, z1);
-				}
-				else
-				{
-					npc.returnHome(true);
-				}
-				
+				moveTo(x1, y1, z1);
 				return;
 			}
 			else if (Rnd.nextInt(RANDOM_WALK_RATE) == 0)
