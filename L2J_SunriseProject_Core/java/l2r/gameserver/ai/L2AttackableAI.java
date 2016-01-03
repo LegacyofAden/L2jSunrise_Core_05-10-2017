@@ -766,8 +766,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			else
 			{
 				// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
-				final Location moveLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
-				moveTo(moveLoc.getX(), moveLoc.getY(), moveLoc.getZ());
+				// final Location moveLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
+				// moveTo(moveLoc.getX(), moveLoc.getY(), moveLoc.getZ());
+				// This will prevent mob stuck in walls
+				moveTo(x1, y1, z1);
 			}
 		}
 	}
