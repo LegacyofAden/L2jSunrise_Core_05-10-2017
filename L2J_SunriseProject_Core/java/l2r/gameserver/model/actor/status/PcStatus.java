@@ -412,22 +412,29 @@ public class PcStatus extends PlayableStatus
 	{
 		final PcStat charstat = getActiveChar().getStat();
 		
-		// Modify the current CP of the L2Character and broadcast Server->Client packet StatusUpdate
-		if (getCurrentCp() < charstat.getMaxRecoverableCp())
+		try
 		{
-			setCurrentCp(getCurrentCp() + Formulas.calcCpRegen(getActiveChar()), false);
+			// Modify the current CP of the L2Character and broadcast Server->Client packet StatusUpdate
+			if (getCurrentCp() < charstat.getMaxRecoverableCp())
+			{
+				setCurrentCp(getCurrentCp() + Formulas.calcCpRegen(getActiveChar()), false);
+			}
+			
+			// Modify the current HP of the L2Character and broadcast Server->Client packet StatusUpdate
+			if (getCurrentHp() < charstat.getMaxRecoverableHp())
+			{
+				setCurrentHp(getCurrentHp() + Formulas.calcHpRegen(getActiveChar()), false);
+			}
+			
+			// Modify the current MP of the L2Character and broadcast Server->Client packet StatusUpdate
+			if (getCurrentMp() < charstat.getMaxRecoverableMp())
+			{
+				setCurrentMp(getCurrentMp() + Formulas.calcMpRegen(getActiveChar()), false);
+			}
 		}
-		
-		// Modify the current HP of the L2Character and broadcast Server->Client packet StatusUpdate
-		if (getCurrentHp() < charstat.getMaxRecoverableHp())
+		catch (Exception e)
 		{
-			setCurrentHp(getCurrentHp() + Formulas.calcHpRegen(getActiveChar()), false);
-		}
-		
-		// Modify the current MP of the L2Character and broadcast Server->Client packet StatusUpdate
-		if (getCurrentMp() < charstat.getMaxRecoverableMp())
-		{
-			setCurrentMp(getCurrentMp() + Formulas.calcMpRegen(getActiveChar()), false);
+			// nothing to log
 		}
 		
 		getActiveChar().broadcastStatusUpdate(); // send the StatusUpdate packet
