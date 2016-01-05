@@ -2555,7 +2555,7 @@ public final class Formulas
 					{
 						if (negateAbnormalType.equalsIgnoreCase(eff.getAbnormalType()) && (skill.getNegateAbnormals().get(negateAbnormalType) >= eff.getAbnormalLvl()))
 						{
-							eff.exit();
+							canceled.add(eff);
 						}
 					}
 				}
