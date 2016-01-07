@@ -385,7 +385,7 @@ public class NpcTable implements IXmlReader
 												set.set("longRangeSkillChance", parseInteger(attrs, "longRangeChance"));
 												break;
 											}
-											case "clanList":
+											case "clanlist":
 											{
 												for (Node clanListNode = aiNode.getFirstChild(); clanListNode != null; clanListNode = clanListNode.getNextSibling())
 												{
@@ -401,7 +401,7 @@ public class NpcTable implements IXmlReader
 															clans.add(getOrCreateClanId(clanListNode.getTextContent()));
 															break;
 														}
-														case "ignoreNpcId":
+														case "ignorenpcid":
 														{
 															if (ignoreClanNpcIds == null)
 															{
