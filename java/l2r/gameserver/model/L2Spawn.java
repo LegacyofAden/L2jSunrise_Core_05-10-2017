@@ -662,6 +662,9 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 		// Spawn NPC
 		mob.spawnMe(newlocx, newlocy, newlocz);
 		
+		// Initialize undying condition
+		mob.setIsInvul(getTemplate().isUndying());
+		
 		notifyNpcSpawned(mob);
 		
 		_spawnedNpcs.add(mob);

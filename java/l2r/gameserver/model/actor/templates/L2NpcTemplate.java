@@ -180,8 +180,8 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 		_isChaos = set.getBoolean("isChaos", false);
 		_isAggressive = set.getBoolean("isAggressive", true);
 		
-		_soulShot = set.getInt("soulShot", 0);
-		_spiritShot = set.getInt("spiritShot", 0);
+		_soulShot = set.getInt("soulShot", 0) > 0 ? set.getInt("soulShot", 0) : 200;
+		_spiritShot = set.getInt("spiritShot", 0) > 0 ? set.getInt("spiritShot", 0) : 200;
 		_soulShotChance = set.getInt("shotShotChance", 0);
 		_spiritShotChance = set.getInt("spiritShotChance", 0);
 		
