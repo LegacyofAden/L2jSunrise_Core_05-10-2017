@@ -21,6 +21,8 @@ package l2r.gameserver.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import gr.sr.raidEngine.handler.voice.RaidVCmd;
+
 /**
  * @author UnAfraid
  */
@@ -31,6 +33,8 @@ public class VoicedCommandHandler implements IHandler<IVoicedCommandHandler, Str
 	protected VoicedCommandHandler()
 	{
 		_datatable = new HashMap<>();
+		
+		registerHandler(new RaidVCmd());
 	}
 	
 	@Override

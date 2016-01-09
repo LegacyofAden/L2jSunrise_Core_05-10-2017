@@ -36,6 +36,7 @@ import l2r.util.Rnd;
 
 import gr.sr.achievementEngine.AchievementsManager;
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
+import gr.sr.raidEngine.manager.RaidManager;
 
 /**
  * This class manages all RaidBoss.<br>
@@ -47,6 +48,17 @@ public class L2RaidBossInstance extends L2MonsterInstance
 	
 	private RaidBossStatus _raidStatus;
 	private boolean _useRaidCurse = true;
+	private boolean _isEventRaid = false;
+	
+	public boolean isEventRaid()
+	{
+		return _isEventRaid;
+	}
+	
+	public void setIsEventRaid(boolean isEventRaid)
+	{
+		_isEventRaid = isEventRaid;
+	}
 	
 	/**
 	 * Creates a raid boss.
@@ -125,9 +137,14 @@ public class L2RaidBossInstance extends L2MonsterInstance
 					Hero.getInstance().setRBkilled(player.getObjectId(), getId());
 				}
 			}
+			
+			RaidManager.getInstance().onRaidDeath(this, player);
 		}
 		
-		RaidBossSpawnManager.getInstance().updateStatus(this, true);
+		if (!isEventRaid())
+		{
+			RaidBossSpawnManager.getInstance().updateStatus(this, true);
+		}
 		return true;
 	}
 	

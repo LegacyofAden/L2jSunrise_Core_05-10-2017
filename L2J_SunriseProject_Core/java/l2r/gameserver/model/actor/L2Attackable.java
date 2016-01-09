@@ -53,6 +53,7 @@ import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2GrandBossInstance;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
 import l2r.gameserver.model.actor.instance.L2ServitorInstance;
 import l2r.gameserver.model.actor.instance.L2TrapInstance;
 import l2r.gameserver.model.actor.knownlist.AttackableKnownList;
@@ -1474,6 +1475,11 @@ public class L2Attackable extends L2Npc
 		// now throw all categorized drops and handle spoil.
 		for (L2DropCategory cat : npcTemplate.getDropData())
 		{
+			if (isRaid() && (this instanceof L2RaidBossInstance) && ((L2RaidBossInstance) this).isEventRaid())
+			{
+				break;
+			}
+			
 			ItemHolder item = null;
 			if (cat.isSweep())
 			{
