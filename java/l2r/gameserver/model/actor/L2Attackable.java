@@ -52,6 +52,7 @@ import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2GrandBossInstance;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
 import l2r.gameserver.model.actor.instance.L2ServitorInstance;
 import l2r.gameserver.model.actor.instance.L2TrapInstance;
 import l2r.gameserver.model.actor.knownlist.AttackableKnownList;
@@ -1004,6 +1005,11 @@ public class L2Attackable extends L2Npc
 		
 		// Don't drop anything if the last attacker or owner isn't L2PcInstance
 		if (player == null)
+		{
+			return;
+		}
+		
+		if (isRaid() && (this instanceof L2RaidBossInstance) && ((L2RaidBossInstance) this).isEventRaid())
 		{
 			return;
 		}

@@ -753,7 +753,6 @@ public final class Config
 	public static List<String> L2JMOD_MULTILANG_NS_ALLOWED = new ArrayList<>();
 	public static boolean L2WALKER_PROTECTION;
 	public static boolean L2JMOD_DEBUG_VOICE_COMMAND;
-	public static int L2JMOD_DUALBOX_CHECK_MAX_PLAYERS_PER_IP;
 	public static int L2JMOD_DUALBOX_CHECK_MAX_OLYMPIAD_PARTICIPANTS_PER_IP;
 	public static int L2JMOD_DUALBOX_CHECK_MAX_L2EVENT_PARTICIPANTS_PER_IP;
 	public static Map<Integer, Integer> L2JMOD_DUALBOX_CHECK_WHITELIST;
@@ -2357,7 +2356,6 @@ public final class Config
 			L2WALKER_PROTECTION = L2JModSettings.getBoolean("L2WalkerProtection", false);
 			L2JMOD_DEBUG_VOICE_COMMAND = L2JModSettings.getBoolean("DebugVoiceCommand", false);
 			
-			L2JMOD_DUALBOX_CHECK_MAX_PLAYERS_PER_IP = L2JModSettings.getInt("DualboxCheckMaxPlayersPerIP", 0);
 			L2JMOD_DUALBOX_CHECK_MAX_OLYMPIAD_PARTICIPANTS_PER_IP = L2JModSettings.getInt("DualboxCheckMaxOlympiadParticipantsPerIP", 0);
 			L2JMOD_DUALBOX_CHECK_MAX_L2EVENT_PARTICIPANTS_PER_IP = L2JModSettings.getInt("DualboxCheckMaxL2EventParticipantsPerIP", 0);
 			String[] dualboxCheckWhiteList = L2JModSettings.getString("DualboxCheckWhitelist", "127.0.0.1,0").split(";");
@@ -2581,8 +2579,8 @@ public final class Config
 			final PropertiesParser antharas_load = new PropertiesParser(ANTHARAS_CONFIG);
 			
 			ANTHARAS_WAIT_TIME = antharas_load.getInt("AntharasWaitTime", 30);
-			ANTHARAS_SPAWN_INTERVAL = antharas_load.getInt("IntervalOfAntharasSpawn", 264);
-			ANTHARAS_SPAWN_RANDOM = antharas_load.getInt("RandomOfAntharasSpawn", 72);
+			ANTHARAS_SPAWN_INTERVAL = antharas_load.getInt("IntervalOfAntharasSpawn", 192);
+			ANTHARAS_SPAWN_RANDOM = antharas_load.getInt("RandomOfAntharasSpawn", 12);
 			
 			// Load VALAKAS_CONFIG L2Properties file (if exists)
 			final PropertiesParser valakas_load = new PropertiesParser(VALAKAS_CONFIG);
@@ -2590,13 +2588,13 @@ public final class Config
 			VALAKAS_MAX_PLAYERS = valakas_load.getInt("ValakasMaxPlayers", 200);
 			VALAKAS_WAIT_TIME = valakas_load.getInt("ValakasWaitTime", 30);
 			VALAKAS_SPAWN_INTERVAL = valakas_load.getInt("IntervalOfValakasSpawn", 264);
-			VALAKAS_SPAWN_RANDOM = valakas_load.getInt("RandomOfValakasSpawn", 72);
+			VALAKAS_SPAWN_RANDOM = valakas_load.getInt("RandomOfValakasSpawn", 12);
 			
 			// Load BAIUM_CONFIG L2Properties file (if exists)
 			final PropertiesParser baium_load = new PropertiesParser(BAIUM_CONFIG);
 			
-			BAIUM_SPAWN_INTERVAL = baium_load.getInt("IntervalOfBaiumSpawn", 168);
-			BAIUM_SPAWN_RANDOM = baium_load.getInt("RandomOfBaiumSpawn", 48);
+			BAIUM_SPAWN_INTERVAL = baium_load.getInt("IntervalOfBaiumSpawn", 120);
+			BAIUM_SPAWN_RANDOM = baium_load.getInt("RandomOfBaiumSpawn", 10);
 			
 			// Load CORE_CONFIG L2Properties file (if exists)
 			final PropertiesParser core_load = new PropertiesParser(CORE_CONFIG);
@@ -2655,8 +2653,8 @@ public final class Config
 			// Load SAILREN_CONFIG L2Properties file (if exists)
 			final PropertiesParser sailren_load = new PropertiesParser(SAILREN_CONFIG);
 			
-			INTERVAL_OF_SAILREN_SPAWN = sailren_load.getInt("IntervalOfSailrenSpawn", 12);
-			RANDOM_OF_SAILREN_SPAWN = sailren_load.getInt("RandomOfSailrenSpawn", 24);
+			INTERVAL_OF_SAILREN_SPAWN = sailren_load.getInt("IntervalOfSailrenSpawn", 24);
+			RANDOM_OF_SAILREN_SPAWN = sailren_load.getInt("RandomOfSailrenSpawn", 12);
 			
 			// Load VAN_HALTER_CONFIG L2Properties file (if exists)
 			final PropertiesParser vanhalter_load = new PropertiesParser(VAN_HALTER_CONFIG);

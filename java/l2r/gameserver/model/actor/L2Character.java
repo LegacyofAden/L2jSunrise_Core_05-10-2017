@@ -71,6 +71,7 @@ import l2r.gameserver.model.TimeStamp;
 import l2r.gameserver.model.actor.instance.L2EventMapGuardInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
+import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
 import l2r.gameserver.model.actor.instance.L2RiftInvaderInstance;
 import l2r.gameserver.model.actor.knownlist.CharKnownList;
 import l2r.gameserver.model.actor.stat.CharStat;
@@ -158,6 +159,7 @@ import l2r.util.EmptyQueue;
 import l2r.util.Rnd;
 
 import gr.sr.interf.SunriseEvents;
+import gr.sr.raidEngine.manager.RaidManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1028,17 +1030,29 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 		}
 		
+		if (target.isPorting())
+		{
+			getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
 		// Add the L2PcInstance to _knownObjects and _knownPlayer of the target
 		target.getKnownList().addKnownObject(this);
 		
 		L2Weapon weaponItem = getActiveWeaponItem();
 		final int timeAtk = calculateTimeBetweenAttacks();
 		final int timeToHit = timeAtk / 2;
-		_attackEndTime = System.nanoTime() + TimeUnit.NANOSECONDS.convert(timeAtk, TimeUnit.MILLISECONDS);
 		
 		Attack attack = new Attack(this, target, isChargedShot(ShotType.SOULSHOTS), (weaponItem != null) ? weaponItem.getItemGradeSPlus().getId() : 0);
 		setHeading(Util.calculateHeadingFrom(this, target));
 		int reuse = calculateReuseTime(weaponItem);
+		
+		// Just in case npc attack end time is not set
+		if (isNpc())
+		{
+			_attackEndTime = System.nanoTime() + TimeUnit.NANOSECONDS.convert(timeAtk, TimeUnit.MILLISECONDS);
+		}
 		
 		boolean hitted;
 		switch (getAttackType())
@@ -1110,6 +1124,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		else
 		{
+			if (isPlayer() && (target instanceof L2RaidBossInstance) && ((L2RaidBossInstance) target).isEventRaid())
+			{
+				RaidManager.getInstance().checkRaidAttack(getActingPlayer(), (L2RaidBossInstance) target);
+			}
+			
 			// If we didn't miss the hit, discharge the shoulshots, if any
 			setChargedShot(ShotType.SOULSHOTS, false);
 			
@@ -6463,6 +6482,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 										// add attacker into list
 										((L2Character) target).addAttackerToAttackByList(this);
 								}
+								
+								if (isPlayer() && (target instanceof L2RaidBossInstance) && ((L2RaidBossInstance) target).isEventRaid())
+								{
+									RaidManager.getInstance().checkRaidAttack(getActingPlayer(), (L2RaidBossInstance) target);
+								}
 							}
 							// notify target AI about the attack
 							if (((L2Character) target).hasAI() && !skill.hasEffectType(L2EffectType.HATE))
@@ -7636,6 +7660,18 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			stopEffects(L2EffectType.FEAR);
 		}
 		updateAbnormalEffect();
+	}
+	
+	private boolean _isPorting = false;
+	
+	public boolean isPorting()
+	{
+		return _isPorting;
+	}
+	
+	public void setIsPorting(boolean porting)
+	{
+		_isPorting = porting;
 	}
 	
 	public boolean entering = true;

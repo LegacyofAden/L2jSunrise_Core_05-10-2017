@@ -366,6 +366,25 @@ public class PcInventory extends Inventory
 				TradeItem adjItem = tradeList.adjustAvailableItem(item);
 				if (adjItem != null)
 				{
+					// vGodFather just a precaution in order to avoid double view in shops
+					boolean found = false;
+					if (!adjItem.getItem().isStackable())
+					{
+						for (TradeItem temp : getOwner().getSellList().getItems())
+						{
+							if (temp.getObjectId() == adjItem.getObjectId())
+							{
+								found = true;
+								break;
+							}
+						}
+					}
+					
+					if (found)
+					{
+						continue;
+					}
+					
 					list.add(adjItem);
 				}
 			}
