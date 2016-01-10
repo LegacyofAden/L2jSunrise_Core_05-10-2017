@@ -193,7 +193,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public final boolean spawnMe()
 	{
-		assert(getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
+		assert (getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
 		
 		synchronized (this)
 		{

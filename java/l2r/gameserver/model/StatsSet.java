@@ -642,7 +642,7 @@ public class StatsSet implements IParserAdvUtils
 	
 	public void safeSet(String key, int value, int min, int max, String reference)
 	{
-		assert!(((min <= max) && ((value < min) || (value >= max))));
+		assert !(((min <= max) && ((value < min) || (value >= max))));
 		if ((min <= max) && ((value < min) || (value >= max)))
 		{
 			_log.error("Incorrect value: " + value + "for: " + key + "Ref: " + reference);

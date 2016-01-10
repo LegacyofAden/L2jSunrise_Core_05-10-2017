@@ -27,7 +27,7 @@ import l2r.gameserver.model.drops.strategy.IPreciseDeterminationStrategy;
 /**
  * @author NosBit
  */
-public enum DropListScope implements IDropItemFactory, IGroupedDropItemFactory
+public enum DropListScope implements IDropItemFactory,IGroupedDropItemFactory
 {
 	DEATH((itemId, min, max, chance) -> new GeneralDropItem(itemId, min, max, chance, IAmountMultiplierStrategy.DROP, IChanceMultiplierStrategy.DROP), chance -> new GroupedGeneralDropItem(chance)),
 	CORPSE((itemId, min, max, chance) -> new GeneralDropItem(itemId, min, max, chance, IAmountMultiplierStrategy.SPOIL, IChanceMultiplierStrategy.SPOIL), DEATH),
