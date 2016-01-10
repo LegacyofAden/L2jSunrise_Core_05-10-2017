@@ -25,7 +25,8 @@ public class GrandBossList extends AbstractSunriseBoards
 			PreparedStatement statement = con.prepareStatement("SELECT boss_id, status FROM grandboss_data");
 			ResultSet result = statement.executeQuery();
 			
-			nextnpc: while (result.next())
+			nextnpc:
+			while (result.next())
 			{
 				int npcid = result.getInt("boss_id");
 				int status = result.getInt("status");

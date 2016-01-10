@@ -76,42 +76,153 @@ import java.util.Locale;
  * The following table lists escape sequences and associated actions on display devices capable of the action.
  * <table>
  * <tr>
- * <th align=left>Sequence</th> <th align=left>Name</th> <th align=left>Description</th> </tr> <tr> <td>\\</td> <td>backlash</td> <td>None.</td> </tr> <tr> <td>\a</td> <td>alert</td> <td>Attempts to alert the user through audible or visible notification.</td> </tr> <tr> <td>\b</td>
- * <td>backspace</td> <td>Moves the printing position to one column before the current position, unless the current position is the start of a line.</td> </tr> <tr> <td>\f</td> <td>form-feed</td> <td>Moves the printing position to the initial printing position of the next logical page.</td> </tr>
- * <tr> <td>\n</td> <td>newline</td> <td>Moves the printing position to the start of the next line.</td> </tr> <tr> <td>\r</td> <td>carriage-return</td> <td>Moves the printing position to the start of the current line.</td> </tr> <tr> <td>\t</td> <td>tab</td> <td>Moves the printing position to the
- * next implementation- defined horizontal tab position.</td> </tr> <tr> <td>\v</td> <td>vertical-tab</td> <td>Moves the printing position to the start of the next implementation-defined vertical tab position.</td> </tr> </table> </p> <h4>Conversion Specifications</h4> <p> Each conversion
- * specification is introduced by the percent sign character (%). After the character %, the following appear in sequence: </p> <p> Zero or more flags (in any order), which modify the meaning of the conversion specification. </p> <p> An optional minimum field width. If the converted value has fewer
- * characters than the field width, it will be padded with spaces by default on the left; t will be padded on the right, if the left- adjustment flag (-), described below, is given to the field width. The field width takes the form of a decimal integer. If the conversion character is s, the field
- * width is the the minimum number of characters to be printed. </p> <p> An optional precision that gives the minumum number of digits to appear for the d, i, o, x or X conversions (the field is padded with leading zeros); the number of digits to appear after the radix character for the e, E, and f
- * conversions, the maximum number of significant digits for the g and G conversions; or the maximum number of characters to be written from a string is s and S conversions. The precision takes the form of an optional decimal digit string, where a null digit string is treated as 0. If a precision
- * appears with a c conversion character the precision is ignored. </p> <p> An optional h specifies that a following d, i, o, x, or X conversion character applies to a type short argument (the argument will be promoted according to the integral promotions and its value converted to type short before
- * printing). </p> <p> An optional l (ell) specifies that a following d, i, o, x, or X conversion character applies to a type long argument. </p> <p> A field width or precision may be indicated by an asterisk (*) instead of a digit string. In this case, an integer argument supplised the field width
- * precision. The argument that is actually converted is not fetched until the conversion letter is seen, so the the arguments specifying field width or precision must appear before the argument (if any) to be converted. If the precision argument is negative, it will be changed to zero. A negative
- * field width argument is taken as a - flag, followed by a positive field width. </p> <p> In format strings containing the %<code>n</code>$ form of a conversion specification, a field width or precision may be indicated by the sequence *<code>m</code>$, where m is a decimal integer giving the
- * position in the argument list (after the format argument) of an integer argument containing the field width or precision. </p> <p> The format can contain either numbered argument specifications (that is, %<code>n</code>$ and *<code>m</code>$), or unnumbered argument specifications (that is % and
- * *), but normally not both. The only exception to this is that %% can be mixed with the %<code>n</code>$ form. The results of mixing numbered and unnumbered argument specifications in a format string are undefined. </p> <h4>Flag Characters</h4> <p> The flags and their meanings are: </p> <dl> <dt>'
- * <dd>integer portion of the result of a decimal conversion (%i, %d, %f, %g, or %G) will be formatted with thousands' grouping characters. For other conversions the flag is ignored. The non-monetary grouping character is used. <dt>- <dd>result of the conversion is left-justified within the field.
- * (It will be right-justified if this flag is not specified).</td></tr> <dt>+ <dd>result of a signed conversion always begins with a sign (+ or -). (It will begin with a sign only when a negative value is converted if this flag is not specified.) <dt>&lt;space&gt; <dd>If the first character of a
- * signed conversion is not a sign, a space character will be placed before the result. This means that if the space character and + flags both appear, the space flag will be ignored. <dt># <dd>value is to be converted to an alternative form. For c, d, i, and s conversions, the flag has no effect.
- * For o conversion, it increases the precision to force the first digit of the result to be a zero. For x or X conversion, a non-zero result has 0x or 0X prefixed to it, respectively. For e, E, f, g, and G conversions, the result always contains a radix character, even if no digits follow the radix
- * character (normally, a decimal point appears in the result of these conversions only if a digit follows it). For g and G conversions, trailing zeros will not be removed from the result as they normally are. <dt>0 <dd>d, i, o, x, X, e, E, f, g, and G conversions, leading zeros (following any
- * indication of sign or base) are used to pad to the field width; no space padding is performed. If the 0 and - flags both appear, the 0 flag is ignored. For d, i, o, x, and X conversions, if a precision is specified, the 0 flag will be ignored. For c conversions, the flag is ignored. </dl>
- * <h4>Conversion Characters</h4> <p> Each conversion character results in fetching zero or more arguments. The results are undefined if there are insufficient arguments for the format. Usually, an unchecked exception will be thrown. If the format is exhausted while arguments remain, the excess
- * arguments are ignored. </p> <p> The conversion characters and their meanings are: </p> <dl> <dt>d,i <dd>The int argument is converted to a signed decimal in the style [-]dddd. The precision specifies the minimum number of digits to appear; if the value being converted can be represented in fewer
- * digits, it will be expanded with leading zeros. The default precision is 1. The result of converting 0 with an explicit precision of 0 is no characters. <dt>o <dd>The int argument is converted to unsigned octal format in the style ddddd. The precision specifies the minimum number of digits to
- * appear; if the value being converted can be represented in fewer digits, it will be expanded with leading zeros. The default precision is 1. The result of converting 0 with an explicit precision of 0 is no characters. <dt>x <dd>The int argument is converted to unsigned hexadecimal format in the
- * style dddd; the letters abcdef are used. The precision specifies the minimum numberof digits to appear; if the value being converted can be represented in fewer digits, it will be expanded with leading zeros. The default precision is 1. The result of converting 0 with an explicit precision of 0
- * is no characters. <dt>X <dd>Behaves the same as the x conversion character except that letters ABCDEF are used instead of abcdef. <dt>f <dd>The floating point number argument is written in decimal notation in the style [-]ddd.ddd, where the number of digits after the radix character (shown here
- * as a decimal point) is equal to the precision specification. A Locale is used to determine the radix character to use in this format. If the precision is omitted from the argument, six digits are written after the radix character; if the precision is explicitly 0 and the # flag is not specified,
- * no radix character appears. If a radix character appears, at least 1 digit appears before it. The value is rounded to the appropriate number of digits. <dt>e,E <dd>The floating point number argument is written in the style [-]d.ddde{+-}dd (the symbols {+-} indicate either a plus or minus sign),
- * where there is one digit before the radix character (shown here as a decimal point) and the number of digits after it is equal to the precision. A Locale is used to determine the radix character to use in this format. When the precision is missing, six digits are written after the radix
- * character; if the precision is 0 and the # flag is not specified, no radix character appears. The E conversion will produce a number with E instead of e introducing the exponent. The exponent always contains at least two digits. However, if the value to be written requires an exponent greater
- * than two digits, additional exponent digits are written as necessary. The value is rounded to the appropriate number of digits. <dt>g,G <dd>The floating point number argument is written in style f or e (or in sytle E in the case of a G conversion character), with the precision specifying the
- * number of significant digits. If the precision is zero, it is taken as one. The style used depends on the value converted: style e (or E) will be used only if the exponent resulting from the conversion is less than -4 or greater than or equal to the precision. Trailing zeros are removed from the
- * result. A radix character appears only if it is followed by a digit. <dt>c,C <dd>The integer argument is converted to a char and the result is written. <dt>s,S <dd>The argument is taken to be a string and bytes from the string are written until the end of the string or the number of bytes
- * indicated by the precision specification of the argument is reached. If the precision is omitted from the argument, it is taken to be infinite, so all characters up to the end of the string are written. <dt>% <dd>Write a % character; no argument is converted. </dl> <p> If a conversion
- * specification does not match one of the above forms, an IllegalArgumentException is thrown and the instance of PrintfFormat is not created. </p> <p> If a floating point value is the internal representation for infinity, the output is [+]Infinity, where Infinity is either Infinity or Inf,
- * depending on the desired output string length. Printing of the sign follows the rules described above. </p> <p>If a floating point value is the internal representation for "not-a-number," the output is [+]NaN. Printing of the sign follows the rules described above.
+ * <th align=left>Sequence</th>
+ * <th align=left>Name</th>
+ * <th align=left>Description</th>
+ * </tr>
+ * <tr>
+ * <td>\\</td>
+ * <td>backlash</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>\a</td>
+ * <td>alert</td>
+ * <td>Attempts to alert the user through audible or visible notification.</td>
+ * </tr>
+ * <tr>
+ * <td>\b</td>
+ * <td>backspace</td>
+ * <td>Moves the printing position to one column before the current position, unless the current position is the start of a line.</td>
+ * </tr>
+ * <tr>
+ * <td>\f</td>
+ * <td>form-feed</td>
+ * <td>Moves the printing position to the initial printing position of the next logical page.</td>
+ * </tr>
+ * <tr>
+ * <td>\n</td>
+ * <td>newline</td>
+ * <td>Moves the printing position to the start of the next line.</td>
+ * </tr>
+ * <tr>
+ * <td>\r</td>
+ * <td>carriage-return</td>
+ * <td>Moves the printing position to the start of the current line.</td>
+ * </tr>
+ * <tr>
+ * <td>\t</td>
+ * <td>tab</td>
+ * <td>Moves the printing position to the next implementation- defined horizontal tab position.</td>
+ * </tr>
+ * <tr>
+ * <td>\v</td>
+ * <td>vertical-tab</td>
+ * <td>Moves the printing position to the start of the next implementation-defined vertical tab position.</td>
+ * </tr>
+ * </table>
+ * </p>
+ * <h4>Conversion Specifications</h4>
+ * <p>
+ * Each conversion specification is introduced by the percent sign character (%). After the character %, the following appear in sequence:
+ * </p>
+ * <p>
+ * Zero or more flags (in any order), which modify the meaning of the conversion specification.
+ * </p>
+ * <p>
+ * An optional minimum field width. If the converted value has fewer characters than the field width, it will be padded with spaces by default on the left; t will be padded on the right, if the left- adjustment flag (-), described below, is given to the field width. The field width takes the form of
+ * a decimal integer. If the conversion character is s, the field width is the the minimum number of characters to be printed.
+ * </p>
+ * <p>
+ * An optional precision that gives the minumum number of digits to appear for the d, i, o, x or X conversions (the field is padded with leading zeros); the number of digits to appear after the radix character for the e, E, and f conversions, the maximum number of significant digits for the g and G
+ * conversions; or the maximum number of characters to be written from a string is s and S conversions. The precision takes the form of an optional decimal digit string, where a null digit string is treated as 0. If a precision appears with a c conversion character the precision is ignored.
+ * </p>
+ * <p>
+ * An optional h specifies that a following d, i, o, x, or X conversion character applies to a type short argument (the argument will be promoted according to the integral promotions and its value converted to type short before printing).
+ * </p>
+ * <p>
+ * An optional l (ell) specifies that a following d, i, o, x, or X conversion character applies to a type long argument.
+ * </p>
+ * <p>
+ * A field width or precision may be indicated by an asterisk (*) instead of a digit string. In this case, an integer argument supplised the field width precision. The argument that is actually converted is not fetched until the conversion letter is seen, so the the arguments specifying field width
+ * or precision must appear before the argument (if any) to be converted. If the precision argument is negative, it will be changed to zero. A negative field width argument is taken as a - flag, followed by a positive field width.
+ * </p>
+ * <p>
+ * In format strings containing the %<code>n</code>$ form of a conversion specification, a field width or precision may be indicated by the sequence *<code>m</code>$, where m is a decimal integer giving the position in the argument list (after the format argument) of an integer argument containing
+ * the field width or precision.
+ * </p>
+ * <p>
+ * The format can contain either numbered argument specifications (that is, %<code>n</code>$ and *<code>m</code>$), or unnumbered argument specifications (that is % and *), but normally not both. The only exception to this is that %% can be mixed with the %<code>n</code>$ form. The results of mixing
+ * numbered and unnumbered argument specifications in a format string are undefined.
+ * </p>
+ * <h4>Flag Characters</h4>
+ * <p>
+ * The flags and their meanings are:
+ * </p>
+ * <dl>
+ * <dt>'
+ * <dd>integer portion of the result of a decimal conversion (%i, %d, %f, %g, or %G) will be formatted with thousands' grouping characters. For other conversions the flag is ignored. The non-monetary grouping character is used.
+ * <dt>-
+ * <dd>result of the conversion is left-justified within the field. (It will be right-justified if this flag is not specified).</td>
+ * </tr>
+ * <dt>+
+ * <dd>result of a signed conversion always begins with a sign (+ or -). (It will begin with a sign only when a negative value is converted if this flag is not specified.)
+ * <dt>&lt;space&gt;
+ * <dd>If the first character of a signed conversion is not a sign, a space character will be placed before the result. This means that if the space character and + flags both appear, the space flag will be ignored.
+ * <dt>#
+ * <dd>value is to be converted to an alternative form. For c, d, i, and s conversions, the flag has no effect. For o conversion, it increases the precision to force the first digit of the result to be a zero. For x or X conversion, a non-zero result has 0x or 0X prefixed to it, respectively. For e,
+ * E, f, g, and G conversions, the result always contains a radix character, even if no digits follow the radix character (normally, a decimal point appears in the result of these conversions only if a digit follows it). For g and G conversions, trailing zeros will not be removed from the result as
+ * they normally are.
+ * <dt>0
+ * <dd>d, i, o, x, X, e, E, f, g, and G conversions, leading zeros (following any indication of sign or base) are used to pad to the field width; no space padding is performed. If the 0 and - flags both appear, the 0 flag is ignored. For d, i, o, x, and X conversions, if a precision is specified,
+ * the 0 flag will be ignored. For c conversions, the flag is ignored.
+ * </dl>
+ * <h4>Conversion Characters</h4>
+ * <p>
+ * Each conversion character results in fetching zero or more arguments. The results are undefined if there are insufficient arguments for the format. Usually, an unchecked exception will be thrown. If the format is exhausted while arguments remain, the excess arguments are ignored.
+ * </p>
+ * <p>
+ * The conversion characters and their meanings are:
+ * </p>
+ * <dl>
+ * <dt>d,i
+ * <dd>The int argument is converted to a signed decimal in the style [-]dddd. The precision specifies the minimum number of digits to appear; if the value being converted can be represented in fewer digits, it will be expanded with leading zeros. The default precision is 1. The result of converting
+ * 0 with an explicit precision of 0 is no characters.
+ * <dt>o
+ * <dd>The int argument is converted to unsigned octal format in the style ddddd. The precision specifies the minimum number of digits to appear; if the value being converted can be represented in fewer digits, it will be expanded with leading zeros. The default precision is 1. The result of
+ * converting 0 with an explicit precision of 0 is no characters.
+ * <dt>x
+ * <dd>The int argument is converted to unsigned hexadecimal format in the style dddd; the letters abcdef are used. The precision specifies the minimum numberof digits to appear; if the value being converted can be represented in fewer digits, it will be expanded with leading zeros. The default
+ * precision is 1. The result of converting 0 with an explicit precision of 0 is no characters.
+ * <dt>X
+ * <dd>Behaves the same as the x conversion character except that letters ABCDEF are used instead of abcdef.
+ * <dt>f
+ * <dd>The floating point number argument is written in decimal notation in the style [-]ddd.ddd, where the number of digits after the radix character (shown here as a decimal point) is equal to the precision specification. A Locale is used to determine the radix character to use in this format. If
+ * the precision is omitted from the argument, six digits are written after the radix character; if the precision is explicitly 0 and the # flag is not specified, no radix character appears. If a radix character appears, at least 1 digit appears before it. The value is rounded to the appropriate
+ * number of digits.
+ * <dt>e,E
+ * <dd>The floating point number argument is written in the style [-]d.ddde{+-}dd (the symbols {+-} indicate either a plus or minus sign), where there is one digit before the radix character (shown here as a decimal point) and the number of digits after it is equal to the precision. A Locale is used
+ * to determine the radix character to use in this format. When the precision is missing, six digits are written after the radix character; if the precision is 0 and the # flag is not specified, no radix character appears. The E conversion will produce a number with E instead of e introducing the
+ * exponent. The exponent always contains at least two digits. However, if the value to be written requires an exponent greater than two digits, additional exponent digits are written as necessary. The value is rounded to the appropriate number of digits.
+ * <dt>g,G
+ * <dd>The floating point number argument is written in style f or e (or in sytle E in the case of a G conversion character), with the precision specifying the number of significant digits. If the precision is zero, it is taken as one. The style used depends on the value converted: style e (or E)
+ * will be used only if the exponent resulting from the conversion is less than -4 or greater than or equal to the precision. Trailing zeros are removed from the result. A radix character appears only if it is followed by a digit.
+ * <dt>c,C
+ * <dd>The integer argument is converted to a char and the result is written.
+ * <dt>s,S
+ * <dd>The argument is taken to be a string and bytes from the string are written until the end of the string or the number of bytes indicated by the precision specification of the argument is reached. If the precision is omitted from the argument, it is taken to be infinite, so all characters up to
+ * the end of the string are written.
+ * <dt>%
+ * <dd>Write a % character; no argument is converted.
+ * </dl>
+ * <p>
+ * If a conversion specification does not match one of the above forms, an IllegalArgumentException is thrown and the instance of PrintfFormat is not created.
+ * </p>
+ * <p>
+ * If a floating point value is the internal representation for infinity, the output is [+]Infinity, where Infinity is either Infinity or Inf, depending on the desired output string length. Printing of the sign follows the rules described above.
+ * </p>
+ * <p>
+ * If a floating point value is the internal representation for "not-a-number," the output is [+]NaN. Printing of the sign follows the rules described above.
  * </p>
  * <p>
  * In no case does a non-existent or small field width cause truncation of a field; if the result of a conversion is wider than the field width, the field is simply expanded to contain the conversion result.
