@@ -446,9 +446,9 @@ public class GameServer
 		_log.info("Maximum Numbers of Connected players: " + Config.MAXIMUM_ONLINE_USERS);
 		_log.info("Server loaded in " + ((System.currentTimeMillis() - serverLoadStart) / 1000) + " seconds.");
 		
+		SunriseInfo.load();
 		printSection("UPnP");
 		UPnPService.getInstance();
-		SunriseInfo.load();
 	}
 	
 	public static void printSection(String s)

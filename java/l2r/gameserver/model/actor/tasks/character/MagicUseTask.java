@@ -32,18 +32,20 @@ public final class MagicUseTask implements Runnable
 	private L2Object[] _targets;
 	private final L2Skill _skill;
 	private int _count;
-	private int _skillTime;
+	private int _hitTime;
+	private int _coolTime;
 	private int _phase;
 	private final boolean _simultaneously;
 	
-	public MagicUseTask(L2Character character, L2Object[] tgts, L2Skill s, int hit, boolean simultaneous)
+	public MagicUseTask(L2Character character, L2Object[] tgts, L2Skill s, int hit, int cool, boolean simultaneous)
 	{
 		_character = character;
 		_targets = tgts;
 		_skill = s;
 		_count = 0;
 		_phase = 1;
-		_skillTime = hit;
+		_hitTime = hit;
+		_coolTime = cool;
 		_simultaneously = simultaneous;
 	}
 	
@@ -89,9 +91,14 @@ public final class MagicUseTask implements Runnable
 		return _skill;
 	}
 	
-	public int getSkillTime()
+	public int getHitTime()
 	{
-		return _skillTime;
+		return _hitTime;
+	}
+	
+	public int getCoolTime()
+	{
+		return _coolTime;
 	}
 	
 	public L2Object[] getTargets()
@@ -114,9 +121,14 @@ public final class MagicUseTask implements Runnable
 		_phase = phase;
 	}
 	
-	public void setSkillTime(int skillTime)
+	public void setHitTime(int skillTime)
 	{
-		_skillTime = skillTime;
+		_hitTime = skillTime;
+	}
+	
+	public void setCoolTime(int cool)
+	{
+		_coolTime = cool;
 	}
 	
 	public void setTargets(L2Object[] targets)

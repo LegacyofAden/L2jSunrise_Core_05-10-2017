@@ -1813,35 +1813,49 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		// Get the Identifier of the skill
 		int magicId = skill.getId();
 		
-		// Get the Base Casting Time of the Skills.
-		int skillTime = (skill.getHitTime() + skill.getCoolTime());
+		// Get the casting time of the skill (base)
+		int hitTime = skill.getHitTime();
+		int coolTime = skill.getCoolTime();
 		
 		boolean effectWhileCasting = (skill.getSkillType() == L2SkillType.FUSION) || (skill.getSkillType() == L2SkillType.SIGNET_CASTTIME);
 		// Don't modify the skill time for FORCE_BUFF skills. The skill time for those skills represent the buff time.
 		if (!effectWhileCasting)
 		{
-			// Calculate the Casting Time of the "Non-Static" Skills (with caster PAtk/MAtkSpd).
-			if (!skill.isStatic())
+			hitTime = Formulas.calcAtkSpd(this, skill, hitTime);
+			if (coolTime > 0)
 			{
-				skillTime = Formulas.calcAtkSpd(this, skill, skillTime);
-			}
-			// Calculate the Casting Time of Magic Skills (reduced in 40% if using SPS/BSPS)
-			if (skill.isMagic() && (isChargedShot(ShotType.SPIRITSHOTS) || isChargedShot(ShotType.BLESSED_SPIRITSHOTS)))
-			{
-				skillTime = (int) (0.6 * skillTime);
+				coolTime = Formulas.calcAtkSpd(this, skill, coolTime);
 			}
 		}
 		
+		// Calculate altered Cast Speed due to BSpS/SpS
+		if (skill.isMagic() && !effectWhileCasting)
+		{
+			// Only takes 70% of the time to cast a BSpS/SpS cast
+			if (isChargedShot(ShotType.SPIRITSHOTS) || isChargedShot(ShotType.BLESSED_SPIRITSHOTS))
+			{
+				hitTime = (int) (0.70 * hitTime);
+				coolTime = (int) (0.70 * coolTime);
+			}
+		}
+		
+		// Don't modify skills HitTime if staticHitTime is specified for skill in datapack.
 		// Avoid broken Casting Animation.
 		// Client can't handle less than 550ms Casting Animation in Magic Skills with more than 550ms base.
-		if (skill.isMagic() && ((skill.getHitTime() + skill.getCoolTime()) > 550) && (skillTime < 550))
+		if (skill.isMagic() && ((skill.getHitTime() + skill.getCoolTime()) > 550) && (hitTime < 550))
 		{
-			skillTime = 550;
+			hitTime = 550;
 		}
 		// Client can't handle less than 500ms Casting Animation in Physical Skills with 500ms base or more.
-		else if (!skill.isStatic() && ((skill.getHitTime() + skill.getCoolTime()) >= 500) && (skillTime < 500))
+		else if (skill.isStatic())
 		{
-			skillTime = 500;
+			hitTime = skill.getHitTime();
+			coolTime = skill.getCoolTime();
+		}
+		// if basic hitTime is higher than 500 than the min hitTime is 500
+		else if ((skill.getHitTime() >= 500) && (hitTime < 500))
+		{
+			hitTime = 500;
 		}
 		
 		// queue herbs and potions
@@ -1859,7 +1873,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		else
 		{
 			setIsCastingNow(true);
-			_castInterruptTime = -2 + GameTimeController.getInstance().getGameTicks() + (skillTime / GameTimeController.MILLIS_IN_TICK);
+			_castInterruptTime = -2 + GameTimeController.getInstance().getGameTicks() + (hitTime / GameTimeController.MILLIS_IN_TICK);
 			setLastSkillCast(skill);
 		}
 		
@@ -1977,7 +1991,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		// Send a Server->Client packet MagicSkillUser with target, displayId, level, skillTime, reuseDelay
 		// to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
-		broadcastPacket(new MagicSkillUse(this, target, skill.getDisplayId(), skill.getDisplayLevel(), skillTime, reuseDelay));
+		broadcastPacket(new MagicSkillUse(this, target, skill.getDisplayId(), skill.getDisplayLevel(), hitTime, reuseDelay));
 		
 		// Send a system message USE_S1 to the L2Character
 		if (isPlayer())
@@ -2043,20 +2057,20 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			ThreadPoolManager.getInstance().scheduleEffect(new FlyToLocationTask(this, target, skill), 50);
 		}
 		
-		MagicUseTask mut = new MagicUseTask(this, targets, skill, skillTime, simultaneously);
+		MagicUseTask mut = new MagicUseTask(this, targets, skill, hitTime, coolTime, simultaneously);
 		
 		// launch the magic in skillTime milliseconds
-		if (skillTime > 0)
+		if (hitTime > 410)
 		{
 			// Send a Server->Client packet SetupGauge with the color of the gauge and the casting time
 			if (isPlayer() && !effectWhileCasting)
 			{
-				sendPacket(new SetupGauge(SetupGauge.BLUE, skillTime));
+				sendPacket(new SetupGauge(SetupGauge.BLUE, hitTime));
 			}
 			
 			if (skill.getHitCounts() > 0)
 			{
-				skillTime = (skillTime * skill.getHitTimings()[0]) / 100;
+				hitTime = (hitTime * skill.getHitTimings()[0]) / 100;
 			}
 			
 			if (effectWhileCasting)
@@ -2075,7 +2089,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				
 				// Create a task MagicUseTask to launch the MagicSkill at the end of the casting time (skillTime)
 				// For client animation reasons (party buffs especially) 400 ms before!
-				_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime - 400);
+				_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, hitTime - 400);
 			}
 			else
 			{
@@ -2088,12 +2102,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				
 				// Create a task MagicUseTask to launch the MagicSkill at the end of the casting time (skillTime)
 				// For client animation reasons (party buffs especially) 400 ms before!
-				_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime - 400);
+				_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, hitTime - 400);
 			}
 		}
 		else
 		{
-			mut.setSkillTime(0);
+			mut.setHitTime(0);
 			onMagicLaunchedTimer(mut);
 		}
 	}
@@ -5859,7 +5873,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					
 					// Healing party members should ignore LOS.
 					if (((skill.getTargetType() != L2TargetType.PARTY) || !skill.hasEffectType(L2EffectType.HEAL)) //
-					&& (mut.getSkillTime() > 550) && !GeoData.getInstance().canSeeTarget(this, target))
+					&& (mut.getHitTime() > 550) && !GeoData.getInstance().canSeeTarget(this, target))
 					{
 						skipLOS++;
 						continue;
@@ -5927,7 +5941,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		mut.setPhase(2);
-		if (mut.getSkillTime() == 0)
+		if (mut.getHitTime() == 0)
 		{
 			onMagicHitTimer(mut);
 		}
@@ -5983,143 +5997,118 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			return;
 		}
 		
-		try
+		// Go through targets table
+		for (L2Object tgt : targets)
 		{
-			// Go through targets table
-			for (L2Object tgt : targets)
+			if (tgt.isPlayable())
 			{
-				if (tgt.isPlayable())
+				L2Character target = (L2Character) tgt;
+				
+				if (skill.getSkillType() == L2SkillType.BUFF)
 				{
-					L2Character target = (L2Character) tgt;
-					
-					if (skill.getSkillType() == L2SkillType.BUFF)
-					{
-						SystemMessage smsg = SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
-						smsg.addSkillName(skill);
-						target.sendPacket(smsg);
-					}
-					
-					if (isPlayer() && target.isSummon())
-					{
-						((L2Summon) target).updateAndBroadcastStatus(1);
-					}
+					SystemMessage smsg = SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
+					smsg.addSkillName(skill);
+					target.sendPacket(smsg);
+				}
+				
+				if (isPlayer() && target.isSummon())
+				{
+					((L2Summon) target).updateAndBroadcastStatus(1);
 				}
 			}
-			
-			rechargeShots(skill.useSoulShot(), skill.useSpiritShot());
-			
-			final StatusUpdate su = new StatusUpdate(this);
-			boolean isSendStatus = false;
-			
-			// Consume MP of the L2Character and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
-			double mpConsume = getStat().getMpConsume(skill);
-			
-			if (mpConsume > 0)
-			{
-				if (mpConsume > getCurrentMp())
-				{
-					sendPacket(SystemMessageId.NOT_ENOUGH_MP);
-					abortCast();
-					return;
-				}
-				
-				getStatus().reduceMp(mpConsume);
-				su.addAttribute(StatusUpdate.CUR_MP, (int) getCurrentMp());
-				isSendStatus = true;
-			}
-			
-			// Consume HP if necessary and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
-			if (skill.getHpConsume() > 0)
-			{
-				double consumeHp = skill.getHpConsume();
-				
-				if (consumeHp >= getCurrentHp())
-				{
-					sendPacket(SystemMessageId.NOT_ENOUGH_HP);
-					abortCast();
-					return;
-				}
-				
-				getStatus().reduceHp(consumeHp, this, true);
-				
-				su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
-				isSendStatus = true;
-			}
-			
-			// Consume CP if necessary and Send the Server->Client packet StatusUpdate with current CP/HP and MP to all other L2PcInstance to inform
-			if (skill.getCpConsume() > 0)
-			{
-				double consumeCp;
-				
-				consumeCp = skill.getCpConsume();
-				if ((consumeCp + 1) >= getCurrentHp())
-				{
-					consumeCp = getCurrentHp() - 1.0;
-				}
-				
-				getStatus().reduceCp((int) consumeCp);
-				su.addAttribute(StatusUpdate.CUR_CP, (int) getCurrentCp());
-				isSendStatus = true;
-			}
-			
-			// Send a Server->Client packet StatusUpdate with MP modification to the L2PcInstance
-			if (isSendStatus)
-			{
-				sendPacket(su);
-			}
-			
-			if (isPlayer())
-			{
-				// Consume Charges
-				if (skill.getChargeConsume() > 0)
-				{
-					getActingPlayer().decreaseCharges(skill.getChargeConsume());
-				}
-				
-				// Consume Souls if necessary
-				if (skill.getMaxSoulConsumeCount() > 0)
-				{
-					if (!getActingPlayer().decreaseSouls(skill.getMaxSoulConsumeCount(), skill))
-					{
-						abortCast();
-						return;
-					}
-				}
-				
-				if (SunriseEvents.isInEvent((L2PcInstance) this))
-				{
-					SunriseEvents.onUseSkill((L2PcInstance) this, skill);
-				}
-			}
-			
-			// Launch the magic skill in order to calculate its effects
-			callSkill(mut.getSkill(), mut.getTargets());
-		}
-		catch (NullPointerException e)
-		{
-			_log.warn(String.valueOf(e));
 		}
 		
-		if (mut.getSkillTime() > 0)
+		rechargeShots(skill.useSoulShot(), skill.useSpiritShot());
+		
+		final StatusUpdate su = new StatusUpdate(this);
+		boolean isSendStatus = false;
+		
+		// Consume MP of the L2Character and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
+		double mpConsume = getStat().getMpConsume(skill);
+		
+		if (mpConsume > 0)
 		{
-			mut.setCount(mut.getCount() + 1);
-			if (mut.getCount() < skill.getHitCounts())
+			if (mpConsume > getCurrentMp())
 			{
-				int skillTime = (mut.getSkillTime() * skill.getHitTimings()[mut.getCount()]) / 100;
-				if (mut.isSimultaneous())
-				{
-					_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime);
-				}
-				else
-				{
-					_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime);
-				}
+				sendPacket(SystemMessageId.NOT_ENOUGH_MP);
+				abortCast();
 				return;
 			}
+			
+			getStatus().reduceMp(mpConsume);
+			su.addAttribute(StatusUpdate.CUR_MP, (int) getCurrentMp());
+			isSendStatus = true;
 		}
 		
+		// Consume HP if necessary and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
+		if (skill.getHpConsume() > 0)
+		{
+			double consumeHp = skill.getHpConsume();
+			
+			if (consumeHp >= getCurrentHp())
+			{
+				sendPacket(SystemMessageId.NOT_ENOUGH_HP);
+				abortCast();
+				return;
+			}
+			
+			getStatus().reduceHp(consumeHp, this, true);
+			
+			su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
+			isSendStatus = true;
+		}
+		
+		// Consume CP if necessary and Send the Server->Client packet StatusUpdate with current CP/HP and MP to all other L2PcInstance to inform
+		if (skill.getCpConsume() > 0)
+		{
+			double consumeCp;
+			
+			consumeCp = skill.getCpConsume();
+			if ((consumeCp + 1) >= getCurrentHp())
+			{
+				consumeCp = getCurrentHp() - 1.0;
+			}
+			
+			getStatus().reduceCp((int) consumeCp);
+			su.addAttribute(StatusUpdate.CUR_CP, (int) getCurrentCp());
+			isSendStatus = true;
+		}
+		
+		// Send a Server->Client packet StatusUpdate with MP modification to the L2PcInstance
+		if (isSendStatus)
+		{
+			sendPacket(su);
+		}
+		
+		if (isPlayer())
+		{
+			// Consume Charges
+			if (skill.getChargeConsume() > 0)
+			{
+				getActingPlayer().decreaseCharges(skill.getChargeConsume());
+			}
+			
+			// Consume Souls if necessary
+			if (skill.getMaxSoulConsumeCount() > 0)
+			{
+				if (!getActingPlayer().decreaseSouls(skill.getMaxSoulConsumeCount(), skill))
+				{
+					abortCast();
+					return;
+				}
+			}
+			
+			if (SunriseEvents.isInEvent((L2PcInstance) this))
+			{
+				SunriseEvents.onUseSkill((L2PcInstance) this, skill);
+			}
+		}
+		
+		// Launch the magic skill in order to calculate its effects
+		callSkill(mut.getSkill(), mut.getTargets());
+		
 		mut.setPhase(3);
-		if (mut.getSkillTime() == 0)
+		if ((mut.getHitTime() == 0) || (mut.getCoolTime() == 0))
 		{
 			onMagicFinalizer(mut);
 		}
@@ -6127,11 +6116,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		{
 			if (mut.isSimultaneous())
 			{
-				_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, 0);
+				_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, mut.getCoolTime());
 			}
 			else
 			{
-				_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, 0);
+				_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, mut.getCoolTime());
 			}
 		}
 	}
