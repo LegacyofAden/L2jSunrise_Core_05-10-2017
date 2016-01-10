@@ -97,6 +97,12 @@ public class RequestProcureCropList extends L2GameClientPacket
 		}
 		
 		final int castleId = manager.getCastle().getResidenceId();
+		if (manager.getTemplate().getParameters().getInt("manor_id", -1) != castleId)
+		{
+			sendActionFailed();
+			return;
+		}
+		
 		int slots = 0, weight = 0;
 		for (CropHolder i : _items)
 		{
