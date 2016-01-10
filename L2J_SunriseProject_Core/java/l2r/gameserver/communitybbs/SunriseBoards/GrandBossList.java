@@ -29,7 +29,7 @@ public class GrandBossList extends AbstractSunriseBoards
 			{
 				int npcid = result.getInt("boss_id");
 				int status = result.getInt("status");
-				if ((npcid == 29066) || (npcid == 29067) || (npcid == 29068) || (npcid == 29019))
+				if (npcid == 29062)
 				{
 					continue nextnpc;
 				}

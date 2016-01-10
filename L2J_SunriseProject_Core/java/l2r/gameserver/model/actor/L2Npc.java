@@ -1763,11 +1763,7 @@ public class L2Npc extends L2Character
 		{
 			if (physical)
 			{
-				if (_soulshotamount == 0)
-				{
-					return;
-				}
-				else if (Rnd.get(100) > getSoulShotChance())
+				if ((_soulshotamount == 0) || (Rnd.get(100) > getSoulShotChance()))
 				{
 					return;
 				}
@@ -1777,16 +1773,12 @@ public class L2Npc extends L2Character
 			}
 			if (magic)
 			{
-				if (_spiritshotamount == 0)
-				{
-					return;
-				}
-				else if (Rnd.get(100) > getSpiritShotChance())
+				if ((_spiritshotamount == 0) || (Rnd.get(100) > getSpiritShotChance()))
 				{
 					return;
 				}
 				_spiritshotamount--;
-				Broadcast.toSelfAndKnownPlayersInRadius(this, new MagicSkillUse(this, this, 2061, 1, 0, 0), 600);
+				Broadcast.toSelfAndKnownPlayersInRadius(this, new MagicSkillUse(this, this, 2039, 1, 0, 0), 600);
 				setChargedShot(ShotType.SPIRITSHOTS, true);
 			}
 		}
