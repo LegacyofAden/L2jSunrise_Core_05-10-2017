@@ -101,7 +101,7 @@ public class L2OlympiadStadiumZone extends L2ZoneRespawn
 	{
 		for (L2DoorInstance door : InstanceManager.getInstance().getInstance(getInstanceId()).getDoors())
 		{
-			if ((door != null) && !door.getOpen())
+			if ((door != null) && door.isClosed())
 			{
 				door.openMe();
 			}
@@ -112,7 +112,7 @@ public class L2OlympiadStadiumZone extends L2ZoneRespawn
 	{
 		for (L2DoorInstance door : InstanceManager.getInstance().getInstance(getInstanceId()).getDoors())
 		{
-			if ((door != null) && door.getOpen())
+			if ((door != null) && door.isOpened())
 			{
 				door.closeMe();
 			}

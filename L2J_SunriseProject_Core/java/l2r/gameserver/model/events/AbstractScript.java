@@ -2613,7 +2613,7 @@ public abstract class AbstractScript implements INamable
 		{
 			_log.warn(getClass().getSimpleName() + ": called openDoor(" + doorId + ", " + instanceId + "); but door wasnt found!", new NullPointerException());
 		}
-		else if (!door.getOpen())
+		else if (door.isClosed())
 		{
 			door.openMe();
 		}
@@ -2631,7 +2631,7 @@ public abstract class AbstractScript implements INamable
 		{
 			_log.warn(getClass().getSimpleName() + ": called closeDoor(" + doorId + ", " + instanceId + "); but door wasnt found!", new NullPointerException());
 		}
-		else if (door.getOpen())
+		else if (door.isOpened())
 		{
 			door.closeMe();
 		}

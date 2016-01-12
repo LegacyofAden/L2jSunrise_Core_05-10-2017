@@ -617,7 +617,7 @@ public final class Castle extends AbstractResidence
 				door.setCurrentHp((isDoorWeak) ? (door.getMaxHp() / 2) : (door.getMaxHp()));
 			}
 			
-			if (door.getOpen())
+			if (door.isOpened())
 			{
 				door.closeMe();
 			}

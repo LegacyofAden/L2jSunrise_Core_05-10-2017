@@ -695,17 +695,18 @@ public class CharEffectList
 		// Remove the active skill L2effect from _effects of the L2Character
 		if (effectList.remove(effect) && _owner.isPlayer() && effect.getShowIcon() && !effect.isInstant())
 		{
-			SystemMessage sm;
-			if (effect.getSkill().isToggle())
+			if ((effect.getCount() == 0) && effect.getShowIcon() && !effect.isInstant())
 			{
-				sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ABORTED);
+				SystemMessage smsg3 = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WORN_OFF);
+				smsg3.addSkillName(effect.getSkill());
+				_owner.sendPacket(smsg3);
 			}
 			else
 			{
-				sm = SystemMessage.getSystemMessage(SystemMessageId.EFFECT_S1_HAS_BEEN_REMOVED);
+				SystemMessage sm = effect.getSkill().isToggle() ? SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ABORTED) : SystemMessage.getSystemMessage(SystemMessageId.EFFECT_S1_HAS_BEEN_REMOVED);
+				sm.addSkillName(effect);
+				_owner.sendPacket(sm);
 			}
-			sm.addSkillName(effect);
-			_owner.sendPacket(sm);
 		}
 	}
 	

@@ -297,7 +297,7 @@ public class Duel
 			// Close doors chickens cannot run from the destiny
 			for (L2DoorInstance door : InstanceManager.getInstance().getInstance(getDueldInstanceId()).getDoors())
 			{
-				if ((door != null) && door.getOpen())
+				if ((door != null) && door.isOpened())
 				{
 					door.closeMe();
 				}

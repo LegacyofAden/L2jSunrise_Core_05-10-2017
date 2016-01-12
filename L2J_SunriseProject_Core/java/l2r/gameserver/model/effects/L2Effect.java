@@ -552,14 +552,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			}
 			case FINISHING:
 			{
-				// If the time left is equal to zero, send the message
-				if ((_count == 0) && _icon && !isInstant() && getEffected().isPlayer())
-				{
-					SystemMessage smsg3 = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WORN_OFF);
-					smsg3.addSkillName(_skill);
-					getEffected().sendPacket(smsg3);
-				}
-				
 				// if task is null - stopEffectTask does not remove effect
 				if ((_currentFuture == null) && (getEffected() != null))
 				{
