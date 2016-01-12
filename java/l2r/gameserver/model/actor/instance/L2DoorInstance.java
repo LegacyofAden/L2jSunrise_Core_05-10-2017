@@ -243,6 +243,16 @@ public class L2DoorInstance extends L2Character
 		return _open;
 	}
 	
+	public boolean isOpened()
+	{
+		return _open;
+	}
+	
+	public boolean isClosed()
+	{
+		return !_open;
+	}
+	
 	/**
 	 * @param open The open to set.
 	 */
@@ -454,11 +464,7 @@ public class L2DoorInstance extends L2Character
 		StaticObject su = new StaticObject(this, false);
 		StaticObject targetableSu = new StaticObject(this, true);
 		DoorStatusUpdate dsu = new DoorStatusUpdate(this);
-		OnEventTrigger oe = null;
-		if (getEmitter() > 0)
-		{
-			oe = new OnEventTrigger(getEmitter(), getOpen());
-		}
+		OnEventTrigger oe = getEmitter() > 0 ? new OnEventTrigger(getEmitter(), isClosed()) : null;
 		
 		for (L2PcInstance player : knownPlayers)
 		{
@@ -526,7 +532,7 @@ public class L2DoorInstance extends L2Character
 				first = door;
 			}
 			
-			if (door.getOpen() != open)
+			if (door.isOpened() != open)
 			{
 				door.setOpen(open);
 				door.broadcastStatusUpdate();
@@ -706,7 +712,7 @@ public class L2DoorInstance extends L2Character
 		{
 			if (getEmitter() > 0)
 			{
-				activeChar.sendPacket(new OnEventTrigger(getEmitter(), getOpen()));
+				activeChar.sendPacket(new OnEventTrigger(getEmitter(), isClosed()));
 			}
 			
 			activeChar.sendPacket(new StaticObject(this, activeChar.isGM()));
@@ -771,7 +777,7 @@ public class L2DoorInstance extends L2Character
 		@Override
 		public void run()
 		{
-			if (getOpen())
+			if (isOpened())
 			{
 				closeMe();
 			}
@@ -783,7 +789,7 @@ public class L2DoorInstance extends L2Character
 		@Override
 		public void run()
 		{
-			boolean open = getOpen();
+			boolean open = isOpened();
 			if (open)
 			{
 				closeMe();

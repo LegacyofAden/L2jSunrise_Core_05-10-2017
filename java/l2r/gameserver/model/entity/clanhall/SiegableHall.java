@@ -121,7 +121,7 @@ public final class SiegableHall extends ClanHall
 				}
 			}
 			
-			if (door.getOpen())
+			if (door.isOpened())
 			{
 				door.closeMe();
 			}

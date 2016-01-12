@@ -6107,6 +6107,24 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		// Launch the magic skill in order to calculate its effects
 		callSkill(mut.getSkill(), mut.getTargets());
 		
+		if (mut.getHitTime() > 0)
+		{
+			mut.setCount(mut.getCount() + 1);
+			if (mut.getCount() < skill.getHitCounts())
+			{
+				int skillTime = (mut.getHitTime() * skill.getHitTimings()[mut.getCount()]) / 100;
+				if (mut.isSimultaneous())
+				{
+					_skillCast2 = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime);
+				}
+				else
+				{
+					_skillCast = ThreadPoolManager.getInstance().scheduleEffect(mut, skillTime);
+				}
+				return;
+			}
+		}
+		
 		mut.setPhase(3);
 		if ((mut.getHitTime() == 0) || (mut.getCoolTime() == 0))
 		{
@@ -6147,7 +6165,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		final L2Object target = mut.getTargets().length > 0 ? mut.getTargets()[0] : null;
 		
 		// On each repeat recharge shots before cast.
-		if (mut.getCount() > 0)
+		// we will force npc to recharge shots no matter what
+		if (isNpc())
+		{
+			rechargeShots(mut.getSkill().useSoulShot(), mut.getSkill().useSpiritShot());
+		}
+		else if (mut.getCount() > 0)
 		{
 			rechargeShots(mut.getSkill().useSoulShot(), mut.getSkill().useSpiritShot());
 		}
@@ -6443,6 +6466,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 									if (target.isPlayer())
 									{
 										target.getActingPlayer().getAI().clientStartAutoAttack();
+										
+										// vGodFather
+										if (target.getActingPlayer().getTarget() == null)
+										{
+											target.getActingPlayer().setTarget(player);
+										}
 									}
 									else if (target.isSummon() && ((L2Character) target).hasAI())
 									{

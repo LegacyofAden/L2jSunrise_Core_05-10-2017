@@ -369,7 +369,10 @@ public class L2ServitorInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			LOG.error("Could not store summon effect data: {}", e);
+			if (Config.DEBUG)
+			{
+				LOG.error("Could not store summon effect data: {}", e);
+			}
 		}
 	}
 	
