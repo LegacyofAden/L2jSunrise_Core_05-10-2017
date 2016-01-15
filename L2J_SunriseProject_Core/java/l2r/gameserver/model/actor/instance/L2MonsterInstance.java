@@ -299,7 +299,7 @@ public class L2MonsterInstance extends L2Attackable
 		final int spawnZ = spawn.getZ();
 		_returnToSpawnTask = ThreadPoolManager.getInstance().scheduleGeneral(() ->
 		{
-			if ((!L2MonsterInstance.this.isInCombat()) && (!L2MonsterInstance.this.isAlikeDead()) && (!L2MonsterInstance.this.isDead()))
+			if (!isInCombat() && !isAlikeDead() && !isDead())
 			{
 				clearAggroList();
 				moveToLocation(spawnX, spawnY, spawnZ, 0);

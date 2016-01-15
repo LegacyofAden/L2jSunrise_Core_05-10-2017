@@ -287,13 +287,10 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 		}
 	}
 	
-	/**
-	 * UnAfraid: FIXME: Sometimes buffers appear on arena 3v3 match where it shouldn't or they don't get unspawned when match start.
-	 */
 	@Override
 	protected boolean needBuffers()
 	{
-		return false;
+		return true;
 	}
 	
 	@Override

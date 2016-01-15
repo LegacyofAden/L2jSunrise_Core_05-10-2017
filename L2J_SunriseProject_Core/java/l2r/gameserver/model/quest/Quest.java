@@ -77,7 +77,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 {
 	public static final String MORE_THAN_MEETS_THE_EYE = "Q00136_MoreThanMeetsTheEye";
 	public static final String TUTORIAL = "255_Tutorial";
-	public static final String FATES_WHISPER = "Q00234_FatesWhisper";
+	public static final String FATES_WHISPER = "234_FatesWhisper";
 	public static final String MIMIRS_ELIXIR = "Q00235_MimirsElixir";
 	public static final String SEEDS_OF_CHAOS = "Q00236_SeedsOfChaos";
 	public static final String REPENT_YOUR_SINS = "Q00422_RepentYourSins";
