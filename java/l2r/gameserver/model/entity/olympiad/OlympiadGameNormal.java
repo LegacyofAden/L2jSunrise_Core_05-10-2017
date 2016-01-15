@@ -647,7 +647,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 				winside = 1;
 				
 				// Save Fight Result
-				if (_startTime != 0) // TODO: Check why this can happen
+				if (_startTime != 0) // vGodFather fix
 				{
 					saveResults(_playerOne, _playerTwo, 1, _startTime, _fightTime, getType());
 				}
@@ -675,7 +675,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 				winside = 2;
 				
 				// Save Fight Result
-				if (_startTime != 0) // TODO: Check why this can happen
+				if (_startTime != 0) // vGodFather fix
 				{
 					saveResults(_playerOne, _playerTwo, 2, _startTime, _fightTime, getType());
 				}
@@ -687,7 +687,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 			else
 			{
 				// Save Fight Result
-				if (_startTime != 0) // TODO: Check why this can happen
+				if (_startTime != 0) // vGodFather fix
 				{
 					saveResults(_playerOne, _playerTwo, 0, _startTime, _fightTime, getType());
 				}

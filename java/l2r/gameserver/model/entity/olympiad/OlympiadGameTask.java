@@ -365,6 +365,12 @@ public final class OlympiadGameTask implements Runnable
 				_zone.spawnBuffers();
 			}
 			
+			// vGodFather 3v3 matches should not have buffers
+			if (!_game.needBuffers())
+			{
+				_zone.deleteBuffers();
+			}
+			
 			if (!_game.portPlayersToArena(_zone.getSpawns()))
 			{
 				return false;
