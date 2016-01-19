@@ -1149,7 +1149,7 @@ public class L2Party extends AbstractPlayerGroup
 	@Override
 	public L2PcInstance getLeader()
 	{
-		return _members.get(0);
+		return (_members != null) && !_members.isEmpty() ? _members.get(0) : null;
 	}
 	
 	public synchronized void requestLootChange(PartyDistributionType partyDistributionType)

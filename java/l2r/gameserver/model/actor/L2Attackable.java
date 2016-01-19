@@ -1796,6 +1796,12 @@ public class L2Attackable extends L2Npc
 		return true;
 	}
 	
+	@Override
+	public L2Attackable getAttackable()
+	{
+		return this;
+	}
+	
 	public boolean canShowLevelInTitle()
 	{
 		return !(getName().equals("Chest"));

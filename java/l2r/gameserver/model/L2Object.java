@@ -32,6 +32,7 @@ import l2r.gameserver.handler.IActionHandler;
 import l2r.gameserver.handler.IActionShiftHandler;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.instancemanager.InstanceManager;
+import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -364,6 +365,11 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	}
 	
 	public L2PcInstance getActingPlayer()
+	{
+		return null;
+	}
+	
+	public L2Attackable getAttackable()
 	{
 		return null;
 	}

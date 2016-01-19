@@ -69,7 +69,7 @@ public abstract class AbstractPlayerGroup
 	 */
 	public int getLeaderObjectId()
 	{
-		return getLeader().getObjectId();
+		return getLeader() != null ? getLeader().getObjectId() : 0;
 	}
 	
 	/**
