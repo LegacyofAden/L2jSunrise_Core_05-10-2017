@@ -754,13 +754,21 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			npc.RANDOM_WALK_RATE = -1;
 			if (useTeleport && !npc.isRunner())
 			{
-				if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
+				try
 				{
-					moveTo(x1, y1, z1);
+					if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
+					{
+						moveTo(x1, y1, z1);
+					}
+					else
+					{
+						npc.returnHome(true);
+					}
 				}
-				else
+				catch (Exception e)
 				{
-					npc.returnHome(true);
+					// This can only happen if actor is outside of world area
+					// nothing to log
 				}
 			}
 			else
