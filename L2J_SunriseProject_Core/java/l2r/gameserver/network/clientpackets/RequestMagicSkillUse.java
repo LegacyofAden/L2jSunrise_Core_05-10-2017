@@ -55,7 +55,7 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 			return;
 		}
 		
-		if (activeChar.isDead())
+		if (activeChar.isDead() || activeChar.isCastingNow())
 		{
 			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
 			return;
@@ -132,12 +132,14 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 		// If Alternate rule Karma punishment is set to true, forbid skill Return to player with Karma
 		if ((skill.getSkillType() == L2SkillType.RECALL) && !Config.ALT_GAME_KARMA_PLAYER_CAN_TELEPORT && (activeChar.getKarma() > 0))
 		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}
 		
 		// players mounted on pets cannot use any toggle skills
 		if (skill.isToggle() && activeChar.isMounted())
 		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}
 		
