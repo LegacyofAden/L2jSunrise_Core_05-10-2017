@@ -723,7 +723,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				y1 = npc.getSpawn().getY(npc);
 				z1 = npc.getSpawn().getZ(npc);
 				
-				if (!npc.isInsideRadius(x1, y1, 0, range + 200, false, false))
+				if (!npc.isInsideRadius(x1, y1, 0, range + 150, true, false))
 				{
 					useTeleport = true;
 					npc.setisReturningToSpawnPoint(true);

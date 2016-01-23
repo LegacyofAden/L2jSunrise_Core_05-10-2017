@@ -198,15 +198,8 @@ public final class RequestBypassToServer extends L2GameClientPacket
 				activeChar.setIsUsingAioMultisell(false);
 				
 				int endOfId = _command.indexOf('_', 5);
-				String id;
-				if (endOfId > 0)
-				{
-					id = _command.substring(4, endOfId);
-				}
-				else
-				{
-					id = _command.substring(4);
-				}
+				String id = endOfId > 0 ? _command.substring(4, endOfId) : _command.substring(4);
+				
 				if (Util.isDigit(id))
 				{
 					L2Object object = L2World.getInstance().findObject(Integer.parseInt(id));
@@ -222,15 +215,8 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			else if (_command.startsWith("item_"))
 			{
 				int endOfId = _command.indexOf('_', 5);
-				String id;
-				if (endOfId > 0)
-				{
-					id = _command.substring(5, endOfId);
-				}
-				else
-				{
-					id = _command.substring(5);
-				}
+				String id = endOfId > 0 ? _command.substring(5, endOfId) : _command.substring(5);
+				
 				try
 				{
 					L2ItemInstance item = activeChar.getInventory().getItemByObjectId(Integer.parseInt(id));
@@ -279,24 +265,21 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			{
 				if (AioItemsConfigs.ENABLE_AIO_NPCS)
 				{
-					String sub = _command.substring(8);
-					AioItemNpcs.onBypassFeedback(activeChar, sub);
+					AioItemNpcs.onBypassFeedback(activeChar, _command.substring(8));
 				}
 			}
 			else if (_command.startsWith("Aiobuff"))
 			{
 				if (BufferConfigs.ENABLE_ITEM_BUFFER)
 				{
-					String sub = _command.substring(8);
-					AioItemBuffer.onBypassFeedback(activeChar, sub);
+					AioItemBuffer.onBypassFeedback(activeChar, _command.substring(8));
 				}
 			}
 			else if (_command.startsWith("Vote"))
 			{
 				if (IndividualVoteSystemConfigs.ENABLE_VOTE_SYSTEM)
 				{
-					String sub = _command.substring(5);
-					VoteHandler.onBypassFeedback(activeChar, sub);
+					VoteHandler.onBypassFeedback(activeChar, _command.substring(5));
 				}
 			}
 			else if (_command.startsWith("_diary"))

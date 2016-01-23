@@ -936,6 +936,7 @@ public final class Config
 	// --------------------------------------------------
 	public static int MOVE_PACKET_DELAY;
 	public static int ATTACK_PACKET_DELAY;
+	public static int REQUEST_MAGIC_PACKET_DELAY;
 	
 	// --------------------------------------------------
 	// Server Packets Settings
@@ -1800,6 +1801,7 @@ public final class Config
 			
 			MOVE_PACKET_DELAY = clientPacketsSettings.getInt("MovePacketDelay", 100);
 			ATTACK_PACKET_DELAY = clientPacketsSettings.getInt("AttackPacketDelay", 500);
+			REQUEST_MAGIC_PACKET_DELAY = clientPacketsSettings.getInt("RequestMagicPacketDelay", 50);
 			
 			// Load ServerPackets L2Properties file (if exists)
 			final PropertiesParser serverPacketsSettings = new PropertiesParser(SERVER_PACKETS_FILE);

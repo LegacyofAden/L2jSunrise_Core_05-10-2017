@@ -134,10 +134,6 @@ public abstract class L2Decoy extends L2Character
 	{
 		if (isVisible() && !isDead())
 		{
-			if (getWorldRegion() != null)
-			{
-				getWorldRegion().removeFromZones(this);
-			}
 			owner.setDecoy(null);
 			decayMe();
 			getKnownList().removeAllKnownObjects();

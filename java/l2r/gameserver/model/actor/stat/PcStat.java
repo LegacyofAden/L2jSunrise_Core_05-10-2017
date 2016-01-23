@@ -79,22 +79,11 @@ public class PcStat extends PlayableStat
 		super(activeChar);
 	}
 	
+	// vGodFather
 	public void decreaseKarma(long value)
 	{
-		L2PcInstance activeChar = getActiveChar();
-		
-		// vGodFather Fix
-		boolean hadKarma;
-		if (activeChar.getKarma() > 0)
-		{
-			hadKarma = true;
-		}
-		else
-		{
-			hadKarma = false;
-		}
-		
 		// Set new karma
+		final L2PcInstance activeChar = getActiveChar();
 		if (!activeChar.isCursedWeaponEquipped() && (activeChar.getKarma() > 0) && (activeChar.isGM() || !activeChar.isInsideZone(ZoneIdType.PVP)))
 		{
 			int karmaLost = Formulas.calculateKarmaLost(activeChar, value);
@@ -106,7 +95,7 @@ public class PcStat extends PlayableStat
 				activeChar.sendPacket(msg);
 				
 				// vGodFather Fix
-				if ((activeChar.getKarma() <= 0) && hadKarma)
+				if (activeChar.getKarma() <= 0)
 				{
 					activeChar.startFlag();
 				}
@@ -910,7 +899,7 @@ public class PcStat extends PlayableStat
 		nevits = getActiveChar().getRecomBonusMul();
 		
 		// Bonus from Nevit's Hunting
-		// TODO: Nevit's hunting bonus
+		// vGodFather already handled
 		
 		// Bonus exp from skills
 		bonusExp = 1 + (calcStat(Stats.BONUS_EXP, 0, null, null) / 100);
@@ -957,7 +946,7 @@ public class PcStat extends PlayableStat
 		nevits = getActiveChar().getRecomBonusMul();
 		
 		// Bonus from Nevit's Hunting
-		// TODO: Nevit's hunting bonus
+		// vGodFather already handled
 		
 		// Bonus sp from skills
 		bonusSp = 1 + (calcStat(Stats.BONUS_SP, 0, null, null) / 100);

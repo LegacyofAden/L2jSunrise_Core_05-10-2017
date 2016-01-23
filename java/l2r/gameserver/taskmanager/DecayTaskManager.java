@@ -171,6 +171,15 @@ public final class DecayTaskManager
 		return ret.toString();
 	}
 	
+	/**
+	 * <u><b><font color="FF0000">Read only</font></b></u>
+	 * @return
+	 */
+	public Map<L2Character, ScheduledFuture<?>> getTasks()
+	{
+		return _decayTasks;
+	}
+	
 	public static DecayTaskManager getInstance()
 	{
 		return SingletonHolder._instance;

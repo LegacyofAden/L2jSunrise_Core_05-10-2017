@@ -346,12 +346,7 @@ public final class L2World
 	 */
 	public void removeVisibleObject(L2Object object, L2WorldRegion oldWorldRegion)
 	{
-		if (object == null)
-		{
-			return;
-		}
-		
-		if (oldWorldRegion == null)
+		if ((object == null) || (oldWorldRegion == null))
 		{
 			return;
 		}

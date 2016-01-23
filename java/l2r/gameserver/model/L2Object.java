@@ -168,9 +168,9 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public void decayMe()
 	{
-		assert getWorldRegion() != null;
+		assert _worldRegion != null;
 		
-		L2WorldRegion reg = getWorldRegion();
+		L2WorldRegion reg = _worldRegion;
 		
 		synchronized (this)
 		{
@@ -194,7 +194,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public final boolean spawnMe()
 	{
-		assert (getWorldRegion() == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
+		assert (_worldRegion == null) && (getLocation().getX() != 0) && (getLocation().getY() != 0) && (getLocation().getZ() != 0);
 		
 		synchronized (this)
 		{
@@ -206,12 +206,12 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 			L2World.getInstance().storeObject(this);
 			
 			// Add the L2Object spawn to _visibleObjects and if necessary to _allplayers of its L2WorldRegion
-			getWorldRegion().addVisibleObject(this);
+			_worldRegion.addVisibleObject(this);
 		}
 		
 		// this can synchronize on others instances, so it's out of synchronized, to avoid deadlocks
 		// Add the L2Object spawn in the world as a visible object
-		L2World.getInstance().addVisibleObject(this, getWorldRegion());
+		L2World.getInstance().addVisibleObject(this, _worldRegion);
 		
 		onSpawn();
 		
@@ -220,7 +220,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public final void spawnMe(int x, int y, int z)
 	{
-		assert getWorldRegion() == null;
+		assert _worldRegion == null;
 		
 		synchronized (this)
 		{
@@ -256,10 +256,10 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 		// synchronized, to avoid deadlocks
 		
 		// Add the L2Object spawn to _visibleObjects and if necessary to _allplayers of its L2WorldRegion
-		getWorldRegion().addVisibleObject(this);
+		_worldRegion.addVisibleObject(this);
 		
 		// Add the L2Object spawn in the world as a visible object
-		L2World.getInstance().addVisibleObject(this, getWorldRegion());
+		L2World.getInstance().addVisibleObject(this, _worldRegion);
 		
 		onSpawn();
 	}
@@ -289,7 +289,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	 */
 	public final boolean isVisible()
 	{
-		return getWorldRegion() != null;
+		return _worldRegion != null;
 	}
 	
 	public final void setIsVisible(boolean value)
@@ -617,7 +617,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public final void setXYZInvisible(int x, int y, int z)
 	{
-		assert getWorldRegion() == null;
+		assert _worldRegion == null;
 		if (x > L2World.MAP_MAX_X)
 		{
 			x = L2World.MAP_MAX_X - 5000;
@@ -652,14 +652,14 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 		}
 		
 		L2WorldRegion newRegion = L2World.getInstance().getRegion(getLocation());
-		if (newRegion != getWorldRegion())
+		if (newRegion != _worldRegion)
 		{
-			getWorldRegion().removeVisibleObject(this);
+			_worldRegion.removeVisibleObject(this);
 			
 			setWorldRegion(newRegion);
 			
 			// Add the L2Oject spawn to _visibleObjects and if necessary to _allplayers of its L2WorldRegion
-			getWorldRegion().addVisibleObject(this);
+			_worldRegion.addVisibleObject(this);
 		}
 	}
 	
@@ -670,18 +670,6 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	
 	public void setWorldRegion(L2WorldRegion value)
 	{
-		if ((getWorldRegion() != null) && isCharacter()) // confirm revalidation of old region's zones
-		{
-			if (value != null)
-			{
-				getWorldRegion().revalidateZones((L2Character) this); // at world region change
-			}
-			else
-			{
-				getWorldRegion().removeFromZones((L2Character) this); // at world region change
-			}
-		}
-		
 		_worldRegion = value;
 	}
 	
@@ -784,7 +772,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	@Override
 	public final void setXYZ(int newX, int newY, int newZ)
 	{
-		assert getWorldRegion() != null;
+		assert _worldRegion != null;
 		
 		setX(newX);
 		setY(newY);
@@ -792,7 +780,7 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 		
 		try
 		{
-			if (L2World.getInstance().getRegion(getLocation()) != getWorldRegion())
+			if (L2World.getInstance().getRegion(getLocation()) != _worldRegion)
 			{
 				updateWorldRegion();
 			}
@@ -1028,6 +1016,11 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 				sendInfo(obj.getActingPlayer());
 			}
 		}
+	}
+	
+	public int getWatchDistance()
+	{
+		return 0;
 	}
 	
 	@Override

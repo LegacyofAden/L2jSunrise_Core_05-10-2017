@@ -30,7 +30,6 @@ import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.TeleportWhereType;
 import l2r.gameserver.instancemanager.MapRegionManager;
 import l2r.gameserver.model.L2World;
-import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.VehiclePathPoint;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -423,8 +422,6 @@ public abstract class L2Vehicle extends L2Character
 			_log.error("Failed oustPlayers().", e);
 		}
 		
-		final L2WorldRegion oldRegion = getWorldRegion();
-		
 		try
 		{
 			decayMe();
@@ -432,11 +429,6 @@ public abstract class L2Vehicle extends L2Character
 		catch (Exception e)
 		{
 			_log.error("Failed decayMe().", e);
-		}
-		
-		if (oldRegion != null)
-		{
-			oldRegion.removeFromZones(this);
 		}
 		
 		try

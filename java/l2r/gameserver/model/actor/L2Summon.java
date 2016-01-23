@@ -35,7 +35,6 @@ import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.model.AggroInfo;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2Party;
-import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.actor.instance.L2NpcInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.knownlist.SummonKnownList;
@@ -446,12 +445,9 @@ public abstract class L2Summon extends L2Playable
 			}
 			
 			stopAllEffects();
-			L2WorldRegion oldRegion = getWorldRegion();
+			
 			decayMe();
-			if (oldRegion != null)
-			{
-				oldRegion.removeFromZones(this);
-			}
+			
 			getKnownList().removeAllKnownObjects();
 			setTarget(null);
 			if (owner != null)

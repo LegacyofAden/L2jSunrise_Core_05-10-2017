@@ -285,7 +285,6 @@ public final class WalkingManager implements IXmlReader
 					if (!npc.isInsideRadius(node, 3000, true, false))
 					{
 						final String message = "Route '" + routeName + "': NPC (id=" + npc.getId() + ", x=" + npc.getX() + ", y=" + npc.getY() + ", z=" + npc.getZ() + ") is too far from starting point (node x=" + node.getX() + ", y=" + node.getY() + ", z=" + node.getZ() + ", range=" + npc.calculateDistance(node, true, true) + "), walking will not start";
-						LOGGER.warn(getClass().getSimpleName() + ": " + message);
 						npc.sendDebugMessage(message);
 						return;
 					}
