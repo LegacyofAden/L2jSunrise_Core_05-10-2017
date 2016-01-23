@@ -50,7 +50,6 @@ import l2r.gameserver.model.L2NpcAIData;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2Spawn;
 import l2r.gameserver.model.L2World;
-import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2ClanHallManagerInstance;
 import l2r.gameserver.model.actor.instance.L2DoormenInstance;
@@ -1431,12 +1430,6 @@ public class L2Npc extends L2Character
 		catch (Exception e)
 		{
 			_log.error("deleteMe()", e);
-		}
-		
-		final L2WorldRegion oldRegion = getWorldRegion();
-		if (oldRegion != null)
-		{
-			oldRegion.removeFromZones(this);
 		}
 		
 		// Remove all L2Object from _knownObjects and _knownPlayer of the L2Character then cancel Attack or Cast and notify AI

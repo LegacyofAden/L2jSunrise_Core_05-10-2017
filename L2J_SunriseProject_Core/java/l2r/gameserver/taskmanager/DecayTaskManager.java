@@ -18,9 +18,7 @@
  */
 package l2r.gameserver.taskmanager;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
@@ -71,45 +69,33 @@ public class DecayTaskManager
 		public void run()
 		{
 			final long current = System.currentTimeMillis();
-			try
+			L2Character actor;
+			Long next;
+			int delay;
+			
+			for (Map.Entry<L2Character, Long> entry : _decayTasks.entrySet())
 			{
-				final Iterator<Entry<L2Character, Long>> it = _decayTasks.entrySet().iterator();
-				Entry<L2Character, Long> e;
-				L2Character actor;
-				Long next;
-				int delay;
-				while (it.hasNext())
+				actor = entry.getKey();
+				next = entry.getValue();
+				
+				if (actor.isRaid() && !actor.isRaidMinion())
 				{
-					e = it.next();
-					actor = e.getKey();
-					next = e.getValue();
-					if ((actor == null) || (next == null))
-					{
-						continue;
-					}
-					if (actor.isRaid() && !actor.isRaidMinion())
-					{
-						delay = Config.RAID_BOSS_DECAY_TIME;
-					}
-					else if ((actor instanceof L2Attackable) && (((L2Attackable) actor).isSpoiled() || ((L2Attackable) actor).isSeeded()))
-					{
-						delay = Config.SPOILED_DECAY_TIME;
-					}
-					else
-					{
-						delay = Config.NPC_DECAY_TIME;
-					}
-					if ((current - next) > delay)
-					{
-						actor.onDecay();
-						it.remove();
-					}
+					delay = Config.RAID_BOSS_DECAY_TIME;
 				}
-			}
-			catch (Exception e)
-			{
-				// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
-				_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
+				else if ((actor instanceof L2Attackable) && (((L2Attackable) actor).isSpoiled() || ((L2Attackable) actor).isSeeded()))
+				{
+					delay = Config.SPOILED_DECAY_TIME;
+				}
+				else
+				{
+					delay = Config.NPC_DECAY_TIME;
+				}
+				
+				if ((current - next) > delay)
+				{
+					actor.onDecay();
+					_decayTasks.remove(actor);
+				}
 			}
 		}
 	}

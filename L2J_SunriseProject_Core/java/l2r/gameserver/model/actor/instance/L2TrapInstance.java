@@ -433,11 +433,6 @@ public final class L2TrapInstance extends L2Npc
 		
 		if (isVisible() && !isDead())
 		{
-			if (getWorldRegion() != null)
-			{
-				getWorldRegion().removeFromZones(this);
-			}
-			
 			deleteMe();
 		}
 	}

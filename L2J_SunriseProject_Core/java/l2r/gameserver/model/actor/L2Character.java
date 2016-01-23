@@ -515,12 +515,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public void onDecay()
 	{
 		decayMe();
-		
-		final L2WorldRegion reg = getWorldRegion();
-		if (reg != null)
-		{
-			reg.removeFromZones(this);
-		}
 	}
 	
 	@Override
@@ -710,6 +704,10 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
 		
+		// vGodFather addon
+		int originalX = x;
+		int originalY = y;
+		
 		if (Config.OFFSET_ON_TELEPORT_ENABLED && (randomOffset > 0))
 		{
 			x += Rnd.get(-randomOffset, randomOffset);
@@ -717,6 +715,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		z += 5;
+		
+		// vGodFather addon
+		Location dropDest = GeoData.getInstance().moveCheck(originalX, originalY, z, x, y, z, instanceId);
+		x = dropDest.getX();
+		y = dropDest.getY();
+		z = dropDest.getZ();
 		
 		// Send a Server->Client packet TeleportToLocationt to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
 		broadcastPacket(new TeleportToLocation(this, x, y, z, heading));
@@ -7697,6 +7701,39 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		{
 			broadcastPacket(su);
 		}
+	}
+	
+	// vGodFather addon some mobs must have higher watch-forget distance
+	int _watchDistance = 0;
+	
+	public void setWatchDistance(int distance)
+	{
+		_watchDistance = distance;
+	}
+	
+	@Override
+	public int getWatchDistance()
+	{
+		return _watchDistance;
+	}
+	
+	@Override
+	public final void setWorldRegion(L2WorldRegion value)
+	{
+		// confirm revalidation of old region's zones
+		if (getWorldRegion() != null)
+		{
+			if (value != null)
+			{
+				getWorldRegion().revalidateZones(this);
+			}
+			else
+			{
+				getWorldRegion().removeFromZones(this);
+			}
+		}
+		
+		super.setWorldRegion(value);
 	}
 	
 	private Future<?> _moveToPawnTask;

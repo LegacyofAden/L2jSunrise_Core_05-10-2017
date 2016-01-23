@@ -1402,7 +1402,6 @@ public final class FourSepulchersManager
 				((L2SepulcherNpcInstance) temp.getLastSpawn()).sayInShout(msg);
 			}
 		}
-		
 		else if (_inEntryTime)
 		{
 			NpcStringId msg1 = NpcStringId.YOU_MAY_NOW_ENTER_THE_SEPULCHER;

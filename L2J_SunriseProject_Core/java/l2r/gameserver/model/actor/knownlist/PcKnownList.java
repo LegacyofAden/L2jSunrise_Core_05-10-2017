@@ -163,6 +163,13 @@ public class PcKnownList extends PlayableKnownList
 			return 15000;
 		}
 		
+		// vGodFather addon
+		// forget distance should be +1000 in watch distance
+		if (object.getWatchDistance() > 0)
+		{
+			return object.getWatchDistance() + 1000;
+		}
+		
 		// when knownlist grows, the distance to forget should be at least
 		// the same as the previous watch range, or it becomes possible that
 		// extra charinfo packets are being sent (watch-forget-watch-forget)
@@ -193,6 +200,12 @@ public class PcKnownList extends PlayableKnownList
 		if (object.isRunner())
 		{
 			return 14000;
+		}
+		
+		// vGodFather addon
+		if (object.getWatchDistance() > 0)
+		{
+			return object.getWatchDistance();
 		}
 		
 		final int knownlistSize = getKnownObjects().size();

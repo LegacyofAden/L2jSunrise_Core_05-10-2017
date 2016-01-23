@@ -137,7 +137,6 @@ import l2r.gameserver.model.L2RecipeList;
 import l2r.gameserver.model.L2Request;
 import l2r.gameserver.model.L2SkillLearn;
 import l2r.gameserver.model.L2World;
-import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.Macro;
 import l2r.gameserver.model.MacroList;
@@ -339,6 +338,7 @@ import gr.sr.configsEngine.configs.impl.AntibotConfigs;
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 import gr.sr.configsEngine.configs.impl.FlagZoneConfigs;
 import gr.sr.configsEngine.configs.impl.LeaderboardsConfigs;
+import gr.sr.configsEngine.configs.impl.PcBangConfigs;
 import gr.sr.configsEngine.configs.impl.PremiumServiceConfigs;
 import gr.sr.configsEngine.configs.impl.PvpRewardSystemConfigs;
 import gr.sr.interf.PlayerEventInfo;
@@ -2060,7 +2060,7 @@ public final class L2PcInstance extends L2Playable
 		else if ((_karma > 0) && (karma == 0))
 		{
 			// Send a Server->Client StatusUpdate packet with Karma and PvP Flag to the L2PcInstance and all L2PcInstance to inform (broadcast)
-			setKarmaFlag(0);
+			setKarmaFlag();
 		}
 		
 		_karma = karma;
@@ -7175,9 +7175,8 @@ public final class L2PcInstance extends L2Playable
 	
 	/**
 	 * Send a Server->Client StatusUpdate packet with Karma and PvP Flag to the L2PcInstance and all L2PcInstance to inform (broadcast).
-	 * @param flag
 	 */
-	public void setKarmaFlag(int flag)
+	public void setKarmaFlag()
 	{
 		sendUserInfo(true);
 		for (L2PcInstance player : getKnownList().getKnownPlayers().values())
@@ -11872,14 +11871,6 @@ public final class L2PcInstance extends L2Playable
 			_log.error("deleteMe()", e);
 		}
 		
-		// Remove from world regions zones
-		final L2WorldRegion oldRegion = getWorldRegion();
-		
-		if (oldRegion != null)
-		{
-			oldRegion.removeFromZones(this);
-		}
-		
 		// Remove the L2PcInstance from the world
 		try
 		{
@@ -14382,14 +14373,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void setPcBangPoints(final int i)
 	{
-		if (i < 200000)
-		{
-			_pcBangPoints = i;
-		}
-		else
-		{
-			_pcBangPoints = 200000;
-		}
+		_pcBangPoints = i < PcBangConfigs.MAX_PC_BANG_POINTS ? i : PcBangConfigs.MAX_PC_BANG_POINTS;
 	}
 	
 	/**
@@ -15683,6 +15667,7 @@ public final class L2PcInstance extends L2Playable
 	// Delay Engine By L][Sunrise Team
 	private long _lastAttackPacket = 0;
 	private long _lastMovePacket = 0;
+	private long _lastRequestMagicPacket = 0;
 	
 	public long getLastAttackPacket()
 	{
@@ -15702,6 +15687,16 @@ public final class L2PcInstance extends L2Playable
 	public void setLastMovePacket()
 	{
 		_lastMovePacket = System.currentTimeMillis();
+	}
+	
+	public long getLastRequestMagicPacket()
+	{
+		return _lastRequestMagicPacket;
+	}
+	
+	public void setLastRequestMagicPacket()
+	{
+		_lastRequestMagicPacket = System.currentTimeMillis();
 	}
 	
 	// ============================================== //

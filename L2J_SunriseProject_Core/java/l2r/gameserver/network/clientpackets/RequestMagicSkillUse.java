@@ -55,6 +55,14 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 			return;
 		}
 		
+		if ((System.currentTimeMillis() - activeChar.getLastRequestMagicPacket()) < Config.MOVE_PACKET_DELAY)
+		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
+		activeChar.setLastRequestMagicPacket();
+		
 		if (activeChar.isDead() || activeChar.isCastingNow())
 		{
 			activeChar.sendPacket(ActionFailed.STATIC_PACKET);

@@ -130,7 +130,10 @@ public final class RequestActionUse extends L2GameClientPacket
 			if (!(Arrays.binarySearch(allowedActions, _actionId) >= 0))
 			{
 				sendPacket(ActionFailed.STATIC_PACKET);
-				_log.warn("Player " + activeChar + " used action which he does not have! Id = " + _actionId + " transform: " + activeChar.getTransformation());
+				if (Config.DEBUG)
+				{
+					_log.warn("Player " + activeChar + " used action which he does not have! Id = " + _actionId + " transform: " + activeChar.getTransformation());
+				}
 				return;
 			}
 		}

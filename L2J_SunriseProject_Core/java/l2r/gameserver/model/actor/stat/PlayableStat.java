@@ -50,6 +50,7 @@ public class PlayableStat extends CharStat
 			return true;
 		}
 		
+		// vGodFather moved this after first exp check
 		final TerminateReturn term = EventDispatcher.getInstance().notifyEvent(new OnPlayableExpChanged(getActiveChar(), getExp(), getExp() + value), getActiveChar(), TerminateReturn.class);
 		if ((term != null) && term.terminate())
 		{
