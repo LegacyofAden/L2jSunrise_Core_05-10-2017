@@ -152,6 +152,16 @@ public class PcAppearance
 		_sex = isfemale;
 	}
 	
+	public final boolean isMale()
+	{
+		return _sex;
+	}
+	
+	public final boolean isFemale()
+	{
+		return _sex;
+	}
+	
 	public void setGhostMode(boolean b)
 	{
 		_ghostmode = b;

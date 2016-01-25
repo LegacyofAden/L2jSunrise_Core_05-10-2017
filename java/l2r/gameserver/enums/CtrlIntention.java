@@ -41,6 +41,7 @@ public enum CtrlIntention
 	AI_INTENTION_PICK_UP,
 	/** Move to target, then interact */
 	AI_INTENTION_INTERACT,
+	// vGodFather addon
 	/** Move to target via geodata, then interact. */
 	AI_INTENTION_MOVE_AND_INTERACT;
 }

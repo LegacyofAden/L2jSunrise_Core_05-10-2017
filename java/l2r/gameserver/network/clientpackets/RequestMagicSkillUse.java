@@ -63,7 +63,7 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 		
 		activeChar.setLastRequestMagicPacket();
 		
-		if (activeChar.isDead() || activeChar.isCastingNow())
+		if (activeChar.isDead())
 		{
 			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
 			return;

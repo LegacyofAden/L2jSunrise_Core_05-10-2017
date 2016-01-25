@@ -1690,6 +1690,7 @@ public class L2CharacterAI extends AbstractAI
 		return (sk.getTargetType() == L2TargetType.PARTY);
 	}
 	
+	// vGodFather addon
 	protected boolean checkDistanceAndMove(L2Object target)
 	{
 		if ((int) _actor.calculateDistance(target, false, false) > 150)
@@ -1701,6 +1702,7 @@ public class L2CharacterAI extends AbstractAI
 		return false;
 	}
 	
+	// vGodFather addon
 	@Override
 	protected void onIntentionMoveAndInteract(L2Object object, Location loc)
 	{
