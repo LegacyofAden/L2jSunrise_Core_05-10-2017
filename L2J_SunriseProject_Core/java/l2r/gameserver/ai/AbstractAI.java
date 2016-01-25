@@ -297,6 +297,7 @@ public abstract class AbstractAI implements Ctrl
 			case AI_INTENTION_INTERACT:
 				onIntentionInteract((L2Object) arg0);
 				break;
+			// vGodFather addon
 			case AI_INTENTION_MOVE_AND_INTERACT:
 				onIntentionMoveAndInteract((L2Object) arg0, (Location) arg1);
 				break;
@@ -455,8 +456,6 @@ public abstract class AbstractAI implements Ctrl
 	
 	protected abstract void onIntentionInteract(L2Object object);
 	
-	protected abstract void onIntentionMoveAndInteract(L2Object object, Location loc);
-	
 	protected abstract void onEvtThink();
 	
 	protected abstract void onEvtAttacked(L2Character attacker);
@@ -498,6 +497,9 @@ public abstract class AbstractAI implements Ctrl
 	protected abstract void onEvtFinishCasting();
 	
 	protected abstract void onEvtAfraid(L2Character effector, boolean start);
+	
+	// vGodFather addon
+	protected abstract void onIntentionMoveAndInteract(L2Object object, Location loc);
 	
 	/**
 	 * Cancel action client side by sending Server->Client packet ActionFailed to the L2PcInstance actor. <FONT COLOR=#FF0000><B> <U>Caution</U> : Low level function, used by AI subclasses</B></FONT>

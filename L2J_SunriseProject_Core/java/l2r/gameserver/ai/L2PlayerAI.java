@@ -326,6 +326,7 @@ public class L2PlayerAI extends L2PlayableAI
 		setIntention(AI_INTENTION_IDLE);
 	}
 	
+	// vGodFather addon
 	private void thinkMoveAndInteract()
 	{
 		if (_actor.isAllSkillsDisabled() || _actor.isCastingNow())
@@ -375,6 +376,7 @@ public class L2PlayerAI extends L2PlayableAI
 			{
 				thinkInteract();
 			}
+			// vGodFather addon
 			else if (getIntention() == CtrlIntention.AI_INTENTION_MOVE_AND_INTERACT)
 			{
 				thinkMoveAndInteract();

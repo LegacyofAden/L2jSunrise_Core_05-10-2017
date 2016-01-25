@@ -794,30 +794,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	protected void thinkAttack()
 	{
 		final L2Attackable npc = getActiveChar();
-		if (npc.isCastingNow())
-		{
-			return;
-		}
-		
-		L2Character originalAttackTarget = getAttackTarget();
-		// Check if target is dead or if timeout is expired to stop this attack
-		if ((originalAttackTarget == null) || originalAttackTarget.isAlikeDead() || (_attackTimeout < GameTimeController.getInstance().getGameTicks()))
-		{
-			// Stop hating this target after the attack timeout or if target is dead
-			npc.stopHating(originalAttackTarget);
-			
-			// Set the AI Intention to AI_INTENTION_ACTIVE
-			npc.RANDOM_WALK_RATE = 15;
-			setIntention(AI_INTENTION_ACTIVE);
-			
-			npc.setWalking();
-			return;
-		}
-		
+		final L2Character originalAttackTarget = getAttackTarget();
 		final int collision = npc.getTemplate().getCollisionRadius();
 		
-		// Handle all L2Object of its Faction inside the Faction Range
-		
+		// Check for npc same clan
 		String faction_id = getActiveChar().getFactionId();
 		if ((faction_id != null) && !faction_id.isEmpty())
 		{
@@ -899,6 +879,25 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			{
 				_log.warn(getClass().getSimpleName() + ": thinkAttack() faction call failed: " + e.getMessage());
 			}
+		}
+		
+		if (npc.isCastingNow())
+		{
+			return;
+		}
+		
+		// Check if target is dead or if timeout is expired to stop this attack
+		if ((originalAttackTarget == null) || originalAttackTarget.isAlikeDead() || (_attackTimeout < GameTimeController.getInstance().getGameTicks()))
+		{
+			// Stop hating this target after the attack timeout or if target is dead
+			npc.stopHating(originalAttackTarget);
+			
+			// Set the AI Intention to AI_INTENTION_ACTIVE
+			npc.RANDOM_WALK_RATE = 15;
+			setIntention(AI_INTENTION_ACTIVE);
+			
+			npc.setWalking();
+			return;
 		}
 		
 		if (npc.isCoreAIDisabled())
@@ -2653,6 +2652,8 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			switch (getIntention())
 			{
 				case AI_INTENTION_ACTIVE:
+					// vGodFather addon
+				case AI_INTENTION_MOVE_TO:
 					thinkActive();
 					break;
 				case AI_INTENTION_ATTACK:
