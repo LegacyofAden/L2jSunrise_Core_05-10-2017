@@ -63,7 +63,6 @@ public enum L2SkillType
 	CHAIN_HEAL,
 	UNLOCK,
 	UNLOCK_SPECIAL,
-	SOW,
 	DUMMY,
 	// Creation
 	CREATE_ITEM(L2SkillCreateItem.class),

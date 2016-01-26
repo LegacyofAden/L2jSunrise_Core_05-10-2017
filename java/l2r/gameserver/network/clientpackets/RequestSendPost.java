@@ -321,14 +321,14 @@ public final class RequestSendPost extends L2GameClientPacket
 			L2ItemInstance oldItem = player.checkItemManipulation(i.getObjectId(), i.getCount(), "attach");
 			if ((oldItem == null) || !oldItem.isTradeable() || oldItem.isEquipped())
 			{
-				_log.warn("Error adding attachment for char " + player.getName() + " (olditem == null)");
+				_log.info("Adding attachment failed for char " + player.getName() + " (olditem == null)");
 				return false;
 			}
 			
 			final L2ItemInstance newItem = player.getInventory().transferItem("SendMail", i.getObjectId(), i.getCount(), attachments, player, receiver);
 			if (newItem == null)
 			{
-				_log.warn("Error adding attachment for char " + player.getName() + " (newitem == null)");
+				_log.info("Adding attachment failed for char " + player.getName() + " (newitem == null)");
 				continue;
 			}
 			newItem.setItemLocation(newItem.getItemLocation(), msg.getId());
