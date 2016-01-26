@@ -209,45 +209,45 @@ public class TradeList
 	{
 		if (isLocked())
 		{
-			_log.warn(_owner.getName() + ": Attempt to modify locked TradeList!");
+			_log.info(_owner.getName() + ": Attempt to modify locked TradeList!");
 			return null;
 		}
 		
 		L2Object o = L2World.getInstance().findObject(objectId);
 		if (!(o instanceof L2ItemInstance))
 		{
-			_log.warn(_owner.getName() + ": Trying to add something other than an item!");
+			_log.info(_owner.getName() + ": Trying to add something other than an item!");
 			return null;
 		}
 		
 		L2ItemInstance item = (L2ItemInstance) o;
 		if (!(item.isTradeable() || (getOwner().isGM() && Config.GM_TRADE_RESTRICTED_ITEMS)) || item.isQuestItem())
 		{
-			_log.warn(_owner.getName() + ": Attempt to add a restricted item!");
+			_log.info(_owner.getName() + ": Attempt to add a restricted item!");
 			return null;
 		}
 		
 		if (!getOwner().getInventory().canManipulateWithItemId(item.getId()))
 		{
-			_log.warn(_owner.getName() + ": Attempt to add an item that can't manipualte!");
+			_log.info(_owner.getName() + ": Attempt to add an item that can't manipualte!");
 			return null;
 		}
 		
 		if ((count <= 0) || (count > item.getCount()))
 		{
-			_log.warn(_owner.getName() + ": Attempt to add an item with invalid item count!");
+			_log.info(_owner.getName() + ": Attempt to add an item with invalid item count!");
 			return null;
 		}
 		
 		if (!item.isStackable() && (count > 1))
 		{
-			_log.warn(_owner.getName() + ": Attempt to add non-stackable item to TradeList with count > 1!");
+			_log.info(_owner.getName() + ": Attempt to add non-stackable item to TradeList with count > 1!");
 			return null;
 		}
 		
 		if ((Inventory.MAX_ADENA / count) < price)
 		{
-			_log.warn(_owner.getName() + ": Attempt to overflow adena !");
+			_log.info(_owner.getName() + ": Attempt to overflow adena !");
 			return null;
 		}
 		

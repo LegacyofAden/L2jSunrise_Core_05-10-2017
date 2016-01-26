@@ -82,6 +82,13 @@ public class L2BufferInstance extends L2Npc
 		{
 			player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
 			player.setCurrentCp(player.getMaxCp());
+			
+			if (player.hasSummon())
+			{
+				player.getSummon().setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
+				player.getSummon().setCurrentCp(player.getMaxCp());
+			}
+			
 			BufferPacketSender.sendPacket(player, "functions.htm", BufferPacketCategories.FILE, getObjectId());
 		}
 		// Method to give auto buffs depends on class

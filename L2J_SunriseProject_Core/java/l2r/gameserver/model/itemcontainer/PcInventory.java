@@ -935,24 +935,16 @@ public class PcInventory extends Inventory
 	 * @param item the item to validate.
 	 * @return {@code true} if there is enough room to add the item inventory.
 	 */
+	// vGodFather improvements
 	public boolean validateCapacity(L2ItemInstance item)
 	{
-		int slots = 0;
-		
-		if (item.isStackable())
+		// we must skip all checks if item is stackable and exists in inventory or item is herb
+		if ((item.isStackable() && (getItemByItemId(item.getId()) != null)) || item.getItem().hasExImmediateEffect())
 		{
-			if (getInventoryItemCount(item.getId(), -1) <= 0)
-			{
-				slots++;
-			}
-			return validateCapacity(slots, item.isQuestItem());
+			return true;
 		}
 		
-		if (!item.isStackable() && !item.getItem().hasExImmediateEffect())
-		{
-			slots++;
-		}
-		return validateCapacity(slots, item.isQuestItem());
+		return validateCapacity(1, item.isQuestItem());
 	}
 	
 	/**

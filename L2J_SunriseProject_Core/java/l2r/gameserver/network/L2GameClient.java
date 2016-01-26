@@ -629,7 +629,7 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 		if (character != null)
 		{
 			// exploit prevention, should not happens in normal way
-			_log.error("Attempt of double login: " + character.getName() + "(" + objId + ") " + getAccountName());
+			_log.info("Attempt of double login: " + character.getName() + "(" + objId + ") " + getAccountName());
 			if (character.getClient() != null)
 			{
 				character.getClient().closeNow();
