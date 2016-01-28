@@ -1996,7 +1996,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		broadcastPacket(new MagicSkillUse(this, target, skill.getDisplayId(), skill.getDisplayLevel(), hitTime, reuseDelay));
 		
 		// Send a system message USE_S1 to the L2Character
-		if (isPlayer())
+		if (isPlayer() && !skill.isAbnormalInstant())
 		{
 			SystemMessage sm = null;
 			switch (magicId)

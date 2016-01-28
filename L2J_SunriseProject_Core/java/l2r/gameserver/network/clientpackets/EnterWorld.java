@@ -251,12 +251,11 @@ public class EnterWorld extends L2GameClientPacket
 			notifySponsorOrApprentice(activeChar);
 			
 			final AuctionableHall clanHall = ClanHallManager.getInstance().getClanHallByOwner(clan);
-			if (clanHall != null)
+			if ((clanHall != null) && !clanHall.getPaid() && (clan.getWarehouse().getAdena() < clanHall.getLease()))
 			{
-				if (!clanHall.getPaid())
-				{
-					activeChar.sendPacket(SystemMessageId.PAYMENT_FOR_YOUR_CLAN_HALL_HAS_NOT_BEEN_MADE_PLEASE_MAKE_PAYMENT_TO_YOUR_CLAN_WAREHOUSE_BY_S1_TOMORROW);
-				}
+				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.PAYMENT_FOR_YOUR_CLAN_HALL_HAS_NOT_BEEN_MADE_PLEASE_MAKE_PAYMENT_TO_YOUR_CLAN_WAREHOUSE_BY_S1_TOMORROW);
+				sm.addInt(clanHall.getLease());
+				activeChar.sendPacket(sm);
 			}
 			
 			for (Siege siege : SiegeManager.getInstance().getSieges())

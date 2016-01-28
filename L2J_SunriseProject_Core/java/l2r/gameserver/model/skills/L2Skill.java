@@ -127,6 +127,8 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final int _castRange;
 	private final int _effectRange;
 	
+	/** Abnormal instant, used for herbs mostly. */
+	private final boolean _isAbnormalInstant;
 	/** Abnormal level, global effect level. */
 	private final int _abnormalLvl;
 	/** Abnormal type: global effect "group". */
@@ -284,6 +286,7 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_effectRange = set.getInt("effectRange", -1);
 		
 		_abnormalLvl = set.getInt("abnormalLvl", 0);
+		_isAbnormalInstant = set.getBoolean("abnormalInstant", false);
 		_abnormalType = set.getEnum("abnormalType", AbnormalType.class, AbnormalType.NONE);
 		
 		_effectAbnormalLvl = set.getInt("effectAbnormalLvl", -1); // support for a separate effect abnormal lvl, e.g. poison inside a different skill
@@ -659,6 +662,16 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public final Map<String, Byte> getNegateAbnormals()
 	{
 		return _negateAbnormals;
+	}
+	
+	/**
+	 * Verify if this skill is abnormal instant.<br>
+	 * Herb buff skills yield {@code true} for this check.
+	 * @return {@code true} if the skill is abnormal instant, {@code false} otherwise
+	 */
+	public boolean isAbnormalInstant()
+	{
+		return _isAbnormalInstant;
 	}
 	
 	/**
@@ -1615,7 +1628,6 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 			env = new Env();
 		}
 		
-		env.setSkillMastery(Formulas.calcSkillMastery(effector, this));
 		env.setCharacter(effector);
 		env.setTarget(effected);
 		env.setSkill(this);

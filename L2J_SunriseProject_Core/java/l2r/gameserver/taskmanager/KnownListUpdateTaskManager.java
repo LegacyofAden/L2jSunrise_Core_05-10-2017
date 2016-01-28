@@ -138,7 +138,7 @@ public class KnownListUpdateTaskManager
 							{
 								for (L2Object _object : inrObj)
 								{
-									if (_object != object)
+									if ((_object != null) && (_object != object))
 									{
 										object.getKnownList().addKnownObject(_object);
 									}

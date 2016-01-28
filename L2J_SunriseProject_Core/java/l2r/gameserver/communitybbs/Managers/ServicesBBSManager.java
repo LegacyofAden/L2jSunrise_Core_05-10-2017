@@ -121,7 +121,7 @@ public class ServicesBBSManager extends BaseBBSManager
 		{
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_SHOP_ALLOW)
 			{
-				activeChar.sendMessage("This function is disabled by admin");
+				activeChar.sendMessage("This function is disabled by admin.");
 				return;
 			}
 			
@@ -190,7 +190,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gatekeeper/main_gk.htm");
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_TP_ALLOW)
 			{
-				activeChar.sendMessage("This function is disabled by admin");
+				activeChar.sendMessage("This function is disabled by admin.");
 				separateAndSend(content, activeChar);
 				return;
 			}
@@ -387,7 +387,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_WASH_PK_ALLOW)
 			{
-				activeChar.sendMessage("This function is disabled by admin");
+				activeChar.sendMessage("This function is disabled by admin.");
 				separateAndSend(content, activeChar);
 				return;
 			}
@@ -452,7 +452,7 @@ public class ServicesBBSManager extends BaseBBSManager
 		{
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ALLOW)
 			{
-				activeChar.sendMessage("This function is disabled by admin");
+				activeChar.sendMessage("This function is disabled by admin.");
 				return;
 			}
 			
@@ -462,13 +462,31 @@ public class ServicesBBSManager extends BaseBBSManager
 				return;
 			}
 			
-			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_atrEnchant.htm");
-			final String[] subCommand = command.split(" ");
+			int currency = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ID;
+			String currencyName = ItemData.getInstance().getTemplate(currency).getName();
+			int weaponPrice = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_PRICE_WEAPON;
+			int armorPrice = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_PRICE_ARMOR;
+			int elementWeaponValue = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_LVL_FOR_WEAPON;
+			int elementArmorValue = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_LVL_FOR_ARMOR;
 			
+			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_atrEnchant.htm");
+			content = content.replaceAll("%currency%", ItemData.getInstance().getTemplate(currency).getName());
+			
+			content = content.replaceAll("%weaponCurrency%", String.valueOf(weaponPrice) + " " + currencyName);
+			content = content.replaceAll("%armorCurrency%", String.valueOf(armorPrice) + " " + currencyName);
+			
+			content = content.replaceAll("%armorAttValue%", String.valueOf(elementArmorValue));
+			content = content.replaceAll("%weaponAttValue%", String.valueOf(elementWeaponValue));
+			
+			if (command.startsWith(_servicesBBSCommand + "_atrEnchantHtml"))
+			{
+				separateAndSend(content, activeChar);
+				return;
+			}
+			
+			final String[] subCommand = command.split(" ");
 			String loc = subCommand[1];
 			int armorType = 0;
-			int price = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_PRICE_ARMOR;
-			int value = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_LVL_FOR_ARMOR;
 			
 			switch (loc)
 			{
@@ -488,13 +506,12 @@ public class ServicesBBSManager extends BaseBBSManager
 					armorType = Inventory.PAPERDOLL_LEGS;
 					break;
 				case "weapon":
-					price = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_PRICE_WEAPON;
-					value = CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_LVL_FOR_WEAPON;
 					armorType = Inventory.PAPERDOLL_RHAND;
 					break;
 				default:
+					separateAndSend(content, activeChar);
 					activeChar.sendMessage("You cannot enchant items that are not equipped.");
-					break;
+					return;
 			}
 			
 			String type = subCommand[2];
@@ -520,11 +537,12 @@ public class ServicesBBSManager extends BaseBBSManager
 					typeId = 5;
 					break;
 				default:
+					separateAndSend(content, activeChar);
 					activeChar.sendMessage("You cannot enchant the item. Wrong element.");
-					break;
+					return;
 			}
 			
-			if (Conditions.checkPlayerItemCount(activeChar, CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ID, price))
+			if (Conditions.checkPlayerItemCount(activeChar, currency, loc.equals("weapon") ? weaponPrice : armorPrice))
 			{
 				L2ItemInstance parmorInstance = activeChar.getInventory().getPaperdollItem(armorType);
 				if ((parmorInstance != null) && (parmorInstance.getLocationSlot() == armorType))
@@ -542,7 +560,7 @@ public class ServicesBBSManager extends BaseBBSManager
 					
 					if (parmorInstance.isWeapon())
 					{
-						if ((oldElement != null) && (oldElement.getValue() >= value))
+						if ((oldElement != null) && (oldElement.getValue() >= elementWeaponValue))
 						{
 							separateAndSend(content, activeChar);
 							activeChar.sendMessage("You cannot add same attribute to item!");
@@ -573,7 +591,7 @@ public class ServicesBBSManager extends BaseBBSManager
 									activeChar.sendMessage("You cannot add opposite attribute to item!");
 									return;
 								}
-								if ((elm.getElement() == elementtoAdd) && (elm.getValue() >= value))
+								if ((elm.getElement() == elementtoAdd) && (elm.getValue() >= elementArmorValue))
 								{
 									separateAndSend(content, activeChar);
 									activeChar.sendMessage("You cannot add same attribute to item!");
@@ -583,9 +601,9 @@ public class ServicesBBSManager extends BaseBBSManager
 						}
 					}
 					
-					activeChar.destroyItemByItemId("Community Attribute Manager", CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ID, price, activeChar, true);
+					activeChar.destroyItemByItemId("Community Attribute Manager", currency, parmorInstance.isWeapon() ? weaponPrice : armorPrice, activeChar, true);
 					activeChar.getInventory().unEquipItemInSlot(armorType);
-					parmorInstance.setElementAttr((byte) typeId, value);
+					parmorInstance.setElementAttr((byte) typeId, parmorInstance.isWeapon() ? elementWeaponValue : elementArmorValue);
 					activeChar.getInventory().equipItem(parmorInstance);
 					activeChar.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
 					
@@ -606,7 +624,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_NAME_CHANGE_ALLOW)
 			{
-				activeChar.sendMessage("This function is disabled by admin");
+				activeChar.sendMessage("This function is disabled by admin.");
 				separateAndSend(content, activeChar);
 				return;
 			}
@@ -678,7 +696,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_CLAN_NAME_CHANGE_ALLOW)
 			{
-				activeChar.sendMessage("This function is disabled by admin");
+				activeChar.sendMessage("This function is disabled by admin.");
 				separateAndSend(content, activeChar);
 				return;
 			}
