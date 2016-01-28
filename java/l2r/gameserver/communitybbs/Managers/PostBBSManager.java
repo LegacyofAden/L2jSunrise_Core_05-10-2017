@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.gameserver.communitybbs.BB.Forum;
 import l2r.gameserver.communitybbs.BB.Post;
+import l2r.gameserver.communitybbs.BB.Post.CPost;
 import l2r.gameserver.communitybbs.BB.Topic;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.ShowBoard;
@@ -203,7 +204,42 @@ public class PostBBSManager extends BaseBBSManager
 	@Override
 	public void parsewrite(String url, String ar1, String ar2, String ar3, String ar4, String ar5, L2PcInstance activeChar)
 	{
-	
+		StringTokenizer st = new StringTokenizer(ar1, ";");
+		int idf = Integer.parseInt(st.nextToken());
+		int idt = Integer.parseInt(st.nextToken());
+		int idp = Integer.parseInt(st.nextToken());
+		
+		Forum f = ForumsBBSManager.getInstance().getForumByID(idf);
+		if (f == null)
+		{
+			separateAndSend("<html><body><br><br><center>the forum: " + idf + " does not exist !</center><br><br></body></html>", activeChar);
+		}
+		else
+		{
+			Topic t = f.getTopic(idt);
+			if (t == null)
+			{
+				separateAndSend("<html><body><br><br><center>the topic: " + idt + " does not exist !</center><br><br></body></html>", activeChar);
+			}
+			else
+			{
+				final Post p = getGPosttByTopic(t);
+				if (p != null)
+				{
+					final CPost cp = p.getCPost(idp);
+					if (cp == null)
+					{
+						separateAndSend("<html><body><br><br><center>the post: " + idp + " does not exist !</center><br><br></body></html>", activeChar);
+					}
+					else
+					{
+						p.getCPost(idp).postTxt = ar4;
+						p.updatetxt(idp);
+						cbByPass("_bbsposts;read;" + f.getID() + ";" + t.getID(), activeChar);
+					}
+				}
+			}
+		}
 	}
 	
 	public static PostBBSManager getInstance()

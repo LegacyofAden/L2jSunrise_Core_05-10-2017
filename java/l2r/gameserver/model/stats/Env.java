@@ -39,7 +39,6 @@ public final class Env
 	private L2ItemInstance _item;
 	private byte _shield = 0;
 	private L2Skill _skill;
-	private boolean _skillMastery = false;
 	private boolean _soulShot = false;
 	private boolean _spiritShot = false;
 	private L2Character _target;
@@ -146,14 +145,6 @@ public final class Env
 	}
 	
 	/**
-	 * @return the _skillMastery
-	 */
-	public boolean isSkillMastery()
-	{
-		return _skillMastery;
-	}
-	
-	/**
 	 * @return the _soulShot
 	 */
 	public boolean isSoulShot()
@@ -231,14 +222,6 @@ public final class Env
 	public void setSkill(L2Skill skill)
 	{
 		_skill = skill;
-	}
-	
-	/**
-	 * @param skillMastery the _skillMastery to set
-	 */
-	public void setSkillMastery(boolean skillMastery)
-	{
-		_skillMastery = skillMastery;
 	}
 	
 	/**

@@ -27,10 +27,10 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.model.ChanceCondition;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.interfaces.IChanceSkillTrigger;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.functions.AbstractFunction;
 import l2r.gameserver.model.stats.functions.FuncTemplate;
 import l2r.gameserver.model.stats.functions.Lambda;
@@ -41,8 +41,6 @@ import l2r.gameserver.network.serverpackets.MagicSkillLaunched;
 import l2r.gameserver.network.serverpackets.MagicSkillUse;
 import l2r.gameserver.network.serverpackets.PartySpelled;
 import l2r.gameserver.network.serverpackets.SystemMessage;
-
-import gr.sr.configsEngine.configs.impl.PremiumServiceConfigs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,23 +148,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		_funcTemplates = template.funcTemplates;
 		_count = template.counter;
 		
-		// Support for retail herbs duration when _effected has a Summon
-		int temp = (_effected != null) && _effected.isPlayer() && _effected.getActingPlayer().isPremium() && (PremiumServiceConfigs.PR_SKILL_DURATION_LIST != null) && !PremiumServiceConfigs.PR_SKILL_DURATION_LIST.isEmpty() && PremiumServiceConfigs.PR_SKILL_DURATION_LIST.containsKey(_skill.getId()) ? PremiumServiceConfigs.PR_SKILL_DURATION_LIST.get(_skill.getId()) : template.abnormalTime;
-		if ((_effected != null) && (((_skill.getId() > 2277) && (_skill.getId() < 2286)) || ((_skill.getId() >= 2512) && (_skill.getId() <= 2514))))
-		{
-			final L2Summon summon = _effected.getSummon();
-			if ((summon != null) && summon.isServitor())
-			{
-				temp /= 2;
-			}
-		}
-		
-		if (env.isSkillMastery())
-		{
-			temp *= 2;
-		}
-		
-		_period = temp;
+		_period = Formulas.calcEffectAbnormalTime(_effector, _effected, this);
 		_abnormalEffect = template.abnormalEffect;
 		_specialEffect = template.specialEffect;
 		_abnormalType = template.abnormalType;

@@ -219,6 +219,40 @@ public class TopBBSManager extends BaseBBSManager
 						content = content.replace("%serveronline%", "");
 					}
 					break;
+				case "instances":
+					// Queen Ant
+					content = content.replace("%QASTATIC%", String.valueOf(Config.QUEEN_ANT_SPAWN_INTERVAL));
+					content = content.replace("%QARANDOM%", String.valueOf(Config.QUEEN_ANT_SPAWN_RANDOM));
+					// Antharas
+					content = content.replace("%ANTHARASSTATIC%", String.valueOf(Config.ANTHARAS_SPAWN_INTERVAL));
+					content = content.replace("%ANTHARASRANDOM%", String.valueOf(Config.ANTHARAS_SPAWN_RANDOM));
+					// Valakas
+					content = content.replace("%VALAKASSTATIC%", String.valueOf(Config.VALAKAS_SPAWN_INTERVAL));
+					content = content.replace("%VALAKASRANDOM%", String.valueOf(Config.VALAKAS_SPAWN_RANDOM));
+					// Baium
+					content = content.replace("%BAIUMSTATIC%", String.valueOf(Config.BAIUM_SPAWN_INTERVAL));
+					content = content.replace("%BAIUMRANDOM%", String.valueOf(Config.BAIUM_SPAWN_RANDOM));
+					// Beleth
+					content = content.replace("%BELETHSTATIC%", String.valueOf(Config.BELETH_SPAWN_INTERVAL));
+					content = content.replace("%BELETHRANDOM%", String.valueOf(Config.BELETH_SPAWN_RANDOM));
+					content = content.replace("%BELETHPLAYERS%", String.valueOf(Config.BELETH_MIN_PLAYERS) + "-" + String.valueOf(Config.BELETH_MIN_PLAYERS));
+					// Epidos
+					content = content.replace("%EPIDOSSTATIC%", String.valueOf(2));
+					// Freya Normal
+					content = content.replace("%FREYANORMALPLAYERS%", String.valueOf(Config.MIN_PLAYERS_TO_EASY) + "-" + String.valueOf(Config.MAX_PLAYERS_TO_EASY));
+					// Freya Hard
+					content = content.replace("%FREYAHARDPLAYERS%", String.valueOf(Config.MIN_PLAYERS_TO_HARD) + "-" + String.valueOf(Config.MAX_PLAYERS_TO_HARD));
+					// Frintezza
+					content = content.replace("%FRINTEZZAPLAYERS%", String.valueOf(Config.MIN_PLAYER_TO_FE) + "-" + String.valueOf(Config.MAX_PLAYER_TO_FE));
+					// Zaken Day 83
+					content = content.replace("%ZAKENDAY83PLAYERS%", String.valueOf(Config.ZAKEN_MIN_MEMBERS_DAYTIME_83) + "-" + String.valueOf(Config.ZAKEN_MAX_MEMBERS_DAYTIME_83));
+					// Zaken Day 60
+					content = content.replace("%ZAKENDAY60PLAYERS%", String.valueOf(Config.ZAKEN_MIN_MEMBERS_DAYTIME_60) + "-" + String.valueOf(Config.ZAKEN_MAX_MEMBERS_DAYTIME_60));
+					// Zaken Night
+					content = content.replace("%ZAKENNIGHTPLAYERS%", String.valueOf(Config.ZAKEN_MINMEMBERS_NIGHTTIME) + "-" + String.valueOf(Config.ZAKEN_MAXMEMBERS_NIGHTTIME));
+					// Tiat
+					content = content.replace("%TIATPLAYERS%", String.valueOf(Config.MIN_PLAYER_TO_TIAT) + "-" + String.valueOf(Config.MAX_PLAYER_TO_TIAT));
+					break;
 				default:
 					break;
 			}

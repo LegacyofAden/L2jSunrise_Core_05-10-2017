@@ -89,6 +89,7 @@ import l2r.util.Rnd;
 
 import gr.sr.balanceEngine.BalanceHandler;
 import gr.sr.configsEngine.configs.impl.FormulasConfigs;
+import gr.sr.configsEngine.configs.impl.PremiumServiceConfigs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1975,9 +1976,22 @@ public final class Formulas
 		double elementMod = calcElementMod(attacker.getOwner(), target, skill);
 		rate *= elementMod;
 		
-		// Add Matk/Mdef Bonus (TODO: Pending)
+		// Add Matk/Mdef Bonus
+		double mAtkMod = 1.0;
+		if (skill.isMagic())
+		{
+			double mAtk = attacker.getOwner().getMAtk(null, null);
+			double val = 0;
+			if (attacker.getOwner().isChargedShot(ShotType.BLESSED_SPIRITSHOTS))
+			{
+				val = mAtk * 3.0;// 3.0 is the blessed spiritshot multiplier
+			}
+			val += mAtk;
+			val = (Math.sqrt(val) / target.getMDef(null, null)) * 11.0;
+			mAtkMod = val;
+		}
 		
-		// Check the Rate Limits.
+		rate *= mAtkMod;
 		double finalRate = Math.min(Math.max(rate, skill.getMinChance()), skill.getMaxChance());
 		
 		boolean result = Rnd.chance(finalRate);
@@ -2157,7 +2171,7 @@ public final class Formulas
 	public static boolean calcSkillMastery(L2Character actor, L2Skill sk)
 	{
 		// Static Skills are not affected by Skill Mastery.
-		if (sk.isStatic())
+		if (sk.isStatic() || (actor == null))
 		{
 			return false;
 		}
@@ -2729,5 +2743,59 @@ public final class Formulas
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Calculates the abnormal time for an effect.<br>
+	 * The abnormal time is taken from the skill definition, and it's global for all effects present in the skills.
+	 * @param caster the caster
+	 * @param target the target
+	 * @param effect the effect
+	 * @return the time that the effect will last
+	 */
+	public static int calcEffectAbnormalTime(L2Character caster, L2Character target, L2Effect effect)
+	{
+		int time = effect.getSkill().isPassive() || effect.getSkill().isToggle() ? -1 : effect.getEffectTemplate().abnormalTime;
+		int baseTime = time;
+		
+		// An herb buff will affect both master and servitor, but the buff duration will be half of the normal duration.
+		// If a servitor is not summoned, the master will receive the full buff duration.
+		if ((target != null) && (target.isServitor() || (target.isPlayer() && target.hasSummon() && target.getSummon().isServitor())) && effect.getSkill().isAbnormalInstant())
+		{
+			time /= 2;
+		}
+		
+		// If the skill is a mastery skill, the effect will last twice the default time.
+		if (Formulas.calcSkillMastery(caster, effect.getSkill()))
+		{
+			time *= 2;
+		}
+		
+		// Debuffs Duration Affected by Resistances.
+		if ((caster != null) && (target != null) && effect.getSkill().isDebuff())
+		{
+			final double statMod = effect.getSkill().getBasicProperty().calcBonus(target);
+			double vuln = calcSkillTraitVulnerability(0, target, effect.getSkill());
+			double prof = calcSkillTraitProficiency(0, caster, target, effect.getSkill());
+			double resMod = 1 + ((vuln + prof) / 100);
+			final double lvlBonusMod = calcLvlBonusMod(caster, target, effect.getSkill());
+			final double elementMod = calcAttributeBonus(caster, target, effect.getSkill());
+			time = (int) Math.ceil(Util.constrain(((time * resMod * lvlBonusMod * elementMod) / statMod), (time * 0.5), time));
+			
+			if (caster.isDebug())
+			{
+				caster.sendMessage("---------------------");
+				caster.sendMessage("statMod: " + statMod);
+				caster.sendMessage("resMod: " + resMod);
+				caster.sendMessage("lvlBonusMod: " + lvlBonusMod);
+				caster.sendMessage("elementMod: " + elementMod);
+				caster.sendMessage("baseTime: " + baseTime);
+				caster.sendMessage("finaltime: " + time);
+				caster.sendMessage("---------------------");
+			}
+		}
+		
+		int temp = (target != null) && target.isPlayer() && target.getActingPlayer().isPremium() && (PremiumServiceConfigs.PR_SKILL_DURATION_LIST != null) && !PremiumServiceConfigs.PR_SKILL_DURATION_LIST.isEmpty() && PremiumServiceConfigs.PR_SKILL_DURATION_LIST.containsKey(effect.getSkill().getId()) ? PremiumServiceConfigs.PR_SKILL_DURATION_LIST.get(effect.getSkill().getId()) : 0;
+		return time + temp;
 	}
 }

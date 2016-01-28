@@ -136,17 +136,24 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 			// npc crest of owning clan/ally of castle
 			if ((cha instanceof L2NpcInstance) && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
 			{
-				int townId = TownManager.getTown(_x, _y, _z).getTownId();
-				if ((townId != 33) && (townId != 22))
+				try
 				{
-					L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
-					if (clan != null)
+					int townId = TownManager.getTown(_x, _y, _z).getTownId();
+					if ((townId != 33) && (townId != 22))
 					{
-						_clanCrest = clan.getCrestId();
-						_clanId = clan.getId();
-						_allyCrest = clan.getAllyCrestId();
-						_allyId = clan.getAllyId();
+						L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
+						if (clan != null)
+						{
+							_clanCrest = clan.getCrestId();
+							_clanId = clan.getId();
+							_allyCrest = clan.getAllyCrestId();
+							_allyId = clan.getAllyId();
+						}
 					}
+				}
+				catch (Exception e)
+				{
+					_log.warn("", e);
 				}
 			}
 			

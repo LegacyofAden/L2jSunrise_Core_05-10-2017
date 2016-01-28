@@ -130,7 +130,7 @@ public class KnownListUpdateTaskManager
 					Collection<L2Object> inrObj = regi.getVisibleObjects().values();
 					for (L2Object obj : inrObj)
 					{
-						if (obj != object)
+						if ((obj != null) && (obj != object))
 						{
 							object.getKnownList().addKnownObject(obj);
 						}

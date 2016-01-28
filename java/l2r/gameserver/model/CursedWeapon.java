@@ -343,14 +343,8 @@ public class CursedWeapon
 	
 	public void doTransform()
 	{
-		if (_itemId == 8689)
-		{
-			transformationId = 302;
-		}
-		else if (_itemId == 8190)
-		{
-			transformationId = 301;
-		}
+		// Item id 8689 transform 302, Item id 8190 transform 301
+		transformationId = _itemId == 8689 ? 302 : 301;
 		
 		if (_player.isTransformed() || _player.isInStance())
 		{
