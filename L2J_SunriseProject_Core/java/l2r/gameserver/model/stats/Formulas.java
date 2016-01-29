@@ -1911,7 +1911,7 @@ public final class Formulas
 		rate *= mAtkMod;
 		double finalRate = Math.min(Math.max(rate, skill.getMinChance()), skill.getMaxChance());
 		
-		boolean result = Rnd.chance(finalRate);
+		boolean result = (finalRate * 10) > Rnd.get(1000);
 		if (attacker.isDebug() || Config.DEVELOPER)
 		{
 			final StatsSet set = new StatsSet();
@@ -1994,7 +1994,7 @@ public final class Formulas
 		rate *= mAtkMod;
 		double finalRate = Math.min(Math.max(rate, skill.getMinChance()), skill.getMaxChance());
 		
-		boolean result = Rnd.chance(finalRate);
+		boolean result = (finalRate * 10) > Rnd.get(1000);
 		if (attacker.getOwner().isDebug())
 		{
 			final StatsSet set = new StatsSet();
