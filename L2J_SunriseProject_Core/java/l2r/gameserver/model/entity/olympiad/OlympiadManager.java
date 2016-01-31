@@ -45,12 +45,14 @@ public class OlympiadManager
 	private final List<Integer> _nonClassBasedRegisters;
 	private final Map<Integer, List<Integer>> _classBasedRegisters;
 	private final List<List<Integer>> _teamsBasedRegisters;
+	private final List<Integer> _tempClassBasedRegisters;
 	
 	protected OlympiadManager()
 	{
 		_nonClassBasedRegisters = new CopyOnWriteArrayList<>();
 		_classBasedRegisters = new ConcurrentHashMap<>();
 		_teamsBasedRegisters = new CopyOnWriteArrayList<>();
+		_tempClassBasedRegisters = new CopyOnWriteArrayList<>();
 	}
 	
 	public static final OlympiadManager getInstance()
@@ -106,6 +108,7 @@ public class OlympiadManager
 		_nonClassBasedRegisters.clear();
 		_classBasedRegisters.clear();
 		_teamsBasedRegisters.clear();
+		_tempClassBasedRegisters.clear();
 		AntiFeedManager.getInstance().clear(AntiFeedManager.OLYMPIAD_ID);
 	}
 	
@@ -267,6 +270,7 @@ public class OlympiadManager
 				{
 					classed = new CopyOnWriteArrayList<>();
 					classed.add(charId);
+					_tempClassBasedRegisters.add(charId);
 					_classBasedRegisters.put(player.getBaseClass(), classed);
 				}
 				
@@ -403,6 +407,7 @@ public class OlympiadManager
 		if ((classed != null) && classed.remove(objId))
 		{
 			_classBasedRegisters.put(noble.getBaseClass(), classed);
+			_tempClassBasedRegisters.remove(objId);
 			
 			if (Config.L2JMOD_DUALBOX_CHECK_MAX_OLYMPIAD_PARTICIPANTS_PER_IP > 0)
 			{
@@ -443,6 +448,7 @@ public class OlympiadManager
 		final List<Integer> classed = _classBasedRegisters.get(player.getBaseClass());
 		if ((classed != null) && classed.remove(objId))
 		{
+			_tempClassBasedRegisters.remove(objId);
 			return;
 		}
 		
@@ -582,7 +588,7 @@ public class OlympiadManager
 	
 	public int getCountOpponents()
 	{
-		return _nonClassBasedRegisters.size() + _classBasedRegisters.size() + _teamsBasedRegisters.size();
+		return _nonClassBasedRegisters.size() + _tempClassBasedRegisters.size() + _teamsBasedRegisters.size();
 	}
 	
 	private static class SingletonHolder
