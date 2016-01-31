@@ -57,7 +57,7 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 		
 		if ((System.currentTimeMillis() - activeChar.getLastRequestMagicPacket()) < Config.MOVE_PACKET_DELAY)
 		{
-			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			// activeChar.sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}
 		

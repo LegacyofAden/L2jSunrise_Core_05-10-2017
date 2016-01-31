@@ -185,6 +185,7 @@ public class OfflineTradersTable
 					L2GameClient client = new L2GameClient(null);
 					client.setDetached(true);
 					player = L2PcInstance.load(rs.getInt("charId"));
+					player.loadRecommendations();
 					client.setActiveChar(player);
 					player.setOnlineStatus(true, false);
 					client.setAccountName(player.getAccountNamePlayer());

@@ -202,7 +202,6 @@ import l2r.gameserver.model.entity.NevitSystem;
 import l2r.gameserver.model.entity.RecoBonus;
 import l2r.gameserver.model.entity.Siege;
 import l2r.gameserver.model.entity.olympiad.OlympiadGameManager;
-import l2r.gameserver.model.entity.olympiad.OlympiadGameTask;
 import l2r.gameserver.model.entity.olympiad.OlympiadManager;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerEquipItem;
@@ -265,7 +264,6 @@ import l2r.gameserver.network.serverpackets.ConfirmDlg;
 import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExAutoSoulShot;
 import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
-import l2r.gameserver.network.serverpackets.ExDuelUpdateUserInfo;
 import l2r.gameserver.network.serverpackets.ExFishingEnd;
 import l2r.gameserver.network.serverpackets.ExFishingStart;
 import l2r.gameserver.network.serverpackets.ExGetBookMarkInfoPacket;
@@ -4324,7 +4322,7 @@ public final class L2PcInstance extends L2Playable
 	 * Returns true if cp update should be done, false if not
 	 * @return boolean
 	 */
-	private boolean needCpUpdate()
+	public boolean needCpUpdate()
 	{
 		double currentCp = getCurrentCp();
 		
@@ -4359,7 +4357,7 @@ public final class L2PcInstance extends L2Playable
 	 * Returns true if mp update should be done, false if not
 	 * @return boolean
 	 */
-	private boolean needMpUpdate()
+	public boolean needMpUpdate()
 	{
 		double currentMp = getCurrentMp();
 		
@@ -4388,55 +4386,6 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		return false;
-	}
-	
-	/**
-	 * Send packet StatusUpdate with current HP,MP and CP to the L2PcInstance and only current HP, MP and Level to all other L2PcInstance of the Party. <B><U> Actions</U> :</B>
-	 * <li>Send the Server->Client packet StatusUpdate with current HP, MP and CP to this L2PcInstance</li><BR>
-	 * <li>Send the Server->Client packet PartySmallWindowUpdate with current HP, MP and Level to all other L2PcInstance of the Party</li> <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T SEND current HP and MP to all L2PcInstance of the _statusListener</B></FONT>
-	 */
-	@Override
-	public void broadcastStatusUpdate()
-	{
-		final boolean needCpUpdate = needCpUpdate();
-		final boolean needHpUpdate = needHpUpdate();
-		final boolean needMpUpdate = needMpUpdate();
-		
-		if (!needCpUpdate && !needHpUpdate && !needMpUpdate)
-		{
-			return;
-		}
-		
-		// Send the Server->Client packet StatusUpdate with current HP, MP and CP to this L2PcInstance
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.MAX_HP, getMaxHp());
-		su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
-		su.addAttribute(StatusUpdate.MAX_MP, getMaxMp());
-		su.addAttribute(StatusUpdate.CUR_MP, (int) getCurrentMp());
-		su.addAttribute(StatusUpdate.MAX_CP, getMaxCp());
-		su.addAttribute(StatusUpdate.CUR_CP, (int) getCurrentCp());
-		sendPacket(su);
-		
-		// Check if a party is in progress
-		if (isInParty() && (needCpUpdate || needHpUpdate || needMpUpdate))
-		{
-			getParty().broadcastToPartyMembers(this, new PartySmallWindowUpdate(this));
-		}
-		
-		if (isInOlympiadMode() && isOlympiadStart() && (needCpUpdate || needHpUpdate))
-		{
-			final OlympiadGameTask game = OlympiadGameManager.getInstance().getOlympiadTask(getOlympiadGameId());
-			if ((game != null) && game.isBattleStarted())
-			{
-				game.getZone().broadcastStatusUpdate(this);
-			}
-		}
-		
-		// In duel MP updated only with CP or HP
-		if (isInDuel() && (needCpUpdate || needHpUpdate))
-		{
-			DuelManager.getInstance().broadcastToOppositTeam(this, new ExDuelUpdateUserInfo(this));
-		}
 	}
 	
 	public final void broadcastUserInfo()
@@ -4578,6 +4527,21 @@ public final class L2PcInstance extends L2Playable
 		if (_client != null)
 		{
 			_client.sendPacket(packet);
+		}
+	}
+	
+	/**
+	 * Send a Server->Client packet StatusUpdate to the L2PcInstance.
+	 */
+	@Override
+	public void sendPacket(L2GameServerPacket... packets)
+	{
+		if (_client != null)
+		{
+			for (L2GameServerPacket packet : packets)
+			{
+				_client.sendPacket(packet);
+			}
 		}
 	}
 	
@@ -5154,11 +5118,11 @@ public final class L2PcInstance extends L2Playable
 			// Register target to listen for hp changes.
 			target.addStatusListener(this);
 			
-			// Send max/current hp.
-			final StatusUpdate su = new StatusUpdate(target);
-			su.addAttribute(StatusUpdate.MAX_HP, target.getMaxHp());
-			su.addAttribute(StatusUpdate.CUR_HP, (int) target.getCurrentHp());
-			sendPacket(su);
+			if (target.isNpc())
+			{
+				// Send max/current hp.
+				sendPacket(target.makeStatusUpdate(StatusUpdate.CUR_HP, StatusUpdate.MAX_HP));
+			}
 			
 			// To others the new target, and not yourself!
 			Broadcast.toKnownPlayers(this, new TargetSelected(getObjectId(), newTarget.getObjectId(), getX(), getY(), getZ()));
@@ -7079,9 +7043,26 @@ public final class L2PcInstance extends L2Playable
 	
 	// vGodFather packet system controlling packets
 	private Future<?> _updateAndBroadcastStatus;
+	private Future<?> _updateStatus;
 	private Future<?> _effectsUpdateTask;
 	protected Future<?> _userInfoTask;
 	protected Future<?> _charInfoTask;
+	
+	/**
+	 * Send packet StatusUpdate with current HP,MP and CP to the L2PcInstance and only current HP, MP and Level to all other L2PcInstance of the Party. <B><U> Actions</U> :</B>
+	 * <li>Send the Server->Client packet StatusUpdate with current HP, MP and CP to this L2PcInstance</li><BR>
+	 * <li>Send the Server->Client packet PartySmallWindowUpdate with current HP, MP and Level to all other L2PcInstance of the Party</li> <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T SEND current HP and MP to all L2PcInstance of the _statusListener</B></FONT>
+	 */
+	@Override
+	public void broadcastStatusUpdate()
+	{
+		if ((_updateStatus != null) && !_updateStatus.isDone())
+		{
+			return;
+		}
+		
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.sendStatusUpdate(this), Config.status_update_packetsDelay);
+	}
 	
 	/**
 	 * Update Stats of the L2PcInstance client side by sending Server->Client packet UserInfo/StatusUpdate to this L2PcInstance and CharInfo/StatusUpdate to all L2PcInstance in its _KnownPlayers (broadcast).
@@ -14687,7 +14668,7 @@ public final class L2PcInstance extends L2Playable
 	/**
 	 * Load L2PcInstance Recommendations data.
 	 */
-	private void loadRecommendations()
+	public void loadRecommendations()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement("SELECT rec_have,rec_left,time_left FROM character_reco_bonus WHERE charId=? LIMIT 1"))

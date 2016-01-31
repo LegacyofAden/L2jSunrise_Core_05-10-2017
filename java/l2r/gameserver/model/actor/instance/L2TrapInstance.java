@@ -243,6 +243,7 @@ public final class L2TrapInstance extends L2Npc
 		return null;
 	}
 	
+	@Override
 	public int getKarma()
 	{
 		return _owner != null ? _owner.getKarma() : 0;
@@ -263,6 +264,7 @@ public final class L2TrapInstance extends L2Npc
 		return _owner;
 	}
 	
+	@Override
 	public byte getPvpFlag()
 	{
 		return _owner != null ? _owner.getPvpFlag() : 0;

@@ -210,6 +210,19 @@ public class CharKnownList extends ObjectKnownList
 		return result;
 	}
 	
+	public List<L2Character> getKnownCharactersById(int id)
+	{
+		List<L2Character> result = new LinkedList<>();
+		for (L2Object obj : getKnownObjects().values())
+		{
+			if ((obj != null) && (obj instanceof L2Character) && (obj.getId() == id))
+			{
+				result.add((L2Character) obj);
+			}
+		}
+		return result;
+	}
+	
 	public List<L2Character> getKnownCharactersInRadius(long radius)
 	{
 		List<L2Character> result = new LinkedList<>();

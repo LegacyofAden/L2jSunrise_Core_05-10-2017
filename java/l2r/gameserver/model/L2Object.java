@@ -360,6 +360,10 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 	{
 	}
 	
+	public void sendPacket(L2GameServerPacket... mov)
+	{
+	}
+	
 	public void sendPacket(SystemMessageId id)
 	{
 	}

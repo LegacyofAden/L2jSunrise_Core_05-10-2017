@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -290,15 +291,7 @@ public class Olympiad extends ListenersContainer
 			_log.info("Olympiad System: Currently in Validation Period");
 		}
 		
-		long milliToEnd;
-		if (_period == 0)
-		{
-			milliToEnd = getMillisToOlympiadEnd();
-		}
-		else
-		{
-			milliToEnd = getMillisToValidationEnd();
-		}
+		long milliToEnd = _period == 0 ? getMillisToOlympiadEnd() : getMillisToValidationEnd();
 		
 		double numSecs = (milliToEnd / 1000) % 60;
 		double countDown = ((milliToEnd / 1000) - numSecs) / 60;
@@ -307,6 +300,8 @@ public class Olympiad extends ListenersContainer
 		int numHours = (int) Math.floor(countDown % 24);
 		int numDays = (int) Math.floor((countDown - numHours) / 24);
 		
+		final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		_log.info("Olympiad System: Period ends at " + format.format(milliToEnd + System.currentTimeMillis()));
 		_log.info("Olympiad System: In " + numDays + " days, " + numHours + " hours and " + numMins + " mins.");
 		
 		if (_period == 0)
@@ -427,6 +422,7 @@ public class Olympiad extends ListenersContainer
 			
 			Broadcast.toAllOnlinePlayers(sm);
 			Broadcast.toAllOnlinePlayers("Olympiad Validation Period has began");
+			_log.info("Olympiad System: Olympiad Validation Period has began");
 			
 			if (_scheduledWeeklyTask != null)
 			{
@@ -448,6 +444,9 @@ public class Olympiad extends ListenersContainer
 			
 			loadNoblesRank();
 			_scheduledValdationTask = ThreadPoolManager.getInstance().scheduleGeneral(new ValidationEndTask(), getMillisToValidationEnd());
+			
+			final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			_log.info("Olympiad System: Validation Period ends at " + format.format(getMillisToValidationEnd() + System.currentTimeMillis()));
 		}
 	}
 	
@@ -457,6 +456,7 @@ public class Olympiad extends ListenersContainer
 		public void run()
 		{
 			Broadcast.toAllOnlinePlayers("Olympiad Validation Period has ended");
+			_log.info("Olympiad System: Olympiad Validation Period has ended");
 			_period = 0;
 			_currentCycle++;
 			deleteNobles();
@@ -561,7 +561,7 @@ public class Olympiad extends ListenersContainer
 		} , getMillisToCompBegin());
 	}
 	
-	private long getMillisToOlympiadEnd()
+	public long getMillisToOlympiadEnd()
 	{
 		return (Config.OLYMPIAD_PERIOD.equals("SUNRISE") ? _olympiadEnd : _olympiadEnd - Calendar.getInstance().getTimeInMillis());
 	}
@@ -581,7 +581,7 @@ public class Olympiad extends ListenersContainer
 		_scheduledOlympiadEnd = ThreadPoolManager.getInstance().scheduleGeneral(new OlympiadEndTask(HEROS_TO_BE), 0);
 	}
 	
-	protected long getMillisToValidationEnd()
+	public long getMillisToValidationEnd()
 	{
 		if (_validationEnd > Calendar.getInstance().getTimeInMillis())
 		{
