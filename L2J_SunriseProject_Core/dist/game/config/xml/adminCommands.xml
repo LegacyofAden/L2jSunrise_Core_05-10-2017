@@ -20,13 +20,19 @@
 	<admin command="admin_tradeoff" accessLevel="7" />
 	<admin command="admin_set" accessLevel="7" />
 	<admin command="admin_set_mod" accessLevel="7" />
-	<admin command="admin_saveolymp" accessLevel="7" />
-	<admin command="admin_manualhero" accessLevel="7" confirmDlg="true" />
-	<admin command="admin_sethero" accessLevel="7" />
-	<admin command="admin_endolympiad" accessLevel="7" confirmDlg="true" />
 	<admin command="admin_setconfig" accessLevel="7" />
 	<admin command="admin_config_server" accessLevel="7" />
 	<admin command="admin_gmon" accessLevel="7" />
+
+	<!-- ADMIN OLYMPIAD -->
+	<admin command="admin_oly" accessLevel="7" />
+	<admin command="admin_saveoly" accessLevel="7" />
+	<admin command="admin_checkoly" accessLevel="7" />
+	<admin command="admin_sethero" accessLevel="7" />
+	<admin command="admin_manualhero" accessLevel="7" confirmDlg="true" />
+	<admin command="admin_endoly" accessLevel="7" confirmDlg="true" />
+	<admin command="admin_finisholy" accessLevel="7" confirmDlg="true" />
+	<admin command="admin_endoly" accessLevel="7" confirmDlg="true" />
 
 	<!-- ADMIN ANNOUNCEMENTS -->
 	<admin command="admin_announce" accessLevel="7" />
@@ -525,6 +531,7 @@
 	<admin command="admin_show_teleport" accessLevel="7" />
 	<admin command="admin_teleport_to_character" accessLevel="7" />
 	<admin command="admin_teleportto" accessLevel="7" />
+	<admin command="admin_move_to_id" accessLevel="7" />
 	<admin command="admin_move_to" accessLevel="7" />
 	<admin command="admin_teleport_character" accessLevel="7" />
 	<admin command="admin_recall" accessLevel="7" />

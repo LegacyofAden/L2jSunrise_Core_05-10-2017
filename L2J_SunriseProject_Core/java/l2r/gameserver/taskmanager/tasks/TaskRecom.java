@@ -48,7 +48,7 @@ public class TaskRecom extends Task
 	{
 		for (L2PcInstance player : L2World.getInstance().getPlayers())
 		{
-			if ((player != null) && player.isOnline() && (player.getClient() != null) && !player.getClient().isDetached())
+			if ((player != null) && player.isOnline() && !player.isInOfflineMode())
 			{
 				player.stopRecoBonusTask();
 				player.setRecomBonusTime(3600);

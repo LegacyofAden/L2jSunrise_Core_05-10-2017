@@ -929,6 +929,7 @@ public final class Config
 	// Server Packets Settings
 	// --------------------------------------------------
 	public static int user_char_info_packetsDelay;
+	public static int status_update_packetsDelay;
 	public static int effects_packetsDelay;
 	public static int stats_update_packetsDelay;
 	public static int moveToPawn_packetsDelay;
@@ -1794,6 +1795,7 @@ public final class Config
 			final PropertiesParser serverPacketsSettings = new PropertiesParser(SERVER_PACKETS_FILE);
 			
 			user_char_info_packetsDelay = serverPacketsSettings.getInt("UserAndCharInfoPacketsDelay", 100);
+			status_update_packetsDelay = serverPacketsSettings.getInt("StatusUpdatePacketsDelay", 50);
 			effects_packetsDelay = serverPacketsSettings.getInt("EffectsPacketsDelay", 100);
 			stats_update_packetsDelay = serverPacketsSettings.getInt("StatsUpdatePacketsDelay", 100);
 			moveToPawn_packetsDelay = serverPacketsSettings.getInt("MoveToPawnPacketsDelay", 70);
@@ -3634,25 +3636,25 @@ public final class Config
 		{
 			switch (cType.trim().toLowerCase())
 			{
-				case "Normal":
+				case "normal":
 					tType |= 0x01;
 					break;
-				case "Relax":
+				case "relax":
 					tType |= 0x02;
 					break;
-				case "Test":
+				case "test":
 					tType |= 0x04;
 					break;
-				case "NoLabel":
+				case "nolabel":
 					tType |= 0x08;
 					break;
-				case "Restricted":
+				case "restricted":
 					tType |= 0x10;
 					break;
-				case "Event":
+				case "event":
 					tType |= 0x20;
 					break;
-				case "Free":
+				case "free":
 					tType |= 0x40;
 					break;
 				default:

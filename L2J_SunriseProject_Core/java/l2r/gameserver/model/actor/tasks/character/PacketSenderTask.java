@@ -18,12 +18,18 @@
  */
 package l2r.gameserver.model.actor.tasks.character;
 
+import l2r.gameserver.instancemanager.DuelManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.entity.olympiad.OlympiadGameManager;
+import l2r.gameserver.model.entity.olympiad.OlympiadGameTask;
 import l2r.gameserver.network.serverpackets.CharInfo;
 import l2r.gameserver.network.serverpackets.EtcStatusUpdate;
 import l2r.gameserver.network.serverpackets.ExBrExtraUserInfo;
 import l2r.gameserver.network.serverpackets.ExDominionWarStart;
+import l2r.gameserver.network.serverpackets.ExDuelUpdateUserInfo;
+import l2r.gameserver.network.serverpackets.PartySmallWindowUpdate;
+import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.network.serverpackets.UserInfo;
 
 /**
@@ -83,5 +89,42 @@ public class PacketSenderTask
 		// Send a Server->Client packet CharInfo to all L2PcInstance in _KnownPlayers of the L2PcInstance
 		player.broadcastPacket(new CharInfo(player));
 		player.broadcastPacket(new ExBrExtraUserInfo(player));
+	}
+	
+	public static void sendStatusUpdate(L2PcInstance player)
+	{
+		final boolean needCpUpdate = player.needCpUpdate();
+		final boolean needHpUpdate = player.needHpUpdate();
+		final boolean needMpUpdate = player.needMpUpdate();
+		
+		if (!needCpUpdate && !needHpUpdate && !needMpUpdate)
+		{
+			return;
+		}
+		
+		// Send the Server->Client packet StatusUpdate with current HP, MP and CP to this L2PcInstance
+		StatusUpdate su = player.makeStatusUpdate(StatusUpdate.MAX_HP, StatusUpdate.MAX_MP, StatusUpdate.MAX_CP, StatusUpdate.CUR_HP, StatusUpdate.CUR_MP, StatusUpdate.CUR_CP);
+		player.sendPacket(su);
+		
+		// Check if a party is in progress
+		if (player.isInParty() && (needCpUpdate || needHpUpdate || needMpUpdate))
+		{
+			player.getParty().broadcastToPartyMembers(player, new PartySmallWindowUpdate(player));
+		}
+		
+		if (player.isInOlympiadMode() && player.isOlympiadStart() && (needCpUpdate || needHpUpdate))
+		{
+			final OlympiadGameTask game = OlympiadGameManager.getInstance().getOlympiadTask(player.getOlympiadGameId());
+			if ((game != null) && game.isBattleStarted())
+			{
+				game.getZone().broadcastStatusUpdate(player);
+			}
+		}
+		
+		// In duel MP updated only with CP or HP
+		if (player.isInDuel() && (needCpUpdate || needHpUpdate))
+		{
+			DuelManager.getInstance().broadcastToOppositTeam(player, new ExDuelUpdateUserInfo(player));
+		}
 	}
 }

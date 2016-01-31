@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import l2r.Config;
@@ -599,7 +600,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	/**
 	 * @return true if hp update should be done, false if not
 	 */
-	protected boolean needHpUpdate()
+	public boolean needHpUpdate()
 	{
 		double currentHp = getCurrentHp();
 		double maxHp = getMaxHp();
@@ -631,15 +632,71 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return false;
 	}
 	
-	/**
-	 * Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform.<br>
-	 * <B><U>Actions</U>:</B>
-	 * <ul>
-	 * <li>Create the Server->Client packet StatusUpdate with current HP and MP</li>
-	 * <li>Send the Server->Client packet StatusUpdate with current HP and MP to all L2Character called _statusListener that must be informed of HP/MP updates of this L2Character</li>
-	 * </ul>
-	 * <FONT COLOR=#FF0000><B><U>Caution</U>: This method DOESN'T SEND CP information</B></FONT>
-	 */
+	public StatusUpdate makeStatusUpdate(int... fields)
+	{
+		StatusUpdate su = new StatusUpdate(getObjectId());
+		for (int field : fields)
+		{
+			switch (field)
+			{
+				case StatusUpdate.CUR_HP:
+					su.addAttribute(field, (int) getCurrentHp());
+					break;
+				case StatusUpdate.MAX_HP:
+					su.addAttribute(field, getMaxHp());
+					break;
+				case StatusUpdate.CUR_MP:
+					su.addAttribute(field, (int) getCurrentMp());
+					break;
+				case StatusUpdate.MAX_MP:
+					su.addAttribute(field, getMaxMp());
+					break;
+				case StatusUpdate.KARMA:
+					su.addAttribute(field, getKarma());
+					break;
+				case StatusUpdate.CUR_CP:
+					su.addAttribute(field, (int) getCurrentCp());
+					break;
+				case StatusUpdate.MAX_CP:
+					su.addAttribute(field, getMaxCp());
+					break;
+				case StatusUpdate.PVP_FLAG:
+					su.addAttribute(field, getPvpFlag());
+					break;
+			}
+		}
+		return su;
+	}
+	
+	private final Lock statusListenersLock = new ReentrantLock();
+	
+	public void broadcastToStatusListeners(L2GameServerPacket... packets)
+	{
+		if (!isVisible() || (packets.length == 0))
+		{
+			return;
+		}
+		
+		statusListenersLock.lock();
+		try
+		{
+			for (int i = 0; i < getStatus().getStatusListener().size(); i++)
+			{
+				for (L2Character temp : getStatus().getStatusListener())
+				{
+					if (temp != null)
+					{
+						temp.sendPacket(packets);
+					}
+				}
+			}
+		}
+		finally
+		{
+			statusListenersLock.unlock();
+		}
+	}
+	
 	public void broadcastStatusUpdate()
 	{
 		if (getStatus().getStatusListener().isEmpty() || !needHpUpdate())
@@ -648,19 +705,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		// Create the Server->Client packet StatusUpdate with current HP
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.MAX_HP, getMaxHp());
-		su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
-		
-		// Go through the StatusListener
-		// Send the Server->Client packet StatusUpdate with current HP and MP
-		for (L2Character temp : getStatus().getStatusListener())
-		{
-			if (temp != null)
-			{
-				temp.sendPacket(su);
-			}
-		}
+		StatusUpdate su = makeStatusUpdate(StatusUpdate.MAX_HP, StatusUpdate.MAX_MP, StatusUpdate.CUR_HP, StatusUpdate.CUR_MP);
+		broadcastToStatusListeners(su);
 	}
 	
 	/**
@@ -1907,9 +1953,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		if (initmpcons > 0)
 		{
 			getStatus().reduceMp(initmpcons);
-			StatusUpdate su = new StatusUpdate(this);
-			su.addAttribute(StatusUpdate.CUR_MP, (int) getCurrentMp());
-			sendPacket(su);
 		}
 		
 		// Disable the skill during the re-use delay and create a task EnableSkill with Medium priority to enable it at the end of the re-use delay
@@ -6029,9 +6072,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		rechargeShots(skill.useSoulShot(), skill.useSpiritShot());
 		
-		final StatusUpdate su = new StatusUpdate(this);
-		boolean isSendStatus = false;
-		
 		// Consume MP of the L2Character and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
 		double mpConsume = getStat().getMpConsume(skill);
 		
@@ -6045,8 +6085,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 			
 			getStatus().reduceMp(mpConsume);
-			su.addAttribute(StatusUpdate.CUR_MP, (int) getCurrentMp());
-			isSendStatus = true;
 		}
 		
 		// Consume HP if necessary and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
@@ -6062,9 +6100,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 			
 			getStatus().reduceHp(consumeHp, this, true);
-			
-			su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
-			isSendStatus = true;
 		}
 		
 		// Consume CP if necessary and Send the Server->Client packet StatusUpdate with current CP/HP and MP to all other L2PcInstance to inform
@@ -6079,14 +6114,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 			
 			getStatus().reduceCp((int) consumeCp);
-			su.addAttribute(StatusUpdate.CUR_CP, (int) getCurrentCp());
-			isSendStatus = true;
-		}
-		
-		// Send a Server->Client packet StatusUpdate with MP modification to the L2PcInstance
-		if (isSendStatus)
-		{
-			sendPacket(su);
 		}
 		
 		if (isPlayer())
@@ -6475,12 +6502,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 									if (target.isPlayer())
 									{
 										target.getActingPlayer().getAI().clientStartAutoAttack();
-										
-										// vGodFather
-										if (target.getActingPlayer().getTarget() == null)
-										{
-											target.getActingPlayer().setTarget(player);
-										}
 									}
 									else if (target.isSummon() && ((L2Character) target).hasAI())
 									{
@@ -6608,9 +6629,16 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				for (L2Object target : targets)
 				{
-					if (target instanceof L2Character)
+					if (target.isCharacter())
 					{
 						final L2Character creature = (L2Character) target;
+						
+						// vGodFather
+						if (target.isPlayer() && (target.getActingPlayer().getTarget() == null))
+						{
+							target.getActingPlayer().setTarget(this);
+						}
+						
 						if (creature.hasAI())
 						{
 							// Notify target AI about the attack
@@ -6979,7 +7007,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	// Status - NEED TO REMOVE ONCE L2CHARTATUS IS COMPLETE
 	public void addStatusListener(L2Character object)
 	{
-		getStatus().addStatusListener(object);
+		statusListenersLock.lock();
+		try
+		{
+			getStatus().addStatusListener(object);
+		}
+		finally
+		{
+			statusListenersLock.unlock();
+		}
 	}
 	
 	public void reduceCurrentHp(double i, L2Character attacker, L2Skill skill)
@@ -7011,7 +7047,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	
 	public void removeStatusListener(L2Character object)
 	{
-		getStatus().removeStatusListener(object);
+		statusListenersLock.lock();
+		try
+		{
+			getStatus().removeStatusListener(object);
+		}
+		finally
+		{
+			statusListenersLock.unlock();
+		}
 	}
 	
 	protected void stopHpMpRegeneration()
@@ -7715,6 +7759,16 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public int getWatchDistance()
 	{
 		return _watchDistance;
+	}
+	
+	public int getKarma()
+	{
+		return 0;
+	}
+	
+	public byte getPvpFlag()
+	{
+		return 0;
 	}
 	
 	@Override
