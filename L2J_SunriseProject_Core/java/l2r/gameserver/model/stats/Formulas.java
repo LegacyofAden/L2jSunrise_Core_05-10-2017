@@ -2755,7 +2755,12 @@ public final class Formulas
 	 */
 	public static int calcEffectAbnormalTime(L2Character caster, L2Character target, L2Effect effect)
 	{
-		int time = effect.getSkill().isPassive() || effect.getSkill().isToggle() ? -1 : effect.getEffectTemplate().abnormalTime;
+		if (effect.getSkill().isPassive() || effect.getSkill().isToggle())
+		{
+			return 1;
+		}
+		
+		int time = effect.getEffectTemplate().abnormalTime;
 		int baseTime = time;
 		
 		// An herb buff will affect both master and servitor, but the buff duration will be half of the normal duration.
