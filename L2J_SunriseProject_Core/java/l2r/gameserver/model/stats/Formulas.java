@@ -2757,7 +2757,7 @@ public final class Formulas
 	{
 		if (effect.getSkill().isPassive() || effect.getSkill().isToggle())
 		{
-			return 1;
+			return effect.getEffectTemplate().abnormalTime;
 		}
 		
 		int time = effect.getEffectTemplate().abnormalTime;
