@@ -2595,6 +2595,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 							actor.addDamageHate(obj, 0, 2000);
 						}
 						actor.setTarget(obj);
+						setAttackTarget(obj);
 					}
 					if (actor.getIsChaos() != 0)
 					{

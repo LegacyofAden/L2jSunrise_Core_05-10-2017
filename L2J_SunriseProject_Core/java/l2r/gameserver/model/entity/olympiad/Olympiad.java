@@ -282,14 +282,7 @@ public class Olympiad extends ListenersContainer
 		}
 		
 		_log.info("Olympiad System: Loading Olympiad System....");
-		if (_period == 0)
-		{
-			_log.info("Olympiad System: Currently in Olympiad Period");
-		}
-		else
-		{
-			_log.info("Olympiad System: Currently in Validation Period");
-		}
+		_log.info("Olympiad System: Currently in " + (_period == 0 ? "Olympiad" : "Validation") + " Period");
 		
 		long milliToEnd = _period == 0 ? getMillisToOlympiadEnd() : getMillisToValidationEnd();
 		
