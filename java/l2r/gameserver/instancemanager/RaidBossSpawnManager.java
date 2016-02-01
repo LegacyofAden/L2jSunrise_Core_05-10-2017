@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -187,9 +188,8 @@ public class RaidBossSpawnManager
 			
 			if (!_schedules.containsKey(boss.getId()) && ((respawnMinDelay > 0) || (respawnMaxDelay > 0)))
 			{
-				final Calendar time = Calendar.getInstance();
-				time.setTimeInMillis(respawnTime);
-				_log.info(getClass().getSimpleName() + ": Updated " + boss.getName() + " respawn time to " + time.getTime());
+				final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+				_log.info(getClass().getSimpleName() + ": Updated " + boss.getName() + " respawn time to " + format.format(respawnDelay + System.currentTimeMillis()));
 				
 				_schedules.put(boss.getId(), ThreadPoolManager.getInstance().scheduleGeneral(new SpawnSchedule(boss.getId()), respawnDelay));
 				updateDb();
