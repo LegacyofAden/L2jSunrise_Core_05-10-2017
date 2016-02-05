@@ -2703,7 +2703,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						}
 						
 						// Check if the L2Object is inside the Faction Range of the actor
-						if (called.hasAI())
+						if (called.hasAI() && (target != null))
 						{
 							if ((Math.abs(target.getZ() - called.getZ()) < 600) && me.getAttackByList().contains(target) && ((called.getAI()._intention == CtrlIntention.AI_INTENTION_IDLE) || (called.getAI()._intention == CtrlIntention.AI_INTENTION_ACTIVE)) && (called.getInstanceId() == me.getInstanceId()))
 							{
