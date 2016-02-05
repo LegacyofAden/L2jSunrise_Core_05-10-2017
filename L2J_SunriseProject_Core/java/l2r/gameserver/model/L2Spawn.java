@@ -627,14 +627,7 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 			mob.getVariables().getSet().clear();
 		}
 		// Set the heading of the L2NpcInstance (random heading if not defined)
-		if (getHeading() == -1)
-		{
-			mob.setHeading(Rnd.nextInt(61794));
-		}
-		else
-		{
-			mob.setHeading(getHeading());
-		}
+		mob.setHeading(getHeading() == -1 ? Rnd.nextInt(61794) : getHeading());
 		
 		if (mob instanceof L2Attackable)
 		{
@@ -646,9 +639,7 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 			// Set champion on next spawn
 			if ((mob instanceof L2MonsterInstance) && !getTemplate().isQuestMonster() && !mob.isRaid() && !((L2MonsterInstance) mob).isRaidMinion() && (Config.L2JMOD_CHAMPION_FREQUENCY > 0) && (mob.getLevel() >= Config.L2JMOD_CHAMP_MIN_LVL) && (mob.getLevel() <= Config.L2JMOD_CHAMP_MAX_LVL) && (Config.L2JMOD_CHAMPION_ENABLE_IN_INSTANCES || (getInstanceId() == 0)))
 			{
-				int random = Rnd.get(100);
-				
-				if (random < Config.L2JMOD_CHAMPION_FREQUENCY)
+				if (Rnd.get(100) < Config.L2JMOD_CHAMPION_FREQUENCY)
 				{
 					((L2Attackable) mob).setChampion(true);
 				}

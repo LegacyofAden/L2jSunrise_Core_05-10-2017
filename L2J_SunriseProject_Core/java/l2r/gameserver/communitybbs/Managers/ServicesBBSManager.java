@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.cache.HtmCache;
+import l2r.gameserver.communitybbs.BoardsManager;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.data.sql.ClanTable;
 import l2r.gameserver.data.xml.impl.HennaData;
@@ -97,12 +98,14 @@ public class ServicesBBSManager extends BaseBBSManager
 		
 		if (command.equals(_servicesBBSCommand + ""))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Command", command);
 			filepath = path + "main.htm";
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), filepath);
 			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + ";gatekeeper"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Gatekeeper", command);
 			StringTokenizer st = new StringTokenizer(command, ";");
 			st.nextToken();
 			st.nextToken();
@@ -119,6 +122,7 @@ public class ServicesBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_sendMultisell"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Multisell", command);
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_SHOP_ALLOW)
 			{
 				activeChar.sendMessage("This function is disabled by admin.");
@@ -179,26 +183,29 @@ public class ServicesBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_CommunitySell"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Sell", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gmshop.htm");
 			separateAndSend(content, activeChar);
+			
 			activeChar.setIsUsingAioMultisell(true);
 			activeChar.sendPacket(new BuyList(activeChar.getAdena()));
 			activeChar.sendPacket(new ExBuySellList(activeChar, 0, true));
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_teleport"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Teleport", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/gatekeeper/main_gk.htm");
+			separateAndSend(content, activeChar);
+			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_TP_ALLOW)
 			{
 				activeChar.sendMessage("This function is disabled by admin.");
-				separateAndSend(content, activeChar);
 				return;
 			}
 			
 			if (activeChar.isJailed() || activeChar.isAlikeDead() || activeChar.isInOlympiadMode() || activeChar.inObserverMode() || SunriseEvents.isInEvent(activeChar) || OlympiadManager.getInstance().isRegistered(activeChar))
 			{
 				activeChar.sendMessage("Cannot use at the moment.");
-				separateAndSend(content, activeChar);
 				return;
 			}
 			
@@ -218,13 +225,11 @@ public class ServicesBBSManager extends BaseBBSManager
 					if (SiegeManager.getInstance().getSiege(c[0], c[1], c[2]) != null)
 					{
 						activeChar.sendPacket(SystemMessageId.NO_PORT_THAT_IS_IN_SIGE);
-						separateAndSend(content, activeChar);
 						return;
 					}
 					else if (TownManager.townHasCastleInSiege(c[0], c[1]) && activeChar.isInsideZone(ZoneIdType.TOWN))
 					{
 						activeChar.sendPacket(SystemMessageId.NO_PORT_THAT_IS_IN_SIGE);
-						separateAndSend(content, activeChar);
 						return;
 					}
 				}
@@ -234,7 +239,6 @@ public class ServicesBBSManager extends BaseBBSManager
 					if (onlyForNobless && !activeChar.isNoble() && !activeChar.isGM())
 					{
 						activeChar.sendMessage("Only noble chars can teleport there.");
-						separateAndSend(content, activeChar);
 						return;
 					}
 					
@@ -271,18 +275,22 @@ public class ServicesBBSManager extends BaseBBSManager
 			{
 				SecurityActions.startSecurity(activeChar, SecurityType.COMMUNITY_SYSTEM);
 			}
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_drawSymbol"))
 		{
-			List<L2Henna> tato = HennaData.getInstance().getHennaList(activeChar.getClassId());
-			activeChar.sendPacket(new HennaEquipList(activeChar, tato));
-			
+			BoardsManager.getInstance().addBypass(activeChar, "Service Symbol Add", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/symbolMaker.htm");
 			separateAndSend(content, activeChar);
+			
+			List<L2Henna> tato = HennaData.getInstance().getHennaList(activeChar.getClassId());
+			activeChar.sendPacket(new HennaEquipList(activeChar, tato));
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_removeSymbol"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Symbol Remove", command);
+			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/symbolMaker.htm");
+			separateAndSend(content, activeChar);
+			
 			boolean hasHennas = false;
 			for (int i = 1; i <= 3; i++)
 			{
@@ -301,36 +309,45 @@ public class ServicesBBSManager extends BaseBBSManager
 			{
 				activeChar.sendMessage("You do not have dyes.");
 			}
-			
-			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/symbolMaker.htm");
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_addAugment"))
 		{
-			activeChar.sendPacket(new ExShowVariationMakeWindow());
+			BoardsManager.getInstance().addBypass(activeChar, "Service Augment Add", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/blacksmith.htm");
 			separateAndSend(content, activeChar);
+			
+			activeChar.sendPacket(new ExShowVariationMakeWindow());
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_delAugment"))
 		{
-			activeChar.sendPacket(new ExShowVariationCancelWindow());
+			BoardsManager.getInstance().addBypass(activeChar, "Service Augment Remove", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/blacksmith.htm");
 			separateAndSend(content, activeChar);
+			
+			activeChar.sendPacket(new ExShowVariationCancelWindow());
 		}
 		else if (command.toLowerCase().startsWith(_servicesBBSCommand + "_pwithdraw"))
 		{
-			GenerateHtmls.showPWithdrawWindow(activeChar, null, (byte) 0);
+			BoardsManager.getInstance().addBypass(activeChar, "Service Private Wh Withdraw", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
 			separateAndSend(content, activeChar);
+			
+			GenerateHtmls.showPWithdrawWindow(activeChar, null, (byte) 0);
 		}
 		else if (command.toLowerCase().startsWith(_servicesBBSCommand + "_cwithdraw"))
 		{
-			GenerateHtmls.showCWithdrawWindow(activeChar, null, (byte) 0);
+			BoardsManager.getInstance().addBypass(activeChar, "Service Clan Wh Withdraw", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
 			separateAndSend(content, activeChar);
+			
+			GenerateHtmls.showCWithdrawWindow(activeChar, null, (byte) 0);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_ndeposit"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Private Wh Deposit", command);
+			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
+			separateAndSend(content, activeChar);
+			
 			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
 			activeChar.setActiveWarehouse(activeChar.getWarehouse());
 			if (activeChar.getWarehouse().getSize() == activeChar.getWareHouseLimit())
@@ -341,11 +358,13 @@ public class ServicesBBSManager extends BaseBBSManager
 			activeChar.setIsUsingAioWh(true);
 			activeChar.tempInventoryDisable();
 			activeChar.sendPacket(new WareHouseDepositList(activeChar, WareHouseDepositList.PRIVATE));
-			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_clandeposit"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Clan Wh Deposit", command);
+			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
+			separateAndSend(content, activeChar);
+			
 			if (activeChar.getClan() == null)
 			{
 				activeChar.sendPacket(SystemMessageId.YOU_ARE_NOT_A_CLAN_MEMBER);
@@ -364,12 +383,13 @@ public class ServicesBBSManager extends BaseBBSManager
 			activeChar.setActiveWarehouse(activeChar.getClan().getWarehouse());
 			activeChar.tempInventoryDisable();
 			activeChar.sendPacket(new WareHouseDepositList(activeChar, WareHouseDepositList.CLAN));
-			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/warehouse.htm");
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_washPK"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Clean Pk", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_decreasePK.htm");
+			separateAndSend(content, activeChar);
+			
 			if (activeChar.getPkKills() > 0)
 			{
 				content = content.replaceAll("%replace%", buttons(activeChar));
@@ -378,17 +398,16 @@ public class ServicesBBSManager extends BaseBBSManager
 			{
 				content = content.replaceAll("%replace%", "<table width=750 height=20><tr><td align=center>You dont have PK Points to wash.</td></tr></table>");
 			}
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_deletePK"))
 		{
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_decreasePK.htm");
 			content = content.replaceAll("%replace%", buttons(activeChar));
+			separateAndSend(content, activeChar);
 			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_WASH_PK_ALLOW)
 			{
 				activeChar.sendMessage("This function is disabled by admin.");
-				separateAndSend(content, activeChar);
 				return;
 			}
 			
@@ -411,17 +430,12 @@ public class ServicesBBSManager extends BaseBBSManager
 					}
 				}
 			}
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_vote"))
 		{
-			if (activeChar == null)
-			{
-				return;
-			}
-			
 			if (command.startsWith(_servicesBBSCommand + "_vote_main"))
 			{
+				BoardsManager.getInstance().addBypass(activeChar, "Service Vote Main", command);
 				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
 				content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
 				separateAndSend(content, activeChar);
@@ -433,23 +447,23 @@ public class ServicesBBSManager extends BaseBBSManager
 				final String[] subCommand = command.split(" ");
 				String site = subCommand[1];
 				
+				BoardsManager.getInstance().addBypass(activeChar, "Service Vote " + site, command);
+				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
+				content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
+				separateAndSend(content, activeChar);
+				
 				if (!VoteHandler.voteChecks(activeChar, site))
 				{
-					content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
-					content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
-					separateAndSend(content, activeChar);
 					return;
 				}
 				
 				VoteHandler.preActivateVoting(activeChar, site);
-				content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/vote.htm");
-				content = content.replaceAll("%voteBanners%", getVoteBanners(activeChar));
-				separateAndSend(content, activeChar);
-				return;
 			}
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_atrEnchant"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Attribute Enchant", command);
+			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_ATTRIBUTE_MANAGER_ALLOW)
 			{
 				activeChar.sendMessage("This function is disabled by admin.");
@@ -620,12 +634,13 @@ public class ServicesBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_changename"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Name Change", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop.htm");
+			separateAndSend(content, activeChar);
 			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_NAME_CHANGE_ALLOW)
 			{
 				activeChar.sendMessage("This function is disabled by admin.");
-				separateAndSend(content, activeChar);
 				return;
 			}
 			
@@ -641,7 +656,6 @@ public class ServicesBBSManager extends BaseBBSManager
 					if (!Util.isAlphaNumeric(val))
 					{
 						activeChar.sendMessage("Invalid character name.");
-						separateAndSend(content, activeChar);
 						return;
 					}
 					
@@ -650,7 +664,6 @@ public class ServicesBBSManager extends BaseBBSManager
 						if (CharNameTable.getInstance().getIdByName(val) > 0)
 						{
 							activeChar.sendMessage("Warning, name " + val + " already exists.");
-							separateAndSend(content, activeChar);
 							return;
 						}
 						
@@ -684,20 +697,19 @@ public class ServicesBBSManager extends BaseBBSManager
 				catch (StringIndexOutOfBoundsException e)
 				{
 					activeChar.sendMessage("Player name box cannot be empty.");
-					separateAndSend(content, activeChar);
 				}
 			}
-			separateAndSend(content, activeChar);
 		}
 		// Change clan name
 		else if (command.startsWith(_servicesBBSCommand + "_changeclanname"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Clan Name Change", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop.htm");
+			separateAndSend(content, activeChar);
 			
 			if (!CommunityServicesConfigs.COMMUNITY_SERVICES_CLAN_NAME_CHANGE_ALLOW)
 			{
 				activeChar.sendMessage("This function is disabled by admin.");
-				separateAndSend(content, activeChar);
 				return;
 			}
 			
@@ -713,14 +725,12 @@ public class ServicesBBSManager extends BaseBBSManager
 					if ((activeChar.getClan() == null) || !activeChar.isClanLeader())
 					{
 						activeChar.sendPacket(SystemMessageId.YOU_ARE_NOT_AUTHORIZED_TO_DO_THAT);
-						separateAndSend(content, activeChar);
 						return;
 					}
 					
 					if (!Util.isAlphaNumeric(val))
 					{
 						activeChar.sendPacket(SystemMessageId.CLAN_NAME_INCORRECT);
-						separateAndSend(content, activeChar);
 						return;
 					}
 					
@@ -729,7 +739,6 @@ public class ServicesBBSManager extends BaseBBSManager
 						if (ClanTable.getInstance().getClanByName(val) != null)
 						{
 							activeChar.sendMessage("Warning, clan name " + val + " already exists.");
-							separateAndSend(content, activeChar);
 							return;
 						}
 						
@@ -762,13 +771,12 @@ public class ServicesBBSManager extends BaseBBSManager
 				catch (StringIndexOutOfBoundsException e)
 				{
 					activeChar.sendMessage("Clan name box cannot be empty.");
-					separateAndSend(content, activeChar);
 				}
 			}
-			separateAndSend(content, activeChar);
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_buffer"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Service Buffer", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/buffer/main.htm");
 			separateAndSend(content, activeChar);
 		}
@@ -804,6 +812,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			// Method to restore HP/MP/CP
 			else if (subCommand[4].startsWith("healme"))
 			{
+				BoardsManager.getInstance().addBypass(activeChar, "Service Buffer Heal", command);
 				if ((activeChar.getPvpFlag() != 0) && !activeChar.isInsideZone(ZoneIdType.PEACE))
 				{
 					activeChar.sendMessage("Cannot use this feature here with flag.");
@@ -818,6 +827,7 @@ public class ServicesBBSManager extends BaseBBSManager
 			// Method to give auto buffs depends on class
 			else if (subCommand[4].startsWith("autobuff"))
 			{
+				BoardsManager.getInstance().addBypass(activeChar, "Service Buffer Auto Buff", command);
 				if ((activeChar.getPvpFlag() != 0) && !activeChar.isInsideZone(ZoneIdType.PEACE))
 				{
 					activeChar.sendMessage("Cannot use this feature here with flag.");

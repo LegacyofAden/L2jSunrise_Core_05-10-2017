@@ -763,10 +763,10 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		z += 5;
 		
 		// vGodFather addon
-		Location dropDest = GeoData.getInstance().moveCheck(originalX, originalY, z, x, y, z, instanceId);
-		x = dropDest.getX();
-		y = dropDest.getY();
-		z = dropDest.getZ();
+		Location fixedLoc = GeoData.getInstance().moveCheck(originalX, originalY, z, x, y, z, instanceId);
+		x = fixedLoc.getX();
+		y = fixedLoc.getY();
+		z = fixedLoc.getZ();
 		
 		// Send a Server->Client packet TeleportToLocationt to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
 		broadcastPacket(new TeleportToLocation(this, x, y, z, heading));
@@ -5143,6 +5143,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public void onHitTimer(L2Character target, int damage, boolean crit, boolean miss, boolean soulshot, byte shld)
 	{
+		// vGodFather Deny the whole process if actor is casting.
+		if (isCastingNow())
+		{
+			return;
+		}
+		
 		// If the attacker/target is dead or use fake death, notify the AI with EVT_CANCEL
 		// and send a Server->Client packet ActionFailed (if attacker is a L2PcInstance)
 		if ((target == null) || isAlikeDead())

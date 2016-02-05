@@ -336,13 +336,6 @@ public class PcStat extends PlayableStat
 			}
 		}
 		
-		StatusUpdate su = new StatusUpdate(getActiveChar());
-		su.addAttribute(StatusUpdate.LEVEL, getLevel());
-		su.addAttribute(StatusUpdate.MAX_CP, getMaxCp());
-		su.addAttribute(StatusUpdate.MAX_HP, getMaxHp());
-		su.addAttribute(StatusUpdate.MAX_MP, getMaxMp());
-		getActiveChar().sendPacket(su);
-		
 		// Update the overloaded status of the L2PcInstance
 		getActiveChar().refreshOverloaded(false);
 		// Update the expertise status of the L2PcInstance

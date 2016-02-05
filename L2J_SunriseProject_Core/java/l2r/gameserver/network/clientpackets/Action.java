@@ -28,6 +28,7 @@ import l2r.gameserver.model.effects.L2Effect;
 import l2r.gameserver.model.effects.L2EffectType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
+import l2r.gameserver.network.serverpackets.DeleteObject;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
 /**
@@ -98,10 +99,12 @@ public final class Action extends L2GameClientPacket
 			obj = L2World.getInstance().findObject(_objectId);
 		}
 		
-		// If object requested does not exist, add warn msg into logs
+		// vGodFather
+		// Just in case we miss deleteObject packet and object is null
+		// we will send again DeleteObject
 		if (obj == null)
 		{
-			// pressing e.g. pickup many times quickly would get you here
+			sendPacket(new DeleteObject(_objectId));// delete visible object in client
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}

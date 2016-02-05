@@ -1110,7 +1110,7 @@ public class L2Party extends AbstractPlayerGroup
 	
 	public PartyDistributionType getDistributionType()
 	{
-		return _distributionType;
+		return _distributionType != null ? _distributionType : PartyDistributionType.FINDERS_KEEPERS;
 	}
 	
 	public boolean isInCommandChannel()

@@ -18,8 +18,12 @@
  */
 package l2r.gameserver.communitybbs;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import l2r.Config;
 import l2r.gameserver.communitybbs.Managers.ClanBBSManager;
+import l2r.gameserver.communitybbs.Managers.FavoriteBBSManager;
 import l2r.gameserver.communitybbs.Managers.MailBBSManager;
 import l2r.gameserver.communitybbs.Managers.PostBBSManager;
 import l2r.gameserver.communitybbs.Managers.ServicesBBSManager;
@@ -99,9 +103,9 @@ public class BoardsManager
 		{
 			// RegionBBSManager.getInstance().cbByPass(command, activeChar);
 		}
-		else if (command.startsWith("_bbsgetfav"))
+		else if (command.startsWith("_bbsgetfav") || command.startsWith("bbs_add_fav") || command.startsWith("_bbsdelfav_"))
 		{
-			// RegionBBSManager.getInstance().cbByPass(command, activeChar);
+			FavoriteBBSManager.getInstance().cbByPass(command, activeChar);
 		}
 		else if (command.startsWith("_bbslink"))
 		{
@@ -155,6 +159,31 @@ public class BoardsManager
 			// no nothing
 		}
 		return;
+	}
+	
+	// This will be used for favorite bbs manager
+	/** The bypasses used by the players. */
+	private final Map<Integer, String> _bypasses = new ConcurrentHashMap<>();
+	
+	/**
+	 * Sets the last bypass used by the player.
+	 * @param player the player
+	 * @param title the title
+	 * @param bypass the bypass
+	 */
+	public void addBypass(L2PcInstance player, String title, String bypass)
+	{
+		_bypasses.put(player.getObjectId(), title + "&" + bypass);
+	}
+	
+	/**
+	 * Removes the last bypass used by the player.
+	 * @param player the player
+	 * @return the last bypass used
+	 */
+	public String removeBypass(L2PcInstance player)
+	{
+		return _bypasses.remove(player.getObjectId());
 	}
 	
 	public static BoardsManager getInstance()

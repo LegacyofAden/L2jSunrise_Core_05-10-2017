@@ -1066,6 +1066,7 @@ public class Olympiad extends ListenersContainer
 		
 		final int rank = NOBLES_RANK.get(objId);
 		int points = (player.isHero() || Hero.getInstance().isUnclaimedHero(player.getObjectId()) ? Config.ALT_OLY_HERO_POINTS : 0);
+		points += getNoblePoints(objId);
 		switch (rank)
 		{
 			case 1:
@@ -1082,6 +1083,7 @@ public class Olympiad extends ListenersContainer
 				break;
 			default:
 				points += Config.ALT_OLY_RANK5_POINTS;
+				break;
 		}
 		
 		if (clear)
@@ -1094,11 +1096,7 @@ public class Olympiad extends ListenersContainer
 	
 	public int getNoblePoints(int objId)
 	{
-		if (!NOBLES.containsKey(objId))
-		{
-			return 0;
-		}
-		return NOBLES.get(objId).getInt(POINTS);
+		return !NOBLES.containsKey(objId) ? 0 : NOBLES.get(objId).getInt(POINTS);
 	}
 	
 	public int getLastNobleOlympiadPoints(int objId)

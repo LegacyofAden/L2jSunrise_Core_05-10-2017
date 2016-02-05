@@ -245,7 +245,7 @@ public final class RequestBypassToServer extends L2GameClientPacket
 					EventDispatcher.getInstance().notifyEventAsync(new OnNpcManorBypass(activeChar, lastNpc, ask, state, time), lastNpc);
 				}
 			}
-			else if (_command.startsWith("_bbs") || _command.startsWith("_maillist") || _command.startsWith("_friendlist"))
+			else if (_command.startsWith("_bbs") || _command.startsWith("bbs") || _command.startsWith("_maillist") || _command.startsWith("_friendlist"))
 			{
 				BoardsManager.getInstance().handleCommands(getClient(), _command);
 			}

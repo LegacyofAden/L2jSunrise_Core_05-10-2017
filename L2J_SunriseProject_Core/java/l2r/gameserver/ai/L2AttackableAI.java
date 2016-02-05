@@ -33,7 +33,6 @@ import l2r.gameserver.GeoData;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.sql.TerritoryTable;
 import l2r.gameserver.enums.AIType;
-import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.DimensionalRiftManager;
@@ -748,6 +747,12 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					x1 = (deltaX + x1) - range;
 					y1 = (deltaY + y1) - range;
 					z1 = npc.getZ();
+					
+					// vGodFather this will fix random walk for mobs
+					Location fixedLoc = GeoData.getInstance().moveCheck(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId());
+					x1 = fixedLoc.getX();
+					y1 = fixedLoc.getY();
+					z1 = fixedLoc.getZ();
 				}
 			}
 			
@@ -787,7 +792,6 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	 * <ul>
 	 * <li>Update the attack timeout if actor is running</li>
 	 * <li>If target is dead or timeout is expired, stop this attack and set the Intention to AI_INTENTION_ACTIVE</li>
-	 * <li>Call all L2Object of its Faction inside the Faction Range</li>
 	 * <li>Chose a target and order to attack it with magic skill or physical attack</li>
 	 * </ul>
 	 */
@@ -814,93 +818,6 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			return;
 		}
 		
-		final int collision = npc.getTemplate().getCollisionRadius();
-		
-		// Handle all L2Object of its Faction inside the Faction Range
-		
-		String faction_id = getActiveChar().getFactionId();
-		if ((faction_id != null) && !faction_id.isEmpty())
-		{
-			final int factionRange = npc.getClanRange() + collision;
-			// Go through all L2Object that belong to its faction
-			try
-			{
-				for (L2Object obj : npc.getKnownList().getKnownCharactersInRadius(factionRange))
-				{
-					if (obj instanceof L2Npc)
-					{
-						L2Npc called = (L2Npc) obj;
-						
-						// Handle SevenSigns mob Factions
-						final String npcfaction = called.getFactionId();
-						if ((npcfaction == null) || npcfaction.isEmpty())
-						{
-							continue;
-						}
-						
-						boolean sevenSignFaction = false;
-						
-						// TODO: Unhardcode this by AI scripts (DrHouse)
-						// Catacomb mobs should assist lilim and nephilim other than dungeon
-						if ("c_dungeon_clan".equals(faction_id) && ("c_dungeon_lilim".equals(npcfaction) || "c_dungeon_nephi".equals(npcfaction)))
-						{
-							sevenSignFaction = true;
-						}
-						// Lilim mobs should assist other Lilim and catacomb mobs
-						else if ("c_dungeon_lilim".equals(faction_id) && "c_dungeon_clan".equals(npcfaction))
-						{
-							sevenSignFaction = true;
-						}
-						// Nephilim mobs should assist other Nephilim and catacomb mobs
-						else if ("c_dungeon_nephi".equals(faction_id) && "c_dungeon_clan".equals(npcfaction))
-						{
-							sevenSignFaction = true;
-						}
-						
-						if (!faction_id.equals(npcfaction) && !sevenSignFaction)
-						{
-							continue;
-						}
-						
-						// Check if the L2Object is inside the Faction Range of the actor
-						if (called.hasAI())
-						{
-							if ((Math.abs(originalAttackTarget.getZ() - called.getZ()) < 600) && npc.getAttackByList().contains(originalAttackTarget) && ((called.getAI()._intention == CtrlIntention.AI_INTENTION_IDLE) || (called.getAI()._intention == CtrlIntention.AI_INTENTION_ACTIVE)) && (called.getInstanceId() == npc.getInstanceId()))
-							{
-								if (originalAttackTarget.isPlayable())
-								{
-									if (originalAttackTarget.isInParty() && originalAttackTarget.getParty().isInDimensionalRift())
-									{
-										byte riftType = originalAttackTarget.getParty().getDimensionalRift().getType();
-										byte riftRoom = originalAttackTarget.getParty().getDimensionalRift().getCurrentRoom();
-										
-										if ((npc instanceof L2RiftInvaderInstance) && !DimensionalRiftManager.getInstance().getRoom(riftType, riftRoom).checkIfInZone(npc.getX(), npc.getY(), npc.getZ()))
-										{
-											continue;
-										}
-									}
-									
-									// By default, when a faction member calls for help, attack the caller's attacker.
-									// Notify the AI with EVT_AGGRESSION
-									called.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, originalAttackTarget, 1);
-									EventDispatcher.getInstance().notifyEventAsync(new OnAttackableFactionCall(called, getActiveChar(), originalAttackTarget.getActingPlayer(), originalAttackTarget.isSummon()), called);
-								}
-								else if ((called instanceof L2Attackable) && (getAttackTarget() != null) && (called.getAI()._intention != CtrlIntention.AI_INTENTION_ATTACK))
-								{
-									((L2Attackable) called).addDamageHate(getAttackTarget(), 0, npc.getHating(getAttackTarget()));
-									called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, getAttackTarget());
-								}
-							}
-						}
-					}
-				}
-			}
-			catch (NullPointerException e)
-			{
-				_log.warn(getClass().getSimpleName() + ": thinkAttack() faction call failed: " + e.getMessage());
-			}
-		}
-		
 		if (npc.isCoreAIDisabled())
 		{
 			return;
@@ -917,6 +834,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		setAttackTarget(mostHate);
 		npc.setTarget(mostHate);
 		
+		final int collision = npc.getTemplate().getCollisionRadius();
 		final int combinedCollision = collision + mostHate.getTemplate().getCollisionRadius();
 		
 		if (!npc.getTemplate().getSuicideSkills().isEmpty() && ((int) ((npc.getCurrentHp() / npc.getMaxHp()) * 100) < 30))
@@ -2420,14 +2338,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				
 				if (dist2 <= range)
 				{
-					if (MostHate != null)
-					{
-						actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-					}
-					else
-					{
-						actor.addDamageHate(obj, 0, 2000);
-					}
+					actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
 					return;
@@ -2451,14 +2362,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				if (obj instanceof L2PcInstance)
 				{
-					if (MostHate != null)
-					{
-						actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-					}
-					else
-					{
-						actor.addDamageHate(obj, 0, 2000);
-					}
+					actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
 					
@@ -2477,28 +2381,14 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 							continue;
 						}
 						
-						if (MostHate != null)
-						{
-							actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-						}
-						else
-						{
-							actor.addDamageHate(obj, 0, 2000);
-						}
+						actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 						actor.setTarget(obj);
 						setAttackTarget(obj);
 					}
 				}
 				else if (obj instanceof L2Summon)
 				{
-					if (MostHate != null)
-					{
-						actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-					}
-					else
-					{
-						actor.addDamageHate(obj, 0, 2000);
-					}
+					actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
 				}
@@ -2536,14 +2426,8 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				{
 					continue;
 				}
-				if (MostHate != null)
-				{
-					actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-				}
-				else
-				{
-					actor.addDamageHate(obj, 0, 2000);
-				}
+				
+				actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 				actor.setTarget(obj);
 				setAttackTarget(obj);
 				return;
@@ -2571,14 +2455,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				if (obj instanceof L2PcInstance)
 				{
-					if ((MostHate != null) && !MostHate.isDead())
-					{
-						actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-					}
-					else
-					{
-						actor.addDamageHate(obj, 0, 2000);
-					}
+					actor.addDamageHate(obj, 0, ((MostHate != null) && !MostHate.isDead()) ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
 				}
@@ -2586,14 +2463,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				{
 					if ((actor.getEnemyClan() != null) && actor.getEnemyClan().equals(((L2Attackable) obj).getClan()))
 					{
-						if (MostHate != null)
-						{
-							actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-						}
-						else
-						{
-							actor.addDamageHate(obj, 0, 2000);
-						}
+						actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 						actor.setTarget(obj);
 						setAttackTarget(obj);
 					}
@@ -2604,28 +2474,14 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 							continue;
 						}
 						
-						if (MostHate != null)
-						{
-							actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-						}
-						else
-						{
-							actor.addDamageHate(obj, 0, 2000);
-						}
+						actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 						actor.setTarget(obj);
 						setAttackTarget(obj);
 					}
 				}
 				else if (obj instanceof L2Summon)
 				{
-					if (MostHate != null)
-					{
-						actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-					}
-					else
-					{
-						actor.addDamageHate(obj, 0, 2000);
-					}
+					actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
 				}
@@ -2736,6 +2592,9 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 		}
 		
+		// Faction call
+		factionCall(me, attacker);
+		
 		super.onEvtAttacked(attacker);
 	}
 	
@@ -2788,6 +2647,100 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				{
 					master.getMinionList().onAssist(me, target);
 				}
+			}
+			
+			// Faction call
+			factionCall(me, target);
+		}
+	}
+	
+	// vGodFather
+	private void factionCall(L2Attackable me, L2Character target)
+	{
+		// Fanction call
+		String faction_id = getActiveChar().getFactionId();
+		if ((faction_id != null) && !faction_id.isEmpty())
+		{
+			final int factionRange = me.getClanRange() + me.getTemplate().getCollisionRadius();
+			// Go through all L2Object that belong to its faction
+			try
+			{
+				for (L2Object obj : me.getKnownList().getKnownCharactersInRadius(factionRange))
+				{
+					if (obj instanceof L2Npc)
+					{
+						L2Npc called = (L2Npc) obj;
+						
+						// Handle SevenSigns mob Factions
+						final String npcfaction = called.getFactionId();
+						if ((npcfaction == null) || npcfaction.isEmpty())
+						{
+							continue;
+						}
+						
+						boolean sevenSignFaction = false;
+						
+						// TODO: Unhardcode this by AI scripts (DrHouse)
+						// Catacomb mobs should assist lilim and nephilim other than dungeon
+						if ("c_dungeon_clan".equals(faction_id) && ("c_dungeon_lilim".equals(npcfaction) || "c_dungeon_nephi".equals(npcfaction)))
+						{
+							sevenSignFaction = true;
+						}
+						// Lilim mobs should assist other Lilim and catacomb mobs
+						else if ("c_dungeon_lilim".equals(faction_id) && "c_dungeon_clan".equals(npcfaction))
+						{
+							sevenSignFaction = true;
+						}
+						// Nephilim mobs should assist other Nephilim and catacomb mobs
+						else if ("c_dungeon_nephi".equals(faction_id) && "c_dungeon_clan".equals(npcfaction))
+						{
+							sevenSignFaction = true;
+						}
+						
+						if (!faction_id.equals(npcfaction) && !sevenSignFaction)
+						{
+							continue;
+						}
+						
+						// Check if the L2Object is inside the Faction Range of the actor
+						if (called.hasAI())
+						{
+							if ((Math.abs(target.getZ() - called.getZ()) < 600) && me.getAttackByList().contains(target) && ((called.getAI()._intention == CtrlIntention.AI_INTENTION_IDLE) || (called.getAI()._intention == CtrlIntention.AI_INTENTION_ACTIVE)) && (called.getInstanceId() == me.getInstanceId()))
+							{
+								if (target.isPlayable())
+								{
+									if (target.isInParty() && target.getParty().isInDimensionalRift())
+									{
+										byte riftType = target.getParty().getDimensionalRift().getType();
+										byte riftRoom = target.getParty().getDimensionalRift().getCurrentRoom();
+										
+										if ((me instanceof L2RiftInvaderInstance) && !DimensionalRiftManager.getInstance().getRoom(riftType, riftRoom).checkIfInZone(me.getX(), me.getY(), me.getZ()))
+										{
+											continue;
+										}
+									}
+									
+									// By default, when a faction member calls for help, attack the caller's attacker.
+									// Notify the AI with EVT_AGGRESSION
+									called.setIsRunning(true);
+									((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
+									called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
+									// called.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, target, 1);
+									EventDispatcher.getInstance().notifyEventAsync(new OnAttackableFactionCall(called, getActiveChar(), target.getActingPlayer(), target.isSummon()), called);
+								}
+								else if ((called instanceof L2Attackable) && (getAttackTarget() != null) && (called.getAI()._intention != CtrlIntention.AI_INTENTION_ATTACK))
+								{
+									((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
+									called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, getAttackTarget());
+								}
+							}
+						}
+					}
+				}
+			}
+			catch (NullPointerException e)
+			{
+				_log.warn(getClass().getSimpleName() + ": thinkAttack() faction call failed: " + e);
 			}
 		}
 	}

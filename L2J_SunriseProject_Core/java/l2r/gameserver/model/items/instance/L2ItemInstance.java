@@ -1682,10 +1682,7 @@ public final class L2ItemInstance extends L2Object
 		}
 		catch (Exception e)
 		{
-			if (Config.DEBUG)
-			{
-				_log.error("Could not update item " + this + " in DB: Reason: " + e.getMessage(), e);
-			}
+			_log.error("Could not update item " + this + " in DB: Reason: " + e.getMessage(), e);
 		}
 	}
 	
@@ -1731,10 +1728,7 @@ public final class L2ItemInstance extends L2Object
 		}
 		catch (Exception e)
 		{
-			if (Config.DEBUG)
-			{
-				_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
-			}
+			_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
 		}
 	}
 	

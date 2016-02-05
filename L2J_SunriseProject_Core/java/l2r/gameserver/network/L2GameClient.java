@@ -576,6 +576,12 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 			// vGodFather
 			try
 			{
+				try (PreparedStatement ps = con.prepareStatement("DELETE FROM bbs_favorite WHERE playerId=?"))
+				{
+					ps.setInt(1, objid);
+					ps.execute();
+				}
+				
 				try (PreparedStatement ps = con.prepareStatement("DELETE FROM achievements WHERE owner_id=?"))
 				{
 					ps.setInt(1, objid);
