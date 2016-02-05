@@ -1811,7 +1811,7 @@ public final class Config
 			status_update_packetsDelay = serverPacketsSettings.getInt("StatusUpdatePacketsDelay", 50);
 			effects_packetsDelay = serverPacketsSettings.getInt("EffectsPacketsDelay", 100);
 			stats_update_packetsDelay = serverPacketsSettings.getInt("StatsUpdatePacketsDelay", 100);
-			moveToPawn_packetsDelay = serverPacketsSettings.getInt("MoveToPawnPacketsDelay", 70);
+			moveToPawn_packetsDelay = serverPacketsSettings.getInt("MoveToPawnPacketsDelay", 0);
 			
 			// Load Telnet L2Properties file (if exists)
 			final PropertiesParser telnetSettings = new PropertiesParser(TELNET_FILE);
