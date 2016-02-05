@@ -170,18 +170,18 @@ public class L2RaidBossInstance extends L2MonsterInstance
 			return;
 		}
 		
-		final int spawnX = spawn.getX();
-		final int spawnY = spawn.getY();
-		final int spawnZ = spawn.getZ();
+		// vGodFather force return raid to spawn loc if range is higher of 9000(custom)
+		if (!isInsideRadius(spawn.getX(), spawn.getY(), spawn.getZ(), Math.max(Config.MAX_DRIFT_RANGE, 9000), true, false))
+		{
+			teleToLocation(spawn.getLocation(), false);
+		}
 		
-		// TODO: This check is not needed. We will teleport rb to his spawn loc! if there is one...
 		// if (!isInCombat() && !isMovementDisabled())
 		// {
-		// if (!isInsideRadius(spawnX, spawnY, spawnZ, Math.max(Config.MAX_DRIFT_RANGE, 200), true, false))
-		if (!isInsideRadius(spawnX, spawnY, spawnZ, Math.max(Config.MAX_DRIFT_RANGE, 9000), true, false))
-		{
-			teleToLocation(spawnX, spawnY, spawnZ, false);
-		}
+		// if (!isInsideRadius(spawn.getX(), spawn.getY(), spawn.getZ(), Math.max(Config.MAX_DRIFT_RANGE, 200), true, false))
+		// {
+		// teleToLocation(spawn.getLocation(), 0);
+		// }
 		// }
 	}
 	

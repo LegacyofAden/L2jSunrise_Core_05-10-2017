@@ -47,6 +47,7 @@ public class GeoData implements IGeoDriver
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoData.class);
 	private static final int ELEVATED_SEE_OVER_DISTANCE = 2;
 	private static final int MAX_SEE_OVER_HEIGHT = 48;
+	private static final int SPAWN_Z_DELTA_LIMIT = 100;
 	
 	private final IGeoDriver _driver;
 	
@@ -164,7 +165,8 @@ public class GeoData implements IGeoDriver
 	}
 	
 	/**
-	 * Gets the spawn height.
+	 * Gets the spawn height. This method is used to coorect Z for spawning and<br>
+	 * movement.
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the the z coordinate
@@ -172,12 +174,22 @@ public class GeoData implements IGeoDriver
 	 */
 	public int getSpawnHeight(int x, int y, int z)
 	{
-		final int height = getHeight(x, y, z);
-		if ((height > (z + 100)) || (height < (z - 100)))
+		final int geoX = getGeoX(x);
+		final int geoY = getGeoY(y);
+		
+		if (!hasGeoPos(geoX, geoY))
 		{
 			return z;
 		}
-		return height;
+		
+		// this Z correction can not increase Z by more than SPAWN_Z_DELTA_LIMIT units and can decrease Z an unlimited amount
+		int nearestZ = getNearestZ(geoX, geoY, z);
+		if ((nearestZ > z) && ((nearestZ - z) > SPAWN_Z_DELTA_LIMIT))
+		{
+			// here the nearest Z was more than SPAWN_Z_DELTA_LIMIT above Z, so we use the next lower z instead
+			return getNextLowerZ(geoX, geoY, z);
+		}
+		return nearestZ;
 	}
 	
 	/**

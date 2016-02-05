@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import l2r.L2DatabaseFactory;
+import l2r.gameserver.communitybbs.BoardsManager;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.model.BlockList;
 import l2r.gameserver.model.L2World;
@@ -39,6 +40,8 @@ public class MailBBSManager extends BaseBBSManager
 	@Override
 	public void cbByPass(String command, L2PcInstance activeChar)
 	{
+		BoardsManager.getInstance().addBypass(activeChar, "Mail Command", command);
+		
 		if (command.equals("_maillist_0_1_0_"))
 		{
 			showInbox(activeChar, 1);

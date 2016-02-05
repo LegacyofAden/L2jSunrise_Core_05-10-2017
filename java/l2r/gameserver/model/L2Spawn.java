@@ -626,14 +626,7 @@ public class L2Spawn implements IPositionable, IIdentifiable, INamable
 			mob.getVariables().getSet().clear();
 		}
 		// Set the heading of the L2NpcInstance (random heading if not defined)
-		if (getHeading() == -1)
-		{
-			mob.setHeading(Rnd.nextInt(61794));
-		}
-		else
-		{
-			mob.setHeading(getHeading());
-		}
+		mob.setHeading(getHeading() == -1 ? Rnd.nextInt(61794) : getHeading());
 		
 		if (mob instanceof L2Attackable)
 		{

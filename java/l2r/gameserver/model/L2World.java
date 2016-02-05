@@ -346,30 +346,33 @@ public final class L2World
 	 */
 	public void removeVisibleObject(L2Object object, L2WorldRegion oldWorldRegion)
 	{
-		if ((object == null) || (oldWorldRegion == null))
+		if (object == null)
 		{
 			return;
 		}
 		
-		// Removes the object from the visible objects of world region.
-		// If object is a player, removes it from the players map of this world region.
-		oldWorldRegion.removeVisibleObject(object);
+		// Removes all objects from the object's known list.
+		object.getKnownList().removeAllKnownObjects();
 		
-		// Goes through all surrounding world region's creatures.
-		// And removes the object from their known lists.
-		for (L2WorldRegion worldRegion : oldWorldRegion.getSurroundingRegions())
+		if (oldWorldRegion != null)
 		{
-			for (L2Object obj : worldRegion.getVisibleObjects().values())
+			// Removes the object from the visible objects of world region.
+			// If object is a player, removes it from the players map of this world region.
+			oldWorldRegion.removeVisibleObject(object);
+			
+			// Goes through all surrounding world region's creatures.
+			// And removes the object from their known lists.
+			for (L2WorldRegion worldRegion : oldWorldRegion.getSurroundingRegions())
 			{
-				if (obj != null)
+				for (L2Object obj : worldRegion.getVisibleObjects().values())
 				{
-					obj.getKnownList().removeKnownObject(object);
+					if (obj != null)
+					{
+						obj.getKnownList().removeKnownObject(object);
+					}
 				}
 			}
 		}
-		
-		// Removes all objects from the object's known list.
-		object.getKnownList().removeAllKnownObjects();
 	}
 	
 	/**

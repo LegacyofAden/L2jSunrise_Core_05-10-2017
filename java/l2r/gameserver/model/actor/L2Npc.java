@@ -1307,6 +1307,7 @@ public class L2Npc extends L2Character
 		{
 			return;
 		}
+		
 		setDecayed(true);
 		
 		// Remove the L2NpcInstance from the world when the decay task is launched
@@ -2035,4 +2036,10 @@ public class L2Npc extends L2Character
 	{
 		return _blocked;
 	}
+	
+	// used for lucky pigs
+	public int _feedCount;
+	public boolean isLucky52 = false;
+	public boolean isLucky70 = false;
+	public boolean isLucky80 = false;
 }

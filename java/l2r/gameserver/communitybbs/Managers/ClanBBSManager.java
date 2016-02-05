@@ -20,6 +20,7 @@ package l2r.gameserver.communitybbs.Managers;
 
 import java.util.StringTokenizer;
 
+import l2r.gameserver.communitybbs.BoardsManager;
 import l2r.gameserver.data.sql.ClanTable;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -37,6 +38,8 @@ public class ClanBBSManager extends BaseBBSManager
 	{
 		if (command.equals("_bbsclan"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Clan", command);
+			
 			if ((activeChar.getClan() == null) || (activeChar.getClan().getLevel() < 2))
 			{
 				clanlist(activeChar, 1);
@@ -48,6 +51,8 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbsclan_clanlist"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Clan List", command);
+			
 			if (command.equals("_bbsclan_clanlist"))
 			{
 				clanlist(activeChar, 1);
@@ -62,6 +67,8 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbsclan_clanhome"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Clan Home", command);
+			
 			if (command.equals("_bbsclan_clanhome"))
 			{
 				clanhome(activeChar);
@@ -76,10 +83,12 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbsclan_clannotice_edit;"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Clan Edit", command);
 			clanNotice(activeChar, activeChar.getClanId());
 		}
 		else if (command.startsWith("_bbsclan_clannotice_enable"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Clan Notice Enable", command);
 			if (activeChar.getClan() != null)
 			{
 				activeChar.getClan().setNoticeEnabled(true);
@@ -88,6 +97,7 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbsclan_clannotice_disable"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Clan Notice Disable", command);
 			if (activeChar.getClan() != null)
 			{
 				activeChar.getClan().setNoticeEnabled(false);

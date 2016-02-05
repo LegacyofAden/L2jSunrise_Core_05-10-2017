@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
 import l2r.gameserver.cache.HtmCache;
+import l2r.gameserver.communitybbs.BoardsManager;
 import l2r.gameserver.communitybbs.SunriseBoards.CastleStatus;
 import l2r.gameserver.communitybbs.SunriseBoards.GrandBossList;
 import l2r.gameserver.communitybbs.SunriseBoards.HeroeList;
@@ -46,6 +47,8 @@ public class TopBBSManager extends BaseBBSManager
 	@Override
 	public void cbByPass(String command, L2PcInstance activeChar)
 	{
+		BoardsManager.getInstance().addBypass(activeChar, "Home", command);
+		
 		String path = "data/html/CommunityBoard/";
 		String filepath = "";
 		String content = "";

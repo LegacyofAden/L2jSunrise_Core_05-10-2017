@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.communitybbs.Managers;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,13 +26,13 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import l2r.gameserver.communitybbs.BoardsManager;
 import l2r.gameserver.communitybbs.BB.Forum;
 import l2r.gameserver.communitybbs.BB.Post;
 import l2r.gameserver.communitybbs.BB.Topic;
 import l2r.gameserver.data.sql.ClanTable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.ShowBoard;
-import l2r.util.StringUtil;
 
 public class TopicBBSManager extends BaseBBSManager
 {
@@ -90,6 +89,7 @@ public class TopicBBSManager extends BaseBBSManager
 	{
 		if (command.equals("_bbsmemo"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Memo Command", command);
 			if (activeChar.getMemo() != null)
 			{
 				showTopics(activeChar.getMemo(), activeChar, 1, activeChar.getMemo().getID());
@@ -97,6 +97,7 @@ public class TopicBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbstopics;read"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Memo Read", command);
 			StringTokenizer st = new StringTokenizer(command, ";");
 			st.nextToken();
 			st.nextToken();
@@ -119,6 +120,7 @@ public class TopicBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbstopics;crea"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Memo Create", command);
 			StringTokenizer st = new StringTokenizer(command, ";");
 			st.nextToken();
 			st.nextToken();
@@ -127,6 +129,7 @@ public class TopicBBSManager extends BaseBBSManager
 		}
 		else if (command.startsWith("_bbstopics;del"))
 		{
+			BoardsManager.getInstance().addBypass(activeChar, "Memo Delete", command);
 			StringTokenizer st = new StringTokenizer(command, ";");
 			st.nextToken();
 			st.nextToken();
@@ -205,8 +208,49 @@ public class TopicBBSManager extends BaseBBSManager
 	 */
 	private void showMemoNewTopics(Forum forum, L2PcInstance activeChar)
 	{
-		final String html = StringUtil.concat("<html><body><br><br><table border=0 width=610><tr><td width=10></td><td width=600 align=left><a action=\"bypass _bbshome\">HOME</a>&nbsp;>&nbsp;<a action=\"bypass _bbsmemo\">Memo Form</a></td></tr></table><img src=\"L2UI.squareblank\" width=\"1\" height=\"10\"><center><table border=0 cellspacing=0 cellpadding=0><tr><td width=610><img src=\"sek.cbui355\" width=\"610\" height=\"1\"><br1><img src=\"sek.cbui355\" width=\"610\" height=\"1\"></td></tr></table><table fixwidth=610 border=0 cellspacing=0 cellpadding=0><tr><td><img src=\"l2ui.mini_logo\" width=5 height=20></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=1></td><td align=center FIXWIDTH=60 height=29>&$413;</td><td FIXWIDTH=540><edit var = \"Title\" width=540 height=13></td><td><img src=\"l2ui.mini_logo\" width=5 height=1></td></tr></table><table fixwidth=610 border=0 cellspacing=0 cellpadding=0><tr><td><img src=\"l2ui.mini_logo\" width=5 height=10></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=1></td><td align=center FIXWIDTH=60 height=29 valign=top>&$427;</td><td align=center FIXWIDTH=540><MultiEdit var =\"Content\" width=535 height=313></td><td><img src=\"l2ui.mini_logo\" width=5 height=1></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=10></td></tr></table><table fixwidth=610 border=0 cellspacing=0 cellpadding=0><tr><td><img src=\"l2ui.mini_logo\" width=5 height=10></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=1></td><td align=center FIXWIDTH=60 height=29>&nbsp;</td><td align=center FIXWIDTH=70><button value=\"&$140;\" action=\"Write Topic crea ", String.valueOf(forum.getID()), " Title Content Title\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\" ></td><td align=center FIXWIDTH=70><button value = \"&$141;\" action=\"bypass _bbsmemo\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\"> </td><td align=center FIXWIDTH=400>&nbsp;</td><td><img src=\"l2ui.mini_logo\" width=5 height=1></td></tr></table></center></body></html>");
-		send1001(html, activeChar);
+		StringBuilder html = new StringBuilder("<html>");
+		html.append("<body><br><br>");
+		html.append("<table border=0 width=755><tr><td width=10></td><td width=600 align=left>");
+		html.append("<a action=\"bypass _bbshome\">HOME</a>&nbsp;>&nbsp;<a action=\"bypass _bbsmemo\">" + forum.getName() + " Form</a>");
+		html.append("</td></tr>");
+		html.append("</table>");
+		html.append("<table border=0 cellspacing=0 cellpadding=0>");
+		html.append("<tr><td width=755><img src=\"L2UI.SquareGray\" width=\"755\" height=\"1\"></td></tr>");
+		html.append("</table>");
+		
+		html.append("<table fixwidth=755 border=0 cellspacing=0 cellpadding=0>");
+		html.append("<tr><td width=5 height=20></td></tr>");
+		html.append("<tr>");
+		html.append("<td width=5></td>");
+		html.append("<td align=center FIXWIDTH=50 height=29>&$413;</td>");
+		html.append("<td FIXWIDTH=540><edit var = \"Title\" width=540 height=13></td>");
+		html.append("<td width=5></td>");
+		html.append("</tr></table>");
+		
+		html.append("<table fixwidth=755 border=0 cellspacing=0 cellpadding=0>");
+		html.append("<tr>");
+		html.append("<td width=5></td>");
+		html.append("<td align=center FIXWIDTH=50 height=29 valign=top>&$427;</td>");
+		html.append("<td align=center FIXWIDTH=550><MultiEdit var =\"Content\" width=700 height=313></td>");
+		html.append("<td width=5></td>");
+		html.append("</tr>");
+		html.append("<tr><td width=5 height=10></td></tr>");
+		html.append("</table>");
+		
+		html.append("<table fixwidth=755 border=0 cellspacing=0 cellpadding=0>");
+		html.append("<tr><td height=10></td></tr>");
+		html.append("<tr>");
+		html.append("<td width=5></td>");
+		html.append("<td align=center FIXWIDTH=50 height=29>&nbsp;</td>");
+		html.append("<td align=center FIXWIDTH=70><button value=\"&$140;\" action=\"Write Topic crea " + forum.getID() + " Title Content Title\" back=\"l2ui_ct1.button.button_df_small_down\" width=70 height=25 fore=\"l2ui_ct1.button.button_df_small\" ></td>");
+		html.append("<td align=center FIXWIDTH=70><button value = \"&$141;\" action=\"bypass _bbsmemo\" back=\"l2ui_ct1.button.button_df_small_down\" width=70 height=25 fore=\"l2ui_ct1.button.button_df_small\"> </td>");
+		html.append("<td align=center FIXWIDTH=340>&nbsp;</td>");
+		html.append("<td width=5></td>");
+		html.append("</tr></table>");
+		html.append("</center>");
+		html.append("</body>");
+		html.append("</html>");
+		send1001(html.toString(), activeChar);
 		send1002(activeChar);
 	}
 	
@@ -246,8 +290,21 @@ public class TopicBBSManager extends BaseBBSManager
 	private void showMemoTopics(Forum forum, L2PcInstance activeChar, int index)
 	{
 		forum.vload();
-		final StringBuilder html = StringUtil.startAppend(2000, "<html><body><br><br><table border=0 width=610><tr><td width=10></td><td width=600 align=left><a action=\"bypass _bbshome\">HOME</a>&nbsp;>&nbsp;<a action=\"bypass _bbsmemo\">Memo Form</a></td></tr></table><img src=\"L2UI.squareblank\" width=\"1\" height=\"10\"><center><table border=0 cellspacing=0 cellpadding=2 bgcolor=888888 width=610><tr><td FIXWIDTH=5></td><td FIXWIDTH=415 align=center>&$413;</td><td FIXWIDTH=120 align=center></td><td FIXWIDTH=70 align=center>&$418;</td></tr></table>");
-		final DateFormat dateFormat = DateFormat.getInstance();
+		StringBuilder html = new StringBuilder("<html><body><br><br>");
+		html.append("<table border=0 width=755><tr><td width=10></td><td width=600 align=left>");
+		html.append("<a action=\"bypass _bbshome\">HOME</a>&nbsp;>&nbsp;<a action=\"bypass _bbsmemo\">Memo Form</a>");
+		html.append("</td></tr>");
+		html.append("</table>");
+		html.append("<center>");
+		html.append("<img src=\"L2UI.squareblank\" width=\"1\" height=\"10\">");
+		html.append("<table border=0 cellspacing=0 cellpadding=0 width=755 bgcolor=A7A19A>");
+		html.append("<tr>");
+		html.append("<td FIXWIDTH=5></td>");
+		html.append("<td FIXWIDTH=500 align=center>&$413;</td>");
+		html.append("<td FIXWIDTH=145 align=center></td>");
+		html.append("<td FIXWIDTH=75 align=center>&$418;</td>");
+		html.append("</tr>");
+		html.append("</table>");
 		
 		for (int i = 0, j = getMaxID(forum) + 1; i < (12 * index); j--)
 		{
@@ -260,12 +317,27 @@ public class TopicBBSManager extends BaseBBSManager
 			{
 				if (i++ >= (12 * (index - 1)))
 				{
-					StringUtil.append(html, "<table border=0 cellspacing=0 cellpadding=5 WIDTH=610><tr><td FIXWIDTH=5></td><td FIXWIDTH=415><a action=\"bypass _bbsposts;read;", String.valueOf(forum.getID()), ";", String.valueOf(t.getID()), "\">", t.getName(), "</a></td><td FIXWIDTH=120 align=center></td><td FIXWIDTH=70 align=center>", dateFormat.format(new Date(t.getDate())), "</td></tr></table><img src=\"L2UI.Squaregray\" width=\"610\" height=\"1\">");
+					html.append("<table border=0 cellspacing=0 cellpadding=5 WIDTH=755>");
+					html.append("<tr>");
+					html.append("<td FIXWIDTH=5></td>");
+					html.append("<td FIXWIDTH=500><a action=\"bypass _bbsposts;read;" + forum.getID() + ";" + t.getID() + "\">" + t.getName() + "</a></td>");
+					html.append("<td FIXWIDTH=145 align=center></td>");
+					html.append("<td FIXWIDTH=75 align=center>" + String.format("%1$te-%1$tm-%1$tY", new Date(t.getDate())) + "</td>");
+					html.append("</tr>");
+					html.append("</table>");
+					html.append("<img src=\"L2UI.Squaregray\" width=\"755\" height=\"1\">");
 				}
 			}
 		}
 		
-		html.append("<br><table width=610 cellspace=0 cellpadding=0><tr><td width=50><button value=\"&$422;\" action=\"bypass _bbsmemo\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\"></td><td width=510 align=center><table border=0><tr>");
+		html.append("<br>");
+		html.append("<table width=755 cellspace=0 cellpadding=0>");
+		html.append("<tr>");
+		html.append("<td width=50>");
+		html.append("<button value=\"&$422;\" action=\"bypass _bbsmemo\" back=\"l2ui_ct1.button.button_df_small_down\" width=70 height=25 fore=\"l2ui_ct1.button.button_df_small\">");
+		html.append("</td>");
+		html.append("<td width=510 align=center>");
+		html.append("<table border=0><tr>");
 		
 		if (index == 1)
 		{
@@ -273,12 +345,11 @@ public class TopicBBSManager extends BaseBBSManager
 		}
 		else
 		{
-			StringUtil.append(html, "<td><button action=\"bypass _bbstopics;read;", String.valueOf(forum.getID()), ";", String.valueOf(index - 1), "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
+			html.append("<td><button action=\"bypass _bbstopics;read;" + forum.getID() + ";" + (index - 1) + "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
 		}
-		
 		int nbp;
 		nbp = forum.getTopicSize() / 8;
-		if ((nbp * 8) != ClanTable.getInstance().getClanCount())
+		if ((nbp * 8) != ClanTable.getInstance().getClans().size())
 		{
 			nbp++;
 		}
@@ -286,11 +357,11 @@ public class TopicBBSManager extends BaseBBSManager
 		{
 			if (i == index)
 			{
-				StringUtil.append(html, "<td> ", String.valueOf(i), " </td>");
+				html.append("<td> " + i + " </td>");
 			}
 			else
 			{
-				StringUtil.append(html, "<td><a action=\"bypass _bbstopics;read;", String.valueOf(forum.getID()), ";", String.valueOf(i), "\"> ", String.valueOf(i), " </a></td>");
+				html.append("<td><a action=\"bypass _bbstopics;read;" + forum.getID() + ";" + i + "\"> " + i + " </a></td>");
 			}
 		}
 		if (index == nbp)
@@ -299,10 +370,24 @@ public class TopicBBSManager extends BaseBBSManager
 		}
 		else
 		{
-			StringUtil.append(html, "<td><button action=\"bypass _bbstopics;read;", String.valueOf(forum.getID()), ";", String.valueOf(index + 1), "\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
+			html.append("<td><button action=\"bypass _bbstopics;read;" + forum.getID() + ";" + (index + 1) + "\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
 		}
 		
-		StringUtil.append(html, "</tr></table> </td> <td align=right><button value = \"&$421;\" action=\"bypass _bbstopics;crea;", String.valueOf(forum.getID()), "\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\" ></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=10></td></tr><tr> <td></td><td align=center><table border=0><tr><td></td><td><edit var = \"Search\" width=130 height=11></td><td><button value=\"&$420;\" action=\"Write 5 -2 0 Search _ _\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\"> </td> </tr></table> </td></tr></table><br><br><br></center></body></html>");
+		html.append("</tr></table> </td> ");
+		html.append("<td align=right><button value = \"&$421;\" action=\"bypass _bbstopics;crea;" + forum.getID() + "\" back=\"l2ui_ct1.button.button_df_small_down\" width=70 height=25 fore=\"l2ui_ct1.button.button_df_small\" ></td></tr>");
+		html.append("<tr><td width=5 height=10></td></tr>");
+		html.append("<tr> ");
+		html.append("<td></td>");
+		html.append("<td align=center><table border=0><tr><td></td><td><edit var = \"Search\" width=130 height=15></td>");
+		html.append("<td><button value=\"&$420;\" action=\"Write 5 -2 0 Search _ _\" back=\"l2ui_ct1.button.button_df_small_down\" width=70 height=25 fore=\"l2ui_ct1.button.button_df_small\"> </td> </tr></table> </td>");
+		html.append("</tr>");
+		html.append("</table>");
+		html.append("<br>");
+		html.append("<br>");
+		html.append("<br>");
+		html.append("</center>");
+		html.append("</body>");
+		html.append("</html>");
 		separateAndSend(html.toString(), activeChar);
 	}
 	
