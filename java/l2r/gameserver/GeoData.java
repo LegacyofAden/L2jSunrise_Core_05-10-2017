@@ -1,157 +1,175 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
- *
+ * Copyright (C) 2004-2016 L2J Server
+ * 
  * This file is part of L2J Server.
- *
+ * 
  * L2J Server is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * L2J Server is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package l2r.gameserver;
 
-import java.io.FileInputStream;
-import java.lang.reflect.Constructor;
-import java.nio.file.Paths;
-import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import l2r.Config;
 import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.model.L2Object;
+import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.interfaces.ILocational;
 import l2r.gameserver.util.GeoUtils;
 import l2r.gameserver.util.LinePointIterator;
 import l2r.gameserver.util.Util;
 
-import com.l2jserver.gameserver.geoengine.Direction;
-import com.l2jserver.gameserver.geoengine.NullDriver;
-import com.l2jserver.gameserver.geoengine.abstraction.IGeoDriver;
+import com.l2jserver.geodriver.Cell;
+import com.l2jserver.geodriver.GeoDriver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author -Nemesiss-, FBIagent
+ * Geodata.
+ * @author -Nemesiss-, HorridoJoho
  */
-public class GeoData implements IGeoDriver
+public class GeoData
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoData.class);
-	private static final int ELEVATED_SEE_OVER_DISTANCE = 2;
+	private static final String FILE_NAME_FORMAT = "%d_%d.l2j";
+	// private static final int ELEVATED_SEE_OVER_DISTANCE = 2;
+	private static final double ELEVATED_SEE_OVER_DISTANCE_SQ = 3 * 3;
 	private static final int MAX_SEE_OVER_HEIGHT = 48;
 	private static final int SPAWN_Z_DELTA_LIMIT = 100;
 	
-	private final IGeoDriver _driver;
+	private final GeoDriver _driver = new GeoDriver();
 	
 	protected GeoData()
 	{
-		if (Config.PATHFINDING > 0)
+		int loadedRegions = 0;
+		try
 		{
-			IGeoDriver driver = null;
-			try
+			for (int regionX = L2World.TILE_X_MIN; regionX <= L2World.TILE_X_MAX; regionX++)
 			{
-				Class<?> cls = Class.forName("com.l2j.geodriver.GeoDriver");
-				if (!IGeoDriver.class.isAssignableFrom(cls))
+				for (int regionY = L2World.TILE_Y_MIN; regionY <= L2World.TILE_Y_MAX; regionY++)
 				{
-					throw new ClassCastException("Geodata driver class needs to implement IGeoDriver!");
+					final Path geoFilePath = Config.GEODATA_PATH.resolve(String.format(FILE_NAME_FORMAT, regionX, regionY));
+					final Boolean loadFile = Config.GEODATA_REGIONS.get(regionX + "_" + regionY);
+					if (loadFile != null)
+					{
+						if (loadFile)
+						{
+							LOGGER.info("{}: Loading {}...", getClass().getSimpleName(), geoFilePath.getFileName());
+							_driver.loadRegion(geoFilePath, regionX, regionY);
+							loadedRegions++;
+						}
+					}
+					else if (Config.TRY_LOAD_UNSPECIFIED_REGIONS && Files.exists(geoFilePath))
+					{
+						try
+						{
+							LOGGER.info("{}: Loading {}...", getClass().getSimpleName(), geoFilePath.getFileName());
+							_driver.loadRegion(geoFilePath, regionX, regionY);
+							loadedRegions++;
+						}
+						catch (Exception e)
+						{
+							LOGGER.warn(getClass().getSimpleName() + ": Failed to load {}!", geoFilePath.getFileName(), e);
+						}
+					}
 				}
-				Constructor<?> ctor = cls.getConstructor(Properties.class);
-				Properties props = new Properties();
-				try (FileInputStream fis = new FileInputStream(Paths.get("config/main/", "Geodata.ini").toString()))
-				{
-					props.load(fis);
-				}
-				driver = (IGeoDriver) ctor.newInstance(props);
 			}
-			catch (Exception ex)
-			{
-				LOGGER.error("Failed to load geodata driver!", ex);
-				System.exit(1);
-			}
-			// we do it this way so it's predictable for the compiler
-			_driver = driver;
 		}
-		else
+		catch (Exception e)
 		{
-			_driver = new NullDriver(null);
+			LOGGER.error("{}: Failed to load geodata!", e);
+			System.exit(1);
 		}
+		
+		LOGGER.info("{}: Loaded {} regions.", getClass().getSimpleName(), loadedRegions);
 	}
 	
-	@Override
-	public int getGeoX(int worldX)
-	{
-		return _driver.getGeoX(worldX);
-	}
-	
-	@Override
-	public int getGeoY(int worldY)
-	{
-		return _driver.getGeoY(worldY);
-	}
-	
-	@Override
-	public int getWorldX(int geoX)
-	{
-		return _driver.getWorldX(geoX);
-	}
-	
-	@Override
-	public int getWorldY(int geoY)
-	{
-		return _driver.getWorldY(geoY);
-	}
-	
-	@Override
 	public boolean hasGeoPos(int geoX, int geoY)
 	{
 		return _driver.hasGeoPos(geoX, geoY);
 	}
 	
-	@Override
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
+	{
+		return _driver.checkNearestNswe(geoX, geoY, worldZ, nswe);
+	}
+	
+	public boolean checkNearestNsweAntiCornerCut(int geoX, int geoY, int worldZ, int nswe)
+	{
+		boolean can = checkNearestNswe(geoX, geoY, worldZ, nswe);
+		if (can && ((nswe & Cell.NSWE_NORTH_EAST) == Cell.NSWE_NORTH_EAST))
+		{
+			can = checkNearestNswe(geoX, geoY - 1, worldZ, Cell.NSWE_EAST) && checkNearestNswe(geoX + 1, geoY, worldZ, Cell.NSWE_NORTH);
+		}
+		
+		if (can && ((nswe & Cell.NSWE_NORTH_WEST) == Cell.NSWE_NORTH_WEST))
+		{
+			can = checkNearestNswe(geoX, geoY - 1, worldZ, Cell.NSWE_WEST) && checkNearestNswe(geoX, geoY - 1, worldZ, Cell.NSWE_NORTH);
+		}
+		
+		if (can && ((nswe & Cell.NSWE_SOUTH_EAST) == Cell.NSWE_SOUTH_EAST))
+		{
+			can = checkNearestNswe(geoX, geoY + 1, worldZ, Cell.NSWE_EAST) && checkNearestNswe(geoX + 1, geoY, worldZ, Cell.NSWE_SOUTH);
+		}
+		
+		if (can && ((nswe & Cell.NSWE_SOUTH_WEST) == Cell.NSWE_SOUTH_WEST))
+		{
+			can = checkNearestNswe(geoX, geoY + 1, worldZ, Cell.NSWE_WEST) && checkNearestNswe(geoX - 1, geoY, worldZ, Cell.NSWE_SOUTH);
+		}
+		
+		return can;
+	}
+	
 	public int getNearestZ(int geoX, int geoY, int worldZ)
 	{
 		return _driver.getNearestZ(geoX, geoY, worldZ);
 	}
 	
-	@Override
 	public int getNextLowerZ(int geoX, int geoY, int worldZ)
 	{
 		return _driver.getNextLowerZ(geoX, geoY, worldZ);
 	}
 	
-	@Override
 	public int getNextHigherZ(int geoX, int geoY, int worldZ)
 	{
 		return _driver.getNextHigherZ(geoX, geoY, worldZ);
 	}
 	
-	@Override
-	public boolean canEnterNeighbors(int geoX, int geoY, int worldZ, Direction first, Direction... more)
+	public int getGeoX(int worldX)
 	{
-		return _driver.canEnterNeighbors(geoX, geoY, worldZ, first, more);
+		return _driver.getGeoX(worldX);
 	}
 	
-	@Override
-	public boolean canEnterAllNeighbors(int geoX, int geoY, int worldZ)
+	public int getGeoY(int worldY)
 	{
-		return _driver.canEnterAllNeighbors(geoX, geoY, worldZ);
+		return _driver.getGeoY(worldY);
+	}
+	
+	public int getWorldX(int geoX)
+	{
+		return _driver.getWorldX(geoX);
+	}
+	
+	public int getWorldY(int geoY)
+	{
+		return _driver.getWorldY(geoY);
 	}
 	
 	// ///////////////////
 	// L2J METHODS
-	public boolean isNullDriver()
-	{
-		return _driver instanceof NullDriver;
-	}
-	
 	/**
 	 * Gets the height.
 	 * @param x the x coordinate
@@ -210,12 +228,14 @@ public class GeoData implements IGeoDriver
 	 */
 	public boolean canSeeTarget(L2Object cha, L2Object target)
 	{
+		if (target == null)
+		{
+			return false;
+		}
 		if (target.isDoor())
 		{
-			// can always see doors :o
 			return true;
 		}
-		
 		return canSeeTarget(cha.getX(), cha.getY(), cha.getZ(), cha.getInstanceId(), target.getX(), target.getY(), target.getZ(), target.getInstanceId());
 	}
 	
@@ -271,32 +291,17 @@ public class GeoData implements IGeoDriver
 		return canSeeTarget(x, y, z, tx, ty, tz);
 	}
 	
-	@SuppressWarnings("unused")
-	private int getLosGeoZ(int prevX, int prevY, int prevGeoZ, int curX, int curY, Direction dir)
+	private int getLosGeoZ(int prevX, int prevY, int prevGeoZ, int curX, int curY, int nswe)
 	{
-		boolean can = true;
-		
-		switch (dir)
+		if ((((nswe & Cell.NSWE_NORTH) != 0) && ((nswe & Cell.NSWE_SOUTH) != 0)) || (((nswe & Cell.NSWE_WEST) != 0) && ((nswe & Cell.NSWE_EAST) != 0)))
 		{
-			case NORTH_EAST:
-				can = canEnterNeighbors(prevX, prevY - 1, prevGeoZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevGeoZ, Direction.NORTH);
-				break;
-			case NORTH_WEST:
-				can = canEnterNeighbors(prevX, prevY - 1, prevGeoZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevGeoZ, Direction.NORTH);
-				break;
-			case SOUTH_EAST:
-				can = canEnterNeighbors(prevX, prevY + 1, prevGeoZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevGeoZ, Direction.SOUTH);
-				break;
-			case SOUTH_WEST:
-				can = canEnterNeighbors(prevX, prevY + 1, prevGeoZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevGeoZ, Direction.SOUTH);
-				break;
-				
+			throw new RuntimeException("Multiple directions!");
 		}
-		if (can && canEnterNeighbors(prevX, prevY, prevGeoZ, dir))
+		
+		if (checkNearestNsweAntiCornerCut(prevX, prevY, prevGeoZ, nswe))
 		{
 			return getNearestZ(curX, curY, prevGeoZ);
 		}
-		
 		return getNextHigherZ(curX, curY, prevGeoZ);
 	}
 	
@@ -320,6 +325,7 @@ public class GeoData implements IGeoDriver
 		z = getNearestZ(geoX, geoY, z);
 		tz = getNearestZ(tGeoX, tGeoY, tz);
 		
+		// fastpath
 		if ((geoX == tGeoX) && (geoY == tGeoY))
 		{
 			if (hasGeoPos(tGeoX, tGeoY))
@@ -329,8 +335,6 @@ public class GeoData implements IGeoDriver
 			
 			return true;
 		}
-		
-		double fullDist = Util.calculateDistance(geoX, geoY, 0, tGeoX, tGeoY, 0, false, false);
 		
 		if (tz > z)
 		{
@@ -355,71 +359,84 @@ public class GeoData implements IGeoDriver
 			geoY = tmp;
 		}
 		
-		int fullZDiff = tz - z;
+		final int dz = z - tz;
 		
+		final double fullDistanceSq = Util.calculateDistance(geoX, geoY, 0, tGeoX, tGeoY, 0, false, true);
+		final double secondSeeOverDistancePoint = fullDistanceSq - ELEVATED_SEE_OVER_DISTANCE_SQ;
+		
+		// LinePointIterator3D pointIter = new LinePointIterator3D(geoX, geoY, z, tGeoX, tGeoY, tz);
 		LinePointIterator pointIter = new LinePointIterator(geoX, geoY, tGeoX, tGeoY);
 		// first point is guaranteed to be available, skip it, we can always see our own position
 		pointIter.next();
 		int prevX = pointIter.x();
 		int prevY = pointIter.y();
-		int prevMoveNearestZ = z;
-		int ptIndex = 0;
-		
+		// int prevBeeZ = pointIter.z();
+		int prevBeeZ = z;
+		int prevGeoZ = prevBeeZ;
+		// int pointIndex = 0;
 		while (pointIter.next())
 		{
 			int curX = pointIter.x();
 			int curY = pointIter.y();
 			
-			// the current position has geodata
+			// if ((curX == prevX) && (curY == prevY))
+			// {
+			// continue;
+			// }
+			
+			double curDistanceSq = Util.calculateDistance(geoX, geoY, 0, curX, curY, 0, false, true);
+			int curBeeZ = z - (int) (dz * ((1.0 * curDistanceSq) / fullDistanceSq));
+			int curGeoZ = prevGeoZ;
+			
+			// check if the position has geodata
 			if (hasGeoPos(curX, curY))
 			{
-				double percentageDist = Util.calculateDistance(geoX, geoY, 0, curX, curY, 0, false, false) / fullDist;
-				int beeCurZ = (int) (z + (fullZDiff * percentageDist));
-				int beeCurNearestZ = getNearestZ(curX, curY, beeCurZ);
-				int moveCurNearestZ;
-				if (canEnterNeighbors(prevX, prevY, prevMoveNearestZ, GeoUtils.computeDirection(prevX, prevY, curX, curY)))
+				int nswe = GeoUtils.computeNswe(prevX, prevY, curX, curY);
+				curGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, curX, curY, nswe);
+				int maxHeight = curBeeZ + MAX_SEE_OVER_HEIGHT;
+				// only allow shooting over fences when oponents are far enough away from each other
+				if (fullDistanceSq > ELEVATED_SEE_OVER_DISTANCE_SQ)
 				{
-					moveCurNearestZ = getNearestZ(curX, curY, prevMoveNearestZ);
-				}
-				else
-				{
-					moveCurNearestZ = beeCurNearestZ;
-				}
-				
-				int maxHeight;
-				if ((ptIndex < ELEVATED_SEE_OVER_DISTANCE) && (fullDist >= ELEVATED_SEE_OVER_DISTANCE))
-				{
-					maxHeight = z + MAX_SEE_OVER_HEIGHT;
-					++ptIndex;
-				}
-				else
-				{
-					maxHeight = beeCurZ + MAX_SEE_OVER_HEIGHT;
+					if (curDistanceSq <= ELEVATED_SEE_OVER_DISTANCE_SQ)
+					{
+						maxHeight = z + MAX_SEE_OVER_HEIGHT;
+					}
+					else if (curDistanceSq >= secondSeeOverDistancePoint)
+					{
+						maxHeight = tz + MAX_SEE_OVER_HEIGHT;
+					}
 				}
 				
 				boolean canSeeThrough = false;
-				if ((beeCurNearestZ <= maxHeight) && (moveCurNearestZ <= beeCurNearestZ))
+				if (curGeoZ <= maxHeight)
 				{
-					Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
-					
-					// check diagonal step
-					switch (dir)
+					if ((nswe & Cell.NSWE_NORTH_EAST) == Cell.NSWE_NORTH_EAST)
 					{
-						case NORTH_EAST:
-							canSeeThrough = (getNearestZ(prevX, prevY - 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX + 1, prevY, beeCurZ) <= maxHeight);
-							break;
-						case NORTH_WEST:
-							canSeeThrough = (getNearestZ(prevX, prevY - 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX - 1, prevY, beeCurZ) <= maxHeight);
-							break;
-						case SOUTH_EAST:
-							canSeeThrough = (getNearestZ(prevX, prevY + 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX + 1, prevY, beeCurZ) <= maxHeight);
-							break;
-						case SOUTH_WEST:
-							canSeeThrough = (getNearestZ(prevX, prevY + 1, beeCurZ) <= maxHeight) || (getNearestZ(prevX - 1, prevY, beeCurZ) <= maxHeight);
-							break;
-						default:
-							canSeeThrough = true;
-							break;
+						int northGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY - 1, Cell.NSWE_EAST);
+						int eastGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX + 1, prevY, Cell.NSWE_NORTH);
+						canSeeThrough = (northGeoZ <= maxHeight) && (eastGeoZ <= maxHeight);
+					}
+					else if ((nswe & Cell.NSWE_NORTH_WEST) == Cell.NSWE_NORTH_WEST)
+					{
+						int northGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY - 1, Cell.NSWE_WEST);
+						int westGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX - 1, prevY, Cell.NSWE_NORTH);
+						canSeeThrough = (northGeoZ <= maxHeight) && (westGeoZ <= maxHeight);
+					}
+					else if ((nswe & Cell.NSWE_SOUTH_EAST) == Cell.NSWE_SOUTH_EAST)
+					{
+						int southGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY + 1, Cell.NSWE_EAST);
+						int eastGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX + 1, prevY, Cell.NSWE_SOUTH);
+						canSeeThrough = (southGeoZ <= maxHeight) && (eastGeoZ <= maxHeight);
+					}
+					else if ((nswe & Cell.NSWE_SOUTH_WEST) == Cell.NSWE_SOUTH_WEST)
+					{
+						int southGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX, prevY + 1, Cell.NSWE_WEST);
+						int westGeoZ = getLosGeoZ(prevX, prevY, prevGeoZ, prevX - 1, prevY, Cell.NSWE_SOUTH);
+						canSeeThrough = (southGeoZ <= maxHeight) && (westGeoZ <= maxHeight);
+					}
+					else
+					{
+						canSeeThrough = true;
 					}
 				}
 				
@@ -427,15 +444,17 @@ public class GeoData implements IGeoDriver
 				{
 					return false;
 				}
-				
-				prevMoveNearestZ = moveCurNearestZ;
 			}
 			
 			prevX = curX;
 			prevY = curY;
+			prevBeeZ = curBeeZ;
+			prevGeoZ = curGeoZ;
+			// ++pointIndex;
 		}
 		
-		return true;
+		// the traced end Z must be the same than the targets Z
+		return prevGeoZ == tz;
 	}
 	
 	/**
@@ -489,32 +508,8 @@ public class GeoData implements IGeoDriver
 			
 			if (hasGeoPos(prevX, prevY))
 			{
-				Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
-				boolean canEnter = false;
-				if (canEnterNeighbors(prevX, prevY, prevZ, dir))
-				{
-					// check diagonal movement
-					switch (dir)
-					{
-						case NORTH_EAST:
-							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.NORTH);
-							break;
-						case NORTH_WEST:
-							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.NORTH);
-							break;
-						case SOUTH_EAST:
-							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.SOUTH);
-							break;
-						case SOUTH_WEST:
-							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.SOUTH);
-							break;
-						default:
-							canEnter = true;
-							break;
-					}
-				}
-				
-				if (!canEnter)
+				int nswe = GeoUtils.computeNswe(prevX, prevY, curX, curY);
+				if (!checkNearestNsweAntiCornerCut(prevX, prevY, prevZ, nswe))
 				{
 					// can't move, return previous location
 					return new Location(getWorldX(prevX), getWorldY(prevY), prevZ);
@@ -575,32 +570,8 @@ public class GeoData implements IGeoDriver
 			
 			if (hasGeoPos(prevX, prevY))
 			{
-				Direction dir = GeoUtils.computeDirection(prevX, prevY, curX, curY);
-				boolean canEnter = false;
-				if (canEnterNeighbors(prevX, prevY, prevZ, dir))
-				{
-					// check diagonal movement
-					switch (dir)
-					{
-						case NORTH_EAST:
-							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.NORTH);
-							break;
-						case NORTH_WEST:
-							canEnter = canEnterNeighbors(prevX, prevY - 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.NORTH);
-							break;
-						case SOUTH_EAST:
-							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.EAST) && canEnterNeighbors(prevX + 1, prevY, prevZ, Direction.SOUTH);
-							break;
-						case SOUTH_WEST:
-							canEnter = canEnterNeighbors(prevX, prevY + 1, prevZ, Direction.WEST) && canEnterNeighbors(prevX - 1, prevY, prevZ, Direction.SOUTH);
-							break;
-						default:
-							canEnter = true;
-							break;
-					}
-				}
-				
-				if (!canEnter)
+				int nswe = GeoUtils.computeNswe(prevX, prevY, curX, curY);
+				if (!checkNearestNsweAntiCornerCut(prevX, prevY, prevZ, nswe))
 				{
 					return false;
 				}

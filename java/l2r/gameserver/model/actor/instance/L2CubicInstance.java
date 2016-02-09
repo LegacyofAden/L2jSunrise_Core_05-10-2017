@@ -277,78 +277,85 @@ public final class L2CubicInstance implements IIdentifiable
 			// Duel targeting
 			if (_owner.isInDuel())
 			{
-				L2PcInstance PlayerA = DuelManager.getInstance().getDuel(_owner.getDuelId()).getTeamLeaderA();
-				L2PcInstance PlayerB = DuelManager.getInstance().getDuel(_owner.getDuelId()).getTeamLeaderB();
-				
-				if (DuelManager.getInstance().getDuel(_owner.getDuelId()).isPartyDuel())
+				try
 				{
-					L2Party partyA = PlayerA.getParty();
-					L2Party partyB = PlayerB.getParty();
-					L2Party partyEnemy = null;
+					L2PcInstance PlayerA = DuelManager.getInstance().getDuel(_owner.getDuelId()).getTeamLeaderA();
+					L2PcInstance PlayerB = DuelManager.getInstance().getDuel(_owner.getDuelId()).getTeamLeaderB();
 					
-					if (partyA != null)
+					if (DuelManager.getInstance().getDuel(_owner.getDuelId()).isPartyDuel())
 					{
-						if (partyA.getMembers().contains(_owner))
+						L2Party partyA = PlayerA.getParty();
+						L2Party partyB = PlayerB.getParty();
+						L2Party partyEnemy = null;
+						
+						if (partyA != null)
 						{
-							if (partyB != null)
+							if (partyA.getMembers().contains(_owner))
 							{
-								partyEnemy = partyB;
+								if (partyB != null)
+								{
+									partyEnemy = partyB;
+								}
+								else
+								{
+									_target = PlayerB;
+								}
 							}
 							else
 							{
-								_target = PlayerB;
+								partyEnemy = partyA;
 							}
 						}
 						else
 						{
-							partyEnemy = partyA;
-						}
-					}
-					else
-					{
-						if (PlayerA == _owner)
-						{
-							if (partyB != null)
+							if (PlayerA == _owner)
 							{
-								partyEnemy = partyB;
+								if (partyB != null)
+								{
+									partyEnemy = partyB;
+								}
+								else
+								{
+									_target = PlayerB;
+								}
 							}
 							else
 							{
-								_target = PlayerB;
+								_target = PlayerA;
 							}
 						}
-						else
+						if ((_target == PlayerA) || (_target == PlayerB))
 						{
-							_target = PlayerA;
+							if (_target == ownerTarget)
+							{
+								return;
+							}
 						}
-					}
-					if ((_target == PlayerA) || (_target == PlayerB))
-					{
-						if (_target == ownerTarget)
+						if (partyEnemy != null)
 						{
+							if (partyEnemy.getMembers().contains(ownerTarget))
+							{
+								_target = (L2Character) ownerTarget;
+							}
 							return;
 						}
 					}
-					if (partyEnemy != null)
+					if ((PlayerA != _owner) && (ownerTarget == PlayerA))
 					{
-						if (partyEnemy.getMembers().contains(ownerTarget))
-						{
-							_target = (L2Character) ownerTarget;
-						}
+						_target = PlayerA;
 						return;
 					}
+					if ((PlayerB != _owner) && (ownerTarget == PlayerB))
+					{
+						_target = PlayerB;
+						return;
+					}
+					_target = null;
 				}
-				if ((PlayerA != _owner) && (ownerTarget == PlayerA))
+				catch (Exception e)
 				{
-					_target = PlayerA;
-					return;
+					// vGodFather
 				}
-				if ((PlayerB != _owner) && (ownerTarget == PlayerB))
-				{
-					_target = PlayerB;
-					return;
-				}
-				_target = null;
 				return;
 			}
 			// Olympiad targeting

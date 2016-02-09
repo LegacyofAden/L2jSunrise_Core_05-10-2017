@@ -76,6 +76,11 @@ public class QuestList extends L2GameServerPacket
 		 * </pre>
 		 */
 		
+		if (_activeChar == null)
+		{
+			return;
+		}
+		
 		writeC(0x86);
 		writeH(_activeChar.getAllActiveQuests().size());
 		for (Quest q : _activeChar.getAllActiveQuests())
