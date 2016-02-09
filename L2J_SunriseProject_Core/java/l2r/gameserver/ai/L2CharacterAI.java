@@ -1077,7 +1077,7 @@ public class L2CharacterAI extends AbstractAI
 			return false; // skill radius -1
 		}
 		
-		offset += _actor.getTemplate().getCollisionRadius();
+		offset += _actor.isPlayer() && target.isDoor() ? _actor.getTemplate().getCollisionRadius() / 2 : _actor.getTemplate().getCollisionRadius();
 		if (target instanceof L2Character)
 		{
 			offset += ((L2Character) target).getTemplate().getCollisionRadius();

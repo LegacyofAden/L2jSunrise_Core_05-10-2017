@@ -609,7 +609,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		if ((npc instanceof L2GuardInstance) && !npc.isWalker() && !npc.isRunner())
 		{
 			// Order to the L2GuardInstance to return to its home location because there's no target to attack
-			npc.returnHome();
+			tryToGoHome(npc);
 		}
 		
 		// If this is a festival monster, then it remains in the same location.
@@ -759,22 +759,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			npc.RANDOM_WALK_RATE = -1;
 			if (useTeleport && !npc.isRunner())
 			{
-				try
-				{
-					if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), x1, y1, z1, npc.getInstanceId()))
-					{
-						moveTo(x1, y1, z1);
-					}
-					else
-					{
-						npc.returnHome(true);
-					}
-				}
-				catch (Exception e)
-				{
-					// This can only happen if actor is outside of world area
-					// nothing to log
-				}
+				tryToGoHome(npc);
 			}
 			else
 			{
@@ -811,8 +796,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			npc.stopHating(originalAttackTarget);
 			
 			// Set the AI Intention to AI_INTENTION_ACTIVE
-			npc.RANDOM_WALK_RATE = 15;
+			// npc.RANDOM_WALK_RATE = 15;
 			setIntention(AI_INTENTION_ACTIVE);
+			
+			tryToGoHome(npc);
 			
 			npc.setWalking();
 			return;
@@ -1257,7 +1244,16 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					{
 						range -= 100;
 					}
-					moveToPawn(target, Math.max(range, 5));
+					
+					// vGodFather
+					if (GeoData.getInstance().canMove(npc.getLocation(), target.getLocation()))
+					{
+						moveToPawn(target, Math.max(range, 5));
+					}
+					else
+					{
+						targetReconsider();
+					}
 				}
 			}
 			return;
@@ -2360,14 +2356,13 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				{
 					continue;
 				}
-				if (obj instanceof L2PcInstance)
+				if (obj.isPlayer())
 				{
 					actor.addDamageHate(obj, 0, MostHate != null ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
-					
 				}
-				else if (obj instanceof L2Attackable)
+				else if (obj.isAttackable())
 				{
 					if ((actor.getEnemyClan() != null) && actor.getEnemyClan().equals(((L2Attackable) obj).getClan()))
 					{
@@ -2402,7 +2397,6 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		L2Character MostHate = actor.getMostHated();
 		if (actor.getHateList() != null)
 		{
-			
 			int rand = Rnd.get(actor.getHateList().size());
 			int count = 0;
 			for (L2Character obj : actor.getHateList())
@@ -2453,13 +2447,13 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				{
 					continue;
 				}
-				if (obj instanceof L2PcInstance)
+				if (obj.isPlayer())
 				{
 					actor.addDamageHate(obj, 0, ((MostHate != null) && !MostHate.isDead()) ? actor.getHating(MostHate) : 2000);
 					actor.setTarget(obj);
 					setAttackTarget(obj);
 				}
-				else if (obj instanceof L2Attackable)
+				else if (obj.isAttackable())
 				{
 					if ((actor.getEnemyClan() != null) && actor.getEnemyClan().equals(((L2Attackable) obj).getClan()))
 					{
@@ -2742,6 +2736,31 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			{
 				_log.warn(getClass().getSimpleName() + ": thinkAttack() faction call failed: " + e);
 			}
+		}
+	}
+	
+	// vGodFather
+	private void tryToGoHome(L2Attackable npc)
+	{
+		try
+		{
+			if (npc.getSpawn() != null)
+			{
+				npc.setisReturningToSpawnPoint(true);
+				if (GeoData.getInstance().canMove(npc.getX(), npc.getY(), npc.getZ(), npc.getSpawn().getX(), npc.getSpawn().getY(), npc.getSpawn().getZ(), npc.getInstanceId()))
+				{
+					moveTo(npc.getSpawn().getX(), npc.getSpawn().getY(), npc.getSpawn().getZ());
+				}
+				else
+				{
+					npc.returnHome(true);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			// This can only happen if actor is outside of world area
+			// nothing to log
 		}
 	}
 	

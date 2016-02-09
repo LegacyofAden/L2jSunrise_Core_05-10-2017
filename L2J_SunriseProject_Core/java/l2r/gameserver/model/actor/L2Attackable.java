@@ -2215,6 +2215,7 @@ public class L2Attackable extends L2Npc
 	public void returnHome(boolean teleport)
 	{
 		clearAggroList();
+		setisReturningToSpawnPoint(false);
 		
 		if (hasAI() && (getSpawn() != null))
 		{

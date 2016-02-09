@@ -165,6 +165,9 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 	private final int _reuseDelay;
 	private final int _sharedReuseGroup;
 	
+	// vGodFather
+	private final boolean _mustConsume;
+	
 	/**
 	 * Constructor of the L2Item that fill class variables.<BR>
 	 * <BR>
@@ -186,6 +189,9 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 		_referencePrice = set.getInt("price", 0);
 		_crystalType = set.getEnum("crystal_type", CrystalType.class, CrystalType.NONE);
 		_crystalCount = set.getInt("crystal_count", 0);
+		
+		// vGodFather
+		_mustConsume = set.getBoolean("must_consume", false);
 		
 		_stackable = set.getBoolean("is_stackable", false);
 		_sellable = set.getBoolean("is_sellable", true);
@@ -562,6 +568,11 @@ public abstract class L2Item extends ListenersContainer implements IIdentifiable
 	public final boolean isStackable()
 	{
 		return _stackable;
+	}
+	
+	public final boolean mustConsume()
+	{
+		return _mustConsume;
 	}
 	
 	/**
