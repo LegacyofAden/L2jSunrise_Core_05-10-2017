@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
+ * Copyright (C) 2004-2016 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -31,7 +31,7 @@ import l2r.gameserver.taskmanager.TaskManager.ExecutedTask;
 import l2r.gameserver.taskmanager.TaskTypes;
 
 /**
- * @author Layane
+ * @author Layane, vGodFather
  */
 public class TaskRecom extends Task
 {
@@ -46,6 +46,20 @@ public class TaskRecom extends Task
 	@Override
 	public void onTimeElapsed(ExecutedTask task)
 	{
+		String RESTART_SYSTEM = "UPDATE character_reco_bonus SET rec_left = ?, time_left = ?, rec_have=GREATEST(rec_have-20,0) WHERE charId IN (SELECT charId FROM characters)";
+		
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement(RESTART_SYSTEM);
+			statement.setInt(1, 20);
+			statement.setInt(2, 3600);
+			statement.execute();
+		}
+		catch (Exception e)
+		{
+			_log.error(getClass().getSimpleName() + ": Could not reset Recommendations System: " + e);
+		}
+		
 		for (L2PcInstance player : L2World.getInstance().getPlayers())
 		{
 			if ((player != null) && player.isOnline() && !player.isInOfflineMode())
@@ -57,27 +71,6 @@ public class TaskRecom extends Task
 				player.sendUserInfo(true);
 				player.sendPacket(new ExVoteSystemInfo(player));
 			}
-		}
-		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
-		{
-			try (PreparedStatement ps = con.prepareStatement("UPDATE character_reco_bonus SET rec_left=?, time_left=?, rec_have=0 WHERE rec_have <=  20"))
-			{
-				ps.setInt(1, 20); // Rec left = 20
-				ps.setInt(2, 3600); // Timer = 1 hour
-				ps.execute();
-			}
-			
-			try (PreparedStatement ps = con.prepareStatement("UPDATE character_reco_bonus SET rec_left=?, time_left=?, rec_have=GREATEST(rec_have-20,0) WHERE rec_have > 20"))
-			{
-				ps.setInt(1, 20); // Rec left = 20
-				ps.setInt(2, 3600); // Timer = 1 hour
-				ps.execute();
-			}
-		}
-		catch (Exception e)
-		{
-			_log.error(getClass().getSimpleName() + ": Could not reset Recommendations System: " + e);
 		}
 		
 		_log.info("Recommendations System reseted.");

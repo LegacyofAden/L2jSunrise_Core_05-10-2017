@@ -50,7 +50,7 @@ public class NevitSystem implements IUniqueId
 		// Reset Nevit's Blessing
 		if ((_player.getLastAccess() < (cal.getTimeInMillis() / 1000L)) && (System.currentTimeMillis() > cal.getTimeInMillis()))
 		{
-			_player.getVariables().set("hunting_time", 0);
+			_player.getNevitSystem().setAdventTime(0); // Refuel-reset hunting bonus time
 		}
 		
 		// Send Packets
@@ -60,7 +60,7 @@ public class NevitSystem implements IUniqueId
 		startNevitEffect(_player.getVariables().getInt("nevit_b", 0));
 		
 		// Set percent
-		int percent = calcPercent(_player.getVariables().getInt("hunting_points", 0));
+		int percent = calcPercent(getAdventPoints());
 		
 		if ((percent >= 45) && (percent < 50))
 		{
@@ -136,11 +136,12 @@ public class NevitSystem implements IUniqueId
 		@Override
 		public void run()
 		{
+			boolean sendPacket = false;
 			setAdventTime(getAdventTime() + 30);
 			if (getAdventTime() >= ADVENT_TIME)
 			{
 				setAdventTime(ADVENT_TIME);
-				stopAdventTask(true);
+				sendPacket = true;
 			}
 			else
 			{
@@ -150,7 +151,7 @@ public class NevitSystem implements IUniqueId
 					getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 				}
 			}
-			stopAdventTask(false);
+			stopAdventTask(sendPacket);
 		}
 	}
 	

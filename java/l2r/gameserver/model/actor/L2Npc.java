@@ -427,11 +427,24 @@ public class L2Npc extends L2Character
 		return false;
 	}
 	
+	// vGodFather
+	boolean _aggroRemoved = false;
+	
+	public void removeAggro(boolean isAggressive)
+	{
+		_aggroRemoved = isAggressive;
+	}
+	
 	/**
 	 * @return the Aggro Range of this L2NpcInstance contained in the L2NpcTemplate.
 	 */
 	public int getAggroRange()
 	{
+		if (_aggroRemoved)
+		{
+			return 0;
+		}
+		
 		return hasAIValue("aggroRange") ? getAIValue("aggroRange") : getTemplate().getAggroRange();
 	}
 	
