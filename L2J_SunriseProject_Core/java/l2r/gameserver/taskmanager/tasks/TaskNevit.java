@@ -18,6 +18,10 @@
  */
 package l2r.gameserver.taskmanager.tasks;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import l2r.L2DatabaseFactory;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.network.serverpackets.ExNevitAdventTimeChange;
@@ -42,16 +46,28 @@ public class TaskNevit extends Task
 	@Override
 	public void onTimeElapsed(ExecutedTask task)
 	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			try (PreparedStatement ps = con.prepareStatement("UPDATE character_variables SET val=? WHERE var='hunting_time'"))
+			{
+				ps.setInt(1, 0); // Refuel-reset hunting bonus time
+				ps.execute();
+			}
+		}
+		catch (Exception e)
+		{
+			_log.error(getClass().getSimpleName() + ": Could not reset Nevit System: " + e);
+		}
+		
 		for (L2PcInstance player : L2World.getInstance().getPlayers())
 		{
-			if ((player == null) || !player.isOnline())
+			if ((player != null) && player.isOnline() && !player.isInOfflineMode())
 			{
-				continue;
+				player.getNevitSystem().setAdventTime(0); // Refuel-reset hunting bonus time
+				player.sendPacket(new ExNevitAdventTimeChange(player.getNevitSystem().getAdventTime(), true));
 			}
-			
-			player.getVariables().set("hunting_time", 0);
-			player.sendPacket(new ExNevitAdventTimeChange(0, true));
 		}
+		
 		_log.info("Nevit system reseted.");
 	}
 	

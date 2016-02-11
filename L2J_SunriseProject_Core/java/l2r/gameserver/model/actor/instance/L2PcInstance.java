@@ -13569,7 +13569,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void teleportBookmarkAdd(int x, int y, int z, int icon, String tag, String name)
 	{
-		if (!teleportBookmarkCondition(1))
+		if (!teleportBookmarkCondition(1) || isTeleporting())
 		{
 			return;
 		}

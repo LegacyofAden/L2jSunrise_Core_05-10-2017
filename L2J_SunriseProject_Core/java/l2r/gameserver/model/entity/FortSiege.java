@@ -115,7 +115,17 @@ public class FortSiege implements Siegable
 				final SystemMessage sm;
 				if (_time == 3600) // 1hr remains
 				{
-					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(600), 3000000); // Prepare task for 10 minutes left.
+					sm = SystemMessage.getSystemMessage(SystemMessageId.S1_MINUTES_UNTIL_THE_FORTRESS_BATTLE_STARTS);
+					sm.addInt(60);
+					announceToPlayer(sm);
+					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(1800), 1800000); // Prepare task for 30 minutes left.
+				}
+				else if (_time == 1800) // 30min remains
+				{
+					sm = SystemMessage.getSystemMessage(SystemMessageId.S1_MINUTES_UNTIL_THE_FORTRESS_BATTLE_STARTS);
+					sm.addInt(30);
+					announceToPlayer(sm);
+					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(600), 1200000); // Prepare task for 10 minutes left.
 				}
 				else if (_time == 600) // 10min remains
 				{

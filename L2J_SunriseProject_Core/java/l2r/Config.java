@@ -976,6 +976,7 @@ public final class Config
 	public static boolean DEBUG_PACKETS_NAMES;
 	public static int DEBUG_PACKETS_INTERVAL;
 	public static boolean HTML_ACTION_CACHE_DEBUG;
+	public static boolean DEBUG_PLAYERS_SKILLS;
 	public static boolean DEBUG_POSSIBLE_ITEMS_DUPE;
 	public static boolean DEBUG_INSTANCES;
 	public static boolean DEBUG_SKILL_PARSING;
@@ -2453,6 +2454,7 @@ public final class Config
 			DEBUG_PACKETS_NAMES = Debug.getBoolean("DebugPacketsName", false);
 			DEBUG_PACKETS_INTERVAL = Debug.getInt("DebugPacketInterval", 5);
 			HTML_ACTION_CACHE_DEBUG = Debug.getBoolean("HtmlActionCacheDebug", false);
+			DEBUG_PLAYERS_SKILLS = Debug.getBoolean("DebugPlayersSkills", false);
 			DEBUG_POSSIBLE_ITEMS_DUPE = Debug.getBoolean("DebugPossibleItemsDupe", false);
 			DEBUG_INSTANCES = Debug.getBoolean("InstanceDebug", false);
 			DEBUG_SKILL_PARSING = Debug.getBoolean("DebugSkillParsing", false);

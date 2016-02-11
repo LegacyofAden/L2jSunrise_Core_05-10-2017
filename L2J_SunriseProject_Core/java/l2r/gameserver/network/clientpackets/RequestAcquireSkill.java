@@ -114,7 +114,10 @@ public final class RequestAcquireSkill extends L2GameClientPacket
 		final L2Skill skill = SkillData.getInstance().getInfo(_id, _level);
 		if (skill == null)
 		{
-			_log.warn(RequestAcquireSkill.class.getSimpleName() + ": Player " + activeChar.getName() + " is trying to learn a null skill Id: " + _id + " level: " + _level + "!");
+			if (Config.DEBUG_PLAYERS_SKILLS)
+			{
+				_log.warn(RequestAcquireSkill.class.getSimpleName() + ": Player " + activeChar.getName() + " is trying to learn a null skill Id: " + _id + " level: " + _level + "!");
+			}
 			return;
 		}
 		
@@ -124,7 +127,10 @@ public final class RequestAcquireSkill extends L2GameClientPacket
 		{
 			if (prevSkillLevel == _level)
 			{
-				_log.warn("Player " + activeChar.getName() + " is trying to learn a skill that already knows, Id: " + _id + " level: " + _level + "!");
+				if (Config.DEBUG_PLAYERS_SKILLS)
+				{
+					_log.warn(RequestAcquireSkill.class.getSimpleName() + ": Player " + activeChar.getName() + " is trying to learn a skill that already knows, Id: " + _id + " level: " + _level + "!");
+				}
 				return;
 			}
 			else if (prevSkillLevel != (_level - 1))
