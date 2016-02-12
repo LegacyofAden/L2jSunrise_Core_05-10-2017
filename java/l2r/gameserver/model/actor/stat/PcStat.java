@@ -777,7 +777,7 @@ public class PcStat extends PlayableStat
 	
 	public synchronized void updateVitalityPoints(float points, boolean useRates, boolean quiet)
 	{
-		if ((points == 0) || !Config.ENABLE_VITALITY)
+		if ((points == 0) || !Config.ENABLE_VITALITY || ((Config.FREE_VITALITY_TILL_LEVEL > 0) && (getActiveChar().getLevel() < Config.FREE_VITALITY_TILL_LEVEL)))
 		{
 			return;
 		}
@@ -870,6 +870,11 @@ public class PcStat extends PlayableStat
 	public byte getVitalityLevel()
 	{
 		if (getActiveChar().getNevitSystem().isAdventBlessingActive())
+		{
+			return 4;
+		}
+		
+		if ((Config.FREE_VITALITY_TILL_LEVEL > 0) && (getActiveChar().getLevel() < Config.FREE_VITALITY_TILL_LEVEL))
 		{
 			return 4;
 		}

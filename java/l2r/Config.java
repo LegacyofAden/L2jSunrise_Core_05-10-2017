@@ -957,6 +957,7 @@ public final class Config
 	public static float RATE_VITALITY_LEVEL_2;
 	public static float RATE_VITALITY_LEVEL_3;
 	public static float RATE_VITALITY_LEVEL_4;
+	public static int FREE_VITALITY_TILL_LEVEL;
 	public static float RATE_DROP_VITALITY_HERBS;
 	public static float RATE_RECOVERY_VITALITY_PEACE_ZONE;
 	public static float RATE_VITALITY_LOST;
@@ -2150,6 +2151,7 @@ public final class Config
 			RATE_VITALITY_LEVEL_2 = RatesSettings.getFloat("RateVitalityLevel2", 2);
 			RATE_VITALITY_LEVEL_3 = RatesSettings.getFloat("RateVitalityLevel3", 2.5f);
 			RATE_VITALITY_LEVEL_4 = RatesSettings.getFloat("RateVitalityLevel4", 3);
+			FREE_VITALITY_TILL_LEVEL = RatesSettings.getInt("FullVitalityTillLevel", 0);
 			RATE_RECOVERY_VITALITY_PEACE_ZONE = RatesSettings.getFloat("RateRecoveryPeaceZone", 1);
 			RATE_VITALITY_LOST = RatesSettings.getFloat("RateVitalityLost", 1);
 			RATE_VITALITY_GAIN = RatesSettings.getFloat("RateVitalityGain", 1);

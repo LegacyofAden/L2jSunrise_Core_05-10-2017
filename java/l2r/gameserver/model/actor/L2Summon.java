@@ -435,7 +435,10 @@ public abstract class L2Summon extends L2Playable
 			storeEffect(true);
 			if (owner != null)
 			{
-				owner.setPet(null);
+				if (!owner.isMounted())
+				{
+					owner.setPet(null);
+				}
 			}
 			
 			// Stop AI tasks

@@ -6541,7 +6541,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 								}
 							}
 							// notify target AI about the attack
-							if (((L2Character) target).hasAI() && !skill.hasEffectType(L2EffectType.HATE))
+							if (((L2Character) target).hasAI() && !skill.hasEffectType(L2EffectType.HATE) && !skill.hasEffectType(L2EffectType.PASSIVE))
 							{
 								((L2Character) target).getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
 							}
@@ -6629,7 +6629,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 			
 			// Notify AI
-			if (skill.isOffensive() && !skill.hasEffectType(L2EffectType.HATE))
+			if (skill.isOffensive() && !skill.hasEffectType(L2EffectType.HATE) && !skill.hasEffectType(L2EffectType.PASSIVE))
 			{
 				for (L2Object target : targets)
 				{

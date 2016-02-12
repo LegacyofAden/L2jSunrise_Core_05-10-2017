@@ -6867,6 +6867,7 @@ public final class L2PcInstance extends L2Playable
 		broadcastPacket(new Ride(this));
 		setMountObjectID(0);
 		storePetFood(petId);
+		setPet(null);
 		// Notify self and others about speed change
 		broadcastUserInfo();
 		return true;
@@ -11283,7 +11284,7 @@ public final class L2PcInstance extends L2Playable
 		
 		// Modify the position of the pet if necessary
 		final L2Summon summon = getSummon();
-		if (summon != null)
+		if ((summon != null) && !isMounted())
 		{
 			summon.setFollowStatus(false);
 			summon.teleToLocation(getLocation(), false);
