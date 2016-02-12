@@ -118,12 +118,8 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 		}
 		
 		int stoneId = stone.getId();
-		byte elementToAdd = Elementals.getItemElement(stoneId);
 		// Armors have the opposite element
-		if (item.isArmor())
-		{
-			elementToAdd = Elementals.getOppositeElement(elementToAdd);
-		}
+		byte elementToAdd = item.isArmor() ? Elementals.getOppositeElement(Elementals.getItemElement(stoneId)) : Elementals.getItemElement(stoneId);
 		byte opositeElement = Elementals.getOppositeElement(elementToAdd);
 		
 		Elementals oldElement = item.getElemental(elementToAdd);
@@ -197,14 +193,7 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 			SystemMessage sm;
 			if (item.getEnchantLevel() == 0)
 			{
-				if (item.isArmor())
-				{
-					sm = SystemMessage.getSystemMessage(SystemMessageId.THE_S2_ATTRIBUTE_WAS_SUCCESSFULLY_BESTOWED_ON_S1_RES_TO_S3_INCREASED);
-				}
-				else
-				{
-					sm = SystemMessage.getSystemMessage(SystemMessageId.ELEMENTAL_POWER_S2_SUCCESSFULLY_ADDED_TO_S1);
-				}
+				sm = item.isArmor() ? SystemMessage.getSystemMessage(SystemMessageId.THE_S2_ATTRIBUTE_WAS_SUCCESSFULLY_BESTOWED_ON_S1_RES_TO_S3_INCREASED) : SystemMessage.getSystemMessage(SystemMessageId.ELEMENTAL_POWER_S2_SUCCESSFULLY_ADDED_TO_S1);
 				sm.addItemName(item);
 				sm.addElemental(realElement);
 				if (item.isArmor())
@@ -214,14 +203,7 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 			}
 			else
 			{
-				if (item.isArmor())
-				{
-					sm = SystemMessage.getSystemMessage(SystemMessageId.THE_S3_ATTRIBUTE_BESTOWED_ON_S1_S2_RESISTANCE_TO_S4_INCREASED);
-				}
-				else
-				{
-					sm = SystemMessage.getSystemMessage(SystemMessageId.ELEMENTAL_POWER_S3_SUCCESSFULLY_ADDED_TO_S1_S2);
-				}
+				sm = item.isArmor() ? SystemMessage.getSystemMessage(SystemMessageId.THE_S3_ATTRIBUTE_BESTOWED_ON_S1_S2_RESISTANCE_TO_S4_INCREASED) : SystemMessage.getSystemMessage(SystemMessageId.ELEMENTAL_POWER_S3_SUCCESSFULLY_ADDED_TO_S1_S2);
 				sm.addInt(item.getEnchantLevel());
 				sm.addItemName(item);
 				sm.addElemental(realElement);
@@ -252,19 +234,10 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 		player.sendUserInfo(true);
 	}
 	
-	public int getLimit(L2ItemInstance item, int sotneId)
+	public int getLimit(L2ItemInstance item, int stoneId)
 	{
-		ElementalItems elementItem = Elementals.getItemElemental(sotneId);
-		if (elementItem == null)
-		{
-			return 0;
-		}
-		
-		if (item.isWeapon())
-		{
-			return Elementals.WEAPON_VALUES[elementItem._type._maxLevel];
-		}
-		return Elementals.ARMOR_VALUES[elementItem._type._maxLevel];
+		ElementalItems elementItem = Elementals.getItemElemental(stoneId);
+		return elementItem == null ? 0 : item.isWeapon() ? Elementals.WEAPON_VALUES[elementItem._type._maxLevel] : Elementals.ARMOR_VALUES[elementItem._type._maxLevel];
 	}
 	
 	public int getPowerToAdd(int stoneId, int oldValue, L2ItemInstance item)
@@ -273,11 +246,7 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 		{
 			if (item.isWeapon())
 			{
-				if (oldValue == 0)
-				{
-					return Elementals.FIRST_WEAPON_BONUS;
-				}
-				return Elementals.NEXT_WEAPON_BONUS;
+				return oldValue == 0 ? Elementals.FIRST_WEAPON_BONUS : Elementals.NEXT_WEAPON_BONUS;
 			}
 			else if (item.isArmor())
 			{

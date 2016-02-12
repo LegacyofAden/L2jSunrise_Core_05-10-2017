@@ -1155,7 +1155,10 @@ public class L2PetInstance extends L2Summon
 		{
 			if (getInventory() != null)
 			{
-				getInventory().deleteMe();
+				if (!owner.isMounted())
+				{
+					getInventory().deleteMe();
+				}
 			}
 			L2World.getInstance().removePet(owner.getObjectId());
 		}

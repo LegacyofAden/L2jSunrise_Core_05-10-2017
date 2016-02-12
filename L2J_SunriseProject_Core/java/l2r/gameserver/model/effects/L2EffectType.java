@@ -75,5 +75,6 @@ public enum L2EffectType
 	SUMMON_NPC, // confirmed
 	TRANSFORMATION,
 	TELEPORT_TO_TARGET, // confirmed
-	STEAL_ABNORMAL
+	STEAL_ABNORMAL,
+	PASSIVE
 }

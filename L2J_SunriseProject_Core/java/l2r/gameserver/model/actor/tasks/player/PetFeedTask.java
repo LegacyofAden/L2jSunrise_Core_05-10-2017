@@ -78,14 +78,28 @@ public class PetFeedTask implements Runnable
 				return;
 			}
 			
+			boolean summonHaveFood = false;
+			
 			L2ItemInstance food = null;
 			for (int id : foodIds)
 			{
-				// TODO: possibly pet inv?
-				food = _player.getInventory().getItemByItemId(id);
+				food = _player.getSummon().getInventory().getItemByItemId(id);
 				if (food != null)
 				{
+					summonHaveFood = true;
 					break;
+				}
+			}
+			
+			if (food == null)
+			{
+				for (int id : foodIds)
+				{
+					food = _player.getInventory().getItemByItemId(id);
+					if (food != null)
+					{
+						break;
+					}
 				}
 			}
 			
@@ -94,7 +108,7 @@ public class PetFeedTask implements Runnable
 				IItemHandler handler = ItemHandler.getInstance().getHandler(food.getEtcItem());
 				if (handler != null)
 				{
-					handler.useItem(_player, food, false);
+					handler.useItem(summonHaveFood ? _player.getSummon() : _player, food, false);
 					SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.PET_TOOK_S1_BECAUSE_HE_WAS_HUNGRY);
 					sm.addItemName(food.getId());
 					_player.sendPacket(sm);
