@@ -45,10 +45,10 @@ public final class SoDManager
 	
 	protected SoDManager()
 	{
-		_log.info("Seed of Destruction Manager: Loaded. Current stage is: " + getSoDState());
 		_SoDLastStateChangeDate = Calendar.getInstance();
 		loadData();
 		handleSodStages();
+		_log.info("Seed of Destruction Manager: Loaded. Current stage is: " + getSoDState());
 	}
 	
 	public void saveData(byte seedType)
