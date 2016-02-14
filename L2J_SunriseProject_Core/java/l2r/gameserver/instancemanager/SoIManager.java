@@ -59,12 +59,12 @@ public class SoIManager
 	
 	protected SoIManager()
 	{
-		_log.info("Seed of Infinity Manager: Loaded. Current stage is: " + getCurrentStage());
 		checkStageAndSpawn();
 		if (isSeedOpen())
 		{
 			openSeed(getOpenedTime());
 		}
+		_log.info("Seed of Infinity Manager: Loaded. Current stage is: " + getCurrentStage());
 	}
 	
 	public static int getCurrentStage()
