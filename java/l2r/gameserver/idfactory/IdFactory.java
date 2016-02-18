@@ -390,4 +390,9 @@ public abstract class IdFactory
 	public abstract void releaseId(int id);
 	
 	public abstract int size();
+	
+	public boolean checkId(int id)
+	{
+		return false;
+	}
 }

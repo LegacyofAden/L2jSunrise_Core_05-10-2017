@@ -377,7 +377,10 @@ public abstract class AbstractAI implements Ctrl
 				onEvtEvaded((L2Character) args[0]);
 				break;
 			case EVT_READY_TO_ACT:
-				if (!_actor.isCastingNow() && !_actor.isCastingSimultaneouslyNow())
+				// vGodFather check this
+				// After change this line we fixed a nasty bug with potions sometimes stops auto attack
+				// if (!_actor.isCastingNow() && !_actor.isCastingSimultaneouslyNow())
+				if (!_actor.isCastingNow())
 				{
 					onEvtReadyToAct();
 				}

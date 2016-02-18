@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
+ * Copyright (C) 2004-2016 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -70,7 +70,7 @@ public final class Fort extends AbstractResidence
 	
 	private final List<L2DoorInstance> _doors = new ArrayList<>();
 	private L2StaticObjectInstance _flagPole = null;
-	private FortSiege _siege = null;
+	private volatile FortSiege _siege = null;
 	private Calendar _siegeDate;
 	private Calendar _lastOwnedTime;
 	private L2SiegeZone _zone;
@@ -276,12 +276,7 @@ public final class Fort extends AbstractResidence
 	
 	public void endOfSiege(L2Clan clan)
 	{
-		ThreadPoolManager.getInstance().scheduleGeneral(new endFortressSiege(this, clan), 1000);
-	}
-	
-	public void engrave(L2Clan clan)
-	{
-		setOwner(clan, true);
+		ThreadPoolManager.getInstance().executeAi(new endFortressSiege(this, clan));
 	}
 	
 	/**
@@ -386,6 +381,11 @@ public final class Fort extends AbstractResidence
 			_log.warn(getClass().getSimpleName() + ": Updating Fort owner with null clan!!!");
 			return false;
 		}
+		
+		final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.THE_FORTRESS_BATTLE_OF_S1_HAS_FINISHED);
+		sm.addCastleId(getResidenceId());
+		getSiege().announceToPlayer(sm);
+		
 		final L2Clan oldowner = getOwnerClan();
 		if ((oldowner != null) && (clan != oldowner))
 		{
@@ -549,7 +549,7 @@ public final class Fort extends AbstractResidence
 	public void upgradeDoor(int doorId, int hp, int pDef, int mDef)
 	{
 		L2DoorInstance door = getDoor(doorId);
-		if ((door != null) && (door.getId() == doorId))
+		if (door != null)
 		{
 			door.setCurrentHp(door.getMaxHp() + hp);
 			
@@ -876,7 +876,7 @@ public final class Fort extends AbstractResidence
 	
 	public final void setOwnerClan(L2Clan clan)
 	{
-		setVisibleFlag(clan != null ? true : false);
+		setVisibleFlag(clan != null);
 		_fortOwner = clan;
 	}
 	
@@ -911,7 +911,13 @@ public final class Fort extends AbstractResidence
 	{
 		if (_siege == null)
 		{
-			_siege = new FortSiege(this);
+			synchronized (this)
+			{
+				if (_siege == null)
+				{
+					_siege = new FortSiege(this);
+				}
+			}
 		}
 		return _siege;
 	}
@@ -986,7 +992,7 @@ public final class Fort extends AbstractResidence
 		{
 			try
 			{
-				_f.engrave(_clan);
+				_f.setOwner(_clan, true);
 			}
 			catch (Exception e)
 			{
@@ -1015,7 +1021,7 @@ public final class Fort extends AbstractResidence
 	 *            <li>1 - independent</li>
 	 *            <li>2 - contracted with castle</li>
 	 *            </ul>
-	 * @param castleId set Castle Id for contracted fort
+	 * @param castleId the Id of the contracted castle (0 if no contract with any castle)
 	 */
 	public final void setFortState(int state, int castleId)
 	{
@@ -1044,10 +1050,7 @@ public final class Fort extends AbstractResidence
 	}
 	
 	/**
-	 * @return Returns fortress type.<BR>
-	 *         <BR>
-	 *         0 - small (3 commanders) <BR>
-	 *         1 - big (4 commanders + control room)
+	 * @return the fortress type (0 - small (3 commanders), 1 - big (4 commanders + control room))
 	 */
 	public final int getFortType()
 	{
@@ -1098,7 +1101,7 @@ public final class Fort extends AbstractResidence
 	}
 	
 	/**
-	 * @return Returns amount of barracks.
+	 * @return the amount of barracks in this fortress
 	 */
 	public final int getFortSize()
 	{
@@ -1158,14 +1161,13 @@ public final class Fort extends AbstractResidence
 		for (L2Spawn spawnDat : _specialEnvoys)
 		{
 			spawnDat.doSpawn();
-			spawnDat.startRespawn();
 		}
 	}
 	
 	private void initNpcs()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM fort_spawnlist WHERE fortId = ? AND spawnType = ? "))
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM fort_spawnlist WHERE fortId = ? AND spawnType = ?"))
 		{
 			ps.setInt(1, getResidenceId());
 			ps.setInt(2, 0);

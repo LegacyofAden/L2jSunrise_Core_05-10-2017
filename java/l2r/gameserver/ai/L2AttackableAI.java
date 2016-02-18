@@ -781,13 +781,17 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		if ((originalAttackTarget == null) || originalAttackTarget.isAlikeDead() || (_attackTimeout < GameTimeController.getInstance().getGameTicks()))
 		{
 			// Stop hating this target after the attack timeout or if target is dead
-			npc.stopHating(originalAttackTarget);
+			if (originalAttackTarget != null)
+			{
+				npc.stopHating(originalAttackTarget);
+			}
 			
 			// Set the AI Intention to AI_INTENTION_ACTIVE
-			// npc.RANDOM_WALK_RATE = 15;
+			// Retail you must give time to mobs before start go back
+			npc.RANDOM_WALK_RATE = 15;
 			setIntention(AI_INTENTION_ACTIVE);
 			
-			tryToGoHome(npc);
+			// tryToGoHome(npc);
 			
 			npc.setWalking();
 			return;
@@ -1764,6 +1768,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		double dist = 0;
 		double dist2 = 0;
 		int range = 0;
+		if (getAttackTarget() == null)
+		{
+			return;
+		}
 		try
 		{
 			if (npc.getTarget() == null)
@@ -2600,65 +2608,63 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	// vGodFather
 	private void factionCall(L2Attackable me, L2Character target)
 	{
-		// Handle all L2Object of its Faction inside the Faction Range
+		if (target == null)
+		{
+			return;
+		}
 		
+		// Handle all L2Object of its Faction inside the Faction Range
 		Set<Integer> clans = getActiveChar().getTemplate().getClans();
 		if ((clans != null) && !clans.isEmpty())
 		{
 			final int factionRange = me.getTemplate().getClanHelpRange() + me.getTemplate().getCollisionRadius();
 			// Go through all L2Object that belong to its faction
-			try
+			for (L2Object obj : me.getKnownList().getKnownCharactersInRadius(factionRange))
 			{
-				for (L2Object obj : me.getKnownList().getKnownCharactersInRadius(factionRange))
+				if (!(obj instanceof L2Npc))
 				{
-					if (obj instanceof L2Npc)
+					continue;
+				}
+				
+				L2Npc called = (L2Npc) obj;
+				
+				// We will stop if mob does not have ai or is dead
+				if (!called.hasAI() || called.isDead() || !getActiveChar().getTemplate().isClan(called.getTemplate().getClans()))
+				{
+					continue;
+				}
+				
+				// Check if the L2Object is inside the Faction Range of the actor
+				final CtrlIntention calledIntention = called.getAI().getIntention();
+				if ((Math.abs(target.getZ() - called.getZ()) < 600) && me.getAttackByList().contains(target) && ((calledIntention == CtrlIntention.AI_INTENTION_IDLE) || (calledIntention == CtrlIntention.AI_INTENTION_ACTIVE)) && (called.getInstanceId() == me.getInstanceId()) && GeoData.getInstance().canSeeTarget(me, called))
+				{
+					if (target.isPlayable())
 					{
-						L2Npc called = (L2Npc) obj;
-						
-						if (!getActiveChar().getTemplate().isClan(called.getTemplate().getClans()))
+						if (target.isInParty() && target.getParty().isInDimensionalRift())
 						{
-							continue;
-						}
-						
-						// Check if the L2Object is inside the Faction Range of the actor
-						if (called.hasAI() && (target != null))
-						{
-							if ((Math.abs(target.getZ() - called.getZ()) < 600) && me.getAttackByList().contains(target) && ((called.getAI()._intention == CtrlIntention.AI_INTENTION_IDLE) || (called.getAI()._intention == CtrlIntention.AI_INTENTION_ACTIVE)) && (called.getInstanceId() == me.getInstanceId()))
+							byte riftType = target.getParty().getDimensionalRift().getType();
+							byte riftRoom = target.getParty().getDimensionalRift().getCurrentRoom();
+							
+							if ((me instanceof L2RiftInvaderInstance) && !DimensionalRiftManager.getInstance().getRoom(riftType, riftRoom).checkIfInZone(me.getX(), me.getY(), me.getZ()))
 							{
-								if (target.isPlayable())
-								{
-									if (target.isInParty() && target.getParty().isInDimensionalRift())
-									{
-										byte riftType = target.getParty().getDimensionalRift().getType();
-										byte riftRoom = target.getParty().getDimensionalRift().getCurrentRoom();
-										
-										if ((me instanceof L2RiftInvaderInstance) && !DimensionalRiftManager.getInstance().getRoom(riftType, riftRoom).checkIfInZone(me.getX(), me.getY(), me.getZ()))
-										{
-											continue;
-										}
-									}
-									
-									// By default, when a faction member calls for help, attack the caller's attacker.
-									// Notify the AI with EVT_AGGRESSION
-									called.setIsRunning(true);
-									((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
-									called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
-									// called.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, target, 1);
-									EventDispatcher.getInstance().notifyEventAsync(new OnAttackableFactionCall(called, getActiveChar(), target.getActingPlayer(), target.isSummon()), called);
-								}
-								else if ((called instanceof L2Attackable) && (getAttackTarget() != null) && (called.getAI()._intention != CtrlIntention.AI_INTENTION_ATTACK))
-								{
-									((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
-									called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, getAttackTarget());
-								}
+								continue;
 							}
 						}
+						
+						// By default, when a faction member calls for help, attack the caller's attacker.
+						// Notify the AI with EVT_AGGRESSION
+						called.setIsRunning(true);
+						((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
+						called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
+						// called.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, target, 1);
+						EventDispatcher.getInstance().notifyEventAsync(new OnAttackableFactionCall(called, getActiveChar(), target.getActingPlayer(), target.isSummon()), called);
+					}
+					else if ((called instanceof L2Attackable) && (getAttackTarget() != null) && (calledIntention != CtrlIntention.AI_INTENTION_ATTACK))
+					{
+						((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
+						called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, getAttackTarget());
 					}
 				}
-			}
-			catch (NullPointerException e)
-			{
-				_log.warn(getClass().getSimpleName() + ": thinkAttack() faction call failed: " + e.getMessage());
 			}
 		}
 	}

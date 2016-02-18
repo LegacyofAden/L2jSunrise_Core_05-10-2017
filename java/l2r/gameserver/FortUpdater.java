@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
+ * Copyright (C) 2004-2016 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -20,7 +20,6 @@ package l2r.gameserver;
 
 import l2r.Config;
 import l2r.gameserver.enums.FortUpdaterType;
-import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.entity.Fort;
 import l2r.gameserver.model.itemcontainer.Inventory;
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FortUpdater implements Runnable
 {
-	protected static Logger _log = LoggerFactory.getLogger(FortUpdater.class);
+	private static final Logger _log = LoggerFactory.getLogger(FortUpdater.class);
 	private final L2Clan _clan;
 	private final Fort _fort;
 	private int _runCount;
@@ -56,6 +55,7 @@ public class FortUpdater implements Runnable
 			switch (_updaterType)
 			{
 				case PERIODIC_UPDATE:
+				{
 					_runCount++;
 					if ((_fort.getOwnerClan() == null) || (_fort.getOwnerClan() != _clan))
 					{
@@ -69,7 +69,7 @@ public class FortUpdater implements Runnable
 						if (_clan.getWarehouse().getAdena() >= Config.FS_FEE_FOR_CASTLE)
 						{
 							_clan.getWarehouse().destroyItemByItemId("FS_fee_for_Castle", Inventory.ADENA_ID, Config.FS_FEE_FOR_CASTLE, null, null);
-							CastleManager.getInstance().getCastleById(_fort.getCastleId()).addToTreasuryNoTax(Config.FS_FEE_FOR_CASTLE);
+							_fort.getContractedCastle().addToTreasuryNoTax(Config.FS_FEE_FOR_CASTLE);
 							_fort.raiseSupplyLvL();
 						}
 						else
@@ -79,7 +79,9 @@ public class FortUpdater implements Runnable
 					}
 					_fort.saveFortVariables();
 					break;
+				}
 				case MAX_OWN_TIME:
+				{
 					if ((_fort.getOwnerClan() == null) || (_fort.getOwnerClan() != _clan))
 					{
 						return;
@@ -90,11 +92,12 @@ public class FortUpdater implements Runnable
 						_fort.setFortState(0, 0);
 					}
 					break;
+				}
 			}
 		}
 		catch (Exception e)
 		{
-			_log.warn(String.valueOf(e));
+			_log.error("There has been a problem updating forts!", e);
 		}
 	}
 	
