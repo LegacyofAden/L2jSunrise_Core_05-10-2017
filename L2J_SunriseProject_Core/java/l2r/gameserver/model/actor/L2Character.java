@@ -6656,7 +6656,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		catch (Exception e)
 		{
-			_log.warn(getClass().getSimpleName() + ": callSkill() failed.", e);
+			_log.warn(getClass().getSimpleName() + ": callSkill() failed, Actor: " + getName() + "[" + getId() + "] Skill: " + skill.getId() + ".", e);
 		}
 	}
 	

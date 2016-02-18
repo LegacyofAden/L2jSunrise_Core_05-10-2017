@@ -1728,7 +1728,10 @@ public final class L2ItemInstance extends L2Object
 		}
 		catch (Exception e)
 		{
-			_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
+			if (Config.DEBUG)
+			{
+				_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
+			}
 		}
 	}
 	

@@ -1066,6 +1066,7 @@ public final class Config
 	// GrandBoss Settings
 	// --------------------------------------------------
 	// Antharas
+	public static int ANTHARAS_MAX_PLAYERS;
 	public static int ANTHARAS_WAIT_TIME;
 	public static int ANTHARAS_SPAWN_INTERVAL;
 	public static int ANTHARAS_SPAWN_RANDOM;
@@ -2543,6 +2544,7 @@ public final class Config
 			// Load ANTHARAS_CONFIG L2Properties file (if exists)
 			final PropertiesParser antharas_load = new PropertiesParser(ANTHARAS_CONFIG);
 			
+			ANTHARAS_MAX_PLAYERS = antharas_load.getInt("AntharasMaxPlayers", 200);
 			ANTHARAS_WAIT_TIME = antharas_load.getInt("AntharasWaitTime", 30);
 			ANTHARAS_SPAWN_INTERVAL = antharas_load.getInt("IntervalOfAntharasSpawn", 192);
 			ANTHARAS_SPAWN_RANDOM = antharas_load.getInt("RandomOfAntharasSpawn", 12);

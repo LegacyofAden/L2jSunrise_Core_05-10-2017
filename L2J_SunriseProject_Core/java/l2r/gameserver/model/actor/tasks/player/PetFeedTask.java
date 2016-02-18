@@ -81,13 +81,16 @@ public class PetFeedTask implements Runnable
 			boolean summonHaveFood = false;
 			
 			L2ItemInstance food = null;
-			for (int id : foodIds)
+			if (_player.getSummon() != null)
 			{
-				food = _player.getSummon().getInventory().getItemByItemId(id);
-				if (food != null)
+				for (int id : foodIds)
 				{
-					summonHaveFood = true;
-					break;
+					food = _player.getSummon().getInventory().getItemByItemId(id);
+					if (food != null)
+					{
+						summonHaveFood = true;
+						break;
+					}
 				}
 			}
 			

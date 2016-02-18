@@ -149,6 +149,12 @@ public class BitSetIDFactory extends IdFactory
 		return (size() - FIRST_OID);
 	}
 	
+	@Override
+	public boolean checkId(int id)
+	{
+		return _freeIds.get(id);
+	}
+	
 	/**
 	 * @return
 	 */
