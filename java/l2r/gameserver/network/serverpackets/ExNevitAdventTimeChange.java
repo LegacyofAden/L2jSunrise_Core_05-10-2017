@@ -18,6 +18,8 @@
  */
 package l2r.gameserver.network.serverpackets;
 
+import l2r.gameserver.model.entity.NevitSystem;
+
 /**
  * @author mochitto
  */
@@ -28,7 +30,8 @@ public class ExNevitAdventTimeChange extends L2GameServerPacket
 	
 	public ExNevitAdventTimeChange(int time, boolean paused)
 	{
-		_time = (time > 14400) ? 14400 : time;
+		// we must set time here
+		_time = (time >= NevitSystem.ADVENT_TIME) ? 16000 : time;
 		_paused = paused;
 	}
 	

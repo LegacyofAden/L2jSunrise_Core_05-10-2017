@@ -1270,15 +1270,16 @@ public final class Formulas
 					target.setCurrentCp(1);
 					target.sendPacket(SystemMessageId.LETHAL_STRIKE);
 				}
-				// for Monsters HP is set to 1.
-				else if (target.isMonster() && FormulasConfigs.ALLOW_LETHAL_STRIKES_ON_MOBS)
-				{
-					target.setCurrentHp(1);
-				}
 				else if (target.isSummon() && FormulasConfigs.ALLOW_LETHAL_STRIKES_ON_SUMMONS)
 				{
 					target.setCurrentHp(1);
 				}
+				// for Monsters HP is set to 1.
+				else if (target.isMonster() && FormulasConfigs.ALLOW_LETHAL_STRIKES_ON_MOBS)
+				{
+					target.reduceCurrentHp(target.getCurrentHp() - 1, activeChar, skill);
+				}
+				
 				activeChar.sendPacket(SystemMessageId.LETHAL_STRIKE_SUCCESSFUL);
 			}
 			// Half-Kill

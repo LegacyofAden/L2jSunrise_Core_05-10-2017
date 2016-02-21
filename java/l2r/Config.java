@@ -144,6 +144,7 @@ public final class Config
 	// --------------------------------------------------
 	public static boolean ALT_GAME_DELEVEL;
 	public static boolean DECREASE_SKILL_LEVEL;
+	public static int MAX_LEVEL_DIFF_CAN_KEEP_SKILL_LVL;
 	public static double ALT_WEIGHT_LIMIT;
 	public static int RUN_SPD_BOOST;
 	public static int DEATH_PENALTY_CHANCE;
@@ -1080,6 +1081,7 @@ public final class Config
 	// --------------------------------------------------
 	// Antharas
 	public static int ANTHARAS_MAX_PLAYERS;
+	public static int ANTHARAS_MAX_MINIONS_COUNT;
 	public static int ANTHARAS_WAIT_TIME;
 	public static int ANTHARAS_SPAWN_INTERVAL;
 	public static int ANTHARAS_SPAWN_RANDOM;
@@ -1489,6 +1491,7 @@ public final class Config
 			
 			ALT_GAME_DELEVEL = Character.getBoolean("Delevel", true);
 			DECREASE_SKILL_LEVEL = Character.getBoolean("DecreaseSkillOnDelevel", true);
+			MAX_LEVEL_DIFF_CAN_KEEP_SKILL_LVL = Character.getInt("MaxLvlDiffCanKeepSkillLvl", 9);
 			ALT_WEIGHT_LIMIT = Character.getDouble("AltWeightLimit", 1);
 			RUN_SPD_BOOST = Character.getInt("RunSpeedBoost", 0);
 			DEATH_PENALTY_CHANCE = Character.getInt("DeathPenaltyChance", 20);
@@ -2588,6 +2591,7 @@ public final class Config
 			final PropertiesParser antharas_load = new PropertiesParser(ANTHARAS_CONFIG);
 			
 			ANTHARAS_MAX_PLAYERS = antharas_load.getInt("AntharasMaxPlayers", 200);
+			ANTHARAS_MAX_MINIONS_COUNT = antharas_load.getInt("AntharasMaxMinionsCount", 100);
 			ANTHARAS_WAIT_TIME = antharas_load.getInt("AntharasWaitTime", 30);
 			ANTHARAS_SPAWN_INTERVAL = antharas_load.getInt("IntervalOfAntharasSpawn", 192);
 			ANTHARAS_SPAWN_RANDOM = antharas_load.getInt("RandomOfAntharasSpawn", 12);

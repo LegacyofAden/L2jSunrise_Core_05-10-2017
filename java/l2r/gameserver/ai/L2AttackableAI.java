@@ -34,6 +34,7 @@ import l2r.gameserver.GeoData;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.sql.TerritoryTable;
 import l2r.gameserver.enums.AIType;
+import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.DimensionalRiftManager;
@@ -2654,9 +2655,15 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						// By default, when a faction member calls for help, attack the caller's attacker.
 						// Notify the AI with EVT_AGGRESSION
 						called.setIsRunning(true);
-						((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
-						called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
-						// called.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, target, 1);
+						if (called.isAttackable())
+						{
+							((L2Attackable) called).addDamageHate(getAttackTarget(), 0, me.getHating(getAttackTarget()));
+							called.getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
+						}
+						else
+						{
+							called.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, target, 1);
+						}
 						EventDispatcher.getInstance().notifyEventAsync(new OnAttackableFactionCall(called, getActiveChar(), target.getActingPlayer(), target.isSummon()), called);
 					}
 					else if ((called instanceof L2Attackable) && (getAttackTarget() != null) && (calledIntention != CtrlIntention.AI_INTENTION_ATTACK))

@@ -18,6 +18,9 @@ import l2r.gameserver.network.serverpackets.ExNevitAdventEffect;
 import l2r.gameserver.network.serverpackets.ExNevitAdventPointInfoPacket;
 import l2r.gameserver.network.serverpackets.ExNevitAdventTimeChange;
 
+/**
+ * @author vGodFather
+ */
 public class NevitSystem implements IUniqueId
 {
 	// Timers
@@ -25,7 +28,7 @@ public class NevitSystem implements IUniqueId
 	private static final int BONUS_EFFECT_TIME = 180;
 	
 	// Nevit Hour
-	private static final int ADVENT_TIME = 14400;
+	public static final int ADVENT_TIME = 14400;
 	public final L2PcInstance _player;
 	
 	private volatile ScheduledFuture<?> _adventTask;
@@ -93,8 +96,7 @@ public class NevitSystem implements IUniqueId
 			startNevitEffect(BONUS_EFFECT_TIME);
 		}
 		
-		int percent = calcPercent(getAdventPoints());
-		switch (percent)
+		switch (calcPercent(getAdventPoints()))
 		{
 			case 45:
 			{
@@ -124,7 +126,7 @@ public class NevitSystem implements IUniqueId
 			{
 				if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
 				{
-					_adventTask = ThreadPoolManager.getInstance().scheduleGeneral(new AdventTask(), 30000);
+					_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), 25000, 25000); // task cycle confirmed in retail
 					getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 				}
 			}
@@ -136,22 +138,19 @@ public class NevitSystem implements IUniqueId
 		@Override
 		public void run()
 		{
-			boolean sendPacket = false;
 			setAdventTime(getAdventTime() + 30);
 			if (getAdventTime() >= ADVENT_TIME)
 			{
 				setAdventTime(ADVENT_TIME);
-				sendPacket = true;
+				stopAdventTask(true);
+				return;
 			}
-			else
+			
+			addPoints(72);
+			if ((getAdventTime() % 60) == 0)
 			{
-				addPoints(72);
-				if ((getAdventTime() % 60) == 0)
-				{
-					getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
-				}
+				getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 			}
-			stopAdventTask(sendPacket);
 		}
 	}
 	
@@ -220,6 +219,13 @@ public class NevitSystem implements IUniqueId
 			_nevitEffectTask.cancel(true);
 			_nevitEffectTask = null;
 		}
+	}
+	
+	public void checkIfMustGivePoints(long baseExp)
+	{
+		/**
+		 * if (_adventTask == null) { synchronized (this) { if (_adventTask == null) { int nevitPoints = (int) Math.round(((baseExp / (npcLevel * npcLevel)) * 100) / 20); // TODO: Formula from the bulldozer. addPoints(nevitPoints); } } }
+		 */
 	}
 	
 	public L2PcInstance getPlayer()
