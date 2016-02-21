@@ -344,7 +344,7 @@ public class PcStat extends PlayableStat
 		getActiveChar().broadcastUserInfo();
 		getActiveChar().sendPacket(new ExVoteSystemInfo(getActiveChar()));
 		// Nevit Points For Level
-		getActiveChar().getNevitSystem().addPoints(2000);
+		getActiveChar().getNevitSystem().addPoints(1950);
 		
 		return levelIncreased;
 	}

@@ -14452,7 +14452,7 @@ public final class L2PcInstance extends L2Playable
 				continue;
 			}
 			// player level is too low for such skill level
-			if (getLevel() < (learn.getGetLevel() - 9))
+			if (getLevel() < (learn.getGetLevel() - Config.MAX_LEVEL_DIFF_CAN_KEEP_SKILL_LVL))
 			{
 				deacreaseSkillLevel(id);
 			}
@@ -14824,20 +14824,12 @@ public final class L2PcInstance extends L2Playable
 	
 	public int getRecomBonus()
 	{
-		if ((getRecomBonusTime() > 0) || isHourglassEffected())
-		{
-			return RecoBonus.getRecoBonus(this);
-		}
-		return 0;
+		return (getRecomBonusTime() > 0) || isHourglassEffected() ? RecoBonus.getRecoBonus(this) : 0;
 	}
 	
 	public double getRecomBonusMul()
 	{
-		if ((getRecomBonusTime() > 0) || isHourglassEffected())
-		{
-			return RecoBonus.getRecoMultiplier(this);
-		}
-		return 1;
+		return (getRecomBonusTime() > 0) || isHourglassEffected() ? RecoBonus.getRecoMultiplier(this) : 0;
 	}
 	
 	@Override

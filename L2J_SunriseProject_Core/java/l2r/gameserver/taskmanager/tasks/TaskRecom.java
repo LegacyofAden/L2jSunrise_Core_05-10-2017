@@ -62,14 +62,17 @@ public class TaskRecom extends Task
 		
 		for (L2PcInstance player : L2World.getInstance().getPlayers())
 		{
-			if ((player != null) && player.isOnline() && !player.isInOfflineMode())
+			if ((player != null))
 			{
 				player.stopRecoBonusTask();
 				player.setRecomBonusTime(3600);
 				player.setRecomLeft(20);
 				player.setRecomHave(player.getRecomHave() - 20);
-				player.sendUserInfo(true);
-				player.sendPacket(new ExVoteSystemInfo(player));
+				if (!player.isInOfflineMode())
+				{
+					player.sendUserInfo(true);
+					player.sendPacket(new ExVoteSystemInfo(player));
+				}
 			}
 		}
 		
