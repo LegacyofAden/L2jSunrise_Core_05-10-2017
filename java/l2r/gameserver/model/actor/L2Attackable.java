@@ -38,6 +38,7 @@ import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.InstanceType;
+import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.CursedWeaponsManager;
 import l2r.gameserver.instancemanager.PcCafePointsManager;
 import l2r.gameserver.instancemanager.WalkingManager;
@@ -537,6 +538,13 @@ public class L2Attackable extends L2Npc
 								attacker.addExpAndSp(addexp, addsp, useVitalityRate());
 								if (addexp > 0)
 								{
+									// vGodFather
+									if (!attacker.isInsideZone(ZoneIdType.PEACE) && ((attacker.getLevel() - getLevel()) <= 9))
+									{
+										attacker.getNevitSystem().startAdventTask();
+										attacker.getNevitSystem().checkIfMustGivePoints(addexp);
+									}
+									
 									attacker.updateVitalityPoints(getVitalityPoints(damage), true, false);
 									PcCafePointsManager.givePcCafePoint(attacker, addexp);
 								}

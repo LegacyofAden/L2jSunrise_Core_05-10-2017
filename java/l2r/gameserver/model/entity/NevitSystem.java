@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.effects.AbnormalEffect;
@@ -24,11 +25,14 @@ import l2r.gameserver.network.serverpackets.ExNevitAdventTimeChange;
 public class NevitSystem implements IUniqueId
 {
 	// Timers
-	private static final int MAX_POINTS = 7200;
-	private static final int BONUS_EFFECT_TIME = 180;
+	private static final int MAX_POINTS = Config.HUNTING_BONUS_MAX_POINTS;
+	private static final int BONUS_EFFECT_TIME = Config.HUNTING_BONUS_EFFECT_TIME;
+	protected static final int REFRESH_RATE = Config.HUNTING_BONUS_REFRESH_RATE;
+	protected static final int REFRESH_POINTS = Config.HUNTING_BONUS_POINTS_ON_REFRESH;
+	private static final boolean EXTRA_POINTS = Config.HUNTING_BONUS_EXTRA_POINTS;
 	
 	// Nevit Hour
-	public static final int ADVENT_TIME = 14400;
+	public static final int ADVENT_TIME = Config.HUNTING_BONUS_MAX_TIME;
 	public final L2PcInstance _player;
 	
 	private volatile ScheduledFuture<?> _adventTask;
@@ -126,7 +130,7 @@ public class NevitSystem implements IUniqueId
 			{
 				if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
 				{
-					_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), 25000, 25000); // task cycle confirmed in retail
+					_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE, REFRESH_RATE); // task cycle confirmed in retail
 					getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 				}
 			}
@@ -138,7 +142,7 @@ public class NevitSystem implements IUniqueId
 		@Override
 		public void run()
 		{
-			setAdventTime(getAdventTime() + 30);
+			setAdventTime(getAdventTime() + REFRESH_RATE);
 			if (getAdventTime() >= ADVENT_TIME)
 			{
 				setAdventTime(ADVENT_TIME);
@@ -146,7 +150,7 @@ public class NevitSystem implements IUniqueId
 				return;
 			}
 			
-			addPoints(72);
+			addPoints(REFRESH_POINTS);
 			if ((getAdventTime() % 60) == 0)
 			{
 				getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
@@ -223,9 +227,21 @@ public class NevitSystem implements IUniqueId
 	
 	public void checkIfMustGivePoints(long baseExp)
 	{
-		/**
-		 * if (_adventTask == null) { synchronized (this) { if (_adventTask == null) { int nevitPoints = (int) Math.round(((baseExp / (npcLevel * npcLevel)) * 100) / 20); // TODO: Formula from the bulldozer. addPoints(nevitPoints); } } }
-		 */
+		if (EXTRA_POINTS)
+		{
+			if (_adventTask == null)
+			{
+				synchronized (this)
+				{
+					if (_adventTask == null)
+					{
+						// TODO: this is custom formula no idea if exist in off
+						// int nevitPoints = (int) Math.round(((baseExp / (npcLevel * npcLevel)) * 100) / 20);
+						addPoints(REFRESH_POINTS / 2);
+					}
+				}
+			}
+		}
 	}
 	
 	public L2PcInstance getPlayer()

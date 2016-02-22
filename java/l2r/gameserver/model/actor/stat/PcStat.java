@@ -167,11 +167,6 @@ public class PcStat extends PlayableStat
 			bonusSp = getSpBonusMultiplier();
 		}
 		
-		if ((addToExp > 0) && !activeChar.isInsideZone(ZoneIdType.PEACE))
-		{
-			activeChar.getNevitSystem().startAdventTask();
-		}
-		
 		if (!activeChar.isInsideZone(ZoneIdType.PEACE))
 		{
 			activeChar.setRecomTimerActive(true);

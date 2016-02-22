@@ -113,6 +113,7 @@ public final class Config
 	public static final String GENERAL_CONFIG_FILE = "./config/main/General.ini";
 	public static final String GEODATA_CONFIG_FILE = "./config/main/Geodata.ini";
 	public static final String GRACIASEEDS_CONFIG_FILE = "./config/main/GraciaSeeds.ini";
+	public static final String HUNTING_BONUS_CONFIG = "./config/main/HuntingBonus.ini";
 	public static final String ID_CONFIG_FILE = "./config/main/IdFactory.ini";
 	public static final String INSTANCES_CONFIG_FILE = "./config/main/Instances.ini";
 	public static final String ITEM_MALL_CONFIG_FILE = "./config/main/ItemMall.ini";
@@ -1206,6 +1207,16 @@ public final class Config
 	// --------------------------------------------------
 	public static int SOD_TIAT_KILL_COUNT;
 	public static long SOD_STAGE_2_LENGTH;
+	
+	// --------------------------------------------------
+	// Hunting bonus Settings
+	// --------------------------------------------------
+	public static int HUNTING_BONUS_MAX_POINTS;
+	public static int HUNTING_BONUS_MAX_TIME;
+	public static int HUNTING_BONUS_REFRESH_RATE;
+	public static int HUNTING_BONUS_POINTS_ON_REFRESH;
+	public static int HUNTING_BONUS_EFFECT_TIME;
+	public static boolean HUNTING_BONUS_EXTRA_POINTS;
 	
 	// --------------------------------------------------
 	// Chatfilter Settings
@@ -2790,6 +2801,17 @@ public final class Config
 			// Seed of Destruction
 			SOD_TIAT_KILL_COUNT = GraciaSeedsSettings.getInt("TiatKillCountForNextState", 10);
 			SOD_STAGE_2_LENGTH = GraciaSeedsSettings.getLong("Stage2Length", 720) * 60000;
+			
+			// Hunting bonus
+			final PropertiesParser HuntingBonusSettings = new PropertiesParser(HUNTING_BONUS_CONFIG);
+			
+			// Seed of Destruction
+			HUNTING_BONUS_MAX_POINTS = HuntingBonusSettings.getInt("HuntingBonusMaxPoints", 7200);
+			HUNTING_BONUS_MAX_TIME = HuntingBonusSettings.getInt("HuntingBonusMaxTime", 14400);
+			HUNTING_BONUS_REFRESH_RATE = HuntingBonusSettings.getInt("HuntingBonusRefreshRate", 25) * 1000;
+			HUNTING_BONUS_POINTS_ON_REFRESH = HuntingBonusSettings.getInt("HuntingBonusRefreshPoints", 25);
+			HUNTING_BONUS_EFFECT_TIME = HuntingBonusSettings.getInt("HuntingBonusEffectTime", 180);
+			HUNTING_BONUS_EXTRA_POINTS = HuntingBonusSettings.getBoolean("HuntingBonusExtraPoints", false);
 			
 			final File chat_filter = new File(CHAT_FILTER_FILE);
 			try (FileReader fr = new FileReader(chat_filter);
