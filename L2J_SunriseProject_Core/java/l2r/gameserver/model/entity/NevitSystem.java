@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
+import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.effects.AbnormalEffect;
 import l2r.gameserver.model.events.EventType;
@@ -225,7 +226,7 @@ public class NevitSystem implements IUniqueId
 		}
 	}
 	
-	public void checkIfMustGivePoints(long baseExp)
+	public void checkIfMustGivePoints(long baseExp, L2Attackable l2Attackable)
 	{
 		if (EXTRA_POINTS)
 		{
@@ -235,9 +236,8 @@ public class NevitSystem implements IUniqueId
 				{
 					if (_adventTask == null)
 					{
-						// TODO: this is custom formula no idea if exist in off
-						// int nevitPoints = (int) Math.round(((baseExp / (npcLevel * npcLevel)) * 100) / 20);
-						addPoints(REFRESH_POINTS / 2);
+						int nevitPoints = Math.round(((baseExp / (l2Attackable.getLevel() * l2Attackable.getLevel())) * 100) / 20);
+						addPoints(nevitPoints);
 					}
 				}
 			}

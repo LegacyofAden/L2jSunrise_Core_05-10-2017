@@ -543,7 +543,7 @@ public class L2Attackable extends L2Npc
 									if (!attacker.isInsideZone(ZoneIdType.PEACE) && ((attacker.getLevel() - getLevel()) <= 9))
 									{
 										attacker.getNevitSystem().startAdventTask();
-										attacker.getNevitSystem().checkIfMustGivePoints(addexp);
+										attacker.getNevitSystem().checkIfMustGivePoints(addexp, this);
 									}
 									
 									attacker.updateVitalityPoints(getVitalityPoints(damage), true, false);
