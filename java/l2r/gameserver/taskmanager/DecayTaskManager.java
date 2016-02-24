@@ -20,7 +20,6 @@ package l2r.gameserver.taskmanager;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +30,8 @@ import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 
+import javolution.util.FastMap;
+
 /**
  * @author NosBit
  */
@@ -38,7 +39,7 @@ public final class DecayTaskManager
 {
 	private final ScheduledExecutorService _decayExecutor = Executors.newSingleThreadScheduledExecutor();
 	
-	protected final Map<L2Character, ScheduledFuture<?>> _decayTasks = new ConcurrentHashMap<>();
+	protected final Map<L2Character, ScheduledFuture<?>> _decayTasks = new FastMap<L2Character, ScheduledFuture<?>>().shared();
 	
 	/**
 	 * Adds a decay task for the specified character.<br>

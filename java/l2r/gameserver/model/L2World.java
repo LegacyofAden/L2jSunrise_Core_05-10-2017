@@ -33,7 +33,6 @@ import l2r.gameserver.data.xml.impl.AdminData;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
-import l2r.gameserver.network.serverpackets.DeleteObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -352,12 +351,12 @@ public final class L2World
 			return;
 		}
 		
-		// vGodFather TODO find better way or not?
-		if (object.isNpc())
-		{
-			L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInStoreMode()).forEach(pc -> pc.sendPacket(new DeleteObject(object)));
-			// object.getKnownList().getKnownObjects().values().stream().filter(obj -> obj.isPlayer() && obj.getActingPlayer().isOnline() && !obj.getActingPlayer().isInOfflineMode()).forEach(obj -> obj.sendPacket(new DeleteObject(object)));
-		}
+		//// vGodFather TODO find better way or not?
+		// if (object.isNpc())
+		// {
+		// L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInStoreMode()).forEach(pc -> pc.sendPacket(new DeleteObject(object)));
+		// // object.getKnownList().getKnownObjects().values().stream().filter(obj -> obj.isPlayer() && obj.getActingPlayer().isOnline() && !obj.getActingPlayer().isInOfflineMode()).forEach(obj -> obj.sendPacket(new DeleteObject(object)));
+		// }
 		
 		// Removes all objects from the object's known list.
 		object.getKnownList().removeAllKnownObjects();
