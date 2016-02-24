@@ -19,7 +19,6 @@
 package l2r.gameserver.taskmanager;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
@@ -29,6 +28,8 @@ import l2r.gameserver.model.actor.L2Character;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javolution.util.FastMap;
+
 /**
  * @author la2 Lets drink to code!
  */
@@ -36,7 +37,7 @@ public class DecayTaskManager
 {
 	protected static final Logger _log = LoggerFactory.getLogger(DecayTaskManager.class);
 	
-	protected final Map<L2Character, Long> _decayTasks = new ConcurrentHashMap<>();
+	protected final Map<L2Character, Long> _decayTasks = new FastMap<L2Character, Long>().shared();
 	
 	protected DecayTaskManager()
 	{
