@@ -2231,165 +2231,76 @@ public final class Formulas
 	
 	public static double calcAttributeBonus(L2Character attacker, L2Character target, L2Skill skill)
 	{
-		int attack_attribute;
+		int calcPower = 0;
+		int calcDefen = 0;
+		int calcTotal = 0;
+		double result = 1.0;
+		byte element;
 		
 		if (skill != null)
 		{
-			if ((skill.getElement() == -1) || (attacker.getAttackElement() != skill.getElement()))
+			element = skill.getElement();
+			if (element >= 0)
 			{
-				return 1;
-			}
-			attack_attribute = attacker.getAttackElementValue(attacker.getAttackElement()) + skill.getElementPower();
-		}
-		else
-		{
-			attack_attribute = attacker.getAttackElementValue(attacker.getAttackElement());
-			if (attack_attribute == 0)
-			{
-				return 1;
-			}
-		}
-		
-		int defence_attribute = target.getDefenseElementValue(attacker.getAttackElement());
-		double attack_attribute_mod = 0;
-		double defence_attribute_mod = 0;
-		
-		if (attack_attribute >= 450)
-		{
-			if (defence_attribute >= 450)
-			{
-				attack_attribute_mod = 0.06909;
-				defence_attribute_mod = 0.078;
-			}
-			else if (defence_attribute >= 350)
-			{
-				attack_attribute_mod = 0.0887;
-				defence_attribute_mod = 0.1007;
-			}
-			else
-			{
-				attack_attribute_mod = 0.129;
-				defence_attribute_mod = 0.1473;
-			}
-		}
-		else if (attack_attribute >= 300)
-		{
-			if (defence_attribute >= 300)
-			{
-				attack_attribute_mod = 0.0887;
-				defence_attribute_mod = 0.1007;
-			}
-			else if (defence_attribute >= 150)
-			{
-				attack_attribute_mod = 0.129;
-				defence_attribute_mod = 0.1473;
-			}
-			else
-			{
-				attack_attribute_mod = 0.25;
-				defence_attribute_mod = 0.2894;
-			}
-		}
-		else if (attack_attribute >= 150)
-		{
-			if (defence_attribute >= 150)
-			{
-				attack_attribute_mod = 0.129;
-				defence_attribute_mod = 0.1473;
-			}
-			else if (defence_attribute >= 0)
-			{
-				attack_attribute_mod = 0.25;
-				defence_attribute_mod = 0.2894;
-			}
-			else
-			{
-				attack_attribute_mod = 0.4;
-				defence_attribute_mod = 0.55;
-			}
-		}
-		else if (attack_attribute >= -99)
-		{
-			if (defence_attribute >= 0)
-			{
-				attack_attribute_mod = 0.25;
-				defence_attribute_mod = 0.2894;
-			}
-			else
-			{
-				attack_attribute_mod = 0.4;
-				defence_attribute_mod = 0.55;
+				calcPower = skill.getElementPower();
+				calcDefen = target.getDefenseElementValue(element);
+				
+				if (attacker.getAttackElement() == element)
+				{
+					calcPower += attacker.getAttackElementValue(element);
+				}
+				if (calcPower > 300)
+				{
+					calcPower = 300;
+				}
+				
+				calcTotal = calcPower - calcDefen;
+				if (calcTotal > 0)
+				{
+					if (calcTotal < 50)
+					{
+						result += calcTotal * 0.003948;
+					}
+					else if (calcTotal < 150)
+					{
+						result = 1.1974;
+					}
+					else if (calcTotal < 300)
+					{
+						result = 1.3973;
+					}
+					else
+					{
+						result = 1.6963;
+					}
+				}
 			}
 		}
 		else
 		{
-			if (defence_attribute >= 450)
+			element = attacker.getAttackElement();
+			if (element >= 0)
 			{
-				attack_attribute_mod = 0.06909;
-				defence_attribute_mod = 0.078;
+				calcTotal = Math.max(attacker.getAttackElementValue(element) - target.getDefenseElementValue(element), 0);
+				
+				if (calcTotal < 50)
+				{
+					result += calcTotal * 0.003948;
+				}
+				else if (calcTotal < 150)
+				{
+					result = 1.1974;
+				}
+				else if (calcTotal < 300)
+				{
+					result = 1.3973;
+				}
+				else
+				{
+					result = 1.6963;
+				}
 			}
-			else if (defence_attribute >= 350)
-			{
-				attack_attribute_mod = 0.0887;
-				defence_attribute_mod = 0.1007;
-			}
-			else
-			{
-				attack_attribute_mod = 0.129;
-				defence_attribute_mod = 0.1473;
-			}
 		}
-		
-		int attribute_diff = attack_attribute - defence_attribute;
-		double min;
-		double max;
-		if (attribute_diff >= 300)
-		{
-			max = 100.0;
-			min = -50;
-		}
-		else if (attribute_diff >= 150)
-		{
-			max = 70.0;
-			min = -50;
-		}
-		else if (attribute_diff >= -150)
-		{
-			max = 40.0;
-			min = -50;
-		}
-		else if (attribute_diff >= -300)
-		{
-			max = 40.0;
-			min = -60;
-		}
-		else
-		{
-			max = 40.0;
-			min = -80;
-		}
-		
-		attack_attribute += 100;
-		attack_attribute *= attack_attribute;
-		
-		attack_attribute_mod = (attack_attribute / 144.0) * attack_attribute_mod;
-		
-		defence_attribute += 100;
-		defence_attribute *= defence_attribute;
-		
-		defence_attribute_mod = (defence_attribute / 169.0) * defence_attribute_mod;
-		
-		double attribute_mod_diff = attack_attribute_mod - defence_attribute_mod;
-		
-		attribute_mod_diff = Math.min(Math.max(attribute_mod_diff, min), max);
-		
-		double result = (attribute_mod_diff / 100.0) + 1;
-		
-		if (attacker.isPlayer() && target.isPlayer() && (result < 1.0))
-		{
-			result = 1.0;
-		}
-		
 		return result;
 	}
 	
