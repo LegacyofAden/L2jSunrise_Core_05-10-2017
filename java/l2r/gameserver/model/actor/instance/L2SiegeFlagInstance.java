@@ -114,6 +114,11 @@ public class L2SiegeFlagInstance extends L2Npc
 	@Override
 	public boolean isAutoAttackable(L2Character attacker)
 	{
+		if (attacker.isPlayer() && (attacker.getActingPlayer().getClan() != null) && (_clan != null) && (attacker.getActingPlayer().getClan() == _clan))
+		{
+			return false;
+		}
+		
 		return !(isInvul() || isHpBlocked());
 	}
 	
@@ -196,7 +201,7 @@ public class L2SiegeFlagInstance extends L2Npc
 		super.reduceCurrentHp(damage, attacker, skill);
 		if (canTalk())
 		{
-			if (((getCastle() != null) && getCastle().getSiege().isInProgress()) || ((getFort() != null) && getFort().getSiege().isInProgress()) || ((getConquerableHall() != null) && getConquerableHall().isInSiege()))
+			if (((getCastle() != null) && getCastle().getSiege().isInProgress()) || ((getFort() != null) && getFort().getSiege().isInProgress()) || ((getConquerableHall() != null) && getConquerableHall().isInSiege()) || TerritoryWarManager.getInstance().isTWInProgress())
 			{
 				if (_clan != null)
 				{

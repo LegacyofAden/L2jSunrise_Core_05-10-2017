@@ -2808,7 +2808,7 @@ public final class Config
 			// Seed of Destruction
 			HUNTING_BONUS_MAX_POINTS = HuntingBonusSettings.getInt("HuntingBonusMaxPoints", 7200);
 			HUNTING_BONUS_MAX_TIME = HuntingBonusSettings.getInt("HuntingBonusMaxTime", 14400);
-			HUNTING_BONUS_REFRESH_RATE = HuntingBonusSettings.getInt("HuntingBonusRefreshRate", 25) * 1000;
+			HUNTING_BONUS_REFRESH_RATE = HuntingBonusSettings.getInt("HuntingBonusRefreshRate", 25);
 			HUNTING_BONUS_POINTS_ON_REFRESH = HuntingBonusSettings.getInt("HuntingBonusRefreshPoints", 25);
 			HUNTING_BONUS_EFFECT_TIME = HuntingBonusSettings.getInt("HuntingBonusEffectTime", 180);
 			HUNTING_BONUS_EXTRA_POINTS = HuntingBonusSettings.getBoolean("HuntingBonusExtraPoints", false);

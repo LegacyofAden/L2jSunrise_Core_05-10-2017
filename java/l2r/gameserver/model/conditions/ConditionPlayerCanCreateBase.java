@@ -18,15 +18,12 @@
  */
 package l2r.gameserver.model.conditions;
 
-import java.util.List;
-
 import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.FortManager;
 import l2r.gameserver.instancemanager.FortSiegeManager;
 import l2r.gameserver.instancemanager.SiegeManager;
 import l2r.gameserver.instancemanager.TerritoryWarManager;
-import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Castle;
 import l2r.gameserver.model.entity.Fort;
@@ -85,11 +82,20 @@ public class ConditionPlayerCanCreateBase extends Condition
 			return false;
 		}
 		
+		// vGodFather We will stop checks if there not territory war active
+		if (!canCreateBase && !TerritoryWarManager.getInstance().isTWInProgress())
+		{
+			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
+			sm.addSkillName(env.getSkill());
+			player.sendPacket(sm);
+			return false;
+		}
+		
+		// vGodFather territory flag fix
 		// Territory War
 		if (castle != null)
 		{
-			List<L2Clan> sClan = TerritoryWarManager.getInstance().getRegisteredClans(castle.getResidenceId());
-			if ((castle.getSiege() == null) && TerritoryWarManager.getInstance().isTWInProgress() && (sClan != null) && sClan.contains(player.getClan()))
+			if (TerritoryWarManager.getInstance().isTWInProgress() && TerritoryWarManager.getInstance().getAllRegisteredClans().contains(player.getClan()))
 			{
 				canCreateBase = true;
 			}

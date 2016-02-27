@@ -213,6 +213,11 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 		return _level;
 	}
 	
+	public void setLevel(byte level)
+	{
+		_level = level;
+	}
+	
 	public String getType()
 	{
 		return _type;

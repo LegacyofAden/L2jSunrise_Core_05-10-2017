@@ -131,7 +131,7 @@ public class NevitSystem implements IUniqueId
 			{
 				if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
 				{
-					_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE, REFRESH_RATE); // task cycle confirmed in retail
+					_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000); // task cycle confirmed in retail
 					getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 				}
 			}
