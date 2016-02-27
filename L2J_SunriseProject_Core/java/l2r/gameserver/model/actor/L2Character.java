@@ -6640,7 +6640,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						final L2Character creature = (L2Character) target;
 						
 						// vGodFather
-						if (target.isPlayer() && (target.getActingPlayer().getTarget() == null))
+						if (target.isPlayer() && (target.getActingPlayer().getTarget() == null) && !skill.hasEffectType(L2EffectType.REMOVE_TARGET))
 						{
 							target.getActingPlayer().setTarget(this);
 						}

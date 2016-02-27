@@ -53,7 +53,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	private final String _title;
 	private final boolean _serverSideTitle;
 	private final String _sex;
-	private final byte _level;
+	private byte _level;
 	private final int _rewardExp;
 	private final int _rewardSp;
 	private final int _rHand;
@@ -602,6 +602,11 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	public byte getLevel()
 	{
 		return _level;
+	}
+	
+	public void setLevel(byte level)
+	{
+		_level = level;
 	}
 	
 	/**

@@ -332,6 +332,13 @@ public class MapRegionManager implements IXmlReader
 					fort = FortManager.getInstance().getFort(player);
 					clanhall = ClanHallManager.getInstance().getNearbyAbstractHall(activeChar.getX(), activeChar.getY(), 10000);
 					L2SiegeFlagInstance tw_flag = TerritoryWarManager.getInstance().getHQForClan(player.getClan());
+					
+					// vGodFather territory flag fix
+					if (tw_flag == null)
+					{
+						tw_flag = TerritoryWarManager.getInstance().getFlagForClan(player.getClan());
+					}
+					
 					if (tw_flag != null)
 					{
 						return tw_flag.getLocation();
@@ -348,7 +355,6 @@ public class MapRegionManager implements IXmlReader
 								return flags.get(0).getLocation();
 							}
 						}
-						
 					}
 					else if (fort != null)
 					{

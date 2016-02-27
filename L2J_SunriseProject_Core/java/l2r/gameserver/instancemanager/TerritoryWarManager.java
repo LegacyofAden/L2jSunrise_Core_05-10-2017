@@ -244,6 +244,16 @@ public final class TerritoryWarManager implements Siegable
 		return _registeredClans.get(castleId);
 	}
 	
+	public List<L2Clan> getAllRegisteredClans()
+	{
+		List<L2Clan> clan = new LinkedList<>();
+		for (int castle : _registeredClans.keySet())
+		{
+			_registeredClans.get(castle).forEach(cl -> clan.add(cl));
+		}
+		return clan;
+	}
+	
 	public void addDisguisedPlayer(int playerObjId)
 	{
 		_disguisedPlayers.add(playerObjId);
@@ -304,6 +314,10 @@ public final class TerritoryWarManager implements Siegable
 		
 		_registeredClans.putIfAbsent(castleId, new CopyOnWriteArrayList<>());
 		_registeredClans.get(castleId).add(clan);
+		System.out.println("Clan registered:");
+		
+		_registeredClans.get(castleId).forEach(cl -> System.out.println("Clan in list: " + cl.getName()));
+		
 		changeRegistration(castleId, clan.getId(), false);
 	}
 	

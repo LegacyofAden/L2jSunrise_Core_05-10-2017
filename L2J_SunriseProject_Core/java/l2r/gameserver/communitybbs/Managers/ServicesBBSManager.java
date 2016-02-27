@@ -263,7 +263,7 @@ public class ServicesBBSManager extends BaseBBSManager
 						activeChar.setTarget(activeChar);
 						activeChar.disableAllSkills();
 						Broadcast.toSelfAndKnownPlayersInRadius(activeChar, new MagicSkillUse(activeChar, 1050, 1, 30000, 0), 810000);
-						activeChar.sendPacket(new SetupGauge(0, 30000));
+						activeChar.sendPacket(new SetupGauge(SetupGauge.BLUE, 30000));
 						activeChar.setSkillCast(ThreadPoolManager.getInstance().scheduleGeneral(new Teleport(activeChar, c[0], c[1], c[2]), 30000));
 						activeChar.forceIsCasting(10 + GameTimeController.getInstance().getGameTicks() + (30000 / GameTimeController.MILLIS_IN_TICK));
 					}

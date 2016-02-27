@@ -57,7 +57,6 @@ import l2r.gameserver.model.skills.targets.L2TargetType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.AutoAttackStop;
-import l2r.gameserver.network.serverpackets.SetupGauge;
 import l2r.gameserver.taskmanager.AttackStanceTaskManager;
 import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
@@ -335,12 +334,13 @@ public class L2CharacterAI extends AbstractAI
 		if (skill.getHitTime() > 50)
 		{
 			_actor.abortAttack();
+			// vGodFather red bar does not dissapear in off
 			// Send a Server->Client packet SetupGauge
-			if (_actor.isPlayer())
-			{
-				SetupGauge sg = new SetupGauge(SetupGauge.RED, 0);
-				_actor.sendPacket(sg);
-			}
+			// if (_actor.isPlayer())
+			// {
+			// SetupGauge sg = new SetupGauge(SetupGauge.RED, 0);
+			// _actor.sendPacket(sg);
+			// }
 		}
 		// Set the AI skill used by INTENTION_CAST
 		_skill = skill;

@@ -199,6 +199,12 @@ public final class RequestRestartPoint extends L2GameClientPacket
 				hall = CHSiegeManager.getInstance().getNearbyClanHall(activeChar);
 				L2SiegeFlagInstance flag = TerritoryWarManager.getInstance().getHQForClan(activeChar.getClan());
 				
+				// vGodFather territory flag fix
+				if (flag == null)
+				{
+					flag = TerritoryWarManager.getInstance().getFlagForClan(activeChar.getClan());
+				}
+				
 				if ((castle != null) && castle.getSiege().isInProgress())
 				{
 					siegeClan = castle.getSiege().getAttackerClan(activeChar.getClan());
@@ -211,6 +217,9 @@ public final class RequestRestartPoint extends L2GameClientPacket
 				{
 					siegeClan = hall.getSiege().getAttackerClan(activeChar.getClan());
 				}
+				
+				// vGodFather territory flag fix
+				// player will be ported to village if flag died while player was dead
 				if (((siegeClan == null) || siegeClan.getFlag().isEmpty()) && (flag == null))
 				{
 					// Check if clan hall has inner spawns loc
@@ -219,8 +228,10 @@ public final class RequestRestartPoint extends L2GameClientPacket
 						break;
 					}
 					
-					_log.warn("Player [" + activeChar.getName() + "] called RestartPointPacket - To Siege HQ and he doesn't have Siege HQ!");
-					return;
+					// we dont need this warning anymore
+					// _log.warn("Player [" + activeChar.getName() + "] called RestartPointPacket - To Siege HQ and he doesn't have Siege HQ!");
+					loc = MapRegionManager.getInstance().getTeleToLocation(activeChar, TeleportWhereType.TOWN);
+					break;
 				}
 				loc = MapRegionManager.getInstance().getTeleToLocation(activeChar, TeleportWhereType.SIEGEFLAG);
 				break;

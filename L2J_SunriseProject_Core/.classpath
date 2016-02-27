@@ -12,6 +12,5 @@
 	<classpathentry kind="lib" path="dist/libs/mail-1.5.2.jar"/>
 	<classpathentry kind="lib" path="dist/libs/commons.jar"/>
 	<classpathentry kind="lib" path="dist/libs/event-engine.jar"/>
-	<classpathentry kind="lib" path="dist/libs/javolution-5.5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
