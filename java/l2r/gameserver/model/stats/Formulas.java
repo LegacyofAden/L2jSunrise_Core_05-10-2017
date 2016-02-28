@@ -2249,10 +2249,6 @@ public final class Formulas
 				{
 					calcPower += attacker.getAttackElementValue(element);
 				}
-				if (calcPower > 300)
-				{
-					calcPower = 300;
-				}
 				
 				calcTotal = calcPower - calcDefen;
 				if (calcTotal > 0)
@@ -2261,11 +2257,11 @@ public final class Formulas
 					{
 						result += calcTotal * 0.003948;
 					}
-					else if (calcTotal < 150)
+					else if (calcTotal <= 150)
 					{
 						result = 1.1974;
 					}
-					else if (calcTotal < 300)
+					else if (calcTotal <= 300)
 					{
 						result = 1.3973;
 					}
@@ -2274,6 +2270,25 @@ public final class Formulas
 						result = 1.6963;
 					}
 				}
+				else if (calcTotal < -110)
+				{
+					if (attacker.isNpc())
+					{
+						if (calcTotal <= -170)
+						{
+							result = 0.8;
+						}
+						else
+						{
+							result = 1 - ((170 + calcTotal) * 0.0033d);
+						}
+					}
+				}
+				
+				if (Config.DEVELOPER)
+				{
+					_log.info(skill.getName() + ": " + calcPower + ", " + calcDefen + ", " + result + " Total: " + calcTotal);
+				}
 			}
 		}
 		else
@@ -2281,23 +2296,47 @@ public final class Formulas
 			element = attacker.getAttackElement();
 			if (element >= 0)
 			{
-				calcTotal = Math.max(attacker.getAttackElementValue(element) - target.getDefenseElementValue(element), 0);
+				calcPower = attacker.getAttackElementValue(element);
+				calcDefen = target.getDefenseElementValue(element);
 				
-				if (calcTotal < 50)
+				calcTotal = calcPower - calcDefen;
+				if (calcTotal < -110)
 				{
-					result += calcTotal * 0.003948;
+					if (attacker.isNpc())
+					{
+						if (calcTotal <= -170)
+						{
+							result = 0.8;
+						}
+						else
+						{
+							result = 1 - ((170 + calcTotal) * 0.0033d);
+						}
+					}
 				}
-				else if (calcTotal < 150)
+				else if (calcTotal > 0)
 				{
-					result = 1.1974;
+					if (calcTotal < 50)
+					{
+						result += calcTotal * 0.003948;
+					}
+					else if (calcTotal <= 150)
+					{
+						result = 1.1974;
+					}
+					else if (calcTotal <= 300)
+					{
+						result = 1.3973;
+					}
+					else
+					{
+						result = 1.6963;
+					}
 				}
-				else if (calcTotal < 300)
+				
+				if (Config.DEVELOPER)
 				{
-					result = 1.3973;
-				}
-				else
-				{
-					result = 1.6963;
+					_log.info("Hit: " + calcPower + ", " + calcDefen + ", " + result + " Total: " + calcTotal);
 				}
 			}
 		}
