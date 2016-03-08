@@ -34,6 +34,7 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.MessageType;
 import l2r.gameserver.enums.PartyDistributionType;
+import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.instancemanager.PcCafePointsManager;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
@@ -948,8 +949,15 @@ public class L2Party extends AbstractPlayerGroup
 				
 				if (addexp > 0)
 				{
-					member.updateVitalityPoints(vitalityPoints, true, false);
-					PcCafePointsManager.givePcCafePoint(member, addexp);
+					// vGodFather for nevit system
+					if (!member.isInsideZone(ZoneIdType.PEACE) && ((member.getLevel() - target.getLevel()) <= 9))
+					{
+						member.getNevitSystem().startAdventTask();
+						member.getNevitSystem().checkIfMustGivePoints(addexp, target);
+						
+						member.updateVitalityPoints(vitalityPoints, true, false);
+						PcCafePointsManager.givePcCafePoint(member, addexp);
+					}
 				}
 			}
 			else

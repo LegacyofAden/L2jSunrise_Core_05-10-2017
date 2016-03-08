@@ -538,15 +538,15 @@ public class L2Attackable extends L2Npc
 								attacker.addExpAndSp(addexp, addsp, useVitalityRate());
 								if (addexp > 0)
 								{
-									// vGodFather
+									// vGodFather for nevit system
 									if (!attacker.isInsideZone(ZoneIdType.PEACE) && ((attacker.getLevel() - getLevel()) <= 9))
 									{
 										attacker.getNevitSystem().startAdventTask();
 										attacker.getNevitSystem().checkIfMustGivePoints(addexp, this);
+										
+										attacker.updateVitalityPoints(getVitalityPoints(damage), true, false);
+										PcCafePointsManager.givePcCafePoint(attacker, addexp);
 									}
-									
-									attacker.updateVitalityPoints(getVitalityPoints(damage), true, false);
-									PcCafePointsManager.givePcCafePoint(attacker, addexp);
 								}
 							}
 						}
@@ -1703,7 +1703,7 @@ public class L2Attackable extends L2Npc
 				getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE, null, null);
 				
 				broadcastPacket(new MagicSkillUse(this, this, 2036, 1, 500, 0), 2500);
-				teleToLocation(getSpawn().getLocation());
+				teleToLocation(new Location(getSpawn().getX(), getSpawn().getY(), getSpawn().getZ(), 0));
 			}
 		}
 	}

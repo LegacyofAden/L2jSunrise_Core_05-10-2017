@@ -46,13 +46,12 @@ public class TaskRecom extends Task
 	@Override
 	public void onTimeElapsed(ExecutedTask task)
 	{
-		String RESTART_SYSTEM = "UPDATE character_reco_bonus SET rec_left = ?, time_left = ?, rec_have=GREATEST(rec_have-20,0) WHERE charId IN (SELECT charId FROM characters)";
+		// final String RESTART_SYSTEM = "UPDATE character_reco_bonus SET rec_left = ?, time_left = ?, rec_have=GREATEST(rec_have-20,0) WHERE charId IN (SELECT charId FROM characters)";
+		final String UPDATE_CHARACTERS_RECO = "UPDATE character_reco_bonus cr, characters c SET cr.time_left = 3600, cr.rec_left = 20, rec_have = IF(rec_have > 20, rec_have - 20, 0) WHERE c.online = 0 AND c.charId = cr.charId";
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			PreparedStatement statement = con.prepareStatement(RESTART_SYSTEM);
-			statement.setInt(1, 20);
-			statement.setInt(2, 3600);
+			PreparedStatement statement = con.prepareStatement(UPDATE_CHARACTERS_RECO);
 			statement.execute();
 		}
 		catch (Exception e)
