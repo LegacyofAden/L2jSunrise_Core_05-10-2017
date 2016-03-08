@@ -352,13 +352,6 @@ public final class L2World
 			return;
 		}
 		
-		// vGodFather TODO find better way or not?
-		if (object.isNpc())
-		{
-			L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInStoreMode()).forEach(pc -> pc.sendPacket(new DeleteObject(object)));
-			// object.getKnownList().getKnownObjects().values().stream().filter(obj -> obj.isPlayer() && obj.getActingPlayer().isOnline() && !obj.getActingPlayer().isInOfflineMode()).forEach(obj -> obj.sendPacket(new DeleteObject(object)));
-		}
-		
 		// Removes all objects from the object's known list.
 		object.getKnownList().removeAllKnownObjects();
 		
@@ -368,18 +361,37 @@ public final class L2World
 			// If object is a player, removes it from the players map of this world region.
 			oldWorldRegion.removeVisibleObject(object);
 			
+			/**
+			 * for (L2Object element : oldWorldRegion.getVisibleObjects().values()) { if (element != null) { element.getKnownList().removeKnownObject(object); } } for (L2WorldRegion reg : oldWorldRegion.getSurroundingRegions()) { if (oldWorldRegion == reg) { continue; } for (L2Object element :
+			 * reg.getVisibleObjects().values()) { if (element != null) { element.getKnownList().removeKnownObject(object); } } }
+			 */
+			
+			final boolean objectHasKnownlist = (object.getKnownList() != null);
+			
 			// Goes through all surrounding world region's creatures.
 			// And removes the object from their known lists.
 			for (L2WorldRegion worldRegion : oldWorldRegion.getSurroundingRegions())
 			{
 				for (L2Object obj : worldRegion.getVisibleObjects().values())
 				{
-					if (obj != null)
+					if (obj.getKnownList() != null)
 					{
 						obj.getKnownList().removeKnownObject(object);
 					}
+					
+					if (objectHasKnownlist)
+					{
+						object.getKnownList().removeKnownObject(obj);
+					}
 				}
 			}
+		}
+		
+		// vGodFather TODO find better way or not?
+		if (object.isNpc())
+		{
+			L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInStoreMode()).forEach(pc -> pc.sendPacket(new DeleteObject(object)));
+			// object.getKnownList().getKnownObjects().values().stream().filter(obj -> obj.isPlayer() && obj.getActingPlayer().isOnline() && !obj.getActingPlayer().isInOfflineMode()).forEach(obj -> obj.sendPacket(new DeleteObject(object)));
 		}
 	}
 	

@@ -1249,16 +1249,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					{
 						range -= 100;
 					}
-					
-					// vGodFather
-					if (GeoData.getInstance().canMove(npc.getLocation(), target.getLocation()))
-					{
-						moveToPawn(target, Math.max(range, 5));
-					}
-					else
-					{
-						targetReconsider();
-					}
+					moveToPawn(target, Math.max(range, 5));
 				}
 			}
 			return;

@@ -26,24 +26,6 @@ import l2r.gameserver.model.quest.QuestState;
 
 public class QuestList extends L2GameServerPacket
 {
-	private List<Quest> _quests;
-	private L2PcInstance _activeChar;
-	
-	public QuestList()
-	{
-	
-	}
-	
-	@Override
-	public void runImpl()
-	{
-		if ((getClient() != null) && (getClient().getActiveChar() != null))
-		{
-			_activeChar = getClient().getActiveChar();
-			_quests = _activeChar.getAllActiveQuests();
-		}
-	}
-	
 	@Override
 	protected final void writeImpl()
 	{
@@ -80,18 +62,25 @@ public class QuestList extends L2GameServerPacket
 		 * </pre>
 		 */
 		
+		final L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
 		// Maybe client crash on login so client and quest stay null
-		if ((_activeChar == null) || (_quests == null))
+		final List<Quest> quests = activeChar.getAllActiveQuests();
+		if (quests == null)
 		{
 			return;
 		}
 		
 		writeC(0x86);
-		writeH(_quests.size());
-		for (Quest q : _quests)
+		writeH(quests.size());
+		for (Quest q : quests)
 		{
 			writeD(q.getId());
-			QuestState qs = _activeChar.getQuestState(q.getName());
+			QuestState qs = activeChar.getQuestState(q.getName());
 			if (qs == null)
 			{
 				writeD(0);

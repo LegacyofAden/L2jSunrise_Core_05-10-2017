@@ -722,7 +722,8 @@ public final class L2PcInstance extends L2Playable
 	private boolean _exchangeRefusal = false; // Exchange refusal
 	
 	private L2Party _party;
-	PartyDistributionType _partyDistributionType;
+	// Default should be Finders Keepers just in case for client failure
+	PartyDistributionType _partyDistributionType = PartyDistributionType.FINDERS_KEEPERS;
 	
 	// this is needed to find the inviting player for Party response
 	// there can only be one active party request at once
@@ -1994,6 +1995,10 @@ public final class L2PcInstance extends L2Playable
 	protected void decRecomLeft()
 	{
 		_recomLeft--;
+		if (_recomLeft < 0)
+		{
+			_recomLeft = 0;
+		}
 	}
 	
 	public void giveRecom(L2PcInstance target)
@@ -5973,7 +5978,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		retailLostExp = lostExp;
-		if (SunriseEvents.isInEvent(this) || getVarB("noExp"))
+		if (SunriseEvents.isInEvent(this))
 		{
 			lostExp = 0;
 		}
@@ -14715,21 +14720,28 @@ public final class L2PcInstance extends L2Playable
 	{
 		int recTimeToSave = _recoBonusTask != null ? (int) Math.max(0, _recoBonusTask.getDelay(TimeUnit.SECONDS)) : getRecomBonusTime();
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("INSERT INTO character_reco_bonus (charId,rec_have,rec_left,time_left) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE rec_have=?, rec_left=?, time_left=?"))
+			PreparedStatement statement = con.prepareStatement("REPLACE INTO character_reco_bonus (charId,rec_have,rec_left,time_left) VALUES (?,?,?,?)"))
+		// PreparedStatement statement = con.prepareStatement("INSERT INTO character_reco_bonus (charId,rec_have,rec_left,time_left) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE rec_have=?, rec_left=?, time_left=?"))
 		{
 			statement.setInt(1, getObjectId());
 			statement.setInt(2, getRecomHave());
 			statement.setInt(3, getRecomLeft());
-			statement.setLong(4, recTimeToSave);
-			// Update part
-			statement.setInt(5, getRecomHave());
-			statement.setInt(6, getRecomLeft());
-			statement.setLong(7, recTimeToSave);
+			statement.setInt(4, recTimeToSave);
 			statement.execute();
+			
+			// statement.setInt(1, getObjectId());
+			// statement.setInt(2, getRecomHave());
+			// statement.setInt(3, getRecomLeft());
+			// statement.setLong(4, recTimeToSave);
+			// Update part
+			// statement.setInt(5, getRecomHave());
+			// statement.setInt(6, getRecomLeft());
+			// statement.setLong(7, recTimeToSave);
+			// statement.execute();
 		}
 		catch (Exception e)
 		{
-			_log.error("Could not update Recommendations for player: " + getObjectId(), e);
+			_log.error("Could not update Recommendations for player: {}", this, e);
 		}
 	}
 	
@@ -14832,7 +14844,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public int getRecomBonusTime()
 	{
-		return _recoBonusTime;
+		return Math.max(_recoBonusTime, 0);
 	}
 	
 	public int getRecomBonus()

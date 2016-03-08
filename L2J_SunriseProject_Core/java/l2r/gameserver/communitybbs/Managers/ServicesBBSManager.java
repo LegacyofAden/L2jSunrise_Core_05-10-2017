@@ -252,6 +252,7 @@ public class ServicesBBSManager extends BaseBBSManager
 					
 					if (activeChar.isInsideZone(ZoneIdType.PEACE) || activeChar.isGM())
 					{
+						activeChar.setInstanceId(0);
 						activeChar.teleToLocation(c[0], c[1], c[2]);
 					}
 					else
@@ -971,6 +972,7 @@ public class ServicesBBSManager extends BaseBBSManager
 		@Override
 		public void run()
 		{
+			_activeChar.setInstanceId(0);
 			_activeChar.teleToLocation(_x, _y, _z, true);
 			_activeChar.setIsCastingNow(false);
 			_activeChar.enableAllSkills();

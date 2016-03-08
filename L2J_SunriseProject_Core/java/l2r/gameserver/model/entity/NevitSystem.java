@@ -34,7 +34,7 @@ public class NevitSystem implements IUniqueId
 	
 	// Nevit Hour
 	public static final int ADVENT_TIME = Config.HUNTING_BONUS_MAX_TIME;
-	public final L2PcInstance _player;
+	private final L2PcInstance _player;
 	
 	private volatile ScheduledFuture<?> _adventTask;
 	private volatile ScheduledFuture<?> _nevitEffectTask;
@@ -125,20 +125,14 @@ public class NevitSystem implements IUniqueId
 	
 	public void startAdventTask()
 	{
-		if (_adventTask == null)
+		if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
 		{
-			synchronized (this)
-			{
-				if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
-				{
-					_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000); // task cycle confirmed in retail
-					getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
-				}
-			}
+			_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000); // task cycle confirmed in retail
+			getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 		}
 	}
 	
-	public class AdventTask implements Runnable
+	protected class AdventTask implements Runnable
 	{
 		@Override
 		public void run()
@@ -159,7 +153,7 @@ public class NevitSystem implements IUniqueId
 		}
 	}
 	
-	public synchronized void stopAdventTask(boolean sendPacket)
+	public void stopAdventTask(boolean sendPacket)
 	{
 		if (_adventTask != null)
 		{
@@ -173,7 +167,7 @@ public class NevitSystem implements IUniqueId
 		}
 	}
 	
-	public synchronized void startNevitEffect(int time)
+	private void startNevitEffect(int time)
 	{
 		if (getEffectTime() > 0)
 		{
@@ -191,7 +185,7 @@ public class NevitSystem implements IUniqueId
 		}
 	}
 	
-	public class NevitEffectEnd implements Runnable
+	protected class NevitEffectEnd implements Runnable
 	{
 		@Override
 		public void run()
@@ -205,7 +199,7 @@ public class NevitSystem implements IUniqueId
 		}
 	}
 	
-	public synchronized void stopNevitEffectTask(boolean saveTime)
+	protected void stopNevitEffectTask(boolean saveTime)
 	{
 		if (_nevitEffectTask != null)
 		{
@@ -228,19 +222,10 @@ public class NevitSystem implements IUniqueId
 	
 	public void checkIfMustGivePoints(long baseExp, L2Attackable l2Attackable)
 	{
-		if (EXTRA_POINTS)
+		if (EXTRA_POINTS && (_adventTask == null))
 		{
-			if (_adventTask == null)
-			{
-				synchronized (this)
-				{
-					if (_adventTask == null)
-					{
-						int nevitPoints = Math.round(((baseExp / (l2Attackable.getLevel() * l2Attackable.getLevel())) * 100) / 20);
-						addPoints(nevitPoints);
-					}
-				}
-			}
+			int nevitPoints = Math.round(((baseExp / (l2Attackable.getLevel() * l2Attackable.getLevel())) * 100) / 20);
+			addPoints(nevitPoints);
 		}
 	}
 	

@@ -116,7 +116,7 @@ public final class RequestBypassToServer extends L2GameClientPacket
 			bypassOriginId = activeChar.validateHtmlAction(_command);
 			if (bypassOriginId == -1)
 			{
-				_log.warn("Player " + activeChar.getName() + " sent non cached bypass: '" + _command + "'");
+				// _log.warn("Player " + activeChar.getName() + " sent non cached bypass: '" + _command + "'");
 				return;
 			}
 			
