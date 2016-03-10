@@ -28,7 +28,7 @@ public class TimeUtils
 		
 		if (period > 1440)
 		{
-			sb.append((period - (period % 1440)) / 1440).append(" Π΄.");
+			sb.append((period - (period % 1440)) / 1440).append(" P.");
 			period = period % 1440;
 		}
 		
