@@ -19,9 +19,6 @@
 package l2r.gameserver.network.clientpackets;
 
 import l2r.Config;
-import l2r.gameserver.ai.NextAction;
-import l2r.gameserver.ai.NextAction.NextActionCallback;
-import l2r.gameserver.enums.CtrlEvent;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.skills.L2Skill;
@@ -160,20 +157,7 @@ public final class RequestMagicSkillUse extends L2GameClientPacket
 			activeChar.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, activeChar.getLocation());
 		}
 		
-		// vGodFather
-		if (activeChar.isAttackingNow())
-		{
-			final L2Skill sk = skill;
-			// Creating next action class.
-			final NextAction nextAction = new NextAction(CtrlEvent.EVT_READY_TO_ACT, CtrlIntention.AI_INTENTION_CAST, (NextActionCallback) () -> activeChar.useMagic(sk, _ctrlPressed, _shiftPressed));
-			
-			// Binding next action to AI.
-			activeChar.getAI().setNextAction(nextAction);
-		}
-		else
-		{
-			activeChar.useMagic(skill, _ctrlPressed, _shiftPressed);
-		}
+		activeChar.useMagic(skill, _ctrlPressed, _shiftPressed);
 	}
 	
 	@Override
