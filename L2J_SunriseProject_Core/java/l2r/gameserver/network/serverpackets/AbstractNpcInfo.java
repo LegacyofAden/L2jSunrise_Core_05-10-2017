@@ -34,11 +34,11 @@ import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
-import l2r.gameserver.model.actor.instance.L2NpcInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2TrapInstance;
 import l2r.gameserver.model.actor.templates.L2PcTemplate;
 import l2r.gameserver.model.effects.AbnormalEffect;
+import l2r.gameserver.model.zone.type.L2TownZone;
 
 import gr.sr.datatables.FakePcsTable;
 
@@ -134,26 +134,21 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 			}
 			
 			// npc crest of owning clan/ally of castle
-			if ((cha instanceof L2NpcInstance) && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
+			if (cha.isNpc() && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
 			{
-				try
+				// vGodFather
+				L2TownZone town = TownManager.getTown(_x, _y, _z);
+				int townId = town != null ? town.getTownId() : 33;
+				if ((townId != 33) && (townId != 22))
 				{
-					int townId = TownManager.getTown(_x, _y, _z).getTownId();
-					if ((townId != 33) && (townId != 22))
+					L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
+					if (clan != null)
 					{
-						L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
-						if (clan != null)
-						{
-							_clanCrest = clan.getCrestId();
-							_clanId = clan.getId();
-							_allyCrest = clan.getAllyCrestId();
-							_allyId = clan.getAllyId();
-						}
+						_clanCrest = clan.getCrestId();
+						_clanId = clan.getId();
+						_allyCrest = clan.getAllyCrestId();
+						_allyId = clan.getAllyId();
 					}
-				}
-				catch (Exception e)
-				{
-					_log.warn("", e);
 				}
 			}
 			
@@ -488,6 +483,12 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 		private final int _form;
 		private final int _val;
 		
+		// vGodFather crest on summons
+		private int _clanCrest = 0;
+		private int _allyCrest = 0;
+		private int _allyId = 0;
+		private int _clanId = 0;
+		
 		public SummonInfo(L2Summon cha, L2Character attacker, int val)
 		{
 			super(cha);
@@ -504,6 +505,20 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 			_idTemplate = cha.getTemplate().getIdTemplate();
 			_collisionHeight = cha.getTemplate().getfCollisionHeight();
 			_collisionRadius = cha.getTemplate().getfCollisionRadius();
+			
+			// vGodFather crest on summons
+			if (cha.getOwner() != null)
+			{
+				L2Clan clan = cha.getOwner().getClan();
+				if (clan != null)
+				{
+					_clanCrest = clan.getCrestId();
+					_clanId = clan.getId();
+					_allyCrest = clan.getAllyCrestId();
+					_allyId = clan.getAllyId();
+				}
+			}
+			
 			_invisible = cha.isInvisible();
 		}
 		
@@ -562,10 +577,12 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 			
 			writeD(gmSeeInvis ? _summon.getAbnormalEffect() | AbnormalEffect.STEALTH.getMask() : _summon.getAbnormalEffect());
 			
-			writeD(0x00); // clan id
-			writeD(0x00); // crest id
-			writeD(0x00); // C2
-			writeD(0x00); // C2
+			// vGodFather crest on summons
+			writeD(_clanId); // clan id
+			writeD(_clanCrest); // crest id
+			writeD(_allyId); // ally id
+			writeD(_allyCrest); // all crest
+			
 			writeC(_summon.isInsideZone(ZoneIdType.WATER) ? 1 : _summon.isFlying() ? 2 : 0); // C2
 			
 			writeC(_summon.getTeam().getId());
