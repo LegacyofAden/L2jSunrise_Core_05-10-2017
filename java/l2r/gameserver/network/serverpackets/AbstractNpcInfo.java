@@ -34,11 +34,11 @@ import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
-import l2r.gameserver.model.actor.instance.L2NpcInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2TrapInstance;
 import l2r.gameserver.model.actor.templates.L2PcTemplate;
 import l2r.gameserver.model.effects.AbnormalEffect;
+import l2r.gameserver.model.zone.type.L2TownZone;
 
 import gr.sr.datatables.FakePcsTable;
 
@@ -134,26 +134,21 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 			}
 			
 			// npc crest of owning clan/ally of castle
-			if ((cha instanceof L2NpcInstance) && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
+			if (cha.isNpc() && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
 			{
-				try
+				// vGodFather
+				L2TownZone town = TownManager.getTown(_x, _y, _z);
+				int townId = town != null ? town.getTownId() : 33;
+				if ((townId != 33) && (townId != 22))
 				{
-					int townId = TownManager.getTown(_x, _y, _z).getTownId();
-					if ((townId != 33) && (townId != 22))
+					L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
+					if (clan != null)
 					{
-						L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
-						if (clan != null)
-						{
-							_clanCrest = clan.getCrestId();
-							_clanId = clan.getId();
-							_allyCrest = clan.getAllyCrestId();
-							_allyId = clan.getAllyId();
-						}
+						_clanCrest = clan.getCrestId();
+						_clanId = clan.getId();
+						_allyCrest = clan.getAllyCrestId();
+						_allyId = clan.getAllyId();
 					}
-				}
-				catch (Exception e)
-				{
-					_log.warn("", e);
 				}
 			}
 			
