@@ -804,9 +804,10 @@ public final class Formulas
 				return 1.;
 		}
 		
+		// vGodFather correct wrong ss multiplier applied on skills
 		// Add soulshot boost.
 		int ssBoost = ss ? 2 : 1;
-		damage = (skill != null) ? ((damage * ssBoost) + skill.getPower(attacker, target, isPvP, isPvE)) : (damage * ssBoost);
+		damage = (skill != null) ? (damage + skill.getPower(attacker, target, isPvP, isPvE)) * ssBoost : damage * ssBoost;
 		
 		// Defense modifier depending of the attacker weapon
 		L2Weapon weapon = attacker.getActiveWeaponItem();
