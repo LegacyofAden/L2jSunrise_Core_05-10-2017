@@ -103,7 +103,7 @@ public class CubicAction implements Runnable
 			{
 				for (L2Effect e : _cubic.getOwner().getEffectList().getDebuffs())
 				{
-					if ((e != null) && e.getSkill().canBeDispeled())
+					if ((e != null) && !e.getSkill().hasSelfEffects() && e.getSkill().canBeDispeled())
 					{
 						UseCubicCure = true;
 						e.exit();
