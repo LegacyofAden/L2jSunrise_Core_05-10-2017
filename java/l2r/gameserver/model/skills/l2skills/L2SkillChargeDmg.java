@@ -105,7 +105,7 @@ public class L2SkillChargeDmg extends L2Skill
 			{
 				// FIXME: Traits
 				// double damageMultiplier = Formulas.calcWeaponTraitBonus(attacker, target) * Formulas.calcAttributeBonus(attacker, target, skill) * Formulas.calcGeneralTraitBonus(attacker, target, skill.getTraitType(), true);
-				double damageMultiplier = Formulas.calcValakasTrait(attacker, target, skill);
+				double damageMultiplier = Formulas.calcValakasTrait(attacker, target, skill) * Formulas.calcAttributeBonus(attacker, target, skill);
 				
 				double weaponTypeBoost;
 				L2Weapon weapon = attacker.getActiveWeaponItem();
