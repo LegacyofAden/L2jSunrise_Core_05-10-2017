@@ -114,15 +114,7 @@ public class SetPrivateStoreListSell extends L2GameClientPacket
 		tradeList.clear();
 		tradeList.setPackaged(_packageSale);
 		
-		long totalCost;
-		if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-		{
-			totalCost = player.getFAdena();
-		}
-		else
-		{
-			totalCost = player.getAdena();
-		}
+		long totalCost = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? player.getFAdena() : player.getAdena();
 		for (Item i : _items)
 		{
 			if (!i.addToTradeList(tradeList))
