@@ -778,15 +778,7 @@ public class TradeList
 			}
 		}
 		
-		long adena;
-		if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-		{
-			adena = playerInventory.getFAdena();
-		}
-		else
-		{
-			adena = playerInventory.getAdena();
-		}
+		long adena = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? playerInventory.getFAdena() : playerInventory.getAdena();
 		if (totalPrice > adena)
 		{
 			player.sendPacket(SystemMessageId.YOU_NOT_ENOUGH_ADENA);
@@ -992,15 +984,7 @@ public class TradeList
 				break;
 			}
 			
-			long adena;
-			if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-			{
-				adena = ownerInventory.getFAdena();
-			}
-			else
-			{
-				adena = ownerInventory.getAdena();
-			}
+			long adena = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? ownerInventory.getFAdena() : ownerInventory.getAdena();
 			if (adena < _totalPrice)
 			{
 				continue;
@@ -1099,16 +1083,7 @@ public class TradeList
 		if (totalPrice > 0)
 		{
 			// Transfer adena
-			long adena;
-			if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-			{
-				adena = ownerInventory.getFAdena();
-			}
-			else
-			{
-				adena = ownerInventory.getAdena();
-			}
-			
+			long adena = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? ownerInventory.getFAdena() : ownerInventory.getAdena();
 			if (totalPrice > adena)
 			{
 				// should not happens, just a precaution
