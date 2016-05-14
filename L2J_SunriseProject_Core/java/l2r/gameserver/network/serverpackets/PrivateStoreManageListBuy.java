@@ -34,14 +34,7 @@ public class PrivateStoreManageListBuy extends L2GameServerPacket
 	public PrivateStoreManageListBuy(L2PcInstance player)
 	{
 		_objId = player.getObjectId();
-		if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-		{
-			_playerAdena = player.getFAdena();
-		}
-		else
-		{
-			_playerAdena = player.getAdena();
-		}
+		_playerAdena = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? player.getFAdena() : player.getAdena();
 		_itemList = player.getInventory().getUniqueItems(false, true);
 		_buyList = player.getBuyList().getItems();
 	}

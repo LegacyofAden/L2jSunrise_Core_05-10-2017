@@ -33,14 +33,7 @@ public class PrivateStoreListSell extends L2GameServerPacket
 	public PrivateStoreListSell(L2PcInstance player, L2PcInstance storePlayer)
 	{
 		_objId = storePlayer.getObjectId();
-		if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-		{
-			_playerAdena = player.getFAdena();
-		}
-		else
-		{
-			_playerAdena = player.getAdena();
-		}
+		_playerAdena = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? player.getFAdena() : player.getAdena();
 		_items = storePlayer.getSellList().getItems();
 		_packageSale = storePlayer.getSellList().isPackaged();
 	}

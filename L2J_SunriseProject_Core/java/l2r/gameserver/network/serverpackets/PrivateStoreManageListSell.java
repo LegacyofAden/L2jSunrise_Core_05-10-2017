@@ -34,14 +34,7 @@ public class PrivateStoreManageListSell extends L2GameServerPacket
 	public PrivateStoreManageListSell(L2PcInstance player, boolean isPackageSale)
 	{
 		_objId = player.getObjectId();
-		if (CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS)
-		{
-			_playerAdena = player.getFAdena();
-		}
-		else
-		{
-			_playerAdena = player.getAdena();
-		}
+		_playerAdena = CustomServerConfigs.ALTERNATE_PAYMODE_SHOPS ? player.getFAdena() : player.getAdena();
 		player.getSellList().updateItems();
 		_packageSale = isPackageSale;
 		_itemList = player.getInventory().getAvailableItems(player.getSellList());
