@@ -139,6 +139,7 @@ public class CharSummonTable
 	public void restoreServitor(L2PcInstance activeChar)
 	{
 		int skillId = _servitors.get(activeChar.getObjectId());
+		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement ps = con.prepareStatement(LOAD_SUMMON))
 		{
@@ -146,7 +147,6 @@ public class CharSummonTable
 			ps.setInt(2, skillId);
 			try (ResultSet rs = ps.executeQuery())
 			{
-				
 				L2NpcTemplate summonTemplate;
 				L2ServitorInstance summon;
 				L2SkillSummon skill;
@@ -160,7 +160,6 @@ public class CharSummonTable
 					skill = (L2SkillSummon) SkillData.getInstance().getInfo(skillId, activeChar.getSkillLevel(skillId));
 					if (skill == null)
 					{
-						removeServitor(activeChar);
 						return;
 					}
 					
@@ -216,6 +215,9 @@ public class CharSummonTable
 		{
 			_log.warn(getClass().getSimpleName() + ": Summon cannot be restored: ", e);
 		}
+		
+		// vGodFather we will remove servitor no matter what
+		removeServitor(activeChar);
 	}
 	
 	public void removeServitor(L2PcInstance activeChar)
@@ -236,7 +238,6 @@ public class CharSummonTable
 	public void restorePet(L2PcInstance activeChar)
 	{
 		L2ItemInstance item = activeChar.getInventory().getItemByObjectId(_pets.get(activeChar.getObjectId()));
-		
 		if (item == null)
 		{
 			return;
