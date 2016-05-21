@@ -23,8 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
 import l2r.gameserver.ThreadPoolManager;
+import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
+import l2r.gameserver.network.serverpackets.DeleteObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +97,10 @@ public class DecayTaskManager
 				{
 					actor.onDecay();
 					_decayTasks.remove(actor);
+					
+					// vGodFather TODO find better way or not?
+					L2Character object = actor;
+					L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInOfflineMode()).forEach(pc -> pc.sendPacket(new DeleteObject(object)));
 				}
 			}
 		}
