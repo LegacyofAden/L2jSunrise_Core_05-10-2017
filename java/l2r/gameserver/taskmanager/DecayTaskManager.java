@@ -27,9 +27,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import l2r.Config;
+import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
+import l2r.gameserver.network.serverpackets.DeleteObject;
 
 /**
  * @author NosBit
@@ -142,6 +144,9 @@ public final class DecayTaskManager
 		{
 			_decayTasks.remove(_character);
 			_character.onDecay();
+			
+			// vGodFather TODO find better way or not?
+			L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInOfflineMode()).forEach(pc -> pc.sendPacket(new DeleteObject(_character)));
 		}
 	}
 	
