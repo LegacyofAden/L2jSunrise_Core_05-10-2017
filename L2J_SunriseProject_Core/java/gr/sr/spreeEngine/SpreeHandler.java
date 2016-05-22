@@ -12,9 +12,6 @@ import l2r.gameserver.util.Broadcast;
  */
 public class SpreeHandler
 {
-	private ExShowScreenMessage msgCase = null;
-	private String announceMessage = null;
-	
 	public SpreeHandler()
 	{
 		// Dummy default
@@ -22,6 +19,9 @@ public class SpreeHandler
 	
 	public void spreeSystem(L2PcInstance player, int spreeKills)
 	{
+		ExShowScreenMessage msgCase = null;
+		String announceMessage = null;
+		
 		switch (spreeKills)
 		{
 			case 1:
