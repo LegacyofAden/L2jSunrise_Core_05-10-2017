@@ -18,8 +18,8 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.gameserver.model.L2Party;
 import l2r.gameserver.model.Location;
@@ -30,7 +30,7 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
  */
 public class PartyMemberPosition extends L2GameServerPacket
 {
-	private final Map<Integer, Location> locations = new HashMap<>();
+	private final Map<Integer, Location> locations = new ConcurrentHashMap<>();
 	
 	public PartyMemberPosition(L2Party party)
 	{
