@@ -109,6 +109,13 @@ public final class RequestRestart extends L2GameClientPacket
 			return;
 		}
 		
+		if (!player.isGM() && player.isInsideZone(ZoneIdType.NO_RESTART))
+		{
+			player.sendPacket(SystemMessageId.NO_RESTART_HERE);
+			sendPacket(RestartResponse.valueOf(false));
+			return;
+		}
+		
 		if (AttackStanceTaskManager.getInstance().hasAttackStanceTask(player) && !(player.isGM() && Config.GM_RESTART_FIGHTING))
 		{
 			if (Config.DEBUG)
