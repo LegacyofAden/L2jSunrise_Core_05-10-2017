@@ -74,6 +74,13 @@ public final class Logout extends L2GameClientPacket
 			return;
 		}
 		
+		if (!player.isGM() && player.isInsideZone(ZoneIdType.NO_RESTART))
+		{
+			player.sendPacket(SystemMessageId.NO_LOGOUT_HERE);
+			player.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
 		if (AttackStanceTaskManager.getInstance().hasAttackStanceTask(player) && !(player.isGM() && Config.GM_RESTART_FIGHTING))
 		{
 			if (Config.DEBUG)
