@@ -154,7 +154,7 @@ public class PcAppearance
 	
 	public final boolean isMale()
 	{
-		return _sex;
+		return !_sex;
 	}
 	
 	public final boolean isFemale()
