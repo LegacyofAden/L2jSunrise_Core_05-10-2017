@@ -79,7 +79,7 @@ public final class SoDManager
 		if (GlobalVariablesManager.getInstance().hasVariable("SoDState"))
 		{
 			_SoDState = GlobalVariablesManager.getInstance().getInt("SoDState");
-			_SoDTiatKilled = GlobalVariablesManager.getInstance().getInt("SoDTiatKilled");
+			_SoDTiatKilled = GlobalVariablesManager.getInstance().getInt("SoDTiatKilled", _SoDTiatKilled);
 			_SoDLastStateChangeDate.setTimeInMillis(GlobalVariablesManager.getInstance().getLong("SoDLSCDate"));
 		}
 		else

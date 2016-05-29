@@ -314,9 +314,6 @@ public final class TerritoryWarManager implements Siegable
 		
 		_registeredClans.putIfAbsent(castleId, new CopyOnWriteArrayList<>());
 		_registeredClans.get(castleId).add(clan);
-		System.out.println("Clan registered:");
-		
-		_registeredClans.get(castleId).forEach(cl -> System.out.println("Clan in list: " + cl.getName()));
 		
 		changeRegistration(castleId, clan.getId(), false);
 	}
