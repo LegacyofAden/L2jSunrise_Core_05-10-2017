@@ -20,12 +20,16 @@ package l2r.gameserver.model;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 import l2r.Config;
 import l2r.gameserver.GameTimeController;
@@ -778,46 +782,67 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public void distributeAdena(L2PcInstance player, long adena, L2Character target, boolean mustMultiply)
 	{
-		// Check the party members that must be rewarded.
-		// The party member must be in range to receive its reward.
-		final List<L2PcInstance> toReward = new LinkedList<>();
-		for (L2PcInstance member : getMembers())
+		final Map<L2PcInstance, AtomicLong> toReward = new HashMap<>(9);
+		
+		for (final L2PcInstance member : getMembers())
 		{
 			if (Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
 			{
-				toReward.add(member);
+				toReward.put(member, new AtomicLong());
 			}
 		}
 		
 		if (!toReward.isEmpty())
 		{
-			// Now we can actually distribute the adena reward
-			// (Total adena splitted by the number of party members that are in range and must be rewarded)
+			long leftOver = adena % toReward.size();
 			final long count = adena / toReward.size();
-			for (L2PcInstance member : toReward)
+			
+			if (count > 0)
 			{
-				if (member.isPremium() && mustMultiply)
+				for (AtomicLong member : toReward.values())
 				{
-					long tempCount = count;
-					tempCount *= member.calcPremiumDropMultipliers(57);
-					if (member.getInventory().getAdenaInstance() != null)
-					{
-						member.addAdena("Party", tempCount, player, true);
-					}
-					else
-					{
-						member.addItem("Party", 57, tempCount, player, true);
-					}
+					member.addAndGet(count);
 				}
-				else
+			}
+			
+			if (leftOver > 0)
+			{
+				List<L2PcInstance> keys = new ArrayList<>(toReward.keySet());
+				
+				while (leftOver-- > 0)
 				{
-					if (member.getInventory().getAdenaInstance() != null)
+					Collections.shuffle(keys);
+					toReward.get(keys.get(0)).incrementAndGet();
+				}
+			}
+			
+			for (Entry<L2PcInstance, AtomicLong> member : toReward.entrySet())
+			{
+				if (member.getValue().get() > 0)
+				{
+					if (member.getKey().isPremium() && mustMultiply)
 					{
-						member.addAdena("Party", count, player, true);
+						long tempCount = member.getValue().get();
+						tempCount *= member.getKey().calcPremiumDropMultipliers(57);
+						if (member.getKey().getInventory().getAdenaInstance() != null)
+						{
+							member.getKey().addAdena("Party", tempCount, player, true);
+						}
+						else
+						{
+							member.getKey().addItem("Party", 57, tempCount, player, true);
+						}
 					}
 					else
 					{
-						member.addItem("Party", 57, count, player, true);
+						if (member.getKey().getInventory().getAdenaInstance() != null)
+						{
+							member.getKey().addAdena("Party", member.getValue().get(), player, true);
+						}
+						else
+						{
+							member.getKey().addItem("Party", 57, member.getValue().get(), player, true);
+						}
 					}
 				}
 			}
@@ -846,33 +871,54 @@ public class L2Party extends AbstractPlayerGroup
 	 */
 	public void evenlyDistribute(L2PcInstance player, int itemId, long itemCount, L2Character target, boolean mustMultiply)
 	{
-		// Check the party members that must be rewarded.
-		// The party member must be in range to receive its reward.
-		final List<L2PcInstance> toReward = new LinkedList<>();
-		for (L2PcInstance member : getMembers())
+		final Map<L2PcInstance, AtomicLong> toReward = new HashMap<>(9);
+		
+		for (final L2PcInstance member : getMembers())
 		{
 			if (Util.checkIfInRange(Config.ALT_PARTY_RANGE2, target, member, true))
 			{
-				toReward.add(member);
+				toReward.put(member, new AtomicLong());
 			}
 		}
 		
 		if (!toReward.isEmpty())
 		{
-			// Now we can actually distribute the adena reward
-			// (Total adena splitted by the number of party members that are in range and must be rewarded)
+			long leftOver = itemCount % toReward.size();
 			final long count = itemCount / toReward.size();
-			for (L2PcInstance member : toReward)
+			
+			if (count > 0)
 			{
-				if (member.isPremium() && mustMultiply)
+				for (AtomicLong member : toReward.values())
 				{
-					long tempCount = count;
-					tempCount *= member.calcPremiumDropMultipliers(57);
-					member.addItem("Party", itemId, tempCount, player, true);
+					member.addAndGet(count);
 				}
-				else
+			}
+			
+			if (leftOver > 0)
+			{
+				List<L2PcInstance> keys = new ArrayList<>(toReward.keySet());
+				
+				while (leftOver-- > 0)
 				{
-					member.addItem("Party", itemId, count, player, true);
+					Collections.shuffle(keys);
+					toReward.get(keys.get(0)).incrementAndGet();
+				}
+			}
+			
+			for (Entry<L2PcInstance, AtomicLong> member : toReward.entrySet())
+			{
+				if (member.getValue().get() > 0)
+				{
+					if (member.getKey().isPremium() && mustMultiply)
+					{
+						long tempCount = member.getValue().get();
+						tempCount *= member.getKey().calcPremiumDropMultipliers(itemId);
+						member.getKey().addItem("Party", itemId, tempCount, player, true);
+					}
+					else
+					{
+						member.getKey().addItem("Party", itemId, member.getValue().get(), player, true);
+					}
 				}
 			}
 		}
