@@ -307,14 +307,19 @@ public class L2ServitorInstance extends L2Summon
 		// Clear list for overwrite
 		SummonEffectsTable.getInstance().clearServitorEffects(getOwner(), getReferenceSkill());
 		
+		final int ownerId = getOwner().getObjectId();
+		final int ownerClassId = getOwner().getClassIndex();
+		final int servitorRefSkill = getReferenceSkill();
+		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement(DELETE_SKILL_SAVE))
+			PreparedStatement ps = con.prepareStatement(DELETE_SKILL_SAVE))
 		{
+			con.setAutoCommit(false);
 			// Delete all current stored effects for summon to avoid dupe
-			statement.setInt(1, getOwner().getObjectId());
-			statement.setInt(2, getOwner().getClassIndex());
-			statement.setInt(3, getReferenceSkill());
-			statement.execute();
+			ps.setInt(1, ownerId);
+			ps.setInt(2, ownerClassId);
+			ps.setInt(3, servitorRefSkill);
+			ps.execute();
 			
 			int buff_index = 0;
 			
@@ -357,27 +362,26 @@ public class L2ServitorInstance extends L2Summon
 						
 						storedSkills.add(skill.getReuseHashCode());
 						
-						ps2.setInt(1, getOwner().getObjectId());
-						ps2.setInt(2, getOwner().getClassIndex());
-						ps2.setInt(3, getReferenceSkill());
+						ps2.setInt(1, ownerId);
+						ps2.setInt(2, ownerClassId);
+						ps2.setInt(3, servitorRefSkill);
 						ps2.setInt(4, skill.getId());
 						ps2.setInt(5, skill.getLevel());
 						ps2.setInt(6, effect.getCount());
 						ps2.setInt(7, effect.getTime());
 						ps2.setInt(8, ++buff_index);
-						ps2.execute();
+						ps2.addBatch();
 						
 						SummonEffectsTable.getInstance().addServitorEffect(getOwner(), getReferenceSkill(), skill, effect.getCount(), effect.getTime());
 					}
+					ps2.executeBatch();
 				}
 			}
+			con.commit();
 		}
 		catch (Exception e)
 		{
-			if (Config.DEBUG)
-			{
-				_log.warn("Could not store summon effect data");
-			}
+			_log.error("Could not store summon effect data for owner " + ownerId + ", class " + ownerClassId + ", skill " + servitorRefSkill + ", error", e);
 		}
 	}
 	

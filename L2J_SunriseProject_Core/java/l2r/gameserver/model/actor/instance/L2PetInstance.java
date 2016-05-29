@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.ThreadPoolManager;
+import l2r.gameserver.ai.L2SummonAI;
 import l2r.gameserver.data.SummonEffectsTable;
 import l2r.gameserver.data.sql.CharSummonTable;
 import l2r.gameserver.data.xml.impl.ItemData;
@@ -635,6 +636,8 @@ public class L2PetInstance extends L2Summon
 		
 		if (follow)
 		{
+			// vGodFather this will fix pet doesn't follow owner if use attack after pick up
+			((L2SummonAI) this.getAI()).setStartFollowController(true);
 			followOwner();
 		}
 	}
