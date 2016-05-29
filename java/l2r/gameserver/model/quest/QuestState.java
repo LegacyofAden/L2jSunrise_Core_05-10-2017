@@ -1214,13 +1214,22 @@ public final class QuestState
 	 */
 	public void showTutorialHTML(String html)
 	{
-		String text = HtmCache.getInstance().getHtm(_player.getHtmlPrefix(), "data/scripts/quests/255_Tutorial/" + html);
-		if (text == null)
+		try
 		{
-			_log.warn("missing html page data/scripts/quests/255_Tutorial/" + html);
-			text = "<html><body>File data/scripts/quests/255_Tutorial/" + html + " not found or file is empty.</body></html>";
+			String text = HtmCache.getInstance().getHtm(_player.getHtmlPrefix(), "data/scripts/quests/255_Tutorial/" + html);
+			if (text == null)
+			{
+				_log.warn("missing html page data/scripts/quests/255_Tutorial/" + html);
+				text = "<html><body>File data/scripts/quests/255_Tutorial/" + html + " not found or file is empty.</body></html>";
+			}
+			_player.sendPacket(new TutorialShowHtml(text));
 		}
-		_player.sendPacket(new TutorialShowHtml(text));
+		catch (Exception e)
+		{
+			// vGodFather TODO remove when this script moved from py to java
+			// just in case player was null
+			// nothing to log
+		}
 	}
 	
 	/**

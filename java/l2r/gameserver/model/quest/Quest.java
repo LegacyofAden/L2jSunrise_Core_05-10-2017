@@ -81,6 +81,7 @@ public class Quest extends AbstractScript implements IIdentifiable
 	public static final String MIMIRS_ELIXIR = "Q00235_MimirsElixir";
 	public static final String SEEDS_OF_CHAOS = "Q00236_SeedsOfChaos";
 	public static final String REPENT_YOUR_SINS = "Q00422_RepentYourSins";
+	public static final String FOUR_GOBLETS = "620_FourGoblets";
 	
 	/** Map containing lists of timers from the name of the timer. */
 	private volatile Map<String, List<QuestTimer>> _questTimers = null;
