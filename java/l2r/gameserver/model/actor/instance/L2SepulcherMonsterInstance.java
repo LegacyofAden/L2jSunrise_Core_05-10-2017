@@ -26,6 +26,7 @@ import l2r.gameserver.instancemanager.FourSepulchersManager;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 import l2r.gameserver.model.holders.SkillHolder;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.QuestState;
 import l2r.gameserver.network.serverpackets.NpcSay;
 
@@ -289,7 +290,6 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 	
 	private void giveCup(L2Character killer)
 	{
-		String questId = "620_FourGoblets";
 		int cupId = 0;
 		int oldBrooch = 7262;
 		
@@ -320,7 +320,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 		{
 			for (L2PcInstance mem : player.getParty().getMembers())
 			{
-				QuestState qs = mem.getQuestState(questId);
+				QuestState qs = mem.getQuestState(Quest.FOUR_GOBLETS);
 				if ((qs != null) && (qs.isStarted() || qs.isCompleted()) && (mem.getInventory().getItemByItemId(oldBrooch) == null))
 				{
 					mem.addItem("Quest", cupId, 1, mem, true);
@@ -329,7 +329,7 @@ public class L2SepulcherMonsterInstance extends L2MonsterInstance
 		}
 		else
 		{
-			QuestState qs = player.getQuestState(questId);
+			QuestState qs = player.getQuestState(Quest.FOUR_GOBLETS);
 			if ((qs != null) && (qs.isStarted() || qs.isCompleted()) && (player.getInventory().getItemByItemId(oldBrooch) == null))
 			{
 				player.addItem("Quest", cupId, 1, player, true);

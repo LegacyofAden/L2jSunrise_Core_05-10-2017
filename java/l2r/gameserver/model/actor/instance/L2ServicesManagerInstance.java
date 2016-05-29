@@ -141,17 +141,8 @@ public final class L2ServicesManagerInstance extends L2NpcInstance
 		String[] commandStr = command.split(" ");
 		String actualCommand = commandStr[0];
 		
-		String cmdParams = "";
-		String cmdParams2 = "";
-		
-		if (commandStr.length >= 2)
-		{
-			cmdParams = commandStr[1];
-		}
-		if (commandStr.length >= 3)
-		{
-			cmdParams2 = commandStr[2];
-		}
+		String cmdParams = commandStr.length >= 2 ? commandStr[1] : "";
+		String cmdParams2 = commandStr.length >= 3 ? commandStr[2] : "";
 		
 		// Page navigation, html command how to starts
 		if (command.startsWith("Chat"))
