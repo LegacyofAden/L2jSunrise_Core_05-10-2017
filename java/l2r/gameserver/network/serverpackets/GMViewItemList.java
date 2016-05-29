@@ -53,6 +53,11 @@ public class GMViewItemList extends L2GameServerPacket
 		
 		for (L2ItemInstance temp : _items)
 		{
+			if ((temp == null) || (temp.getItem() == null))
+			{
+				continue;
+			}
+			
 			writeD(temp.getObjectId());
 			writeD(temp.getDisplayId());
 			writeD(temp.getLocationSlot());
@@ -78,6 +83,5 @@ public class GMViewItemList extends L2GameServerPacket
 				writeH(op);
 			}
 		}
-		writeH(0x00);
 	}
 }
