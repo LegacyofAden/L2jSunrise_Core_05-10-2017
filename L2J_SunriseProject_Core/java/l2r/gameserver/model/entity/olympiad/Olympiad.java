@@ -597,19 +597,21 @@ public class Olympiad extends ListenersContainer
 		Calendar currentTime = Calendar.getInstance();
 		Calendar nextChange = Calendar.getInstance();
 		
-		currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
-		currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
-		currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
-		
 		switch (Config.OLYMPIAD_PERIOD)
 		{
 			case "MONTH": // retail
 				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
 				currentTime.set(Calendar.DAY_OF_MONTH, 1); // last day is for validation
+				currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
+				currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
+				currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
 				break;
 			case "WEEK":
 				currentTime.add(Calendar.WEEK_OF_YEAR, Config.ALT_OLY_PERIOD_MULTIPLIER);
 				currentTime.set(Calendar.DAY_OF_WEEK, 1); // last day is for validation
+				currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
+				currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
+				currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
 				break;
 			case "SUNRISE":
 				reloadOlympiadEnd();
@@ -619,6 +621,9 @@ public class Olympiad extends ListenersContainer
 			default:
 				currentTime.add(Calendar.MONTH, Config.ALT_OLY_PERIOD_MULTIPLIER);
 				currentTime.set(Calendar.DAY_OF_MONTH, 1); // last day is for validation
+				currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
+				currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
+				currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
 				_log.warn("Wrong configuration in Olympiad pediod. Check again your Olympiad settings. Auto set to retail values.");
 				break;
 		}
