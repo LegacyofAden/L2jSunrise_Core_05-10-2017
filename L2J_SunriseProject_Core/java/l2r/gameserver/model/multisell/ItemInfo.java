@@ -26,13 +26,14 @@ import l2r.gameserver.model.items.instance.L2ItemInstance;
  */
 public class ItemInfo
 {
-	private final int _enchantLevel, _augmentId;
+	private final int _enchantLevel, _augmentId, _mana;
 	private final byte _elementId;
 	private final int _elementPower;
 	private final int[] _elementals = new int[6];
 	
 	public ItemInfo(L2ItemInstance item)
 	{
+		_mana = item.getMana();
 		_enchantLevel = item.getEnchantLevel();
 		_augmentId = item.getAugmentation() != null ? item.getAugmentation().getAugmentationId() : 0;
 		_elementId = item.getAttackElementType();
@@ -47,6 +48,7 @@ public class ItemInfo
 	
 	public ItemInfo(int enchantLevel)
 	{
+		_mana = -1;
 		_enchantLevel = enchantLevel;
 		_augmentId = 0;
 		_elementId = Elementals.NONE;
@@ -57,6 +59,11 @@ public class ItemInfo
 		_elementals[3] = 0;
 		_elementals[4] = 0;
 		_elementals[5] = 0;
+	}
+	
+	public final int getMana()
+	{
+		return _mana;
 	}
 	
 	public final int getEnchantLevel()
