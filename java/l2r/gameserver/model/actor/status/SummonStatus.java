@@ -56,7 +56,7 @@ public class SummonStatus extends PlayableStatus
 		final L2PcInstance caster = getActiveChar().getTransferingDamageTo();
 		if (getActiveChar().getOwner().getParty() != null)
 		{
-			if ((caster != null) && Util.checkIfInRange(1000, getActiveChar(), caster, true) && !caster.isDead() && getActiveChar().getParty().getMembers().contains(caster))
+			if ((caster != null) && Util.checkIfInRange(1000, getActiveChar(), caster, true) && !caster.isDead() && !caster.isHpBlocked() && getActiveChar().getParty().getMembers().contains(caster))
 			{
 				int transferDmg = 0;
 				

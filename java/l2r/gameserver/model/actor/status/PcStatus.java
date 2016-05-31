@@ -157,7 +157,7 @@ public class PcStatus extends PlayableStatus
 			
 			// Check and calculate transfered damage
 			final L2Summon summon = getActiveChar().getSummon();
-			if (getActiveChar().hasServitor() && Util.checkIfInRange(1000, getActiveChar(), summon, true))
+			if (getActiveChar().hasServitor() && Util.checkIfInRange(1000, getActiveChar(), summon, true) && !summon.isDead() && !summon.isHpBlocked())
 			{
 				tDmg = ((int) value * (int) getActiveChar().getStat().calcStat(Stats.TRANSFER_DAMAGE_PERCENT, 0, null, null)) / 100;
 				
@@ -194,7 +194,7 @@ public class PcStatus extends PlayableStatus
 			}
 			
 			final L2PcInstance caster = getActiveChar().getTransferingDamageTo();
-			if ((caster != null) && (getActiveChar().getParty() != null) && Util.checkIfInRange(1000, getActiveChar(), caster, true) && !caster.isDead() && (getActiveChar() != caster) && getActiveChar().getParty().getMembers().contains(caster))
+			if ((caster != null) && (getActiveChar().getParty() != null) && Util.checkIfInRange(1000, getActiveChar(), caster, true) && !caster.isDead() && !caster.isHpBlocked() && (getActiveChar() != caster) && getActiveChar().getParty().getMembers().contains(caster))
 			{
 				int transferDmg = 0;
 				
