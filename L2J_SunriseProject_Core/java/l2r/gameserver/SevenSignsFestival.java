@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
+ * Copyright (C) 2004-2016 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
@@ -758,7 +759,7 @@ public class SevenSignsFestival implements SpawnListener
 	};
 	// @formatter:on
 	
-	protected FestivalManager _managerInstance;
+	private FestivalManager _managerInstance;
 	protected ScheduledFuture<?> _managerScheduledTask;
 	
 	protected int _signsCycle = SevenSigns.getInstance().getCurrentCycle();
@@ -913,11 +914,15 @@ public class SevenSignsFestival implements SpawnListener
 	{
 		// Start the Festival Manager for the first time after the server has started
 		// at the specified time, then invoke it automatically after every cycle.
-		FestivalManager fm = new FestivalManager();
+		if (_managerInstance != null)
+		{
+			return; // already started
+		}
+		_managerInstance = new FestivalManager();
 		setNextFestivalStart(Config.ALT_FESTIVAL_MANAGER_START + FESTIVAL_SIGNUP_TIME);
-		_managerScheduledTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(fm, Config.ALT_FESTIVAL_MANAGER_START, Config.ALT_FESTIVAL_CYCLE_LENGTH);
+		_managerScheduledTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(_managerInstance, Config.ALT_FESTIVAL_MANAGER_START, Config.ALT_FESTIVAL_CYCLE_LENGTH);
 		
-		_log.info("SevenSignsFestival: The first Festival of Darkness cycle begins in " + (Config.ALT_FESTIVAL_MANAGER_START / 60000) + " minute(s).");
+		_log.info("SevenSignsFestival: The first Festival of Darkness cycle begins in {} minute(s).", TimeUnit.MILLISECONDS.toMinutes(Config.ALT_FESTIVAL_MANAGER_START));
 	}
 	
 	/**
@@ -955,7 +960,7 @@ public class SevenSignsFestival implements SpawnListener
 		}
 		catch (SQLException e)
 		{
-			_log.error("SevenSignsFestival: Failed to load configuration: " + e.getMessage(), e);
+			_log.error("SevenSignsFestival: Failed to load configuration!", e);
 		}
 		
 		StringBuilder query = new StringBuilder();
@@ -989,7 +994,7 @@ public class SevenSignsFestival implements SpawnListener
 		}
 		catch (SQLException e)
 		{
-			_log.error("SevenSignsFestival: Failed to load configuration: " + e.getMessage(), e);
+			_log.error("SevenSignsFestival: Failed to load configuration!", e);
 		}
 	}
 	
@@ -1019,7 +1024,7 @@ public class SevenSignsFestival implements SpawnListener
 		}
 		catch (SQLException e)
 		{
-			_log.error("SevenSignsFestival: Failed to save configuration: " + e.getMessage(), e);
+			_log.error("SevenSignsFestival: Failed to save configuration!", e);
 		}
 		
 		// Updates Seven Signs DB data also, so call only if really necessary.
@@ -1128,7 +1133,7 @@ public class SevenSignsFestival implements SpawnListener
 			}
 			catch (Exception e)
 			{
-				_log.warn("Could not get clan name of " + partyMemberName + ": " + e.getMessage(), e);
+				_log.warn("Could not get clan name of {}!", partyMemberName, e);
 			}
 		}
 	}
@@ -1746,7 +1751,6 @@ public class SevenSignsFestival implements SpawnListener
 		public FestivalManager()
 		{
 			_festivalInstances = new HashMap<>();
-			_managerInstance = this;
 			
 			// Increment the cycle counter.
 			_festivalCycle++;
@@ -1983,7 +1987,7 @@ public class SevenSignsFestival implements SpawnListener
 			}
 			catch (Exception e)
 			{
-				_log.warn(e.getMessage());
+				_log.warn("Could not run featival task!", e);
 			}
 		}
 		
@@ -2132,10 +2136,10 @@ public class SevenSignsFestival implements SpawnListener
 			}
 			catch (Exception e)
 			{
-				_log.warn("SevenSignsFestival: Error while spawning Festival Witch ID " + _witchSpawn._npcId + ": " + e.getMessage(), e);
+				_log.warn("SevenSignsFestival: Error while spawning Festival Witch ID {}!", _witchSpawn._npcId, e);
 			}
 			
-			// Make it appear as though the Witch has apparated there.
+			// Make it appear as though the Witch has appeared there.
 			MagicSkillUse msu = new MagicSkillUse(_witchInst, _witchInst, 2003, 1, 1, 0);
 			_witchInst.broadcastPacket(msu);
 			
@@ -2190,10 +2194,8 @@ public class SevenSignsFestival implements SpawnListener
 					y -= Rnd.nextInt(FESTIVAL_MAX_OFFSET_Y);
 				}
 				
-				Location moveTo = new Location(x, y, _startLocation._z, Rnd.nextInt(65536));
-				
 				festivalMob.setRunning();
-				festivalMob.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, moveTo);
+				festivalMob.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new Location(x, y, _startLocation._z, Rnd.nextInt(65536)));
 			}
 		}
 		
@@ -2269,7 +2271,7 @@ public class SevenSignsFestival implements SpawnListener
 				}
 				catch (Exception e)
 				{
-					_log.warn("SevenSignsFestival: Error while spawning NPC ID " + currSpawn._npcId + ": " + e.getMessage(), e);
+					_log.warn("SevenSignsFestival: Error while spawning NPC ID {}!", currSpawn._npcId, e);
 				}
 			}
 		}
