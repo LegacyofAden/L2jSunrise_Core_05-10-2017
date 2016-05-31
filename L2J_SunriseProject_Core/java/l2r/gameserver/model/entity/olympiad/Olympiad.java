@@ -607,11 +607,15 @@ public class Olympiad extends ListenersContainer
 				currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
 				break;
 			case "WEEK":
-				currentTime.add(Calendar.WEEK_OF_YEAR, Config.ALT_OLY_PERIOD_MULTIPLIER);
 				currentTime.set(Calendar.DAY_OF_WEEK, 1); // last day is for validation
 				currentTime.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_END_HOUR[0]);
 				currentTime.set(Calendar.MINUTE, Config.ALT_OLY_END_HOUR[1]);
 				currentTime.set(Calendar.SECOND, Config.ALT_OLY_END_HOUR[2]);
+				
+				if (currentTime.before(Calendar.getInstance()))
+				{
+					currentTime.add(Calendar.WEEK_OF_YEAR, Config.ALT_OLY_PERIOD_MULTIPLIER);
+				}
 				break;
 			case "SUNRISE":
 				reloadOlympiadEnd();
