@@ -33,7 +33,6 @@ import l2r.gameserver.data.xml.impl.AdminData;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
-import l2r.gameserver.network.serverpackets.DeleteObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -352,47 +351,30 @@ public final class L2World
 			return;
 		}
 		
-		// Removes all objects from the object's known list.
-		object.getKnownList().removeAllKnownObjects();
-		
-		if (oldWorldRegion != null)
+		if (oldWorldRegion == null)
 		{
-			// Removes the object from the visible objects of world region.
-			// If object is a player, removes it from the players map of this world region.
-			oldWorldRegion.removeVisibleObject(object);
-			
-			/**
-			 * for (L2Object element : oldWorldRegion.getVisibleObjects().values()) { if (element != null) { element.getKnownList().removeKnownObject(object); } } for (L2WorldRegion reg : oldWorldRegion.getSurroundingRegions()) { if (oldWorldRegion == reg) { continue; } for (L2Object element :
-			 * reg.getVisibleObjects().values()) { if (element != null) { element.getKnownList().removeKnownObject(object); } } }
-			 */
-			
-			final boolean objectHasKnownlist = (object.getKnownList() != null);
-			
-			// Goes through all surrounding world region's creatures.
-			// And removes the object from their known lists.
-			for (L2WorldRegion worldRegion : oldWorldRegion.getSurroundingRegions())
+			return;
+		}
+		
+		// Removes the object from the visible objects of world region.
+		// If object is a player, removes it from the players map of this world region.
+		oldWorldRegion.removeVisibleObject(object);
+		
+		// Goes through all surrounding world region's creatures.
+		// And removes the object from their known lists.
+		for (L2WorldRegion worldRegion : oldWorldRegion.getSurroundingRegions())
+		{
+			for (L2Object obj : worldRegion.getVisibleObjects().values())
 			{
-				for (L2Object obj : worldRegion.getVisibleObjects().values())
+				if (obj != null)
 				{
-					if (obj.getKnownList() != null)
-					{
-						obj.getKnownList().removeKnownObject(object);
-					}
-					
-					if (objectHasKnownlist)
-					{
-						object.getKnownList().removeKnownObject(obj);
-					}
+					obj.getKnownList().removeKnownObject(object);
 				}
 			}
 		}
 		
-		// vGodFather TODO find better way or not?
-		if (object.isNpc())
-		{
-			L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInStoreMode()).forEach(pc -> pc.sendPacket(new DeleteObject(object)));
-			// object.getKnownList().getKnownObjects().values().stream().filter(obj -> obj.isPlayer() && obj.getActingPlayer().isOnline() && !obj.getActingPlayer().isInOfflineMode()).forEach(obj -> obj.sendPacket(new DeleteObject(object)));
-		}
+		// Removes all objects from the object's known list.
+		object.getKnownList().removeAllKnownObjects();
 	}
 	
 	/**
