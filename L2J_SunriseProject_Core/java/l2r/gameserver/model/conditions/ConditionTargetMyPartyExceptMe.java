@@ -43,8 +43,14 @@ public class ConditionTargetMyPartyExceptMe extends Condition
 		boolean isPartyMember = true;
 		final L2PcInstance player = env.getPlayer();
 		final L2Character target = env.getTarget();
-		if ((player == null) || (target == null) || !target.isPlayer())
+		if ((player == null))
 		{
+			if (!target.isPlayer())
+			{
+				final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED);
+				sm.addSkillName(env.getSkill());
+				target.sendPacket(sm);
+			}
 			isPartyMember = false;
 		}
 		else if (player == target)
