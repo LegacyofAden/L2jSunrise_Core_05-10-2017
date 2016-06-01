@@ -309,6 +309,7 @@ public class L2ServitorInstance extends L2Summon
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
 			PreparedStatement ps = con.prepareStatement(DELETE_SKILL_SAVE))
 		{
+			con.setAutoCommit(false);
 			// Delete all current stored effects for summon to avoid dupe
 			ps.setInt(1, ownerId);
 			ps.setInt(2, ownerClassId);
