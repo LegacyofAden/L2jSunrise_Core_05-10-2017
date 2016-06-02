@@ -20,6 +20,7 @@ package l2r.gameserver.taskmanager;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,6 +42,8 @@ public final class DecayTaskManager
 	private final ScheduledExecutorService _decayExecutor = Executors.newSingleThreadScheduledExecutor();
 	
 	protected final Map<L2Character, ScheduledFuture<?>> _decayTasks = new ConcurrentHashMap<>();
+	
+	public static Set<Integer> _decayed = ConcurrentHashMap.newKeySet();
 	
 	/**
 	 * Adds a decay task for the specified character.<br>
@@ -144,6 +147,8 @@ public final class DecayTaskManager
 		{
 			_decayTasks.remove(_character);
 			_character.onDecay();
+			
+			_decayed.add(_character.getObjectId());
 			
 			// vGodFather TODO find better way or not?
 			L2World.getInstance().getPlayers().stream().filter(pc -> pc.isOnline() && !pc.isInOfflineMode()).forEach(pc -> pc.sendPacket(new DeleteObject(_character)));

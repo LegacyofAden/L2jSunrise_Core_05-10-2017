@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.taskmanager;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,7 +37,7 @@ public class KnownListUpdateTaskManager
 {
 	protected static final Logger _log = LoggerFactory.getLogger(KnownListUpdateTaskManager.class);
 	
-	private static final int FULL_UPDATE_TIMER = 100;
+	private static final int FULL_UPDATE_TIMER = 5;
 	public static boolean updatePass = true;
 	
 	// Do full update every FULL_UPDATE_TIMER * KNOWNLIST_UPDATE_INTERVAL
@@ -49,6 +48,7 @@ public class KnownListUpdateTaskManager
 	protected KnownListUpdateTaskManager()
 	{
 		ThreadPoolManager.getInstance().scheduleAiAtFixedRate(new KnownListUpdate(), 1000, Config.KNOWNLIST_UPDATE_INTERVAL);
+		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(() -> DecayTaskManager._decayed.clear(), 60 * 1000, 60 * 1000);
 	}
 	
 	private class KnownListUpdate implements Runnable
@@ -107,8 +107,7 @@ public class KnownListUpdateTaskManager
 	
 	public void updateRegion(L2WorldRegion region, boolean fullUpdate, boolean forgetObjects)
 	{
-		Collection<L2Object> vObj = region.getVisibleObjects().values();
-		for (L2Object object : vObj) // and for all members in region
+		for (L2Object object : region.getVisibleObjects().values()) // and for all members in region
 		{
 			if ((object == null) || !object.isVisible())
 			{
@@ -127,10 +126,9 @@ public class KnownListUpdateTaskManager
 			{
 				if ((object instanceof L2Playable) || (aggro && regi.isActive()) || fullUpdate)
 				{
-					Collection<L2Object> inrObj = regi.getVisibleObjects().values();
-					for (L2Object obj : inrObj)
+					for (L2Object obj : regi.getVisibleObjects().values())
 					{
-						if ((obj != null) && (obj != object))
+						if ((obj != null) && (obj != object) && !DecayTaskManager._decayed.contains(obj.getObjectId()))
 						{
 							object.getKnownList().addKnownObject(obj);
 						}
@@ -140,11 +138,9 @@ public class KnownListUpdateTaskManager
 				{
 					if (regi.isActive())
 					{
-						Collection<L2Playable> inrPls = regi.getVisiblePlayable().values();
-						
-						for (L2Object obj : inrPls)
+						for (L2Object obj : regi.getVisiblePlayable().values())
 						{
-							if (obj != object)
+							if ((obj != object) && !DecayTaskManager._decayed.contains(obj.getObjectId()))
 							{
 								object.getKnownList().addKnownObject(obj);
 							}
