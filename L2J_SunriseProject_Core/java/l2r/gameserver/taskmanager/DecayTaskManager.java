@@ -19,6 +19,7 @@
 package l2r.gameserver.taskmanager;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
@@ -40,9 +41,12 @@ public class DecayTaskManager
 	
 	protected final Map<L2Character, Long> _decayTasks = new ConcurrentHashMap<>();
 	
+	public static Set<Integer> _decayed = ConcurrentHashMap.newKeySet();
+	
 	protected DecayTaskManager()
 	{
 		ThreadPoolManager.getInstance().scheduleAiAtFixedRate(new DecayScheduler(), 10000, Config.DECAY_TIME_TASK);
+		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(() -> _decayed.clear(), 60 * 1000, 60 * 1000);
 	}
 	
 	public static DecayTaskManager getInstance()
@@ -97,6 +101,8 @@ public class DecayTaskManager
 				{
 					actor.onDecay();
 					_decayTasks.remove(actor);
+					
+					_decayed.add(actor.getObjectId());
 					
 					// vGodFather TODO find better way or not?
 					L2Character object = actor;
