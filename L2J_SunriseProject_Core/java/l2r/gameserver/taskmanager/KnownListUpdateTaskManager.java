@@ -26,10 +26,8 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
-import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Playable;
-import l2r.gameserver.model.actor.instance.L2EventMapGuardInstance;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
 
 import org.slf4j.Logger;
@@ -116,7 +114,7 @@ public class KnownListUpdateTaskManager
 			}
 			
 			// Some mobs need faster knownlist update
-			final boolean aggro = (Config.GUARD_ATTACK_AGGRO_MOB && (object instanceof L2GuardInstance)) || (object instanceof L2EventMapGuardInstance) || ((object instanceof L2Attackable) && (((L2Attackable) object).getEnemyClan() != null));
+			final boolean aggro = (Config.GUARD_ATTACK_AGGRO_MOB && (object instanceof L2GuardInstance));
 			
 			if (forgetObjects)
 			{
