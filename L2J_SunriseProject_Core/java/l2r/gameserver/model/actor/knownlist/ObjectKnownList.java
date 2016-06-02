@@ -18,8 +18,8 @@
  */
 package l2r.gameserver.model.actor.knownlist;
 
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.gameserver.model.L2Object;
@@ -35,6 +35,7 @@ public class ObjectKnownList
 	public ObjectKnownList(L2Object activeObject)
 	{
 		_activeObject = activeObject;
+		_knownObjects = new ConcurrentHashMap<>();
 	}
 	
 	public boolean addKnownObject(L2Object object)
@@ -68,7 +69,7 @@ public class ObjectKnownList
 			return false;
 		}
 		
-		return (getKnownObjects().put(object.getObjectId(), object) == null);
+		return _knownObjects.put(object.getObjectId(), object) == null;
 	}
 	
 	public final boolean knowsObject(L2Object object)
@@ -78,7 +79,7 @@ public class ObjectKnownList
 			return false;
 		}
 		
-		return (getActiveObject() == object) || getKnownObjects().containsKey(object.getObjectId());
+		return (getActiveObject() == object) || _knownObjects.containsKey(object.getObjectId());
 	}
 	
 	/**
@@ -86,7 +87,7 @@ public class ObjectKnownList
 	 */
 	public void removeAllKnownObjects()
 	{
-		getKnownObjects().clear();
+		_knownObjects.clear();
 	}
 	
 	public final boolean removeKnownObject(L2Object object)
@@ -106,7 +107,7 @@ public class ObjectKnownList
 			return true;
 		}
 		
-		return getKnownObjects().remove(object.getObjectId()) != null;
+		return _knownObjects.remove(object.getObjectId()) != null;
 	}
 	
 	/**
@@ -161,10 +162,18 @@ public class ObjectKnownList
 	 */
 	public void forgetObjects(boolean fullCheck)
 	{
-		final Iterator<L2Object> oIter = getKnownObjects().values().iterator();
-		while (oIter.hasNext())
+		for (Entry<Integer, L2Object> entry : _knownObjects.entrySet())
 		{
-			final L2Object object = oIter.next();
+			int objectId = entry.getKey();
+			L2Object object = entry.getValue();
+			
+			if (object == null)
+			{
+				// _log.warn("Memory Leak detected and cleaned.");
+				_knownObjects.remove(objectId);
+				continue;
+			}
+			
 			if (!fullCheck && !object.isPlayable())
 			{
 				continue;
@@ -173,7 +182,6 @@ public class ObjectKnownList
 			// Remove all objects invisible or too far
 			if (!object.isVisible() || !Util.checkIfInShortRadius(getDistanceToForgetObject(object), getActiveObject(), object, true))
 			{
-				oIter.remove();
 				removeKnownObject(object, true);
 			}
 		}
@@ -199,16 +207,6 @@ public class ObjectKnownList
 	 */
 	public final Map<Integer, L2Object> getKnownObjects()
 	{
-		if (_knownObjects == null)
-		{
-			synchronized (this)
-			{
-				if (_knownObjects == null)
-				{
-					_knownObjects = new ConcurrentHashMap<>();
-				}
-			}
-		}
 		return _knownObjects;
 	}
 }
