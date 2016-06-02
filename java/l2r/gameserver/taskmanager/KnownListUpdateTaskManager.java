@@ -37,7 +37,7 @@ public class KnownListUpdateTaskManager
 {
 	protected static final Logger _log = LoggerFactory.getLogger(KnownListUpdateTaskManager.class);
 	
-	private static final int FULL_UPDATE_TIMER = 5;
+	private static final int FULL_UPDATE_TIMER = 100;
 	public static boolean updatePass = true;
 	
 	// Do full update every FULL_UPDATE_TIMER * KNOWNLIST_UPDATE_INTERVAL
