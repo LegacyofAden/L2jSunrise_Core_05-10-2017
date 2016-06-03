@@ -18,43 +18,45 @@
  */
 package l2r.gameserver.network.serverpackets;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.model.interfaces.IPositionable;
+import l2r.gameserver.model.skills.L2Skill;
 
 /**
  * MagicSkillUse server packet implementation.
- * @author UnAfraid, Nos
+ * @author UnAfraid, NosBit, vGodFather
  */
-public final class MagicSkillUse extends L2GameServerPacket
+public class MagicSkillUse extends L2GameServerPacket
 {
+	private final L2Character _activeChar;
+	private final L2Character _target;
 	private final int _skillId;
 	private final int _skillLevel;
 	private final int _hitTime;
 	private final int _reuseDelay;
-	private final L2Character _activeChar;
-	private final L2Character _target;
-	private final List<Integer> _unknown = Collections.emptyList();
-	private final List<Location> _groundLocations;
 	
-	public MagicSkillUse(L2Character cha, L2Character target, int skillId, int skillLevel, int hitTime, int reuseDelay)
+	public MagicSkillUse(L2Character cha, L2Character target, int skillId, int skillLevel, int skillTime, int reuseDelay)
 	{
 		_activeChar = cha;
 		_target = target;
 		_skillId = skillId;
 		_skillLevel = skillLevel;
-		_hitTime = hitTime;
+		_hitTime = skillTime;
 		_reuseDelay = reuseDelay;
-		_groundLocations = cha.isPlayer() && (cha.getActingPlayer().getCurrentSkillWorldPosition() != null) ? Arrays.asList(cha.getActingPlayer().getCurrentSkillWorldPosition()) : Collections.<Location> emptyList();
 	}
 	
-	public MagicSkillUse(L2Character cha, int skillId, int skillLevel, int hitTime, int reuseDelay)
+	public MagicSkillUse(L2Character cha, int skillId, int skillLevel, int skillTime, int reuseDelay)
 	{
-		this(cha, cha, skillId, skillLevel, hitTime, reuseDelay);
+		this(cha, cha, skillId, skillLevel, skillTime, reuseDelay);
+	}
+	
+	public MagicSkillUse(L2Character cha, L2Character target, L2Skill skill, int skillTime, int reuseDelay)
+	{
+		this(cha, target, skill.getDisplayId(), skill.getLevel(), skillTime, reuseDelay);
+	}
+	
+	public MagicSkillUse(L2Character cha, L2Skill skill, int skillTime, int reuseDelay)
+	{
+		this(cha, cha, skill.getDisplayId(), skill.getLevel(), skillTime, reuseDelay);
 	}
 	
 	@Override
@@ -68,16 +70,11 @@ public final class MagicSkillUse extends L2GameServerPacket
 		writeD(_hitTime);
 		writeD(_reuseDelay);
 		writeLoc(_activeChar);
-		writeH(_unknown.size()); // TODO: Implement me!
-		for (int unknown : _unknown)
-		{
-			writeH(unknown);
-		}
-		writeH(_groundLocations.size());
-		for (IPositionable target : _groundLocations)
-		{
-			writeLoc(target);
-		}
+		
+		// vGodFather FIXME missing info?
+		writeH(0x00);
+		writeH(0x00);
+		
 		writeLoc(_target);
 	}
 }
