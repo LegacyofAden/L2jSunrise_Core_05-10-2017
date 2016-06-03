@@ -134,6 +134,12 @@ public class CharacterSelect extends L2GameClientPacket
 						_log.info("selected slot:" + _charSlot);
 					}
 					
+					if (_charSlot < 0)
+					{
+						_log.warn(CharacterSelect.class.getSimpleName() + ": Selected slot:" + _charSlot + ", auto set 0.");
+						_charSlot = 0;
+					}
+					
 					// load up character from disk
 					final L2PcInstance cha = client.loadCharFromDisk(_charSlot);
 					if (SecondaryAuthData.getInstance().isEnabled())
