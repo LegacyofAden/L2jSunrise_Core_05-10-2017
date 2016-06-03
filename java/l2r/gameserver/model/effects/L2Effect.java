@@ -249,25 +249,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		_period = period;
 	}
 	
-	/**
-	 * Returns the elapsed time of the task.
-	 * @return Time in seconds.
-	 */
-	public int getElapsedTaskTime()
-	{
-		return ((getTotalCount() - _count) * _period) + getTime() + 1;
-	}
-	
-	public int getTotalTaskTime()
-	{
-		return getTotalCount() * _period;
-	}
-	
-	public int getRemainingTaskTime()
-	{
-		return getTotalTaskTime() - getElapsedTaskTime();
-	}
-	
 	public boolean getInUse()
 	{
 		return _isInUse;
@@ -609,7 +590,6 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		
 		final ScheduledFuture<?> future = _currentFuture;
 		final L2Skill sk = getSkill();
-		int time = getRemainingTaskTime() * 1000;
 		if (getTotalCount() > 1)
 		{
 			if (sk.isStatic())
@@ -618,7 +598,7 @@ public abstract class L2Effect implements IChanceSkillTrigger
 			}
 			else
 			{
-				mi.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), time);
+				mi.addEffect(sk.getDisplayId(), sk.getDisplayLevel(), _count * _period * 1000);
 			}
 		}
 		else if (future != null)
