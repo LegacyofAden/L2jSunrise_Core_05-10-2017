@@ -426,8 +426,23 @@ public class CharEffectList
 	 */
 	public final void stopAllEffects()
 	{
-		// Get all active skills effects from this list and exit them
-		getEffects().stream().filter(e -> e != null).forEach(e -> e.exit(true));
+		stopAllEffects(true);
+	}
+	
+	/**
+	 * Exits all effects in this CharEffectList
+	 * @param all will remove all effects even if they can't be dispelled
+	 */
+	public final void stopAllEffects(boolean all)
+	{
+		if (all)
+		{
+			getEffects().stream().filter(e -> e != null).forEach(e -> e.exit(true));
+		}
+		else
+		{
+			getEffects().stream().filter(e -> (e != null) && e.canBeStolen()).forEach(e -> e.exit(true));
+		}
 	}
 	
 	/**
@@ -1213,12 +1228,8 @@ public class CharEffectList
 					if (summonOwner.isInParty())
 					{
 						summonOwner.getParty().broadcastToPartyMembers(summonOwner, psSummon); // send to all member except summonOwner
-						summonOwner.sendPacket(ps); // now send to summonOwner
 					}
-					else
-					{
-						summonOwner.sendPacket(ps);
-					}
+					summonOwner.sendPacket(ps);
 				}
 			}
 			else if (_owner.isPlayer() && _owner.isInParty())
@@ -1313,6 +1324,18 @@ public class CharEffectList
 		if (hasDebuffs())
 		{
 			for (L2Effect e : getDebuffs())
+			{
+				if (e == null)
+				{
+					continue;
+				}
+				flags |= e.getEffectFlags();
+			}
+		}
+		
+		if (hasPassives())
+		{
+			for (L2Effect e : getPassives())
 			{
 				if (e == null)
 				{
