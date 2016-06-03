@@ -39,10 +39,7 @@ public class RequestGotoLobby extends L2GameClientPacket
 	protected void runImpl()
 	{
 		L2GameClient client = getClient();
-		if (!client.isCharCreation())
-		{
-			client.sendPacket(new CharSelectionInfo(client.getAccountName(), client.getSessionId().playOkID1));
-		}
+		client.sendPacket(new CharSelectionInfo(client.getAccountName(), client.getSessionId().playOkID1));
 	}
 	
 	@Override
