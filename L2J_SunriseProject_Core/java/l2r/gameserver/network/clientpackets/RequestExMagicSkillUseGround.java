@@ -24,7 +24,6 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.serverpackets.ActionFailed;
 import l2r.gameserver.network.serverpackets.ValidateLocation;
-import l2r.gameserver.util.Broadcast;
 import l2r.gameserver.util.Util;
 
 /**
@@ -81,7 +80,7 @@ public final class RequestExMagicSkillUseGround extends L2GameClientPacket
 			
 			// normally magicskilluse packet turns char client side but for these skills, it doesn't (even with correct target)
 			activeChar.setHeading(Util.calculateHeadingFrom(activeChar.getX(), activeChar.getY(), _x, _y));
-			Broadcast.toKnownPlayers(activeChar, new ValidateLocation(activeChar));
+			activeChar.broadcastPacket(new ValidateLocation(activeChar));
 			
 			activeChar.useMagic(skill, _ctrlPressed, _shiftPressed);
 		}
