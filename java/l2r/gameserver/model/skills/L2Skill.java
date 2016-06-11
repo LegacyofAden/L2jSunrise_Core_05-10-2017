@@ -1588,14 +1588,16 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		
 		if (isDebuff())
 		{
-			if (effected.isDebuffBlocked())
+			// vGodFather cancel can't be resisted retail like
+			if (effected.isDebuffBlocked() && !hasEffectType(L2EffectType.CANCEL, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 			{
 				return _emptyEffectSet;
 			}
 		}
 		else
 		{
-			if (effected.isBuffBlocked() && !isBad())
+			// vGodFather check if we need more checks here
+			if (effected.isBuffBlocked() && !isBad() && (effected.isPlayer() || effected.isAttackable()))
 			{
 				return _emptyEffectSet;
 			}
@@ -1683,14 +1685,16 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		{
 			if (isDebuff())
 			{
-				if (effected.isDebuffBlocked())
+				// vGodFather cancel can't be resisted retail like
+				if (effected.isDebuffBlocked() && !hasEffectType(L2EffectType.CANCEL, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT))
 				{
 					return _emptyEffectSet;
 				}
 			}
 			else
 			{
-				if (effected.isBuffBlocked() && !isBad())
+				// vGodFather check if we need more checks here
+				if (effected.isBuffBlocked() && !isBad() && (effected.isPlayer() || effected.isAttackable()))
 				{
 					return _emptyEffectSet;
 				}
