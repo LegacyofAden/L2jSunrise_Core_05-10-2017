@@ -225,7 +225,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			}
 			
 			// check if the target is within the grace period for JUST getting up from fake death
-			if (player.isRecentFakeDeath())
+			if (player.isRecentFakeDeath() || (player.getFirstEffect(L2EffectType.HIDE) != null))
 			{
 				return false;
 			}
