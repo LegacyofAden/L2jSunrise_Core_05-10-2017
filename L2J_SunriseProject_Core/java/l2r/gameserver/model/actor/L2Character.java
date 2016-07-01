@@ -766,7 +766,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		Location fixedLoc = GeoData.getInstance().moveCheck(originalX, originalY, z, x, y, z, instanceId);
 		x = fixedLoc.getX();
 		y = fixedLoc.getY();
-		z = fixedLoc.getZ();
+		z = !isFlying() ? fixedLoc.getZ() : z; // correct z only for non flying chars
 		
 		// Send a Server->Client packet TeleportToLocationt to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
 		broadcastPacket(new TeleportToLocation(this, x, y, z, heading));
