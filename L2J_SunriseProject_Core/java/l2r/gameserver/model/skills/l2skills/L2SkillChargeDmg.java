@@ -32,6 +32,8 @@ import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
 import l2r.util.Rnd;
 
+import gr.sr.balanceEngine.BalanceHandler;
+
 public class L2SkillChargeDmg extends L2Skill
 {
 	public L2SkillChargeDmg(StatsSet set)
@@ -142,6 +144,10 @@ public class L2SkillChargeDmg extends L2Skill
 					damage *= 2;
 				}
 			}
+			
+			// Reunion balancer
+			damage = BalanceHandler.getInstance().calc(attacker, target, skill, damage, false);
+			// Reunion balancer - End
 			
 			if (damage > 0)
 			{
