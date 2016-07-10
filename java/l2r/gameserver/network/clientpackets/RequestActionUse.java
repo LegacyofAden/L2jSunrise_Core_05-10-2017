@@ -899,7 +899,7 @@ public final class RequestActionUse extends L2GameClientPacket
 			return;
 		}
 		
-		if (!canControl(summon))
+		if ((skillId != SWITCH_STANCE_ID) && !canControl(summon))
 		{
 			return;
 		}
@@ -940,20 +940,11 @@ public final class RequestActionUse extends L2GameClientPacket
 			return;
 		}
 		
-		if (!canControl(summon))
+		final L2Skill skill = summon.getTemplate().getParameters().getSkillHolder(skillName).getSkill();
+		if ((skill != null) && (skill.getId() != SWITCH_STANCE_ID) && !canControl(summon))
 		{
 			return;
 		}
-		
-		if (summon instanceof L2BabyPetInstance)
-		{
-			if (!((L2BabyPetInstance) summon).isInSupportMode())
-			{
-				sendPacket(SystemMessageId.PET_AUXILIARY_MODE_CANNOT_USE_SKILLS);
-				return;
-			}
-		}
-		final L2Skill skill = summon.getTemplate().getParameters().getSkillHolder(skillName).getSkill();
 		
 		if (skill != null)
 		{

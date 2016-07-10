@@ -19,6 +19,7 @@
 package l2r.gameserver.model.actor.instance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -44,7 +45,9 @@ import l2r.util.Rnd;
 public final class L2BabyPetInstance extends L2PetInstance
 {
 	private static final int BUFF_CONTROL = 5771;
-	private static final int AWAKENING = 5753;
+	
+	// vGodFather: skills that petshould ignore from auto casting
+	private static final List<Integer> _skillIgnoreList = Arrays.asList(5753, 6049, 6053);
 	
 	protected List<SkillHolder> _buffs = null;
 	protected SkillHolder _majorHeal = null;
@@ -98,7 +101,7 @@ public final class L2BabyPetInstance extends L2PetInstance
 			final L2Skill skill = SkillData.getInstance().getInfo(id, lvl);
 			if (skill != null)
 			{
-				if ((skill.getId() == BUFF_CONTROL) || (skill.getId() == AWAKENING))
+				if ((skill.getId() == BUFF_CONTROL) || _skillIgnoreList.contains(skill.getId()))
 				{
 					continue;
 				}
@@ -304,7 +307,8 @@ public final class L2BabyPetInstance extends L2PetInstance
 					}
 				}
 				
-				if (_baby.getFirstEffect(BUFF_CONTROL) == null) // Buff Control is not active
+				// Buff Control is not active
+				if (!_baby.isAffectedBySkill(BUFF_CONTROL))
 				{
 					// searching for usable buffs
 					if ((_buffs != null) && !_buffs.isEmpty())

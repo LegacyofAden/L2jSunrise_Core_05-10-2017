@@ -43,15 +43,12 @@ import l2r.gameserver.model.skills.l2skills.L2SkillSummon;
 import l2r.gameserver.model.stats.Stats;
 import l2r.gameserver.network.serverpackets.SetSummonRemainTime;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author vGodFather
  */
 public class L2ServitorInstance extends L2Summon
 {
-	private static final Logger LOG = LoggerFactory.getLogger(L2ServitorInstance.class);
+	// private static final Logger LOG = LoggerFactory.getLogger(L2ServitorInstance.class);
 	
 	private static final String ADD_SKILL_SAVE = "INSERT INTO character_summon_skills_save (ownerId,ownerClassIndex,summonSkillId,skill_id,skill_level,effect_count,effect_cur_time,buff_index) VALUES (?,?,?,?,?,?,?,?)";
 	private static final String RESTORE_SKILL_SAVE = "SELECT skill_id,skill_level,effect_count,effect_cur_time,buff_index FROM character_summon_skills_save WHERE ownerId=? AND ownerClassIndex=? AND summonSkillId=? ORDER BY buff_index ASC";
@@ -376,7 +373,7 @@ public class L2ServitorInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			LOG.error("Could not store summon effect data for owner " + ownerId + ", class " + ownerClassId + ", skill " + servitorRefSkill + ", error", e);
+			// LOG.error("Could not store summon effect data for owner " + ownerId + ", class " + ownerClassId + ", skill " + servitorRefSkill + ", error", e);
 		}
 	}
 	
