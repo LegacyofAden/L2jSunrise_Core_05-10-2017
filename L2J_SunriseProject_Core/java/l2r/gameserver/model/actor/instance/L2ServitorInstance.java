@@ -381,7 +381,7 @@ public class L2ServitorInstance extends L2Summon
 		}
 		catch (Exception e)
 		{
-			_log.error("Could not store summon effect data for owner " + ownerId + ", class " + ownerClassId + ", skill " + servitorRefSkill + ", error", e);
+			// _log.error("Could not store summon effect data for owner " + ownerId + ", class " + ownerClassId + ", skill " + servitorRefSkill + ", error", e);
 		}
 	}
 	
