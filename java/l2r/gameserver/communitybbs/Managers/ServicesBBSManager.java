@@ -566,6 +566,19 @@ public class ServicesBBSManager extends BaseBBSManager
 					byte opositeElement = Elementals.getOppositeElement(elementtoAdd);
 					Elementals oldElement = parmorInstance.getElemental(elementtoAdd);
 					
+					switch (parmorInstance.getItem().getCrystalType())
+					{
+						case NONE:
+						case A:
+						case B:
+						case C:
+						case D:
+							activeChar.sendMessage("Invalid item grade.");
+							return;
+						default:
+							break;
+					}
+					
 					if ((parmorInstance.isWeapon() && (parmorInstance.getElementals() != null)) || (parmorInstance.isArmor() && (oldElement != null) && (parmorInstance.getElementals() != null) && (parmorInstance.getElementals().length >= 3)))
 					{
 						separateAndSend(content, activeChar);
@@ -618,7 +631,7 @@ public class ServicesBBSManager extends BaseBBSManager
 					
 					activeChar.destroyItemByItemId("Community Attribute Manager", currency, parmorInstance.isWeapon() ? weaponPrice : armorPrice, activeChar, true);
 					activeChar.getInventory().unEquipItemInSlot(armorType);
-					parmorInstance.setElementAttr((byte) typeId, parmorInstance.isWeapon() ? elementWeaponValue : elementArmorValue);
+					parmorInstance.setElementAttr(elementtoAdd, parmorInstance.isWeapon() ? elementWeaponValue : elementArmorValue);
 					activeChar.getInventory().equipItem(parmorInstance);
 					activeChar.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
 					

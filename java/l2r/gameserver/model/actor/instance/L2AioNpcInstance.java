@@ -65,7 +65,6 @@ import l2r.gameserver.network.serverpackets.PartySmallWindowDeleteAll;
 import l2r.gameserver.network.serverpackets.SiegeInfo;
 import l2r.gameserver.network.serverpackets.SortedWareHouseWithdrawalList;
 import l2r.gameserver.network.serverpackets.SortedWareHouseWithdrawalList.WarehouseListType;
-import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.gameserver.network.serverpackets.WareHouseDepositList;
 import l2r.gameserver.network.serverpackets.WareHouseWithdrawalList;
 import l2r.gameserver.util.Util;
@@ -1045,53 +1044,95 @@ public final class L2AioNpcInstance extends L2Npc
 			
 			itemIdToGet = AioItemsConfigs.ELEMENT_COIN;
 			price = AioItemsConfigs.ELEMENT_PRICE;
+			int elementWeaponValue = AioItemsConfigs.ELEMENT_VALUE_WEAPON;
+			int elementArmorValue = AioItemsConfigs.ELEMENT_VALUE_ARMOR;
 			
-			if (!Conditions.checkPlayerItemCount(player, itemIdToGet, price))
+			if (Conditions.checkPlayerItemCount(player, itemIdToGet, price))
 			{
-				return;
-			}
-			
-			L2ItemInstance itemInstance = null;
-			L2ItemInstance parmorInstance = player.getInventory().getPaperdollItem(armorType);
-			if (parmorInstance == null)
-			{
-				player.sendMessage("Equip the item for element.");
-				return;
-			}
-			
-			if (parmorInstance.isHeroItem() || (parmorInstance.isShadowItem() || (parmorInstance.isCommonItem() || (parmorInstance.isEtcItem() || (parmorInstance.isTimeLimitedItem())))))
-			{
-				player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.THIS_IS_NOT_A_SUITABLE_ITEM));
-				return;
-			}
-			
-			if ((armorType == Inventory.PAPERDOLL_RHAND) && !AioItemsConfigs.ELEMENT_ALLOW_MORE_ATT_FOR_WEAPONS)
-			{
-				player.getInventory().getPaperdollItem(Inventory.PAPERDOLL_RHAND).clearElementAttr((byte) -1);
-			}
-			
-			if (parmorInstance.getLocationSlot() == armorType)
-			{
-				itemInstance = parmorInstance;
-			}
-			
-			if (itemInstance != null)
-			{
-				String[] types = command.split(" ");
-				byte element = Elementals.getElementId(types[1]);
-				
-				// set element
-				player.destroyItemByItemId("element", itemIdToGet, price, player, true);
-				player.getInventory().unEquipItemInSlot(armorType);
-				itemInstance.setElementAttr(element, armorType == Inventory.PAPERDOLL_RHAND ? AioItemsConfigs.ELEMENT_VALUE_WEAPON : AioItemsConfigs.ELEMENT_VALUE_ARMOR);
-				player.getInventory().equipItem(itemInstance);
-				player.sendMessage("You have successfully added attribute value.");
-				
-				// send packets
-				InventoryUpdate iu = new InventoryUpdate();
-				iu.addModifiedItem(itemInstance);
-				player.sendPacket(iu);
-				player.sendUserInfo(true);
+				L2ItemInstance parmorInstance = player.getInventory().getPaperdollItem(armorType);
+				if ((parmorInstance != null) && (parmorInstance.getLocationSlot() == armorType))
+				{
+					String[] types = command.split(" ");
+					byte elementtoAdd = Elementals.getElementId(types[1]);
+					byte opositeElement = Elementals.getOppositeElement(elementtoAdd);
+					Elementals oldElement = parmorInstance.getElemental(elementtoAdd);
+					
+					switch (parmorInstance.getItem().getCrystalType())
+					{
+						case NONE:
+						case A:
+						case B:
+						case C:
+						case D:
+							player.sendMessage("Invalid item grade.");
+							return;
+						default:
+							break;
+					}
+					
+					if (!AioItemsConfigs.ELEMENT_ALLOW_MORE_ATT_FOR_WEAPONS)
+					{
+						if ((parmorInstance.isWeapon() && (parmorInstance.getElementals() != null)) || (parmorInstance.isArmor() && (oldElement != null) && (parmorInstance.getElementals() != null) && (parmorInstance.getElementals().length >= 3)))
+						{
+							player.sendPacket(SystemMessageId.ANOTHER_ELEMENTAL_POWER_ALREADY_ADDED);
+							return;
+						}
+					}
+					
+					if (parmorInstance.isWeapon())
+					{
+						if ((oldElement != null) && (oldElement.getValue() >= elementWeaponValue))
+						{
+							player.sendMessage("You cannot add same attribute to item!");
+							return;
+						}
+						
+						if (parmorInstance.getElementals() != null)
+						{
+							for (Elementals elm : parmorInstance.getElementals())
+							{
+								if (parmorInstance.isEquipped())
+								{
+									parmorInstance.getElemental(elm.getElement()).removeBonus(player);
+								}
+								parmorInstance.clearElementAttr(elm.getElement());
+							}
+						}
+					}
+					else if (parmorInstance.isArmor())
+					{
+						if (parmorInstance.getElementals() != null)
+						{
+							for (Elementals elm : parmorInstance.getElementals())
+							{
+								if (elm.getElement() == opositeElement)
+								{
+									player.sendMessage("You cannot add opposite attribute to item!");
+									return;
+								}
+								if ((elm.getElement() == elementtoAdd) && (elm.getValue() >= elementArmorValue))
+								{
+									player.sendMessage("You cannot add same attribute to item!");
+									return;
+								}
+							}
+						}
+					}
+					
+					player.destroyItemByItemId("element", itemIdToGet, price, player, true);
+					player.getInventory().unEquipItemInSlot(armorType);
+					parmorInstance.setElementAttr(elementtoAdd, parmorInstance.isWeapon() ? elementWeaponValue : elementArmorValue);
+					player.getInventory().equipItem(parmorInstance);
+					player.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
+					
+					InventoryUpdate iu = new InventoryUpdate();
+					iu.addModifiedItem(parmorInstance);
+					player.sendPacket(iu);
+				}
+				else
+				{
+					player.sendMessage("You cannot attribute items that are not equipped!");
+				}
 			}
 		}
 		// Method to add specific augment to a weapon
