@@ -310,8 +310,12 @@ public class L2PlayerAI extends L2PlayableAI
 		{
 			return;
 		}
-		if (maybeMoveToPawn(target, 36))
+		if (maybeMoveToPawn(target, 60))
 		{
+			if (_actor.isGM() && _actor.isDebug())
+			{
+				_actor.sendMessage("You are too far away trying to go closer to target: " + target);
+			}
 			return;
 		}
 		setIntention(AI_INTENTION_IDLE);
