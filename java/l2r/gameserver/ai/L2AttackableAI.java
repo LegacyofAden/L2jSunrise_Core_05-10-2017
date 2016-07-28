@@ -1240,7 +1240,8 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 					{
 						range -= 100;
 					}
-					moveToPawn(target, Math.max(range, 5));
+					// moveToPawn(target, Math.max(range, 5));
+					moveTo(target.getLocation());
 				}
 			}
 			return;
