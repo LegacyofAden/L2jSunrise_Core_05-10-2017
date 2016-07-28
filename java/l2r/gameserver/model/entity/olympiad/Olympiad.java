@@ -215,10 +215,6 @@ public class Olympiad extends ListenersContainer
 			_period = Integer.parseInt(OlympiadProperties.getProperty("Period", "0"));
 			_validationEnd = Long.parseLong(OlympiadProperties.getProperty("ValidationEnd", "0"));
 			_nextWeeklyChange = Long.parseLong(OlympiadProperties.getProperty("NextWeeklyChange", "0"));
-			if (Config.OLYMPIAD_PERIOD.equals("SUNRISE"))
-			{
-				reloadOlympiadEnd();
-			}
 		}
 		
 		switch (_period)
@@ -556,12 +552,12 @@ public class Olympiad extends ListenersContainer
 	
 	public long getMillisToOlympiadEnd()
 	{
-		return (Config.OLYMPIAD_PERIOD.equals("SUNRISE") ? _olympiadEnd : _olympiadEnd - Calendar.getInstance().getTimeInMillis());
+		return _olympiadEnd - Calendar.getInstance().getTimeInMillis();
 	}
 	
 	protected void reloadOlympiadEnd()
 	{
-		_olympiadEnd = TimeUtils.getMilisecondsToNextDay(Config.ALT_OLY_END_DATE, 0, 1);
+		_olympiadEnd = TimeUtils.getMilisecondsToNextDay(Config.ALT_OLY_END_DATE, 0, 1) + System.currentTimeMillis();
 	}
 	
 	public void manualSelectHeroes()
