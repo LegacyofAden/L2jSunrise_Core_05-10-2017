@@ -128,7 +128,7 @@ public class KnownListUpdateTaskManager
 				{
 					for (L2Object obj : regi.getVisibleObjects().values())
 					{
-						if ((obj != null) && (obj != object) && !DecayTaskManager._decayed.contains(obj.getObjectId()))
+						if ((obj != null) && (obj != object))
 						{
 							object.getKnownList().addKnownObject(obj);
 						}
@@ -140,7 +140,7 @@ public class KnownListUpdateTaskManager
 					{
 						for (L2Object obj : regi.getVisiblePlayable().values())
 						{
-							if ((obj != object) && !DecayTaskManager._decayed.contains(obj.getObjectId()))
+							if (obj != object)
 							{
 								object.getKnownList().addKnownObject(obj);
 							}
