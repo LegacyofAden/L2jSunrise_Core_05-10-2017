@@ -213,7 +213,6 @@ public class Forum
 	public void rmTopicByID(int id)
 	{
 		_topic.remove(id);
-		
 	}
 	
 	public void insertIntoDb()
@@ -232,7 +231,7 @@ public class Forum
 		}
 		catch (Exception e)
 		{
-			_log.warn("Error while saving new Forum to db " + e.getMessage(), e);
+			// _log.warn("Error while saving new Forum to db " + e.getMessage(), e);
 		}
 	}
 	
