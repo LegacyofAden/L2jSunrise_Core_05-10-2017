@@ -26,6 +26,7 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
+import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
@@ -124,31 +125,39 @@ public class KnownListUpdateTaskManager
 			}
 			for (L2WorldRegion regi : region.getSurroundingRegions())
 			{
-				if ((object instanceof L2Playable) || (aggro && regi.isActive()) || fullUpdate)
+				if (object instanceof L2Playable)
 				{
-					for (L2Object obj : regi.getVisibleObjects().values())
+					for (L2Object _object : regi.getVisibleObjects().values())
 					{
-						if ((obj != null) && (obj != object))
+						if ((_object != null) && (_object != object))
 						{
-							object.getKnownList().addKnownObject(obj);
+							object.getKnownList().addKnownObject(_object);
 						}
 					}
 				}
-				else if (object instanceof L2Character)
+				else if ((object instanceof L2Character) || fullUpdate)
 				{
 					if (regi.isActive())
 					{
-						for (L2Object obj : regi.getVisiblePlayable().values())
+						for (L2Object _object : regi.getVisibleObjects().values())
 						{
-							if (obj != object)
+							if (_object != object)
 							{
-								object.getKnownList().addKnownObject(obj);
+								if ((_object instanceof L2Playable) || aggro || (isAttack(object) && isAttack(_object)))
+								{
+									object.getKnownList().addKnownObject(_object);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	private boolean isAttack(L2Object object)
+	{
+		return (object instanceof L2Attackable) && (((L2Attackable) object).getTemplate().getClans() != null) && !((L2Attackable) object).getTemplate().getClans().isEmpty();
 	}
 	
 	public static KnownListUpdateTaskManager getInstance()
