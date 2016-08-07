@@ -22,6 +22,7 @@ import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.items.type.ArmorType;
+import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.stats.Env;
 
 /**
@@ -46,12 +47,31 @@ public final class ConditionUsingItemType extends Condition
 	@Override
 	public boolean testImpl(Env env)
 	{
-		if ((env.getCharacter() == null) || !env.getCharacter().isPlayer())
+		if ((env.getCharacter() == null) || !env.getCharacter().isPlayable())
 		{
 			return false;
 		}
 		
-		final Inventory inv = env.getPlayer().getInventory();
+		final Inventory inv = env.getCharacter().getInventory();
+		
+		// When target doesn't have an inventory but has an active weapon
+		if (inv == null)
+		{
+			if (env.getCharacter().getActiveWeaponItem() != null)
+			{
+				return (env.getCharacter().getActiveWeaponItem().getItemType().mask() & _mask) != 0;
+			}
+			
+			for (L2Skill skill : env.getCharacter().getAllSkills())
+			{
+				if (skill.getId() == 4415)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		// If ConditionUsingItemType is one between Light, Heavy or Magic
 		if (_armor)
 		{
