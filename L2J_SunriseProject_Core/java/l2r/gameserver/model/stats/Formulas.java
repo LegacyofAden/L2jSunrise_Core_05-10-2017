@@ -2500,89 +2500,82 @@ public final class Formulas
 	{
 		// Resists.
 		int negatedEffectCount = calcNegatedEffectCount(skill);
-		boolean result = calcStealSuccess(activeChar, target, skill, power);
 		
 		final L2Effect[] effects = target.getAllEffects();
 		List<L2Effect> canceled = new ArrayList<>();
 		
-		if (result)
+		// Cancel for Abnormals.
+		if ((skill.getNegateAbnormals() != null) && calcStealSuccess(activeChar, target, skill, power))
 		{
-			// Cancel for Abnormals.
-			if (skill.getNegateAbnormals() != null)
+			for (L2Effect eff : effects)
 			{
-				for (L2Effect eff : effects)
+				if (eff == null)
 				{
-					if (eff == null)
-					{
-						continue;
-					}
-					
-					for (String negateAbnormalType : skill.getNegateAbnormals().keySet())
-					{
-						if (negateAbnormalType.equalsIgnoreCase(eff.getAbnormalType()) && (skill.getNegateAbnormals().get(negateAbnormalType) >= eff.getAbnormalLvl()))
-						{
-							canceled.add(eff);
-						}
-					}
-				}
-			}
-			else
-			{
-				List<L2Effect> _musicList = new LinkedList<>();
-				List<L2Effect> _buffList = new LinkedList<>();
-				
-				for (L2Effect eff : effects)
-				{
-					// Just in case of NPE and remove effect if can't be stolen
-					if ((eff == null) || !eff.canBeStolen())
-					{
-						continue;
-					}
-					
-					// Only Dances/Songs.
-					if (eff.getSkill().isDance())
-					{
-						_musicList.add(eff);
-					}
-					else
-					{
-						_buffList.add(eff);
-					}
+					continue;
 				}
 				
-				// Reversing lists and adding to a new list
-				List<L2Effect> _effectList = new LinkedList<>();
-				Collections.reverse(_musicList);
-				Collections.reverse(_buffList);
-				_effectList.addAll(_musicList);
-				_effectList.addAll(_buffList);
-				
-				if (randomizeList)
+				for (String negateAbnormalType : skill.getNegateAbnormals().keySet())
 				{
-					Collections.shuffle(_effectList);
-				}
-				
-				int negated = 0;
-				if (!_effectList.isEmpty())
-				{
-					for (L2Effect e : _effectList)
+					if (negateAbnormalType.equalsIgnoreCase(eff.getAbnormalType()) && (skill.getNegateAbnormals().get(negateAbnormalType) >= eff.getAbnormalLvl()))
 					{
-						if (negated < negatedEffectCount)
-						{
-							negated++;
-							canceled.add(e);
-						}
+						canceled.add(eff);
 					}
 				}
 			}
 		}
-		
-		if (canceled.isEmpty() && activeChar.isPlayer())
+		else
 		{
-			final SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.C1_RESISTED_YOUR_S2);
-			sm.addCharName(target);
-			sm.addSkillName(skill);
-			activeChar.sendPacket(sm);
+			List<L2Effect> _musicList = new LinkedList<>();
+			List<L2Effect> _buffList = new LinkedList<>();
+			
+			for (L2Effect eff : effects)
+			{
+				// Just in case of NPE and remove effect if can't be stolen
+				if ((eff == null) || !eff.canBeStolen())
+				{
+					continue;
+				}
+				
+				if (!calcStealSuccess(activeChar, target, skill, power))
+				{
+					continue;
+				}
+				
+				// Only Dances/Songs.
+				if (eff.getSkill().isDance())
+				{
+					_musicList.add(eff);
+				}
+				else
+				{
+					_buffList.add(eff);
+				}
+			}
+			
+			// Reversing lists and adding to a new list
+			List<L2Effect> _effectList = new LinkedList<>();
+			Collections.reverse(_musicList);
+			Collections.reverse(_buffList);
+			_effectList.addAll(_musicList);
+			_effectList.addAll(_buffList);
+			
+			if (!randomizeList)
+			{
+				Collections.shuffle(_effectList);
+			}
+			
+			int negated = 0;
+			if (!_effectList.isEmpty())
+			{
+				for (L2Effect e : _effectList)
+				{
+					if (negated < negatedEffectCount)
+					{
+						negated++;
+						canceled.add(e);
+					}
+				}
+			}
 		}
 		
 		return canceled;
