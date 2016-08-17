@@ -93,7 +93,6 @@ public final class NpcHtmlMessage extends AbstractHtmlPacket
 		writeC(0x19);
 		
 		String html = getHtml();
-		GlobalImagesCache.getInstance().sendUsedImages(html, player);
 		
 		Matcher m = GlobalImagesCache.HTML_PATTERN.matcher(html);
 		while (m.find())
@@ -101,12 +100,9 @@ public final class NpcHtmlMessage extends AbstractHtmlPacket
 			String imageName = m.group(1);
 			int imageId = GlobalImagesCache.getInstance().getImageId(imageName);
 			html = html.replaceAll("%image:" + imageName + "%", "Crest.crest_" + Config.SERVER_ID + "_" + imageId);
-			byte[] image = GlobalImagesCache.getInstance().getImage(imageId);
-			if (image != null)
-			{
-				player.sendPacket(new PledgeCrest(imageId, image));
-			}
 		}
+		
+		GlobalImagesCache.getInstance().sendUsedImages(html, player);
 		
 		writeD(getNpcObjId());
 		writeS(html);
