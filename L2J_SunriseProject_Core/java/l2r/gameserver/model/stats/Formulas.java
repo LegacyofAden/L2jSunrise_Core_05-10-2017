@@ -2505,11 +2505,16 @@ public final class Formulas
 		List<L2Effect> canceled = new ArrayList<>();
 		
 		// Cancel for Abnormals.
-		if ((skill.getNegateAbnormals() != null) && calcStealSuccess(activeChar, target, skill, power))
+		if (skill.getNegateAbnormals() != null)
 		{
 			for (L2Effect eff : effects)
 			{
 				if (eff == null)
+				{
+					continue;
+				}
+				
+				if (!calcStealSuccess(activeChar, target, skill, power))
 				{
 					continue;
 				}
