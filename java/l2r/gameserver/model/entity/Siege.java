@@ -518,7 +518,7 @@ public class Siege implements Siegable
 			loadSiegeClan(); // Load siege clan from db
 			updatePlayerSiegeStateFlags(false);
 			teleportPlayer(Siege.TeleportWhoType.Attacker, TeleportWhereType.TOWN); // Teleport to the closest town
-			// teleportPlayer(Siege.TeleportWhoType.Spectator, MapRegionTable.TeleportWhereType.Town); // Teleport to the second closest town
+			teleportPlayer(Siege.TeleportWhoType.Spectator, TeleportWhereType.TOWN); // Teleport to the second closest town
 			_controlTowerCount = 0;
 			spawnControlTower(); // Spawn control tower
 			spawnFlameTower(); // Spawn control tower
