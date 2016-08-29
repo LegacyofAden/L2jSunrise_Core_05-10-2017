@@ -18,11 +18,11 @@
  */
 package l2r.gameserver.data;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import l2r.gameserver.model.actor.L2Summon;
@@ -143,11 +143,11 @@ public class SummonEffectsTable
 	}
 	
 	/** Pets **/
-	private final Map<Integer, List<SummonEffect>> _petEffects = new HashMap<>(); // key: petItemObjectId, value: Effects list
+	private final Map<Integer, List<SummonEffect>> _petEffects = new ConcurrentHashMap<>(); // key: petItemObjectId, value: Effects list
 	
 	public void addPetEffect(int controlObjectId, L2Skill skill, int effectCount, int effectTime)
 	{
-		_petEffects.computeIfAbsent(controlObjectId, k -> new ArrayList<>()).add(new SummonEffect(skill, effectCount, effectTime));
+		_petEffects.computeIfAbsent(controlObjectId, k -> new CopyOnWriteArrayList<>()).add(new SummonEffect(skill, effectCount, effectTime));
 	}
 	
 	public boolean containsPetId(int controlObjectId)
