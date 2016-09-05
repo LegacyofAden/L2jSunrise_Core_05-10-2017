@@ -2614,7 +2614,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			// Go through all L2Object that belong to its faction
 			for (L2Object obj : me.getKnownList().getKnownCharactersInRadius(factionRange))
 			{
-				if (!(obj instanceof L2Npc))
+				if (!(obj instanceof L2Npc) || (obj instanceof L2GuardInstance) || (obj instanceof L2FriendlyMobInstance))
 				{
 					continue;
 				}

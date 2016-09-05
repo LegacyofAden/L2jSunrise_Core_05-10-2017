@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -133,7 +134,7 @@ public final class L2ItemInstance extends L2Object
 	
 	/** Shadow item */
 	private int _mana = -1;
-	private boolean _consumingMana = false;
+	private Future<?> _consumingMana = null;
 	private static final int MANA_CONSUMPTION_RATE = 60000;
 	
 	/** Custom item types (used loto, race tickets) */
@@ -1264,6 +1265,12 @@ public final class L2ItemInstance extends L2Object
 				// decrease mana
 				if (_shadowItem != null)
 				{
+					if (!_shadowItem.isEquipped())
+					{
+						_shadowItem.stopManaConsumeTask();
+						return;
+					}
+					
 					_shadowItem.decreaseMana(true);
 				}
 			}
@@ -1331,9 +1338,10 @@ public final class L2ItemInstance extends L2Object
 		{
 			_storedInDb = false;
 		}
+		
 		if (resetConsumingMana)
 		{
-			_consumingMana = false;
+			stopManaConsumeTask();
 		}
 		
 		final L2PcInstance player = getActingPlayer();
@@ -1359,7 +1367,7 @@ public final class L2ItemInstance extends L2Object
 					break;
 			}
 			
-			if (_mana == 0) // The life time has expired
+			if (_mana <= 0) // The life time has expired
 			{
 				sm = SystemMessage.getSystemMessage(SystemMessageId.S1S_REMAINING_MANA_IS_NOW_0);
 				sm.addItemName(_item);
@@ -1392,7 +1400,6 @@ public final class L2ItemInstance extends L2Object
 					StatusUpdate su = new StatusUpdate(player);
 					su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
 					player.sendPacket(su);
-					
 				}
 				else
 				{
@@ -1405,7 +1412,7 @@ public final class L2ItemInstance extends L2Object
 			else
 			{
 				// Reschedule if still equipped
-				if (!_consumingMana && isEquipped())
+				if ((_consumingMana == null) && isEquipped())
 				{
 					scheduleConsumeManaTask();
 				}
@@ -1421,12 +1428,21 @@ public final class L2ItemInstance extends L2Object
 	
 	public void scheduleConsumeManaTask()
 	{
-		if (_consumingMana)
+		if (_consumingMana != null)
 		{
 			return;
 		}
-		_consumingMana = true;
-		ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleConsumeManaTask(this), MANA_CONSUMPTION_RATE);
+		
+		_consumingMana = ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleConsumeManaTask(this), MANA_CONSUMPTION_RATE);
+	}
+	
+	public void stopManaConsumeTask()
+	{
+		if (_consumingMana != null)
+		{
+			_consumingMana.cancel(true);
+			_consumingMana = null;
+		}
 	}
 	
 	/**
@@ -1593,6 +1609,11 @@ public final class L2ItemInstance extends L2Object
 		{
 			assert _itm.getWorldRegion() == null;
 			
+			if (Config.PATHFINDING > 0)
+			{
+				_z = GeoData.getInstance().getSpawnHeight(_x, _y, _z);
+			}
+			
 			if (_dropper != null)
 			{
 				Location dropDest = GeoData.getInstance().moveCheck(_dropper.getX(), _dropper.getY(), _dropper.getZ(), _x, _y, _z, _dropper.getInstanceId());
@@ -1601,33 +1622,12 @@ public final class L2ItemInstance extends L2Object
 				_z = dropDest.getZ();
 			}
 			
-			if (_dropper != null)
-			{
-				setInstanceId(_dropper.getInstanceId()); // Inherit instancezone when dropped in visible world
-			}
-			else
-			{
-				setInstanceId(0); // No dropper? Make it a global item...
-			}
+			setInstanceId(_dropper != null ? _dropper.getInstanceId() : 0); // Set item instance id
 			
-			synchronized (_itm)
-			{
-				// Set the x,y,z position of the L2ItemInstance dropped and update its _worldregion
-				_itm.setIsVisible(true);
-				_itm.setXYZ(_x, _y, _z);
-				_itm.setWorldRegion(L2World.getInstance().getRegion(getLocation()));
-				
-				// Add the L2ItemInstance dropped to _visibleObjects of its L2WorldRegion
-			}
-			
-			_itm.getWorldRegion().addVisibleObject(_itm);
-			_itm.setDropTime(System.currentTimeMillis());
+			_itm.setDropTime(System.currentTimeMillis()); // Set item drop time
 			_itm.setDropperObjectId(_dropper != null ? _dropper.getObjectId() : 0); // Set the dropper Id for the knownlist packets in sendInfo
+			_itm.spawnMe(_x, _y, _z); // Spawn item in world
 			
-			// this can synchronize on others instances, so it's out of
-			// synchronized, to avoid deadlocks
-			// Add the L2ItemInstance dropped in the world as a visible object
-			L2World.getInstance().addVisibleObject(_itm, _itm.getWorldRegion());
 			if (Config.SAVE_DROPPED_ITEM)
 			{
 				ItemsOnGroundManager.getInstance().save(_itm);
@@ -2262,4 +2262,6 @@ public final class L2ItemInstance extends L2Object
 			_lifeTimeTask = null;
 		}
 	}
+	
+	public boolean fromMob;
 }
