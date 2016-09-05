@@ -376,6 +376,12 @@ public abstract class Inventory extends ItemContainer
 				}
 			}
 			
+			// vGodFather: addon
+			if (item.isShadowItem())
+			{
+				item.stopManaConsumeTask();
+			}
+			
 			// Apply skill, if weapon have "skills on unequip"
 			L2Skill unequipSkill = it.getUnequipSkill();
 			if (unequipSkill != null)
