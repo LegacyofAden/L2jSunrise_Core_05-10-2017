@@ -617,4 +617,7 @@
 	<admin command="admin_startViewer" accessLevel="7"/>
 	<admin command="admin_stopViewer" accessLevel="7"/>
 	<admin command="admin_viewLog" accessLevel="7"/>
+
+	<!-- ADMIN COMMON COMMANDS -->
+	<admin command="admin_real_onlines" accessLevel="7" />
 </list>
