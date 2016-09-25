@@ -7777,25 +7777,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return 0;
 	}
 	
-	@Override
-	public final void setWorldRegion(L2WorldRegion value)
-	{
-		// confirm revalidation of old region's zones
-		if (getWorldRegion() != null)
-		{
-			if (value != null)
-			{
-				getWorldRegion().revalidateZones(this);
-			}
-			else
-			{
-				getWorldRegion().removeFromZones(this);
-			}
-		}
-		
-		super.setWorldRegion(value);
-	}
-	
 	private Future<?> _moveToPawnTask;
 	
 	public void moveToPawn(L2Character _actor, L2Character _followTarget, int _clientMovingToPawnOffset)

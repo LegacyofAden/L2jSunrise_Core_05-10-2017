@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.actor.L2Character;
-import l2r.gameserver.taskmanager.DecayTaskManager;
 import l2r.gameserver.util.Util;
 
 public class ObjectKnownList
@@ -41,7 +40,7 @@ public class ObjectKnownList
 	
 	public boolean addKnownObject(L2Object object)
 	{
-		if ((object == null) || DecayTaskManager._decayed.contains(object.getObjectId()))
+		if (object == null)
 		{
 			return false;
 		}
@@ -128,7 +127,7 @@ public class ObjectKnownList
 			{
 				for (L2Object object : surroundingRegion.getVisibleObjects().values())
 				{
-					if (object != getActiveObject())
+					if ((object != null) && (object != getActiveObject()))
 					{
 						addKnownObject(object);
 						if (object instanceof L2Character)
