@@ -21,6 +21,7 @@ package l2r.gameserver.model;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.enums.PcCondOverride;
@@ -672,9 +673,48 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 		return _worldRegion;
 	}
 	
-	public void setWorldRegion(L2WorldRegion value)
+	protected final ReentrantLock _lock = new ReentrantLock();
+	
+	public void setWorldRegion(L2WorldRegion newRegion)
 	{
-		_worldRegion = value;
+		final L2WorldRegion oldRegion = _worldRegion;
+		
+		if (oldRegion == newRegion)
+		{
+			return;
+		}
+		
+		_lock.lock();
+		try
+		{
+			if (oldRegion != null)
+			{
+				oldRegion.removeVisibleObject(this);
+				
+				if (this instanceof L2Character) // confirm revalidation of old region's zones
+				{
+					if (newRegion != null)
+					{
+						oldRegion.revalidateZones((L2Character) this); // at world region change
+					}
+					else
+					{
+						oldRegion.removeFromZones((L2Character) this); // at world region change
+					}
+				}
+			}
+			
+			_worldRegion = newRegion;
+			
+			if (newRegion != null)
+			{
+				newRegion.addVisibleObject(this);
+			}
+		}
+		finally
+		{
+			_lock.unlock();
+		}
 	}
 	
 	/**

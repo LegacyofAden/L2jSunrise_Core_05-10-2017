@@ -49,7 +49,6 @@ public class KnownListUpdateTaskManager
 	protected KnownListUpdateTaskManager()
 	{
 		ThreadPoolManager.getInstance().scheduleAiAtFixedRate(new KnownListUpdate(), 1000, Config.KNOWNLIST_UPDATE_INTERVAL);
-		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(() -> DecayTaskManager._decayed.clear(), 60 * 1000, 60 * 1000);
 	}
 	
 	private class KnownListUpdate implements Runnable
@@ -141,7 +140,7 @@ public class KnownListUpdateTaskManager
 					{
 						for (L2Object _object : regi.getVisibleObjects().values())
 						{
-							if (_object != object)
+							if ((_object != null) && (_object != object))
 							{
 								if ((_object instanceof L2Playable) || aggro || (isAttack(object) && isAttack(_object)))
 								{
