@@ -793,8 +793,22 @@ public class CharEffectList
 			{
 				if ((e != null) && (e.getSkill().getId() == newEffect.getSkill().getId()) && (e.getEffectType() == newEffect.getEffectType()) && (e.getAbnormalLvl() == newEffect.getAbnormalLvl()) && e.getAbnormalType().equals(newEffect.getAbnormalType()))
 				{
-					e.exit(); // exit this
+					stopSkillEffects(e.getSkill().getId());
 				}
+				
+				//@formatter:off
+				if (
+						(e != null)
+						&& !e.getAbnormalType().equals("none")
+						&& (e.getSkill().getId() != newEffect.getSkill().getId())
+						&& (e.getSkill().getSkillType() == L2SkillType.BUFF)
+						&& e.getAbnormalType().equals(newEffect.getAbnormalType())
+						&& (newEffect.getAbnormalLvl() >= e.getAbnormalLvl())
+					)
+				{
+					stopSkillEffects(e.getSkill().getId());
+				}
+				//@formatter:on
 			}
 			
 			// Remove first buff when buff list is full
@@ -814,7 +828,7 @@ public class CharEffectList
 							}
 							
 							// get first dance
-							e.exit();
+							stopSkillEffects(e.getSkill().getId());
 							effectsToRemove--;
 							if (effectsToRemove < 0)
 							{
@@ -835,8 +849,8 @@ public class CharEffectList
 								continue;
 							}
 							
-							// get first dance
-							e.exit();
+							// get first trigger
+							stopSkillEffects(e.getSkill().getId());
 							effectsToRemove--;
 							if (effectsToRemove < 0)
 							{
@@ -866,7 +880,7 @@ public class CharEffectList
 								
 								if (e.getSkill().getSkillType() == L2SkillType.BUFF)
 								{
-									e.exit();
+									stopSkillEffects(e.getSkill().getId());
 									effectsToRemove--;
 								}
 								else
