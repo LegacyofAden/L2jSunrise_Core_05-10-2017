@@ -1733,6 +1733,6 @@ public class L2CharacterAI extends AbstractAI
 		setTarget(object);
 		
 		// Move the actor to Location (x,y,z) server side AND client side by sending Server->Client packet CharMoveToLocation (broadcast)
-		moveTo(loc);
+		moveTo(loc, 20);
 	}
 }
