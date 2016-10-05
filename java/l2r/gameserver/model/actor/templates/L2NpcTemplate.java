@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
 import l2r.gameserver.data.sql.NpcTable;
+import l2r.gameserver.enums.AISkillScope;
 import l2r.gameserver.enums.AIType;
 import l2r.gameserver.enums.Race;
 import l2r.gameserver.enums.Sex;
@@ -698,7 +699,7 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	
 	public void addGeneralSkill(L2Skill skill)
 	{
-		getGeneralskills().add(skill);
+		_generalSkills.add(skill);
 	}
 	
 	public void addHealSkill(L2Skill skill)
@@ -959,5 +960,44 @@ public final class L2NpcTemplate extends L2CharTemplate implements IIdentifiable
 	public List<L2Skill> getUniversalSkills()
 	{
 		return _universalSkills;
+	}
+	
+	/**
+	 * @param aiSkillScope
+	 * @return
+	 */
+	public List<L2Skill> getAISkills(AISkillScope aiSkillScope)
+	{
+		switch (aiSkillScope)
+		{
+			case ATTACK:
+				return _atkSkills;
+			case BUFF:
+				return _buffSkills;
+			case COT:
+				return _cotSkills;
+			case DEBUFF:
+				return _debuffSkills;
+			case GENERAL:
+				return _generalSkills;
+			case HEAL:
+				return _healSkills;
+			case IMMOBILIZE:
+				return _immobilizeSkills;
+			case LONG_RANGE:
+				return _longRangeSkills;
+			case NEGATIVE:
+				return _negativeSkills;
+			case RES:
+				return _resSkills;
+			case SHORT_RANGE:
+				return _shortRangeSkills;
+			case SUICIDE:
+				return _suicideSkills;
+			case UNIVERSAL:
+				return _universalSkills;
+			default:
+				return null;
+		}
 	}
 }
