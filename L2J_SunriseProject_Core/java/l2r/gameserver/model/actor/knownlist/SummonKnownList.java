@@ -18,6 +18,7 @@
  */
 package l2r.gameserver.model.actor.knownlist;
 
+import l2r.Config;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Summon;
 
@@ -41,12 +42,12 @@ public class SummonKnownList extends PlayableKnownList
 		{
 			return 6000;
 		}
-		return 3000;
+		return Config.KNOWNBASE_DISTANCE_FORGET;
 	}
 	
 	@Override
 	public int getDistanceToWatchObject(L2Object object)
 	{
-		return 1500;
+		return Config.KNOWNBASE_DISTANCE_WATCH;
 	}
 }

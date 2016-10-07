@@ -23,7 +23,9 @@ import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2AirShipInstance;
+import l2r.gameserver.model.actor.instance.L2GrandBossInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
 import l2r.gameserver.network.serverpackets.DeleteObject;
 import l2r.gameserver.network.serverpackets.SpawnItem;
 
@@ -72,9 +74,9 @@ public class PcKnownList extends PlayableKnownList
 			return false;
 		}
 		
-		if (getActiveChar().getVarB("hideStores") && (object.isPlayer()))
+		if (getActiveChar().getVarB("hideStores") && (object != null) && (object.isPlayer()))
 		{
-			if (object.getActingPlayer().getClient().isDetached() || (object.getActingPlayer().isInStoreMode()))
+			if (object.getActingPlayer().isInOfflineMode() || (object.getActingPlayer().isInStoreMode()))
 			{
 				return false;
 			}
@@ -153,16 +155,6 @@ public class PcKnownList extends PlayableKnownList
 	@Override
 	public int getDistanceToForgetObject(L2Object object)
 	{
-		if (object.isVehicle())
-		{
-			return 10000;
-		}
-		
-		if (object.isRunner())
-		{
-			return 15000;
-		}
-		
 		// vGodFather addon
 		// forget distance should be +1000 in watch distance
 		if (object.getWatchDistance() > 0)
@@ -170,57 +162,69 @@ public class PcKnownList extends PlayableKnownList
 			return object.getWatchDistance() + 1000;
 		}
 		
-		// when knownlist grows, the distance to forget should be at least
-		// the same as the previous watch range, or it becomes possible that
-		// extra charinfo packets are being sent (watch-forget-watch-forget)
-		final int knownlistSize = getKnownObjects().size();
-		if (knownlistSize <= 25)
+		if (object.isVehicle())
 		{
-			return 4000;
+			return 10000;
 		}
-		if (knownlistSize <= 35)
+		
+		if (object.isRunner())
 		{
-			return 3500;
+			return 6000;
 		}
-		if (knownlistSize <= 70)
+		
+		if (object instanceof L2GrandBossInstance)
 		{
-			return 2910;
+			return 10000;
 		}
-		return 2310;
+		
+		if (object instanceof L2RaidBossInstance)
+		{
+			return 4500;
+		}
+		
+		if (getActiveChar().isFlying() || (object instanceof L2AirShipInstance))
+		{
+			return 8000;
+		}
+		
+		return Config.KNOWNBASE_DISTANCE_FORGET;
 	}
 	
 	@Override
 	public int getDistanceToWatchObject(L2Object object)
 	{
-		if (object.isVehicle())
-		{
-			return 9000;
-		}
-		
-		if (object.isRunner())
-		{
-			return 14000;
-		}
-		
 		// vGodFather addon
+		// forget distance should be +1000 in watch distance
 		if (object.getWatchDistance() > 0)
 		{
 			return object.getWatchDistance();
 		}
 		
-		final int knownlistSize = getKnownObjects().size();
-		if (knownlistSize <= 25)
+		if (object.isVehicle())
 		{
-			return 3400; // empty field
+			return 8000;
 		}
-		if (knownlistSize <= 35)
+		
+		if (object.isRunner())
 		{
-			return 2900;
+			return 5000;
 		}
-		if (knownlistSize <= 70)
+		
+		if (object instanceof L2GrandBossInstance)
 		{
-			return 2300;
+			return 8000;
 		}
-		return 1700; // Siege, TOI, city
+		
+		if (object instanceof L2RaidBossInstance)
+		{
+			return 4000;
+		}
+		
+		if (getActiveChar().isFlying() || (object instanceof L2AirShipInstance))
+		{
+			return 7000;
+		}
+		
+		return Config.KNOWNBASE_DISTANCE_WATCH;
 	}
 }

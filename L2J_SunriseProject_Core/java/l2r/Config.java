@@ -117,6 +117,7 @@ public final class Config
 	public static final String ID_CONFIG_FILE = "./config/main/IdFactory.ini";
 	public static final String INSTANCES_CONFIG_FILE = "./config/main/Instances.ini";
 	public static final String ITEM_MALL_CONFIG_FILE = "./config/main/ItemMall.ini";
+	public static final String KNOWNLIST_CONFIG_FILE = "./config/main/Knownlist.ini";
 	public static final String L2JMOD_CONFIG_FILE = "./config/main/L2JMods.ini";
 	public static final String NPC_CONFIG_FILE = "./config/main/NPC.ini";
 	public static final String OLYMPIAD_CONFIG_FILE = "./config/main/Olympiad.ini";
@@ -512,12 +513,6 @@ public final class Config
 	public static int MAX_NPC_ANIMATION;
 	public static int MIN_MONSTER_ANIMATION;
 	public static int MAX_MONSTER_ANIMATION;
-	public static boolean GRIDS_ALWAYS_ON;
-	public static int GRID_NEIGHBOR_TURNON_TIME;
-	public static int GRID_NEIGHBOR_TURNOFF_TIME;
-	
-	public static boolean MOVE_BASED_KNOWNLIST;
-	public static long KNOWNLIST_UPDATE_INTERVAL;
 	public static int PEACE_ZONE_MODE;
 	public static String DEFAULT_GLOBAL_CHAT;
 	public static String DEFAULT_TRADE_CHAT;
@@ -654,6 +649,17 @@ public final class Config
 	public static String[] BOTREPORT_RESETPOINT_HOUR;
 	public static long BOTREPORT_REPORT_DELAY;
 	public static boolean BOTREPORT_ALLOW_REPORTS_FROM_SAME_CLAN_MEMBERS;
+	
+	// --------------------------------------------------
+	// Knownlist Settings
+	// --------------------------------------------------
+	public static boolean GRIDS_ALWAYS_ON;
+	public static int GRID_NEIGHBOR_TURNON_TIME;
+	public static int GRID_NEIGHBOR_TURNOFF_TIME;
+	public static boolean MOVE_BASED_KNOWNLIST;
+	public static long KNOWNLIST_UPDATE_INTERVAL;
+	public static int KNOWNBASE_DISTANCE_WATCH;
+	public static int KNOWNBASE_DISTANCE_FORGET;
 	
 	// --------------------------------------------------
 	// Drops Settings
@@ -1914,12 +1920,6 @@ public final class Config
 			MAX_NPC_ANIMATION = General.getInt("MaxNPCAnimation", 20);
 			MIN_MONSTER_ANIMATION = General.getInt("MinMonsterAnimation", 5);
 			MAX_MONSTER_ANIMATION = General.getInt("MaxMonsterAnimation", 20);
-			MOVE_BASED_KNOWNLIST = General.getBoolean("MoveBasedKnownlist", false);
-			KNOWNLIST_UPDATE_INTERVAL = General.getLong("KnownListUpdateInterval", 1250);
-			GRIDS_ALWAYS_ON = General.getBoolean("GridsAlwaysOn", false);
-			GRID_NEIGHBOR_TURNON_TIME = General.getInt("GridNeighborTurnOnTime", 1);
-			GRID_NEIGHBOR_TURNOFF_TIME = General.getInt("GridNeighborTurnOffTime", 90);
-			
 			PEACE_ZONE_MODE = General.getInt("PeaceZoneMode", 0);
 			DEFAULT_GLOBAL_CHAT = General.getString("GlobalChat", "ON");
 			DEFAULT_TRADE_CHAT = General.getString("TradeChat", "ON");
@@ -2553,6 +2553,18 @@ public final class Config
 			{
 				_log.warn("Could not load HexID file (" + HEXID_FILE + "). Hopefully login will give us one.");
 			}
+			
+			// Knownlist settings
+			// Load KNOWNLIST_CONFIG_FILE L2Properties file (if exists)
+			final PropertiesParser knownlist = new PropertiesParser(KNOWNLIST_CONFIG_FILE);
+			
+			MOVE_BASED_KNOWNLIST = knownlist.getBoolean("MoveBasedKnownlist", false);
+			KNOWNLIST_UPDATE_INTERVAL = knownlist.getLong("KnownListUpdateInterval", 1250);
+			GRIDS_ALWAYS_ON = knownlist.getBoolean("GridsAlwaysOn", false);
+			GRID_NEIGHBOR_TURNON_TIME = knownlist.getInt("GridNeighborTurnOnTime", 1);
+			GRID_NEIGHBOR_TURNOFF_TIME = knownlist.getInt("GridNeighborTurnOffTime", 90);
+			KNOWNBASE_DISTANCE_WATCH = knownlist.getInt("KnownBaseWatchDistance", 2800);
+			KNOWNBASE_DISTANCE_FORGET = KNOWNBASE_DISTANCE_WATCH + 500;
 			
 			// Bosses
 			// Load ANTHARAS_CONFIG L2Properties file (if exists)
