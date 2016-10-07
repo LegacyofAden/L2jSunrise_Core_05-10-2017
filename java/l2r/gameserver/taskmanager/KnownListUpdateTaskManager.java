@@ -26,7 +26,6 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
-import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
@@ -156,7 +155,7 @@ public class KnownListUpdateTaskManager
 	
 	private boolean isAttack(L2Object object)
 	{
-		return (object instanceof L2Attackable) && (((L2Attackable) object).getTemplate().getClans() != null) && !((L2Attackable) object).getTemplate().getClans().isEmpty();
+		return object.isAttackable();
 	}
 	
 	public static KnownListUpdateTaskManager getInstance()

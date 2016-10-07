@@ -18,6 +18,7 @@
  */
 package l2r.gameserver.model.actor.knownlist;
 
+import l2r.Config;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.instance.L2DefenderInstance;
 import l2r.gameserver.model.actor.instance.L2StaticObjectInstance;
@@ -47,7 +48,7 @@ public class StaticObjectKnownList extends CharKnownList
 			return 0;
 		}
 		
-		return 4000;
+		return Config.KNOWNBASE_DISTANCE_FORGET;
 	}
 	
 	@Override
@@ -61,6 +62,6 @@ public class StaticObjectKnownList extends CharKnownList
 		{
 			return 0;
 		}
-		return 2000;
+		return Config.KNOWNBASE_DISTANCE_WATCH;
 	}
 }
