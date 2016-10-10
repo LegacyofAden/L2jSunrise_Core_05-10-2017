@@ -389,16 +389,8 @@ public class ServicesBBSManager extends BaseBBSManager
 		{
 			BoardsManager.getInstance().addBypass(activeChar, "Service Clean Pk", command);
 			content = HtmCache.getInstance().getHtm(activeChar.getHtmlPrefix(), "data/html/CommunityBoard/services/exclusiveShop_decreasePK.htm");
+			content = activeChar.getPkKills() > 0 ? content.replaceAll("%replace%", buttons(activeChar)) : content.replaceAll("%replace%", "<table width=750 height=20><tr><td align=center>You dont have PK Points to wash.</td></tr></table>");
 			separateAndSend(content, activeChar);
-			
-			if (activeChar.getPkKills() > 0)
-			{
-				content = content.replaceAll("%replace%", buttons(activeChar));
-			}
-			else
-			{
-				content = content.replaceAll("%replace%", "<table width=750 height=20><tr><td align=center>You dont have PK Points to wash.</td></tr></table>");
-			}
 		}
 		else if (command.startsWith(_servicesBBSCommand + "_deletePK"))
 		{
