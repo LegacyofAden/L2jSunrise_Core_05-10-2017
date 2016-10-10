@@ -656,6 +656,15 @@ public abstract class L2Summon extends L2Playable
 			return false;
 		}
 		
+		// vGodFather: missing summon skills checks
+		// Check if all casting conditions are completed
+		if (!skill.checkCondition(this, target, false))
+		{
+			// Send a Server->Client packet ActionFailed to the L2PcInstance
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
+		}
+		
 		// Check if the summon has enough MP
 		if (getCurrentMp() < (getStat().getMpConsume(skill) + getStat().getMpInitialConsume(skill)))
 		{
