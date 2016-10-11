@@ -5226,13 +5226,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			boolean isBow = ((weapon != null) && ((weapon.getItemType() == WeaponType.BOW) || (weapon.getItemType() == WeaponType.CROSSBOW)));
 			int reflectedDamage = 0;
 			
-			if (!isBow && !target.isInvul()) // Do not reflect if weapon is of type bow or target is invunlerable
+			if (!isBow && !target.isInvul()) // Do not reflect if weapon is of type bow or target is invulnerable
 			{
 				// quick fix for no drop from raid if boss attack high-level char with damage reflection
 				if (!target.isRaid() || (getActingPlayer() == null) || (getActingPlayer().getLevel() <= (target.getLevel() + 8)))
 				{
-					// Reduce HP of the target and calculate reflection damage to reduce HP of attacker if necessary
-					double reflectPercent = target.getStat().calcStat(Stats.REFLECT_DAMAGE_PERCENT, 0, null, null);
+					// vGodFather this will fix max reflect to 100%
+					double reflectPercent = Math.min(target.getStat().calcStat(Stats.REFLECT_DAMAGE_PERCENT, 0, null, null), 100);
 					
 					if (reflectPercent > 0)
 					{
