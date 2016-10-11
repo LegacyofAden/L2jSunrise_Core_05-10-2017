@@ -31,11 +31,16 @@ import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.templates.L2NpcTemplate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author NosBit
  */
 public final class DecayTaskManager
 {
+	protected static final Logger _log = LoggerFactory.getLogger(DecayTaskManager.class);
+	
 	private final ScheduledExecutorService _decayExecutor = Executors.newSingleThreadScheduledExecutor();
 	
 	protected final Map<L2Character, ScheduledFuture<?>> _decayTasks = new ConcurrentHashMap<>();
@@ -48,27 +53,35 @@ public final class DecayTaskManager
 	 */
 	public void add(L2Character character)
 	{
-		if (character == null)
+		try
 		{
-			return;
+			if (character == null)
+			{
+				return;
+			}
+			
+			long delay;
+			if (character.getTemplate() instanceof L2NpcTemplate)
+			{
+				delay = ((L2NpcTemplate) character.getTemplate()).getCorpseTime();
+			}
+			else
+			{
+				delay = Config.DEFAULT_CORPSE_TIME;
+			}
+			
+			if ((character instanceof L2Attackable) && (((L2Attackable) character).isSpoiled() || ((L2Attackable) character).isSeeded()))
+			{
+				delay += Config.SPOILED_CORPSE_EXTEND_TIME;
+			}
+			
+			add(character, delay, TimeUnit.SECONDS);
 		}
-		
-		long delay;
-		if (character.getTemplate() instanceof L2NpcTemplate)
+		catch (Exception e)
 		{
-			delay = ((L2NpcTemplate) character.getTemplate()).getCorpseTime();
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
 		}
-		else
-		{
-			delay = Config.DEFAULT_CORPSE_TIME;
-		}
-		
-		if ((character instanceof L2Attackable) && (((L2Attackable) character).isSpoiled() || ((L2Attackable) character).isSeeded()))
-		{
-			delay += Config.SPOILED_CORPSE_EXTEND_TIME;
-		}
-		
-		add(character, delay, TimeUnit.SECONDS);
 	}
 	
 	/**
@@ -81,21 +94,29 @@ public final class DecayTaskManager
 	 */
 	public void add(L2Character character, long delay, TimeUnit timeUnit)
 	{
-		ScheduledFuture<?> decayTask = _decayExecutor.schedule(new DecayTask(character), delay, TimeUnit.SECONDS);
-		
-		decayTask = _decayTasks.put(character, decayTask);
-		// if decay task already existed cancel it so we use the new time
-		if (decayTask != null)
+		try
 		{
-			if (!decayTask.cancel(false))
+			ScheduledFuture<?> decayTask = _decayExecutor.schedule(new DecayTask(character), delay, TimeUnit.SECONDS);
+			
+			decayTask = _decayTasks.put(character, decayTask);
+			// if decay task already existed cancel it so we use the new time
+			if (decayTask != null)
 			{
-				// old decay task was completed while canceling it remove and cancel the new one
-				decayTask = _decayTasks.remove(character);
-				if (decayTask != null)
+				if (!decayTask.cancel(false))
 				{
-					decayTask.cancel(false);
+					// old decay task was completed while canceling it remove and cancel the new one
+					decayTask = _decayTasks.remove(character);
+					if (decayTask != null)
+					{
+						decayTask.cancel(false);
+					}
 				}
 			}
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
 		}
 	}
 	
@@ -105,10 +126,18 @@ public final class DecayTaskManager
 	 */
 	public void cancel(L2Character character)
 	{
-		final ScheduledFuture<?> decayTask = _decayTasks.remove(character);
-		if (decayTask != null)
+		try
 		{
-			decayTask.cancel(false);
+			final ScheduledFuture<?> decayTask = _decayTasks.remove(character);
+			if (decayTask != null)
+			{
+				decayTask.cancel(false);
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
 		}
 	}
 	
@@ -119,10 +148,18 @@ public final class DecayTaskManager
 	 */
 	public long getRemainingTime(L2Character character)
 	{
-		final ScheduledFuture<?> decayTask = _decayTasks.get(character);
-		if (decayTask != null)
+		try
 		{
-			return decayTask.getDelay(TimeUnit.MILLISECONDS);
+			final ScheduledFuture<?> decayTask = _decayTasks.get(character);
+			if (decayTask != null)
+			{
+				return decayTask.getDelay(TimeUnit.MILLISECONDS);
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
 		}
 		
 		return Long.MAX_VALUE;
@@ -140,8 +177,16 @@ public final class DecayTaskManager
 		@Override
 		public void run()
 		{
-			_decayTasks.remove(_character);
-			_character.onDecay();
+			try
+			{
+				_decayTasks.remove(_character);
+				_character.onDecay();
+			}
+			catch (Exception e)
+			{
+				// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+				_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
+			}
 		}
 	}
 	
