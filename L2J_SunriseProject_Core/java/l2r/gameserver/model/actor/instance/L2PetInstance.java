@@ -660,7 +660,7 @@ public class L2PetInstance extends L2Summon
 		}
 		stopFeed();
 		sendPacket(SystemMessageId.MAKE_SURE_YOU_RESSURECT_YOUR_PET_WITHIN_24_HOURS);
-		DecayTaskManager.getInstance().addDecayTask(this, PET_DECAY_DELAY);
+		DecayTaskManager.getInstance().add(this, PET_DECAY_DELAY);
 		// do not decrease exp if is in duel, arena
 		L2PcInstance owner = getOwner();
 		if ((owner != null) && !owner.isInDuel() && (!isInsideZone(ZoneIdType.PVP) || isInsideZone(ZoneIdType.SIEGE)))
@@ -678,7 +678,7 @@ public class L2PetInstance extends L2Summon
 		super.doRevive();
 		
 		// stopDecay
-		DecayTaskManager.getInstance().cancelDecayTask(this);
+		DecayTaskManager.getInstance().cancel(this);
 		startFeed();
 		if (!isHungry())
 		{

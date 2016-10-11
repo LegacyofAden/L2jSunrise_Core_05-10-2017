@@ -18,6 +18,7 @@
  */
 package l2r.gameserver.taskmanager;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,7 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
+import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
@@ -37,7 +39,7 @@ public class KnownListUpdateTaskManager
 {
 	protected static final Logger _log = LoggerFactory.getLogger(KnownListUpdateTaskManager.class);
 	
-	private static final int FULL_UPDATE_TIMER = 5;
+	private static final int FULL_UPDATE_TIMER = 100;
 	protected static boolean updatePass = true;
 	
 	// Do full update every FULL_UPDATE_TIMER * KNOWNLIST_UPDATE_INTERVAL
@@ -106,7 +108,8 @@ public class KnownListUpdateTaskManager
 	
 	public void updateRegion(L2WorldRegion region, boolean fullUpdate, boolean forgetObjects)
 	{
-		for (L2Object object : region.getVisibleObjects().values()) // and for all members in region
+		Collection<L2Object> vObj = region.getVisibleObjects().values();
+		for (L2Object object : vObj) // and for all members in region
 		{
 			if ((object == null) || !object.isVisible() || (object.getKnownList() == null))
 			{
@@ -114,7 +117,7 @@ public class KnownListUpdateTaskManager
 			}
 			
 			// Some mobs need faster knownlist update
-			final boolean aggro = (Config.GUARD_ATTACK_AGGRO_MOB && (object instanceof L2GuardInstance));
+			final boolean aggro = ((Config.GUARD_ATTACK_AGGRO_MOB && (object instanceof L2GuardInstance)) || (object instanceof L2Attackable));
 			
 			if (forgetObjects)
 			{
@@ -124,25 +127,28 @@ public class KnownListUpdateTaskManager
 			
 			for (L2WorldRegion regi : region.getSurroundingRegions())
 			{
-				if (object instanceof L2Playable)
+				if ((object instanceof L2Playable) || (aggro && regi.isActive()) || fullUpdate)
 				{
-					for (L2Object _object : regi.getVisibleObjects().values())
+					Collection<L2Object> inrObj = regi.getVisibleObjects().values();
 					{
-						if ((_object != null) && (_object != object))
-						{
-							object.getKnownList().addKnownObject(_object);
-						}
-					}
-				}
-				else if ((object instanceof L2Character) || fullUpdate)
-				{
-					if (regi.isActive())
-					{
-						for (L2Object _object : regi.getVisibleObjects().values())
+						for (L2Object _object : inrObj)
 						{
 							if (_object != object)
 							{
-								if ((_object instanceof L2Playable) || aggro || (isAttack(object) && isAttack(_object)))
+								object.getKnownList().addKnownObject(_object);
+							}
+						}
+					}
+				}
+				else if (object instanceof L2Character)
+				{
+					if (regi.isActive())
+					{
+						Collection<L2Playable> inrPls = regi.getVisiblePlayable().values();
+						{
+							for (L2Object _object : inrPls)
+							{
+								if (_object != object)
 								{
 									object.getKnownList().addKnownObject(_object);
 								}
@@ -152,11 +158,6 @@ public class KnownListUpdateTaskManager
 				}
 			}
 		}
-	}
-	
-	private boolean isAttack(L2Object object)
-	{
-		return object.isAttackable();
 	}
 	
 	public static KnownListUpdateTaskManager getInstance()

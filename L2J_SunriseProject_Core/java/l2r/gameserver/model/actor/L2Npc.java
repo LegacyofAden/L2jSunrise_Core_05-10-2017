@@ -1325,7 +1325,7 @@ public class L2Npc extends L2Character
 		final L2Weapon weapon = (killer != null) ? killer.getActiveWeaponItem() : null;
 		_killingBlowWeaponId = (weapon != null) ? weapon.getId() : 0;
 		
-		DecayTaskManager.getInstance().addDecayTask(this);
+		DecayTaskManager.getInstance().add(this);
 		return true;
 	}
 	
@@ -1490,7 +1490,7 @@ public class L2Npc extends L2Character
 	{
 		if (!isDecayed())
 		{
-			DecayTaskManager.getInstance().cancelDecayTask(this);
+			DecayTaskManager.getInstance().cancel(this);
 			onDecay();
 		}
 	}

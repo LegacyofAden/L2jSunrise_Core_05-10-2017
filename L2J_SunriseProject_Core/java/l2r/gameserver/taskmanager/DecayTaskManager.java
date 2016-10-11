@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2015 L2J Server
+ * Copyright (C) 2004-2016 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -19,10 +19,14 @@
 package l2r.gameserver.taskmanager;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import l2r.Config;
-import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
 
@@ -30,72 +34,162 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author la2 Lets drink to code!
+ * @author NosBit
  */
-public class DecayTaskManager
+public final class DecayTaskManager
 {
 	protected static final Logger _log = LoggerFactory.getLogger(DecayTaskManager.class);
 	
-	protected final Map<L2Character, Long> _decayTasks = new ConcurrentHashMap<>();
+	private final ScheduledExecutorService _decayExecutor = Executors.newSingleThreadScheduledExecutor();
 	
-	protected DecayTaskManager()
+	protected final Map<L2Character, ScheduledFuture<?>> _decayTasks = new ConcurrentHashMap<>();
+	
+	public void add(L2Character character, long delay)
 	{
-		ThreadPoolManager.getInstance().scheduleAiAtFixedRate(new DecayScheduler(), 10000, Config.DECAY_TIME_TASK);
+		add(character, delay, TimeUnit.MILLISECONDS);
 	}
 	
-	public static DecayTaskManager getInstance()
+	/**
+	 * Adds a decay task for the specified character.<br>
+	 * <br>
+	 * If the decay task already exists it cancels it and re-adds it.
+	 * @param character the character
+	 */
+	public void add(L2Character character)
 	{
-		return SingletonHolder._instance;
+		try
+		{
+			if (character == null)
+			{
+				return;
+			}
+			
+			long delay;
+			if (character.isRaid() && !character.isRaidMinion())
+			{
+				delay = Config.RAID_BOSS_DECAY_TIME;
+			}
+			else
+			{
+				delay = Config.DEFAULT_CORPSE_TIME;
+			}
+			
+			if ((character instanceof L2Attackable) && (((L2Attackable) character).isSpoiled() || ((L2Attackable) character).isSeeded()))
+			{
+				delay += Config.SPOILED_CORPSE_EXTEND_TIME;
+			}
+			
+			add(character, delay, TimeUnit.SECONDS);
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
+		}
 	}
 	
-	public void addDecayTask(L2Character actor)
+	/**
+	 * Adds a decay task for the specified character.<br>
+	 * <br>
+	 * If the decay task already exists it cancels it and re-adds it.
+	 * @param character the character
+	 * @param delay the delay
+	 * @param timeUnit the time unit of the delay parameter
+	 */
+	public void add(L2Character character, long delay, TimeUnit timeUnit)
 	{
-		addDecayTask(actor, 0);
+		try
+		{
+			ScheduledFuture<?> decayTask = _decayExecutor.schedule(new DecayTask(character), delay, TimeUnit.SECONDS);
+			
+			decayTask = _decayTasks.put(character, decayTask);
+			// if decay task already existed cancel it so we use the new time
+			if (decayTask != null)
+			{
+				if (!decayTask.cancel(false))
+				{
+					// old decay task was completed while canceling it remove and cancel the new one
+					decayTask = _decayTasks.remove(character);
+					if (decayTask != null)
+					{
+						decayTask.cancel(false);
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
+		}
 	}
 	
-	public void addDecayTask(L2Character actor, int interval)
+	/**
+	 * Cancels the decay task of the specified character.
+	 * @param character the character
+	 */
+	public void cancel(L2Character character)
 	{
-		_decayTasks.put(actor, System.currentTimeMillis() + interval);
+		try
+		{
+			final ScheduledFuture<?> decayTask = _decayTasks.remove(character);
+			if (decayTask != null)
+			{
+				decayTask.cancel(false);
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
+		}
 	}
 	
-	public void cancelDecayTask(L2Character actor)
+	/**
+	 * Gets the remaining time of the specified character's decay task.
+	 * @param character the character
+	 * @return if a decay task exists the remaining time, {@code Long.MAX_VALUE} otherwise
+	 */
+	public long getRemainingTime(L2Character character)
 	{
-		_decayTasks.remove(actor);
+		try
+		{
+			final ScheduledFuture<?> decayTask = _decayTasks.get(character);
+			if (decayTask != null)
+			{
+				return decayTask.getDelay(TimeUnit.MILLISECONDS);
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+			_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
+		}
+		
+		return Long.MAX_VALUE;
 	}
 	
-	protected class DecayScheduler implements Runnable
+	private class DecayTask implements Runnable
 	{
+		private final L2Character _character;
+		
+		protected DecayTask(L2Character character)
+		{
+			_character = character;
+		}
+		
 		@Override
 		public void run()
 		{
-			final long current = System.currentTimeMillis();
-			L2Character actor;
-			Long next;
-			int delay;
-			
-			for (Map.Entry<L2Character, Long> entry : _decayTasks.entrySet())
+			try
 			{
-				actor = entry.getKey();
-				next = entry.getValue();
-				
-				if (actor.isRaid() && !actor.isRaidMinion())
-				{
-					delay = Config.RAID_BOSS_DECAY_TIME;
-				}
-				else if ((actor instanceof L2Attackable) && (((L2Attackable) actor).isSpoiled() || ((L2Attackable) actor).isSeeded()))
-				{
-					delay = Config.SPOILED_DECAY_TIME;
-				}
-				else
-				{
-					delay = Config.NPC_DECAY_TIME;
-				}
-				
-				if ((current - next) > delay)
-				{
-					actor.onDecay();
-					_decayTasks.remove(actor);
-				}
+				_decayTasks.remove(_character);
+				_character.onDecay();
+			}
+			catch (Exception e)
+			{
+				// TODO: Find out the reason for exception. Unless caught here, mob decay would stop.
+				_log.warn("Error in DecayScheduler: " + e.getMessage(), e);
 			}
 		}
 	}
@@ -112,15 +206,14 @@ public class DecayTaskManager
 		ret.append("Tasks dump:");
 		ret.append(Config.EOL);
 		
-		Long current = System.currentTimeMillis();
-		for (L2Character actor : _decayTasks.keySet())
+		for (Entry<L2Character, ScheduledFuture<?>> entry : _decayTasks.entrySet())
 		{
 			ret.append("Class/Name: ");
-			ret.append(actor.getClass().getSimpleName());
+			ret.append(entry.getKey().getClass().getSimpleName());
 			ret.append('/');
-			ret.append(actor.getName());
+			ret.append(entry.getKey().getName());
 			ret.append(" decay timer: ");
-			ret.append(current - _decayTasks.get(actor));
+			ret.append(entry.getValue().getDelay(TimeUnit.MILLISECONDS));
 			ret.append(Config.EOL);
 		}
 		
@@ -131,9 +224,14 @@ public class DecayTaskManager
 	 * <u><b><font color="FF0000">Read only</font></b></u>
 	 * @return
 	 */
-	public Map<L2Character, Long> getTasks()
+	public Map<L2Character, ScheduledFuture<?>> getTasks()
 	{
 		return _decayTasks;
+	}
+	
+	public static DecayTaskManager getInstance()
+	{
+		return SingletonHolder._instance;
 	}
 	
 	private static class SingletonHolder
