@@ -364,7 +364,8 @@ public final class L2World
 		// And removes the object from their known lists.
 		for (L2WorldRegion worldRegion : oldWorldRegion.getSurroundingRegions())
 		{
-			for (L2Object obj : worldRegion.getVisibleObjects().values())
+			Collection<L2Object> vObj = worldRegion.getVisibleObjects().values();
+			for (L2Object obj : vObj)
 			{
 				if (obj != null)
 				{
