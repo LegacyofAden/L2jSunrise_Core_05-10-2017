@@ -508,6 +508,7 @@ public class Auction
 			_bidders.remove(_highestBidderId);
 			Clan.setAuctionBiddedAt(0, true);
 			removeBids();
+			ClanHallManager.getInstance().setFree(_itemId);
 			ClanHallManager.getInstance().setOwner(_itemId, Clan);
 		}
 		else
