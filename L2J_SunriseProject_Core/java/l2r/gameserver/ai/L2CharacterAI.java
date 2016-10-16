@@ -1077,19 +1077,19 @@ public class L2CharacterAI extends AbstractAI
 			return false; // skill radius -1
 		}
 		
-		offset += _actor.isPlayer() && target.isDoor() ? _actor.getTemplate().getCollisionRadius() / 2 : _actor.getTemplate().getCollisionRadius();
+		offset += _actor.getTemplate().getCollisionRadius() / 2;
 		if (target instanceof L2Character)
 		{
 			offset += ((L2Character) target).getTemplate().getCollisionRadius();
 		}
 		
 		final boolean needToMove;
+		int xPoint = 0;
+		int yPoint = 0;
 		
 		if (target.isDoor())
 		{
 			L2DoorInstance dor = (L2DoorInstance) target;
-			int xPoint = 0;
-			int yPoint = 0;
 			for (int i : dor.getTemplate().getNodeX())
 			{
 				xPoint += i;
@@ -1157,17 +1157,12 @@ public class L2CharacterAI extends AbstractAI
 				{
 					offset -= 100;
 				}
-				if (offset < 5)
-				{
-					offset = 5;
-				}
 				
-				startFollow((L2Character) target, offset);
+				startFollow((L2Character) target, Math.max(offset, 5));
 			}
-			else
+			else if (target instanceof L2DoorInstance)
 			{
-				// Move the actor to Pawn server side AND client side by sending Server->Client packet MoveToPawn (broadcast)
-				moveToPawn(target, offset);
+				moveTo(xPoint, yPoint, ((L2DoorInstance) target).getTemplate().getNodeZ(), Math.max(offset, 5));
 			}
 			return true;
 		}
