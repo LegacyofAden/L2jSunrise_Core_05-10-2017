@@ -41,7 +41,7 @@ public class ConditionPlayerCallPc extends Condition
 	{
 		boolean canCallPlayer = true;
 		final L2PcInstance player = env.getPlayer();
-		if (player == null)
+		if ((player == null) || player.isInsideZone(ZoneIdType.SIEGE))
 		{
 			canCallPlayer = false;
 		}
