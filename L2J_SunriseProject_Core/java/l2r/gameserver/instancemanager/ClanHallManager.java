@@ -167,10 +167,17 @@ public final class ClanHallManager
 	 */
 	public final synchronized void setFree(int chId)
 	{
-		_freeClanHall.put(chId, _clanHall.get(chId));
-		ClanTable.getInstance().getClan(_freeClanHall.get(chId).getOwnerId()).setHideoutId(0);
-		_freeClanHall.get(chId).free();
-		_clanHall.remove(chId);
+		try
+		{
+			_freeClanHall.put(chId, _clanHall.get(chId));
+			ClanTable.getInstance().getClan(_freeClanHall.get(chId).getOwnerId()).setHideoutId(0);
+			_freeClanHall.get(chId).free();
+			_clanHall.remove(chId);
+		}
+		catch (Exception e)
+		{
+			// TODO: handle it better if owner is npc and auction ends
+		}
 	}
 	
 	/**
