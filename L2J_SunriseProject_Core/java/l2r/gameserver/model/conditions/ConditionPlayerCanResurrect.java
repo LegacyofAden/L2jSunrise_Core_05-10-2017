@@ -18,7 +18,6 @@
  */
 package l2r.gameserver.model.conditions;
 
-import l2r.gameserver.enums.ZoneIdType;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
@@ -52,7 +51,7 @@ public class ConditionPlayerCanResurrect extends Condition
 		{
 			return true;
 		}
-		if ((effected == null) || effected.isInsideZone(ZoneIdType.SIEGE))
+		if (effected == null)
 		{
 			return false;
 		}
