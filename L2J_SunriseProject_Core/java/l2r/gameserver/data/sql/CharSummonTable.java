@@ -234,7 +234,7 @@ public class CharSummonTable
 	
 	public void restorePet(L2PcInstance activeChar)
 	{
-		L2ItemInstance item = activeChar.getInventory().getItemByObjectId(_pets.get(activeChar.getObjectId()));
+		L2ItemInstance item = activeChar.getInventory().getItemByObjectId(_pets.remove(activeChar.getObjectId()));
 		if (item == null)
 		{
 			return;
