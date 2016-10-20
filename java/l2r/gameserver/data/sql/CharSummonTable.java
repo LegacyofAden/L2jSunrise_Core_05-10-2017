@@ -123,7 +123,7 @@ public class CharSummonTable
 	
 	public void restorePet(L2PcInstance activeChar)
 	{
-		final L2ItemInstance item = activeChar.getInventory().getItemByObjectId(_pets.get(activeChar.getObjectId()));
+		final L2ItemInstance item = activeChar.getInventory().getItemByObjectId(_pets.remove(activeChar.getObjectId()));
 		if (item == null)
 		{
 			LOGGER.warn(getClass().getSimpleName() + ": Null pet summoning item for: " + activeChar);

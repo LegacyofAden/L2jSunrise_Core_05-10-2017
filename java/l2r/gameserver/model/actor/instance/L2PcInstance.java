@@ -11222,16 +11222,19 @@ public final class L2PcInstance extends L2Playable
 		if (isSpawnProtected())
 		{
 			sendPacket(SystemMessageId.YOU_ARE_NO_LONGER_PROTECTED_FROM_AGGRESSIVE_MONSTERS);
-			
-			if (Config.RESTORE_SERVITOR_ON_RECONNECT && !hasSummon() && CharSummonTable.getInstance().getServitors().containsKey(getObjectId()))
-			{
-				CharSummonTable.getInstance().restoreServitor(this);
-			}
-			if (Config.RESTORE_PET_ON_RECONNECT && !hasSummon() && CharSummonTable.getInstance().getPets().containsKey(getObjectId()))
-			{
-				CharSummonTable.getInstance().restorePet(this);
-			}
 		}
+		
+		// vGodFather: remove those checks outside of spawn protection check
+		// if spawn protection is disabled(0) and char restart with pet it will bug it
+		if (Config.RESTORE_SERVITOR_ON_RECONNECT && !hasSummon() && CharSummonTable.getInstance().getServitors().containsKey(getObjectId()))
+		{
+			CharSummonTable.getInstance().restoreServitor(this);
+		}
+		if (Config.RESTORE_PET_ON_RECONNECT && !hasSummon() && CharSummonTable.getInstance().getPets().containsKey(getObjectId()))
+		{
+			CharSummonTable.getInstance().restorePet(this);
+		}
+		
 		if (isTeleportProtected())
 		{
 			sendMessage("Teleport spawn protection ended.");
