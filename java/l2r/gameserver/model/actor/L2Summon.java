@@ -1004,7 +1004,7 @@ public abstract class L2Summon extends L2Playable
 		if ((getOwner() != null) && (getOwner().getTarget() != null))
 		{
 			final L2Object target = getOwner().getTarget();
-			if (!target.canBeAttacked() && !getOwner().getAccessLevel().allowPeaceAttack())
+			if (!target.isAutoAttackable(getOwner()) && !getOwner().getAccessLevel().allowPeaceAttack())
 			{
 				getOwner().sendPacket(ActionFailed.STATIC_PACKET);
 				return;
@@ -1045,6 +1045,13 @@ public abstract class L2Summon extends L2Playable
 		{
 			sendPacket(SystemMessageId.PET_REFUSING_ORDER);
 			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
+		}
+		
+		if ((getOwner().getTarget() != null) && !getOwner().getTarget().isAutoAttackable(getOwner()) && !getOwner().getAccessLevel().allowPeaceAttack())
+		{
+			getAI().setIntention(CtrlIntention.AI_INTENTION_FOLLOW, target);
+			getOwner().sendPacket(ActionFailed.STATIC_PACKET);
 			return false;
 		}
 		

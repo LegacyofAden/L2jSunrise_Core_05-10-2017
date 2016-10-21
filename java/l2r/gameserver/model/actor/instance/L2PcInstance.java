@@ -11221,7 +11221,14 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (isSpawnProtected())
 		{
+			setProtection(false);
 			sendPacket(SystemMessageId.YOU_ARE_NO_LONGER_PROTECTED_FROM_AGGRESSIVE_MONSTERS);
+		}
+		
+		if (isTeleportProtected())
+		{
+			setTeleportProtection(false);
+			sendMessage("Teleport spawn protection ended.");
 		}
 		
 		// vGodFather: remove those checks outside of spawn protection check
@@ -11235,13 +11242,11 @@ public final class L2PcInstance extends L2Playable
 			CharSummonTable.getInstance().restorePet(this);
 		}
 		
-		if (isTeleportProtected())
+		// vGodFather: action for events if there is one
+		if (getEventInfo().isInEvent())
 		{
-			sendMessage("Teleport spawn protection ended.");
+			getEventInfo().onAction();
 		}
-		getEventInfo().onAction();
-		setProtection(false);
-		setTeleportProtection(false);
 	}
 	
 	/**
