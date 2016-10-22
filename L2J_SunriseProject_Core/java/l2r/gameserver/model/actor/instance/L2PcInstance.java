@@ -5908,7 +5908,7 @@ public final class L2PcInstance extends L2Playable
 		if (getExpBeforeDeath() > 0)
 		{
 			// Restore the specified % of lost experience.
-			getStat().addExp(Math.round(((getExpBeforeDeath() - getExp()) * restorePercent) / 100));
+			getStat().addExp(Math.round(((getExpBeforeDeath() - getExp()) * restorePercent) / 100), true);
 			setExpBeforeDeath(0);
 		}
 	}
@@ -5999,7 +5999,7 @@ public final class L2PcInstance extends L2Playable
 		// Set the new Experience value of the L2PcInstance
 		if (decreaseExp)
 		{
-			getStat().addExp(-lostExp);
+			getStat().removeExp(lostExp);
 		}
 		else
 		{
@@ -8162,8 +8162,8 @@ public final class L2PcInstance extends L2Playable
 	/**
 	 * Verifies if the player is in offline mode.<br>
 	 * The offline mode may happen for different reasons:<br>
-	 * Abnormally: Player gets abrouptaly disconnected from server.<br>
-	 * Normally: The player gets into offline shop mode, only avaiable by enabling the offline shop mod.
+	 * Abnormally: Player gets abnormally disconnected from server.<br>
+	 * Normally: The player gets into offline shop mode, only available by enabling the offline shop mod.
 	 * @return {@code true} if the player is in offline mode, {@code false} otherwise
 	 */
 	public boolean isInOfflineMode()
@@ -8306,7 +8306,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		catch (Exception e)
 		{
-			// _log.warn("Error could not store char skills: " + e.getMessage(), e);
+			_log.warn("Error could not store char skills: " + e.getMessage(), e);
 		}
 	}
 	
@@ -10670,6 +10670,11 @@ public final class L2PcInstance extends L2Playable
 		return _classIndex;
 	}
 	
+	public boolean isMainClass()
+	{
+		return getBaseClass() == getActiveClass();
+	}
+	
 	private void setClassTemplate(int classId)
 	{
 		_activeClass = classId;
@@ -11145,7 +11150,7 @@ public final class L2PcInstance extends L2Playable
 			}
 			ConfirmDlg dlg = new ConfirmDlg(SystemMessageId.RESURRECTION_REQUEST_BY_C1_FOR_S2_XP.getId());
 			dlg.addPcName(reviver);
-			dlg.addString(Integer.toString(restoreExp));
+			dlg.addString(String.valueOf(Math.abs(restoreExp)));
 			sendPacket(dlg);
 		}
 	}
@@ -12944,7 +12949,6 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (killer == null)
 		{
-			_log.warn(this + " called calculateDeathPenaltyBuffLevel with killer null!");
 			return;
 		}
 		

@@ -106,6 +106,11 @@ public class PcStat extends PlayableStat
 	@Override
 	public boolean addExp(long value)
 	{
+		return addExp(value, false);
+	}
+	
+	public boolean addExp(long exp, boolean isRessurect)
+	{
 		L2PcInstance activeChar = getActiveChar();
 		
 		// Allowed to gain exp?
@@ -114,14 +119,29 @@ public class PcStat extends PlayableStat
 			return false;
 		}
 		
-		if (!super.addExp(value))
+		// Exp from resurrect don't remove karma
+		if (!super.addExp(exp))
 		{
 			return false;
 		}
 		
-		decreaseKarma(value);
+		if (!isRessurect)
+		{
+			decreaseKarma(exp);
+		}
 		
 		activeChar.sendUserInfo(true);
+		return true;
+	}
+	
+	@Override
+	public boolean removeExp(long exp)
+	{
+		if (!super.removeExp(exp))
+		{
+			return false;
+		}
+		decreaseKarma(exp);
 		return true;
 	}
 	
@@ -772,7 +792,7 @@ public class PcStat extends PlayableStat
 	
 	public synchronized void updateVitalityPoints(float points, boolean useRates, boolean quiet)
 	{
-		if ((points == 0) || !Config.ENABLE_VITALITY || ((Config.FREE_VITALITY_TILL_LEVEL > 0) && (getActiveChar().getLevel() < Config.FREE_VITALITY_TILL_LEVEL)))
+		if ((points == 0) || !Config.ENABLE_VITALITY || ((Config.FREE_VITALITY_TILL_LEVEL > 0) && getActiveChar().isMainClass() && (getActiveChar().getLevel() < Config.FREE_VITALITY_TILL_LEVEL)))
 		{
 			return;
 		}
@@ -869,7 +889,7 @@ public class PcStat extends PlayableStat
 			return 4;
 		}
 		
-		if ((Config.FREE_VITALITY_TILL_LEVEL > 0) && (getActiveChar().getLevel() < Config.FREE_VITALITY_TILL_LEVEL))
+		if ((Config.FREE_VITALITY_TILL_LEVEL > 0) && getActiveChar().isMainClass() && (getActiveChar().getLevel() < Config.FREE_VITALITY_TILL_LEVEL))
 		{
 			return 4;
 		}
