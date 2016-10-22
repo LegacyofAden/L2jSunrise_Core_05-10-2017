@@ -4607,20 +4607,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		// Check if a movement offset is defined or no distance to go through
 		if ((offset > 0) || (distance < 1))
 		{
-			// approximation for moving closer when z coordinates are different
-			// TODO: handle Z axis movement better
-			offset -= Math.abs(dz);
-			if (offset < 5)
-			{
-				offset = 5;
-			}
-			
 			// If no distance to go through, the movement is canceled
 			if ((distance < 1) || ((distance - offset) <= 0))
 			{
 				// Notify the AI that the L2Character is arrived at destination
 				getAI().notifyEvent(CtrlEvent.EVT_ARRIVED);
-				
 				return;
 			}
 			// Calculate movement angles needed
@@ -4728,31 +4719,18 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				// Path calculation
 				// Overrides previous movement check
-				if ((isPlayable() && !isInVehicle) || isMinion() || isInCombat())
+				if ((isPlayable() && !isInVehicle) || isMinion() || isInCombat() || isWalker())
 				{
 					m.geoPath = PathFinding.getInstance().findPath(curX, curY, curZ, originalX, originalY, originalZ, getInstanceId(), isPlayable());
 					if ((m.geoPath == null) || (m.geoPath.size() < 2)) // No path found
 					{
-						// Even though there's no path found (remember geonodes aren't perfect),
-						// the mob is attacking and right now we set it so that the mob will go
-						// after target anyway, is dz is small enough.
-						// With cellpathfinding this approach could be changed but would require taking
-						// off the geonodes and some more checks.
-						// Summons will follow their masters no matter what.
-						// Currently minions also must move freely since L2AttackableAI commands
-						// them to move along with their leader
-						if (isPlayer() || (!isPlayable() && !isMinion() && (Math.abs(z - curZ) > 140)) || (isSummon() && !((L2Summon) this).getFollowStatus()))
+						if (!GeoData.getInstance().canMove(curX, curY, curZ, x, y, z, getInstanceId()))
 						{
-							final Location destination = GeoData.getInstance().moveCheck(curX, curY, curZ, originalX, originalY, originalZ, getInstanceId());
-							getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, destination);
-							return;
+							Location destiny = GeoData.getInstance().moveCheck(curX, curY, curZ, x, y, z, getInstanceId());
+							x = destiny.getX();
+							y = destiny.getY();
+							z = destiny.getZ();
 						}
-						
-						m.disregardingGeodata = true;
-						x = originalX;
-						y = originalY;
-						z = originalZ;
-						distance = originalDistance;
 					}
 					else
 					{
