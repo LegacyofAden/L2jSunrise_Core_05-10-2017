@@ -271,6 +271,11 @@ public final class Env
 		_value *= value;
 	}
 	
+	public void mulBaseValue(double value)
+	{
+		_value *= value;
+	}
+	
 	public void divValue(double value)
 	{
 		_value /= value;

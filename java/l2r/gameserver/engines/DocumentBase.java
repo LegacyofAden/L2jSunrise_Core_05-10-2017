@@ -250,6 +250,7 @@ public abstract class DocumentBase
 				case "share":
 				case "enchant":
 				case "enchanthp":
+				case "basemul":
 				{
 					attachFunc(n, template, name, condition);
 				}
