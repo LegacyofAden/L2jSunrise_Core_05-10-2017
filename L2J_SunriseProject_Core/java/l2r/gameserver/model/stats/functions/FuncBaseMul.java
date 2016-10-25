@@ -16,39 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.enums;
+package l2r.gameserver.model.stats.functions;
 
-/**
- * @author GodFather
- */
-public enum StatFunction
+import l2r.gameserver.model.conditions.Condition;
+import l2r.gameserver.model.stats.Env;
+import l2r.gameserver.model.stats.Stats;
+
+public class FuncBaseMul extends AbstractFunction
 {
-	ADD("Add", 30),
-	DIV("Div", 20),
-	ENCHANT("Enchant", 0),
-	ENCHANTHP("EnchantHp", 40),
-	MUL("Mul", 20),
-	SET("Set", 0),
-	SHARE("Share", 30),
-	SUB("Sub", 30),
-	BASEMUL("BaseMul", 20),;
-	
-	String _name;
-	int _order;
-	
-	StatFunction(String name, int order)
+	public FuncBaseMul(Stats pStat, int pOrder, Object owner, Lambda lambda, Condition applayCond)
 	{
-		_name = name;
-		_order = order;
+		super(pStat, pOrder, owner, lambda, applayCond);
 	}
 	
-	public String getName()
+	@Override
+	public void calc(Env env)
 	{
-		return _name;
-	}
-	
-	public int getOrder()
-	{
-		return _order;
+		if ((getApplayCond() == null) || getApplayCond().test(env))
+		{
+			env.addValue(env.getBaseValue() * getLambda().calc(env));
+		}
 	}
 }

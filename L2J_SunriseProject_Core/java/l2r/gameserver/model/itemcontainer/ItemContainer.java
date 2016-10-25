@@ -35,6 +35,8 @@ import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
+import l2r.gameserver.network.serverpackets.InventoryUpdate;
+import l2r.gameserver.network.serverpackets.ItemList;
 
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
@@ -306,6 +308,18 @@ public abstract class ItemContainer
 			{
 				item.updateDatabase();
 			}
+			
+			// Send inventory update packet
+			if (!Config.FORCE_INVENTORY_UPDATE)
+			{
+				InventoryUpdate playerIU = new InventoryUpdate();
+				playerIU.addItem(item);
+				actor.sendPacket(playerIU);
+			}
+			else
+			{
+				actor.sendPacket(new ItemList(actor, false));
+			}
 		}
 		// If item hasn't be found in inventory, create new one
 		else
@@ -334,6 +348,18 @@ public abstract class ItemContainer
 				if (template.isStackable() || !Config.MULTIPLE_ITEM_DROP)
 				{
 					break;
+				}
+				
+				// Send inventory update packet
+				if (!Config.FORCE_INVENTORY_UPDATE)
+				{
+					InventoryUpdate playerIU = new InventoryUpdate();
+					playerIU.addItem(item);
+					actor.sendPacket(playerIU);
+				}
+				else
+				{
+					actor.sendPacket(new ItemList(actor, false));
 				}
 			}
 		}

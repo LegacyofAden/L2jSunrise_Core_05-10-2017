@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.ItemLocation;
@@ -39,7 +38,6 @@ import l2r.gameserver.model.events.impl.character.player.inventory.OnPlayerItemT
 import l2r.gameserver.model.items.L2Item;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.InventoryUpdate;
 import l2r.gameserver.network.serverpackets.ItemList;
 import l2r.gameserver.network.serverpackets.StatusUpdate;
 import l2r.gameserver.util.Util;
@@ -579,18 +577,6 @@ public class PcInventory extends Inventory
 			}
 			if (actor != null)
 			{
-				// Send inventory update packet
-				if (!Config.FORCE_INVENTORY_UPDATE)
-				{
-					InventoryUpdate playerIU = new InventoryUpdate();
-					playerIU.addItem(item);
-					actor.sendPacket(playerIU);
-				}
-				else
-				{
-					actor.sendPacket(new ItemList(actor, false));
-				}
-				
 				// Update current load as well
 				StatusUpdate su = new StatusUpdate(actor);
 				su.addAttribute(StatusUpdate.CUR_LOAD, actor.getCurrentLoad());
