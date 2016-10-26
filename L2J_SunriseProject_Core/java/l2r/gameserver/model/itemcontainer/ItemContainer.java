@@ -344,12 +344,6 @@ public abstract class ItemContainer
 				// Updates database
 				item.updateDatabase();
 				
-				// If stackable, end loop as entire count is included in 1 instance of item
-				if (template.isStackable() || !Config.MULTIPLE_ITEM_DROP)
-				{
-					break;
-				}
-				
 				// Send inventory update packet
 				if (!Config.FORCE_INVENTORY_UPDATE)
 				{
@@ -360,6 +354,12 @@ public abstract class ItemContainer
 				else
 				{
 					actor.sendPacket(new ItemList(actor, false));
+				}
+				
+				// If stackable, end loop as entire count is included in 1 instance of item
+				if (template.isStackable() || !Config.MULTIPLE_ITEM_DROP)
+				{
+					break;
 				}
 			}
 		}
