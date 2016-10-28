@@ -1732,6 +1732,9 @@ public final class L2ItemInstance extends L2Object
 			{
 				_log.error("Could not insert item " + this + " into DB: Reason: " + e.getMessage(), e);
 			}
+			
+			// vGodFather: in case of duplicate entry we must run update on item
+			updateInDb();
 		}
 	}
 	
