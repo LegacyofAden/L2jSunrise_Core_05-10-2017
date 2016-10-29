@@ -5525,7 +5525,7 @@ public final class L2PcInstance extends L2Playable
 					}
 					
 					// If player is Lucky shouldn't get penalized.
-					if (!isLucky() && (insideSiegeZone || !insidePvpZone) && !getNevitSystem().isAdventBlessingActive())
+					if (!isLucky() && !(insideSiegeZone || insidePvpZone) && !getNevitSystem().isAdventBlessingActive())
 					{
 						calculateDeathExpPenalty(killer, isAtWarWith(pk), Config.ALT_GAME_DELEVEL);
 					}
@@ -5990,11 +5990,6 @@ public final class L2PcInstance extends L2Playable
 		
 		// Get the Experience before applying penalty
 		setExpBeforeDeath(getExp());
-		
-		if (getNevitSystem().isAdventBlessingActive())
-		{
-			lostExp = 0;
-		}
 		
 		// Set the new Experience value of the L2PcInstance
 		if (decreaseExp)
