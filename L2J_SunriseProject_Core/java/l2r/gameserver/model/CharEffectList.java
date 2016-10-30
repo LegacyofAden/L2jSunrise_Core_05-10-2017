@@ -21,6 +21,7 @@ package l2r.gameserver.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -355,24 +356,24 @@ public class CharEffectList
 			return 0;
 		}
 		
-		int buffCount = 0;
+		final List<Integer> buffIds = new LinkedList<>();
 		for (L2Effect e : getBuffs())
 		{
 			if ((e != null) && e.getShowIcon() && !e.getSkill().isDance() && !e.getSkill().isTriggeredSkill() && !e.getSkill().is7Signs())
 			{
-				if (e.getSkill().getSkillType() == L2SkillType.BUFF)
+				if (!e.getSkill().isPassive() && !e.getSkill().isDebuff() && !e.getSkill().isHealingPotionSkill())
 				{
-					buffCount++;
+					int skillId = e.getSkill().getId();
+					if (!buffIds.contains(skillId))
+					{
+						buffIds.add(skillId);
+					}
 				}
 			}
 		}
 		
-		if (_owner.isPlayer() && (_owner.getActingPlayer().getShortBuffTaskSkillId() > 0))
-		{
-			buffCount--;
-		}
-		
-		return buffCount;
+		int size = buffIds.size();
+		return size;
 	}
 	
 	/**
@@ -386,16 +387,21 @@ public class CharEffectList
 			return 0;
 		}
 		
-		int danceCount = 0;
+		final List<Integer> buffIds = new LinkedList<>();
 		for (L2Effect e : getBuffs())
 		{
 			if ((e != null) && e.getSkill().isDance() && e.getInUse() && !e.isInstant())
 			{
-				danceCount++;
+				int skillId = e.getSkill().getId();
+				if (!buffIds.contains(skillId))
+				{
+					buffIds.add(skillId);
+				}
 			}
 		}
 		
-		return danceCount;
+		int size = buffIds.size();
+		return size;
 	}
 	
 	/**
@@ -409,16 +415,21 @@ public class CharEffectList
 			return 0;
 		}
 		
-		int activationBuffCount = 0;
+		final List<Integer> buffIds = new LinkedList<>();
 		for (L2Effect e : getBuffs())
 		{
 			if ((e != null) && e.getSkill().isTriggeredSkill() && e.getInUse())
 			{
-				activationBuffCount++;
+				int skillId = e.getSkill().getId();
+				if (!buffIds.contains(skillId))
+				{
+					buffIds.add(skillId);
+				}
 			}
 		}
 		
-		return activationBuffCount;
+		int size = buffIds.size();
+		return size;
 	}
 	
 	/**
@@ -859,7 +870,7 @@ public class CharEffectList
 						}
 					}
 				}
-				else if (!newSkill.isHealingPotionSkill())
+				else if (!newSkill.isHealingPotionSkill() && !newEffect.isInstant())
 				{
 					effectsToRemove = getBuffCount() - _owner.getStat().getMaxBuffCount();
 					if (effectsToRemove >= 0)
