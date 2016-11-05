@@ -7057,12 +7057,19 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void broadcastStatusUpdate()
 	{
-		if ((_updateStatus != null) && !_updateStatus.isDone())
+		if (Config.status_update_packetsDelay == 0)
 		{
-			return;
+			PacketSenderTask.sendStatusUpdate(this);
 		}
-		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.sendStatusUpdate(this), Config.status_update_packetsDelay);
+		else
+		{
+			if ((_updateStatus != null) && !_updateStatus.isDone())
+			{
+				return;
+			}
+			
+			_updateStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.sendStatusUpdate(this), Config.status_update_packetsDelay);
+		}
 	}
 	
 	/**
@@ -7076,7 +7083,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this, fullUpdate), Config.user_char_info_packetsDelay);
+		_updateAndBroadcastStatus = ThreadPoolManager.getInstance().scheduleGeneral(() -> PacketSenderTask.updateAndBroadcastStatus(this, fullUpdate), Config.stats_update_packetsDelay);
 	}
 	
 	protected class UserInfoTask implements Runnable
