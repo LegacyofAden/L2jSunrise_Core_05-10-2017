@@ -424,7 +424,7 @@ public final class CastleManorManager implements IXmlReader, IStorable
 			}
 		}
 		
-		LOGGER.info(getClass().getName() + ": Manor mode changed to " + _mode.toString() + "!");
+		LOGGER.info(getClass().getSimpleName() + ": Manor mode changed to " + _mode.toString() + "!");
 		scheduleModeChange();
 	}
 	
