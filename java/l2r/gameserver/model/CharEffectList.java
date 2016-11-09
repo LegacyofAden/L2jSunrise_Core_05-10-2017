@@ -806,7 +806,7 @@ public class CharEffectList
 				{
 					if ((e.getEffectType() != L2EffectType.BLOCK_DAMAGE) || (newEffect.getEffectType() != L2EffectType.BLOCK_DAMAGE))
 					{
-						e.exit();
+						stopSkillEffects(e.getSkill().getId());
 					}
 				}
 				
