@@ -802,9 +802,12 @@ public class CharEffectList
 		{
 			for (L2Effect e : getBuffs())
 			{
-				if ((e != null) && !e.getAbnormalType().equals("none") && (e.getSkill().getId() == newEffect.getSkill().getId()) && (e.getEffectType() == newEffect.getEffectType()) && (e.getAbnormalLvl() == newEffect.getAbnormalLvl()) && e.getAbnormalType().equals(newEffect.getAbnormalType()))
+				if ((e != null) && (e.getSkill().getId() == newEffect.getSkill().getId()) && (e.getEffectType() == newEffect.getEffectType()) && (e.getAbnormalLvl() == newEffect.getAbnormalLvl()) && e.getAbnormalType().equals(newEffect.getAbnormalType()))
 				{
-					e.exit();
+					if ((e.getEffectType() != L2EffectType.BLOCK_DAMAGE) || (newEffect.getEffectType() != L2EffectType.BLOCK_DAMAGE))
+					{
+						e.exit();
+					}
 				}
 				
 				//@formatter:off
