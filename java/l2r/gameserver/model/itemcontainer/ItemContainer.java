@@ -310,15 +310,18 @@ public abstract class ItemContainer
 			}
 			
 			// Send inventory update packet
-			if (!Config.FORCE_INVENTORY_UPDATE)
+			if (actor != null)
 			{
-				InventoryUpdate playerIU = new InventoryUpdate();
-				playerIU.addItem(item);
-				actor.sendPacket(playerIU);
-			}
-			else
-			{
-				actor.sendPacket(new ItemList(actor, false));
+				if (!Config.FORCE_INVENTORY_UPDATE)
+				{
+					InventoryUpdate playerIU = new InventoryUpdate();
+					playerIU.addItem(item);
+					actor.sendPacket(playerIU);
+				}
+				else
+				{
+					actor.sendPacket(new ItemList(actor, false));
+				}
 			}
 		}
 		// If item hasn't be found in inventory, create new one
@@ -345,15 +348,18 @@ public abstract class ItemContainer
 				item.updateDatabase();
 				
 				// Send inventory update packet
-				if (!Config.FORCE_INVENTORY_UPDATE)
+				if (actor != null)
 				{
-					InventoryUpdate playerIU = new InventoryUpdate();
-					playerIU.addItem(item);
-					actor.sendPacket(playerIU);
-				}
-				else
-				{
-					actor.sendPacket(new ItemList(actor, false));
+					if (!Config.FORCE_INVENTORY_UPDATE)
+					{
+						InventoryUpdate playerIU = new InventoryUpdate();
+						playerIU.addItem(item);
+						actor.sendPacket(playerIU);
+					}
+					else
+					{
+						actor.sendPacket(new ItemList(actor, false));
+					}
 				}
 				
 				// If stackable, end loop as entire count is included in 1 instance of item
