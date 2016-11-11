@@ -271,8 +271,26 @@ public final class CastleManorManager implements IXmlReader, IStorable
 				break;
 		}
 		// Schedule mode change
-		ThreadPoolManager.getInstance().scheduleGeneral(this::changeMode, (_nextModeChange.getTimeInMillis() - System.currentTimeMillis()));
+		
+		long milliToEnd = getMillisToPeriodEnd();
+		double numSecs = (milliToEnd / 1000) % 60;
+		double countDown = ((milliToEnd / 1000) - numSecs) / 60;
+		int numMins = (int) Math.floor(countDown % 60);
+		countDown = (countDown - numMins) / 60;
+		int numHours = (int) Math.floor(countDown % 24);
+		int numDays = (int) Math.floor((countDown - numHours) / 24);
+		
+		final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		LOGGER.info(getClass().getSimpleName() + ": Period ends at " + format.format(milliToEnd + System.currentTimeMillis()));
+		LOGGER.info(getClass().getSimpleName() + ": In " + numDays + " days, " + numHours + " hours and " + numMins + " mins.");
+		
+		ThreadPoolManager.getInstance().scheduleGeneral(this::changeMode, getMillisToPeriodEnd());
 		LOGGER.info(getClass().getSimpleName() + ": Next mode change: " + getNextModeChange());
+	}
+	
+	public long getMillisToPeriodEnd()
+	{
+		return _nextModeChange.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
 	}
 	
 	public final void changeMode()
