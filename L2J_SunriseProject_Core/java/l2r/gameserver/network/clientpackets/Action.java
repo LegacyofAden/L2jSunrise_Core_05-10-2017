@@ -104,7 +104,11 @@ public final class Action extends L2GameClientPacket
 		// we will send again DeleteObject
 		if (obj == null)
 		{
-			sendPacket(new DeleteObject(_objectId));// delete visible object in client
+			// delete null object from client only if is not the player itself
+			if (activeChar.getObjectId() != _objectId)
+			{
+				sendPacket(new DeleteObject(_objectId));
+			}
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return;
 		}
