@@ -209,8 +209,7 @@ public final class RequestCancelPostAttachment extends L2GameClientPacket
 		}
 		
 		// Update current load status on player
-		StatusUpdate su = new StatusUpdate(activeChar);
-		su.addAttribute(StatusUpdate.CUR_LOAD, activeChar.getCurrentLoad());
+		StatusUpdate su = activeChar.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		activeChar.sendPacket(su);
 		
 		final L2PcInstance receiver = L2World.getInstance().getPlayer(msg.getReceiverId());

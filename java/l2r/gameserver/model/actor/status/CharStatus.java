@@ -18,8 +18,8 @@
  */
 package l2r.gameserver.model.actor.status;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
 import l2r.Config;
@@ -44,7 +44,7 @@ public class CharStatus
 	private double _currentMp = 0; // Current MP of the L2Character
 	
 	/** Array containing all clients that need to be notified about hp/mp updates of the L2Character */
-	private Set<L2Character> _statusListener;
+	private List<L2Character> _statusListener;
 	
 	private Future<?> _regTask;
 	
@@ -106,11 +106,11 @@ public class CharStatus
 	 * When a RegenTask is in progress sever just need to go through this list to send Server->Client packet StatusUpdate.
 	 * @return The list of L2Character to inform or null if empty
 	 */
-	public final Set<L2Character> getStatusListener()
+	public final List<L2Character> getStatusListener()
 	{
 		if (_statusListener == null)
 		{
-			_statusListener = ConcurrentHashMap.newKeySet();
+			_statusListener = new CopyOnWriteArrayList<>();
 		}
 		return _statusListener;
 	}

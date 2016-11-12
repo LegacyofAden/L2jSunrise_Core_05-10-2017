@@ -201,8 +201,7 @@ public class RequestPackageSend extends L2GameClientPacket
 		sendPacket(playerIU != null ? playerIU : new ItemList(player, false));
 		
 		// Update current load status on player
-		final StatusUpdate su = new StatusUpdate(player);
-		su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+		final StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		sendPacket(su);
 	}
 	

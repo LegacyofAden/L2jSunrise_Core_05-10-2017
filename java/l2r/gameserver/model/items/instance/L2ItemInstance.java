@@ -1397,8 +1397,7 @@ public final class L2ItemInstance extends L2Object
 					iu.addRemovedItem(this);
 					player.sendPacket(iu);
 					
-					StatusUpdate su = new StatusUpdate(player);
-					su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+					StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 					player.sendPacket(su);
 				}
 				else
@@ -1899,10 +1898,8 @@ public final class L2ItemInstance extends L2Object
 				iu.addRemovedItem(this);
 				player.sendPacket(iu);
 				
-				StatusUpdate su = new StatusUpdate(player);
-				su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+				StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 				player.sendPacket(su);
-				
 			}
 			else
 			{

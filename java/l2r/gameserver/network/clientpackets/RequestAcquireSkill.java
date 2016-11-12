@@ -504,8 +504,7 @@ public final class RequestAcquireSkill extends L2GameClientPacket
 				if (levelUpSp > 0)
 				{
 					player.setSp(player.getSp() - levelUpSp);
-					final StatusUpdate su = new StatusUpdate(player);
-					su.addAttribute(StatusUpdate.SP, player.getSp());
+					final StatusUpdate su = player.makeStatusUpdate(StatusUpdate.SP);
 					player.sendPacket(su);
 				}
 				return true;

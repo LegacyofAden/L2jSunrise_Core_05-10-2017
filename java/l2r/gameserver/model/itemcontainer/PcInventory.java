@@ -578,8 +578,7 @@ public class PcInventory extends Inventory
 			if (actor != null)
 			{
 				// Update current load as well
-				StatusUpdate su = new StatusUpdate(actor);
-				su.addAttribute(StatusUpdate.CUR_LOAD, actor.getCurrentLoad());
+				StatusUpdate su = actor.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 				actor.sendPacket(su);
 				
 				// Notify to scripts

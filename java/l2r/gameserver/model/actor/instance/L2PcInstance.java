@@ -3464,8 +3464,7 @@ public final class L2PcInstance extends L2Playable
 			}
 			
 			// Update current load as well
-			StatusUpdate su = new StatusUpdate(this);
-			su.addAttribute(StatusUpdate.CUR_LOAD, getCurrentLoad());
+			StatusUpdate su = makeStatusUpdate(StatusUpdate.CUR_LOAD);
 			sendPacket(su);
 			
 			// If over capacity, drop the item
@@ -3655,8 +3654,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Update current load as well
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.CUR_LOAD, getCurrentLoad());
+		StatusUpdate su = makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		sendPacket(su);
 		
 		// Sends message to client if requested
@@ -3774,8 +3772,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Update current load as well
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.CUR_LOAD, getCurrentLoad());
+		StatusUpdate su = makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		sendPacket(su);
 		
 		// Sends message to client if requested
@@ -3843,8 +3840,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Update current load as well
-		StatusUpdate playerSU = new StatusUpdate(this);
-		playerSU.addAttribute(StatusUpdate.CUR_LOAD, getCurrentLoad());
+		StatusUpdate playerSU = makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		sendPacket(playerSU);
 		
 		// Send target update packet
@@ -3873,8 +3869,7 @@ public final class L2PcInstance extends L2Playable
 			}
 			
 			// Update current load as well
-			playerSU = new StatusUpdate(targetPlayer);
-			playerSU.addAttribute(StatusUpdate.CUR_LOAD, targetPlayer.getCurrentLoad());
+			playerSU = targetPlayer.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 			targetPlayer.sendPacket(playerSU);
 		}
 		else if (target instanceof PetInventory)
@@ -4005,8 +4000,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Update current load as well
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.CUR_LOAD, getCurrentLoad());
+		StatusUpdate su = makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		sendPacket(su);
 		
 		// Sends message to client if requested
@@ -4097,8 +4091,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Update current load as well
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.CUR_LOAD, getCurrentLoad());
+		StatusUpdate su = makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		sendPacket(su);
 		
 		// Sends message to client if requested
@@ -7194,8 +7187,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void broadcastKarma()
 	{
-		StatusUpdate su = new StatusUpdate(this);
-		su.addAttribute(StatusUpdate.KARMA, getKarma());
+		StatusUpdate su = makeStatusUpdate(StatusUpdate.KARMA);
 		sendPacket(su);
 		
 		Collection<L2PcInstance> plrs = getKnownList().getKnownPlayers().values();
