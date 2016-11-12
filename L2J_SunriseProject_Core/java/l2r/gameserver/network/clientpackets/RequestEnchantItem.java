@@ -417,8 +417,7 @@ public final class RequestEnchantItem extends L2GameClientPacket
 				}
 			}
 			
-			final StatusUpdate su = new StatusUpdate(activeChar);
-			su.addAttribute(StatusUpdate.CUR_LOAD, activeChar.getCurrentLoad());
+			final StatusUpdate su = activeChar.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 			activeChar.sendPacket(su);
 			if (!Config.FORCE_INVENTORY_UPDATE)
 			{

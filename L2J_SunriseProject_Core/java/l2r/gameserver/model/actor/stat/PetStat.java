@@ -79,11 +79,9 @@ public class PetStat extends SummonStat
 		// Sync up exp with current level
 		// if (getExp() > getExpForLevel(getLevel() + 1) || getExp() < getExpForLevel(getLevel())) setExp(Experience.LEVEL[getLevel()]);
 		
-		StatusUpdate su = new StatusUpdate(getActiveChar());
-		su.addAttribute(StatusUpdate.LEVEL, getLevel());
-		su.addAttribute(StatusUpdate.MAX_HP, getMaxHp());
-		su.addAttribute(StatusUpdate.MAX_MP, getMaxMp());
+		StatusUpdate su = getActiveChar().makeStatusUpdate(StatusUpdate.LEVEL, StatusUpdate.MAX_HP, StatusUpdate.MAX_MP);
 		getActiveChar().broadcastPacket(su);
+		
 		if (levelIncreased)
 		{
 			getActiveChar().broadcastPacket(new SocialAction(getActiveChar().getObjectId(), SocialAction.LEVEL_UP));

@@ -471,15 +471,13 @@ public class RecipeController
 		
 		private void updateCurLoad()
 		{
-			StatusUpdate su = new StatusUpdate(_target);
-			su.addAttribute(StatusUpdate.CUR_LOAD, _target.getCurrentLoad());
+			StatusUpdate su = _target.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 			_target.sendPacket(su);
 		}
 		
 		private void updateCurMp()
 		{
-			StatusUpdate su = new StatusUpdate(_target);
-			su.addAttribute(StatusUpdate.CUR_MP, (int) _target.getCurrentMp());
+			StatusUpdate su = _target.makeStatusUpdate(StatusUpdate.CUR_MP);
 			_target.sendPacket(su);
 		}
 		

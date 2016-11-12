@@ -455,8 +455,7 @@ public class MultiSellChoose extends L2GameClientPacket
 				}
 				player.sendPacket(new ItemList(player, false));
 				
-				StatusUpdate su = new StatusUpdate(player);
-				su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+				StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 				player.sendPacket(su);
 				
 				// finally, give the tax to the castle...

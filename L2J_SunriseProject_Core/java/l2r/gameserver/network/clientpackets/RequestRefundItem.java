@@ -215,8 +215,7 @@ public final class RequestRefundItem extends L2GameClientPacket
 		}
 		
 		// Update current load status on player
-		StatusUpdate su = new StatusUpdate(player);
-		su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+		StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		player.sendPacket(su);
 		player.sendPacket(new ExBuySellList(player, taxRate, true));
 	}

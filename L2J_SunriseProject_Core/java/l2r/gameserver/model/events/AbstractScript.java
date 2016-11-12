@@ -2157,8 +2157,7 @@ public abstract class AbstractScript implements INamable
 			}
 		}
 		// send packets
-		StatusUpdate su = new StatusUpdate(player);
-		su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+		StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 		player.sendPacket(su);
 	}
 	

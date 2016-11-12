@@ -372,8 +372,7 @@ public class PcStat extends PlayableStat
 			return false;
 		}
 		
-		StatusUpdate su = new StatusUpdate(getActiveChar());
-		su.addAttribute(StatusUpdate.SP, getSp());
+		StatusUpdate su = getActiveChar().makeStatusUpdate(StatusUpdate.SP);
 		getActiveChar().sendPacket(su);
 		
 		return true;

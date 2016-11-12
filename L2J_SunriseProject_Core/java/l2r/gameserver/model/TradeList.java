@@ -657,11 +657,9 @@ public class TradeList
 			}
 			
 			// Update current load as well
-			StatusUpdate playerSU = new StatusUpdate(_owner);
-			playerSU.addAttribute(StatusUpdate.CUR_LOAD, _owner.getCurrentLoad());
+			StatusUpdate playerSU = _owner.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 			_owner.sendPacket(playerSU);
-			playerSU = new StatusUpdate(_partner);
-			playerSU.addAttribute(StatusUpdate.CUR_LOAD, _partner.getCurrentLoad());
+			playerSU = _partner.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 			_partner.sendPacket(playerSU);
 			
 			success = true;

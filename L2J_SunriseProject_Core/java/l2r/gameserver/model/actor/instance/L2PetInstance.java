@@ -786,8 +786,7 @@ public class L2PetInstance extends L2Summon
 				
 				owner.sendPacket(iu);
 				
-				StatusUpdate su = new StatusUpdate(owner);
-				su.addAttribute(StatusUpdate.CUR_LOAD, owner.getCurrentLoad());
+				StatusUpdate su = owner.makeStatusUpdate(StatusUpdate.CUR_LOAD);
 				owner.sendPacket(su);
 				
 				owner.broadcastUserInfo();
