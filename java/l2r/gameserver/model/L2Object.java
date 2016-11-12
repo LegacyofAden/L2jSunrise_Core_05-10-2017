@@ -606,6 +606,11 @@ public abstract class L2Object extends ListenersContainer implements IIdentifiab
 		return (T) _scripts.get(script.getName());
 	}
 	
+	public void removeStatusListener(L2Character object)
+	{
+	
+	}
+	
 	protected void badCoords()
 	{
 		if (isCharacter())

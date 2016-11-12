@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import l2r.Config;
@@ -671,35 +670,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		return su;
 	}
 	
-	private final Lock statusListenersLock = new ReentrantLock();
-	
-	public void broadcastToStatusListeners(L2GameServerPacket... packets)
-	{
-		if (!isVisible() || (packets.length == 0))
-		{
-			return;
-		}
-		
-		statusListenersLock.lock();
-		try
-		{
-			for (int i = 0; i < getStatus().getStatusListener().size(); i++)
-			{
-				for (L2Character temp : getStatus().getStatusListener())
-				{
-					if (temp != null)
-					{
-						temp.sendPacket(packets);
-					}
-				}
-			}
-		}
-		finally
-		{
-			statusListenersLock.unlock();
-		}
-	}
-	
 	public void broadcastStatusUpdate()
 	{
 		if (getStatus().getStatusListener().isEmpty() || !needHpUpdate())
@@ -708,8 +678,19 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		// Create the Server->Client packet StatusUpdate with current HP
-		StatusUpdate su = makeStatusUpdate(StatusUpdate.MAX_HP, StatusUpdate.MAX_MP, StatusUpdate.CUR_HP, StatusUpdate.CUR_MP);
-		broadcastToStatusListeners(su);
+		StatusUpdate su = new StatusUpdate(this);
+		su.addAttribute(StatusUpdate.MAX_HP, getMaxHp());
+		su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
+		
+		// Go through the StatusListener
+		// Send the Server->Client packet StatusUpdate with current HP and MP
+		for (L2Character temp : getStatus().getStatusListener())
+		{
+			if (temp != null)
+			{
+				temp.sendPacket(su);
+			}
+		}
 	}
 	
 	/**
@@ -6989,15 +6970,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	// Status - NEED TO REMOVE ONCE L2CHARTATUS IS COMPLETE
 	public void addStatusListener(L2Character object)
 	{
-		statusListenersLock.lock();
-		try
-		{
-			getStatus().addStatusListener(object);
-		}
-		finally
-		{
-			statusListenersLock.unlock();
-		}
+		getStatus().addStatusListener(object);
 	}
 	
 	public void reduceCurrentHp(double i, L2Character attacker, L2Skill skill)
@@ -7027,17 +7000,10 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		getStatus().reduceMp(i);
 	}
 	
+	@Override
 	public void removeStatusListener(L2Character object)
 	{
-		statusListenersLock.lock();
-		try
-		{
-			getStatus().removeStatusListener(object);
-		}
-		finally
-		{
-			statusListenersLock.unlock();
-		}
+		getStatus().removeStatusListener(object);
 	}
 	
 	protected void stopHpMpRegeneration()
