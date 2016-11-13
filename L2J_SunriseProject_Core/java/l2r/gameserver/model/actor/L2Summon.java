@@ -719,19 +719,21 @@ public abstract class L2Summon extends L2Playable
 			
 			if ((target.getActingPlayer() != null) && (getOwner().getSiegeState() > 0) && getOwner().isInsideZone(ZoneIdType.SIEGE) && (target.getActingPlayer().getSiegeState() == getOwner().getSiegeState()) && (target.getActingPlayer() != getOwner()) && (target.getActingPlayer().getSiegeSide() == getOwner().getSiegeSide()))
 			{
-				if (getOwner().getActingPlayer().isInSameParty(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameChannel(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameClan(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameAlly(target.getActingPlayer()))
+				// vGodFather: no need this
+				// if (getOwner().getActingPlayer().isInSameParty(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameChannel(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameClan(target.getActingPlayer()) ||
+				// getOwner().getActingPlayer().isInSameAlly(target.getActingPlayer()))
+				// {
+				if (TerritoryWarManager.getInstance().isTWInProgress())
 				{
-					if (TerritoryWarManager.getInstance().isTWInProgress())
-					{
-						sendPacket(SystemMessageId.YOU_CANNOT_ATTACK_A_MEMBER_OF_THE_SAME_TERRITORY);
-					}
-					else
-					{
-						sendPacket(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS);
-					}
-					sendPacket(ActionFailed.STATIC_PACKET);
-					return false;
+					sendPacket(SystemMessageId.YOU_CANNOT_ATTACK_A_MEMBER_OF_THE_SAME_TERRITORY);
 				}
+				else
+				{
+					sendPacket(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS);
+				}
+				sendPacket(ActionFailed.STATIC_PACKET);
+				return false;
+				// }
 			}
 			
 			// Check if the target is attackable
@@ -1087,19 +1089,21 @@ public abstract class L2Summon extends L2Playable
 		
 		if ((target.getActingPlayer() != null) && (getOwner().getSiegeState() > 0) && getOwner().isInsideZone(ZoneIdType.SIEGE) && (target.getActingPlayer().getSiegeSide() == getOwner().getSiegeSide()))
 		{
-			if (getOwner().getActingPlayer().isInSameParty(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameChannel(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameClan(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameAlly(target.getActingPlayer()))
+			// vGodFather: no need this
+			// if (getOwner().getActingPlayer().isInSameParty(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameChannel(target.getActingPlayer()) || getOwner().getActingPlayer().isInSameClan(target.getActingPlayer()) ||
+			// getOwner().getActingPlayer().isInSameAlly(target.getActingPlayer()))
+			// {
+			if (TerritoryWarManager.getInstance().isTWInProgress())
 			{
-				if (TerritoryWarManager.getInstance().isTWInProgress())
-				{
-					sendPacket(SystemMessageId.YOU_CANNOT_ATTACK_A_MEMBER_OF_THE_SAME_TERRITORY);
-				}
-				else
-				{
-					sendPacket(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS);
-				}
-				sendPacket(ActionFailed.STATIC_PACKET);
-				return false;
+				sendPacket(SystemMessageId.YOU_CANNOT_ATTACK_A_MEMBER_OF_THE_SAME_TERRITORY);
 			}
+			else
+			{
+				sendPacket(SystemMessageId.FORCED_ATTACK_IS_IMPOSSIBLE_AGAINST_SIEGE_SIDE_TEMPORARY_ALLIED_MEMBERS);
+			}
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
+			// }
 		}
 		
 		if (!getOwner().getAccessLevel().allowPeaceAttack() && getOwner().isInsidePeaceZone(this, target))
