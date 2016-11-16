@@ -1756,6 +1756,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						sendPacket(ActionFailed.STATIC_PACKET);
 						getAI().setIntention(AI_INTENTION_ACTIVE);
 					}
+					// vGodFather setting back previous intention
+					else if (isSummon())
+					{
+						getAI().notifyEvent(CtrlEvent.EVT_FINISH_CASTING);
+					}
 					return;
 				}
 				
