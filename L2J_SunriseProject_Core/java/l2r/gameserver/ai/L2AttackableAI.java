@@ -2168,9 +2168,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		int range = 0;
 		L2Attackable actor = getActiveChar();
 		L2Character MostHate = actor.getMostHated();
-		if (actor.getHateList() != null)
+		List<L2Character> hateList = actor.getHateList();
+		if (hateList != null)
 		{
-			for (L2Character obj : actor.getHateList())
+			for (L2Character obj : hateList)
 			{
 				if ((obj == null) || !GeoData.getInstance().canSeeTarget(actor, obj) || obj.isDead() || (obj != MostHate) || (obj == actor))
 				{
