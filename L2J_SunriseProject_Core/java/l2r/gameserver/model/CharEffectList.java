@@ -361,7 +361,7 @@ public class CharEffectList
 		{
 			if ((e != null) && e.getShowIcon() && !e.getSkill().isDance() && !e.getSkill().isTriggeredSkill() && !e.getSkill().is7Signs())
 			{
-				if (!e.getSkill().isPassive() && !e.getSkill().isDebuff() && !e.getSkill().isHealingPotionSkill())
+				if (!e.getSkill().isPassive() && !e.getSkill().isToggle() && !e.getSkill().isDebuff() && !e.getSkill().isHealingPotionSkill())
 				{
 					int skillId = e.getSkill().getId();
 					if (!buffIds.contains(skillId))
