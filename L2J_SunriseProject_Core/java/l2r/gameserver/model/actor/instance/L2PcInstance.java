@@ -955,6 +955,8 @@ public final class L2PcInstance extends L2Playable
 		player.setNewbie(1);
 		// Give 20 recommendations
 		player.setRecomLeft(20);
+		// Give one hour bonus for new chars
+		player.setRecomBonusTime(3600);
 		// Item Mall
 		ProductItemData.getInstance().createItemMallPoints(player);
 		// Add the player in the characters table of the database
