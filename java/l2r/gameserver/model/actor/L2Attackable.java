@@ -509,9 +509,9 @@ public class L2Attackable extends L2Npc
 							// mob = 24, atk = 50, diff = 26 (no xp)
 							final int levelDiff = attacker.getLevel() - getLevel();
 							
-							final int[] expSp = calculateExpAndSp(levelDiff, damage, totalDamage, attacker.isPremium());
-							long exp = expSp[0];
-							int sp = expSp[1];
+							final double[] expSp = calculateExpAndSp(levelDiff, damage, totalDamage, attacker.isPremium());
+							double exp = expSp[0];
+							double sp = expSp[1];
 							
 							if (Config.L2JMOD_CHAMPION_ENABLE && isChampion())
 							{
@@ -526,7 +526,7 @@ public class L2Attackable extends L2Npc
 							if (isOverhit() && (overhitAttacker != null) && (overhitAttacker.getActingPlayer() != null) && (attacker == overhitAttacker.getActingPlayer()))
 							{
 								attacker.sendPacket(SystemMessageId.OVER_HIT);
-								exp += calculateOverhitExp(exp);
+								exp += calculateOverhitExp((long) exp);
 							}
 							
 							// Distribute the Exp and SP between the L2PcInstance and its L2Summon
@@ -626,12 +626,12 @@ public class L2Attackable extends L2Npc
 						final int levelDiff = partyLvl - getLevel();
 						
 						// Calculate Exp and SP rewards
-						final int[] expSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, false);
-						final int[] premiumCheckExpSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, true);
-						long exp_premium = premiumCheckExpSp[0];
-						int sp_premium = premiumCheckExpSp[1];
-						long exp = expSp[0];
-						int sp = expSp[1];
+						final double[] expSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, false);
+						final double[] premiumCheckExpSp = calculateExpAndSp(levelDiff, partyDmg, totalDamage, true);
+						double exp_premium = premiumCheckExpSp[0];
+						double sp_premium = premiumCheckExpSp[1];
+						double exp = expSp[0];
+						double sp = expSp[1];
 						
 						if (Config.L2JMOD_CHAMPION_ENABLE && isChampion())
 						{
@@ -651,13 +651,13 @@ public class L2Attackable extends L2Npc
 						if (isOverhit() && (overhitAttacker != null) && (overhitAttacker.getActingPlayer() != null) && (attacker == overhitAttacker.getActingPlayer()))
 						{
 							attacker.sendPacket(SystemMessageId.OVER_HIT);
-							exp += calculateOverhitExp(exp);
+							exp += calculateOverhitExp((long) exp);
 						}
 						
 						// Distribute Experience and SP rewards to L2PcInstance Party members in the known area of the last attacker
 						if (partyDmg > 0)
 						{
-							attackerParty.distributeXpAndSp(exp_premium, sp_premium, exp, sp, rewardedMembers, partyLvl, partyDmg, this);
+							attackerParty.distributeXpAndSp((long) exp_premium, (int) sp_premium, (long) exp, (int) sp, rewardedMembers, partyLvl, partyDmg, this);
 						}
 					}
 				}
@@ -1394,7 +1394,7 @@ public class L2Attackable extends L2Npc
 	 * @param isPremium
 	 * @return
 	 */
-	private int[] calculateExpAndSp(int diff, int damage, long totalDamage, boolean isPremium)
+	private double[] calculateExpAndSp(int diff, int damage, long totalDamage, boolean isPremium)
 	{
 		double xp;
 		double sp;
@@ -1424,23 +1424,16 @@ public class L2Attackable extends L2Npc
 				xp = xp * pow;
 				sp = sp * pow;
 			}
-			
-			if (xp <= 0)
-			{
-				xp = 0;
-				sp = 0;
-			}
-			else if (sp <= 0)
-			{
-				sp = 0;
-			}
 		}
-		int[] tmp =
+		
+		xp = Math.max(0., xp);
+		sp = Math.max(0., sp);
+		
+		return new double[]
 		{
-			(int) xp,
-			(int) sp
+			xp,
+			sp
 		};
-		return tmp;
 	}
 	
 	public long calculateOverhitExp(long normalExp)
