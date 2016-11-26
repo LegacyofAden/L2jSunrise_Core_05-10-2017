@@ -647,20 +647,13 @@ public class L2SiegeGuardAI extends L2CharacterAI implements Runnable
 						{
 							range = _selfAnalysis.maxCastRange - 50;
 						}
-						if (attackTarget.isMoving())
-						{
-							moveToPawn(attackTarget, range - 70);
-						}
-						else
-						{
-							moveToPawn(attackTarget, range);
-						}
+						
+						moveToPawn(attackTarget, attackTarget.isMoving() ? range - 70 : 70);
 					}
 				}
 			}
 			
 			return;
-			
 		}
 		// Else, if the actor is muted and far from target, just "move to pawn"
 		else if (_actor.isMuted() && (dist_2 > (range * range)) && !_selfAnalysis.isHealer)
@@ -674,14 +667,8 @@ public class L2SiegeGuardAI extends L2CharacterAI implements Runnable
 				{
 					range = _selfAnalysis.maxCastRange - 50;
 				}
-				if (attackTarget.isMoving())
-				{
-					moveToPawn(attackTarget, range - 70);
-				}
-				else
-				{
-					moveToPawn(attackTarget, range);
-				}
+				
+				moveToPawn(attackTarget, attackTarget.isMoving() ? range - 70 : 70);
 			}
 			return;
 		}
