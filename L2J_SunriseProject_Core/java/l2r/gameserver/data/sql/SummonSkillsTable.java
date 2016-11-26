@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import l2r.Config;
 import l2r.L2DatabaseFactory;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.model.actor.L2Summon;
@@ -80,7 +81,10 @@ public class SummonSkillsTable
 		int lvl = 0;
 		if (!_skillTrees.containsKey(cha.getId()))
 		{
-			_log.warn(getClass().getSimpleName() + ": Pet id " + cha.getId() + " does not have any skills assigned.");
+			if (Config.DEBUG)
+			{
+				_log.warn(getClass().getSimpleName() + ": Pet id " + cha.getId() + " does not have any skills assigned.");
+			}
 			return lvl;
 		}
 		Collection<L2PetSkillLearn> skills = _skillTrees.get(cha.getId()).values();
@@ -129,7 +133,10 @@ public class SummonSkillsTable
 		List<Integer> skillIds = new ArrayList<>();
 		if (!_skillTrees.containsKey(cha.getId()))
 		{
-			_log.warn(getClass().getSimpleName() + ": Pet id " + cha.getId() + " does not have any skills assigned.");
+			if (Config.DEBUG)
+			{
+				_log.warn(getClass().getSimpleName() + ": Pet id " + cha.getId() + " does not have any skills assigned.");
+			}
 			return skillIds;
 		}
 		Collection<L2PetSkillLearn> skills = _skillTrees.get(cha.getId()).values();
