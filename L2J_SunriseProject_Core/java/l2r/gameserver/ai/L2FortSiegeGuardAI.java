@@ -678,20 +678,13 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 						{
 							return;
 						}
-						if (attackTarget.isMoving())
-						{
-							moveToPawn(attackTarget, range - 70);
-						}
-						else
-						{
-							moveToPawn(attackTarget, range);
-						}
+						
+						moveToPawn(attackTarget, attackTarget.isMoving() ? range - 70 : 70);
 					}
 				}
 			}
 			
 			return;
-			
 		}
 		// Else, if the actor is muted and far from target, just "move to pawn"
 		else if (_actor.isMuted() && (dist_2 > (range * range)))
@@ -709,14 +702,8 @@ public class L2FortSiegeGuardAI extends L2CharacterAI implements Runnable
 				{
 					return;
 				}
-				if (attackTarget.isMoving())
-				{
-					moveToPawn(attackTarget, range - 70);
-				}
-				else
-				{
-					moveToPawn(attackTarget, range);
-				}
+				
+				moveToPawn(attackTarget, attackTarget.isMoving() ? range - 70 : 70);
 			}
 			return;
 		}
