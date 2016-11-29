@@ -328,10 +328,6 @@ public class GameServer
 		BoatManager.getInstance();
 		AirShipManager.getInstance();
 		
-		printSection("Gracia Seeds");
-		SoDManager.getInstance();
-		SoIManager.getInstance();
-		
 		try
 		{
 			printSection("Datapack Scripts");
@@ -344,6 +340,10 @@ public class GameServer
 		{
 			_log.error(getClass().getSimpleName() + ": Failed loading scripts.ini, scripts are not going to be loaded!");
 		}
+		
+		printSection("Gracia Seeds");
+		SoDManager.getInstance();
+		SoIManager.getInstance();
 		
 		printSection("Spawns");
 		SpawnTable.getInstance().load();
