@@ -750,6 +750,11 @@ public class CharEffectList
 			return;
 		}
 		
+		if (newEffect.isDebuffEffect() && _owner.isDebuffBlocked())
+		{
+			return;
+		}
+		
 		// Passive effects are treated specially
 		if (newEffect.isPassiveEffect())
 		{
