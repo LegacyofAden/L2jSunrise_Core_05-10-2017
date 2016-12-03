@@ -1123,7 +1123,7 @@ public final class L2AioNpcInstance extends L2Npc
 					player.getInventory().unEquipItemInSlot(armorType);
 					parmorInstance.setElementAttr(elementtoAdd, parmorInstance.isWeapon() ? elementWeaponValue : elementArmorValue);
 					player.getInventory().equipItem(parmorInstance);
-					player.sendMessage("Successfully added " + subCommand[2] + " attribute to your item.");
+					player.sendMessage("Successfully added " + types[1] + " attribute to your item.");
 					
 					InventoryUpdate iu = new InventoryUpdate();
 					iu.addModifiedItem(parmorInstance);
