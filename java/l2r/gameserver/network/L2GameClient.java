@@ -1002,18 +1002,23 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 		return false;
 	}
 	
+	private int _failedPackets = 0;
+	
 	/**
 	 * Counts buffer underflow exceptions.
 	 */
 	public void onBufferUnderflow()
 	{
-		if (_state == GameClientState.CONNECTED) // in CONNECTED state kick client immediately
+		if (_failedPackets++ >= 10)
 		{
-			if (Config.PACKET_HANDLER_DEBUG)
+			if (_state == GameClientState.CONNECTED) // in CONNECTED state kick client immediately
 			{
-				_log.error("Client " + toString() + " - Disconnected, too many buffer underflows in non-authed state.");
+				if (Config.PACKET_HANDLER_DEBUG)
+				{
+					_log.error("Client " + toString() + " - Disconnected, too many buffer underflows in non-authed state.");
+				}
+				closeNow();
 			}
-			closeNow();
 		}
 	}
 	
