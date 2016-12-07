@@ -50,14 +50,13 @@ public abstract class L2GameClientPacket extends ReceivablePacket<L2GameClient>
 			readImpl();
 			return true;
 		}
+		catch (BufferUnderflowException be)
+		{
+			getClient().onBufferUnderflow();
+		}
 		catch (Exception e)
 		{
 			_log.error("Client: " + getClient().toString() + " - Failed reading: " + getType() + e.getMessage(), e);
-			
-			if (e instanceof BufferUnderflowException)
-			{
-				getClient().onBufferUnderflow();
-			}
 		}
 		return false;
 	}
