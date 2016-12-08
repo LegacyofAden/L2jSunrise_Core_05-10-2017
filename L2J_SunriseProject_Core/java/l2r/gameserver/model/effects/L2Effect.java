@@ -314,6 +314,11 @@ public abstract class L2Effect implements IChanceSkillTrigger
 		_isPassiveEffect = true;
 	}
 	
+	public EffectState getState()
+	{
+		return _state;
+	}
+	
 	public final double calc()
 	{
 		Env env = new Env();
