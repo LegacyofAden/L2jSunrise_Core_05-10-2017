@@ -2038,7 +2038,9 @@ public final class Formulas
 		}
 		// general magic resist
 		final double resModifier = target.calcStat(Stats.MAGIC_SUCCESS_RES, 1, null, skill);
-		int rate = 100 - Math.round((float) (lvlModifier * targetModifier * resModifier));
+		// vGodFather: implement magic failure rate
+		final double failureModifier = attacker.calcStat(Stats.MAGIC_FAILURE_RATE, 1, target, skill);
+		int rate = 100 - Math.round((float) (lvlModifier * targetModifier * resModifier * failureModifier));
 		
 		boolean result = Rnd.chance(rate);
 		if (attacker.isDebug())
