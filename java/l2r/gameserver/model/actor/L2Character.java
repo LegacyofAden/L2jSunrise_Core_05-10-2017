@@ -7292,6 +7292,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	{
 		try
 		{
+			// vGodFather if target is already casting or dead must return
+			if ((skill == null) || target.isCastingNow() || target.isDead())
+			{
+				return;
+			}
+			
 			if (skill.checkCondition(this, target, false))
 			{
 				if (skill.triggersChanceSkill()) // skill will trigger another skill, but only if its not chance skill
