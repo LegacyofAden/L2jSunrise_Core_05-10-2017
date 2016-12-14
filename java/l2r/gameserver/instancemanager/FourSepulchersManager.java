@@ -885,7 +885,7 @@ public final class FourSepulchersManager
 			
 			_hallInUse.put(npcId, true);
 		}
-		if ((Config.FS_PARTY_MEMBER_COUNT <= 1) && player.isInParty())
+		else if ((Config.FS_PARTY_MEMBER_COUNT <= 1) && player.isInParty())
 		{
 			final List<L2PcInstance> members = new LinkedList<>();
 			for (L2PcInstance mem : player.getParty().getMembers())
