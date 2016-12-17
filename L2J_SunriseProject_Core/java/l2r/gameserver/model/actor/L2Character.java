@@ -1088,8 +1088,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		setHeading(Util.calculateHeadingFrom(this, target));
 		int reuse = calculateReuseTime(weaponItem);
 		
-		// Just in case npc attack end time is not set
-		if (isNpc())
+		// vGodFather: Just in case npc attack end time is not set
+		if (isNpc() || isSummon())
 		{
 			_attackEndTime = System.nanoTime() + TimeUnit.NANOSECONDS.convert(timeAtk, TimeUnit.MILLISECONDS);
 		}
