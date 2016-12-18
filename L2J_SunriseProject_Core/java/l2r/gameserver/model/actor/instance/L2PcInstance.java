@@ -11694,18 +11694,29 @@ public final class L2PcInstance extends L2Playable
 		
 		try
 		{
+			for (L2ZoneType zone : ZoneManager.getInstance().getZones(this))
+			{
+				zone.onPlayerLogoutInside(this);
+			}
+		}
+		catch (Exception e)
+		{
+			_log.error("deleteMe() {}", e);
+		}
+		
+		// Set the online Flag to True or False and update the characters table of the database with online status and lastAccess (called when login and logout)
+		try
+		{
+			if (!isOnline())
+			{
+				_log.error("deleteMe() called on offline character " + this, new RuntimeException());
+			}
 			setOnlineStatus(false, true);
-			closeNetConnection(true);
 		}
 		catch (Exception e)
 		{
 			_log.error("deleteMe()", e);
 		}
-		
-		/**
-		 * // Set the online Flag to True or False and update the characters table of the database with online status and lastAccess (called when login and logout) try { if (!isOnline()) { _log.error("deleteMe() called on offline character " + this, new RuntimeException()); } setOnlineStatus(false,
-		 * true); } catch (Exception e) { _log.error("deleteMe()", e); }
-		 */
 		
 		try
 		{
@@ -14475,8 +14486,9 @@ public final class L2PcInstance extends L2Playable
 			{
 				continue;
 			}
+			// vGodFather: expertise skill must skip level diff and checked all the time
 			// player level is too low for such skill level
-			if (getLevel() < (learn.getGetLevel() - Config.MAX_LEVEL_DIFF_CAN_KEEP_SKILL_LVL))
+			if ((CommonSkill.EXPERTISE.getId() == id) || (getLevel() < (learn.getGetLevel() - Config.MAX_LEVEL_DIFF_CAN_KEEP_SKILL_LVL)))
 			{
 				deacreaseSkillLevel(id);
 			}
@@ -14489,7 +14501,9 @@ public final class L2PcInstance extends L2Playable
 		final Map<Integer, L2SkillLearn> skillTree = SkillTreesData.getInstance().getCompleteClassSkillTree(getClassId());
 		for (L2SkillLearn sl : skillTree.values())
 		{
-			if ((sl.getSkillId() == id) && (nextLevel < sl.getSkillLevel()) && (getLevel() >= (sl.getGetLevel() - 9)))
+			// vGodFather: expertise skill must skip level diff and checked all the time
+			int diff = sl.getGetLevel() - (CommonSkill.EXPERTISE.getId() == id ? 0 : 9);
+			if ((sl.getSkillId() == id) && (nextLevel < sl.getSkillLevel()) && (getLevel() >= diff))
 			{
 				// next possible skill level
 				nextLevel = sl.getSkillLevel();
@@ -14498,7 +14512,7 @@ public final class L2PcInstance extends L2Playable
 		
 		if (nextLevel == -1) // there is no lower skill
 		{
-			if (Config.DEBUG)
+			if (Config.DEBUG || isDebug())
 			{
 				_log.info("Removing skill id " + id + " level " + getSkillLevel(id) + " from player " + this);
 			}
@@ -14507,7 +14521,7 @@ public final class L2PcInstance extends L2Playable
 		else
 		// replace with lower one
 		{
-			if (Config.DEBUG)
+			if (Config.DEBUG || isDebug())
 			{
 				_log.info("Decreasing skill id " + id + " from " + getSkillLevel(id) + " to " + nextLevel + " for " + this);
 			}
