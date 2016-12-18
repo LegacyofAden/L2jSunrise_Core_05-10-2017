@@ -93,7 +93,7 @@ public class ConditionPlayerCanCreateBase extends Condition
 		
 		// vGodFather territory flag fix
 		// Territory War
-		if (castle != null)
+		if ((castle != null) || (fort != null))
 		{
 			if (TerritoryWarManager.getInstance().isTWInProgress() && TerritoryWarManager.getInstance().getAllRegisteredClans().contains(player.getClan()))
 			{
