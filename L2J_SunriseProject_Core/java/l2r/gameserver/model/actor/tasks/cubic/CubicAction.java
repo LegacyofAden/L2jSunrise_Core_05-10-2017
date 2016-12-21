@@ -135,13 +135,17 @@ public class CubicAction implements Runnable
 					{
 						// offensive skill, we look for an enemy target
 						_cubic.getCubicTarget();
-						if (!L2CubicInstance.isInCubicRange(_cubic.getOwner(), _cubic.getTarget()))
-						{
-							_cubic.setTarget(null);
-						}
 					}
-					L2Character target = _cubic.getTarget();
-					if ((target != null) && (!target.isDead()))
+					
+					// vGodFather: proper checks for range
+					final L2Character target = _cubic.getTarget();
+					if ((target == null) || !L2CubicInstance.isInCubicRange(_cubic.getOwner(), target))
+					{
+						_cubic.setTarget(null);
+						return;
+					}
+					
+					if (!target.isDead())
 					{
 						if (Config.DEBUG)
 						{

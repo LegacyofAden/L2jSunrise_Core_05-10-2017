@@ -73,8 +73,16 @@ public class CubicHeal implements Runnable
 			if (skill != null)
 			{
 				_cubic.cubicTargetForHeal();
+				
+				// vGodFather: proper checks for range
 				final L2Character target = _cubic.getTarget();
-				if ((target != null) && !target.isDead())
+				if ((target == null) || !L2CubicInstance.isInCubicRange(_cubic.getOwner(), target))
+				{
+					_cubic.setTarget(null);
+					return;
+				}
+				
+				if (!target.isDead())
 				{
 					if ((target.getMaxHp() - target.getCurrentHp()) > skill.getPower())
 					{
