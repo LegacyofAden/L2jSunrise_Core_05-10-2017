@@ -23,6 +23,7 @@ import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.util.Util;
 import l2r.util.Rnd;
 
@@ -134,7 +135,11 @@ public class SoIManager
 		_log.info("Seed of Infinity Manager: Closing the seed.");
 		ServerVariables.unset("SoI_opened");
 		
-		QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiSeedStop", null, null);
+		final Quest script = QuestManager.getInstance().getQuest("EnergySeeds");
+		if (script != null)
+		{
+			script.notifyEvent("SoiSeedStop", null, null);
+		}
 		
 		DoorData.getInstance().getDoor(14240102).closeMe();
 		for (L2PcInstance ch : ZoneManager.getInstance().getZoneById(60010).getPlayersInside())
@@ -148,26 +153,30 @@ public class SoIManager
 	
 	public static void checkStageAndSpawn()
 	{
-		QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiCloseMouthStop", null, null);
-		QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiMouthStop", null, null);
-		
-		QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiAbyssGaze2Stop", null, null);
-		QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiAbyssGaze1Stop", null, null);
-		switch (getCurrentStage())
+		final Quest script = QuestManager.getInstance().getQuest("EnergySeeds");
+		if (script != null)
 		{
-			case 1:
-			case 4:
-				QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiMouthSpawn", null, null);
-				QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiAbyssGaze2Spawn", null, null);
-				break;
-			case 5:
-				QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiCloseMouthSpawn", null, null);
-				QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiAbyssGaze2Spawn", null, null);
-				break;
-			default:
-				QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiCloseMouthSpawn", null, null);
-				QuestManager.getInstance().getQuest("EnergySeeds").notifyEvent("SoiAbyssGaze1Spawn", null, null);
-				break;
+			script.notifyEvent("SoiCloseMouthStop", null, null);
+			script.notifyEvent("SoiMouthStop", null, null);
+			
+			script.notifyEvent("SoiAbyssGaze2Stop", null, null);
+			script.notifyEvent("SoiAbyssGaze1Stop", null, null);
+			switch (getCurrentStage())
+			{
+				case 1:
+				case 4:
+					script.notifyEvent("SoiMouthSpawn", null, null);
+					script.notifyEvent("SoiAbyssGaze2Spawn", null, null);
+					break;
+				case 5:
+					script.notifyEvent("SoiCloseMouthSpawn", null, null);
+					script.notifyEvent("SoiAbyssGaze2Spawn", null, null);
+					break;
+				default:
+					script.notifyEvent("SoiCloseMouthSpawn", null, null);
+					script.notifyEvent("SoiAbyssGaze1Spawn", null, null);
+					break;
+			}
 		}
 	}
 	
