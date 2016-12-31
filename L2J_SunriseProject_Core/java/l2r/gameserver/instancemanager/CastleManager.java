@@ -33,6 +33,7 @@ import l2r.gameserver.SevenSigns;
 import l2r.gameserver.model.L2Clan;
 import l2r.gameserver.model.L2ClanMember;
 import l2r.gameserver.model.L2Object;
+import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.entity.Castle;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
@@ -126,6 +127,11 @@ public class CastleManager implements InstanceListManager
 			}
 		}
 		return null;
+	}
+	
+	public final Castle getCastle(Location loc)
+	{
+		return getCastle(loc.getX(), loc.getY(), loc.getZ());
 	}
 	
 	public final Castle getCastle(int x, int y, int z)
