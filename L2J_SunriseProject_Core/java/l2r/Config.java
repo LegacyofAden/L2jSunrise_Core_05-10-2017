@@ -1203,12 +1203,14 @@ public final class Config
 	// --------------------------------------------------
 	// Hunting bonus Settings
 	// --------------------------------------------------
+	public static boolean HUNTING_BONUS_ENGINE;
 	public static int HUNTING_BONUS_MAX_POINTS;
 	public static int HUNTING_BONUS_MAX_TIME;
 	public static int HUNTING_BONUS_REFRESH_RATE;
 	public static int HUNTING_BONUS_POINTS_ON_REFRESH;
 	public static int HUNTING_BONUS_EFFECT_TIME;
 	public static boolean HUNTING_BONUS_EXTRA_POINTS;
+	public static boolean HUNTING_BONUS_EXTRA_POINTS_ALL_TIME;
 	
 	// --------------------------------------------------
 	// Chatfilter Settings
@@ -2764,12 +2766,14 @@ public final class Config
 			final PropertiesParser HuntingBonusSettings = new PropertiesParser(HUNTING_BONUS_CONFIG);
 			
 			// Seed of Destruction
+			HUNTING_BONUS_ENGINE = HuntingBonusSettings.getBoolean("EnableHuntingBonus", true);
 			HUNTING_BONUS_MAX_POINTS = HuntingBonusSettings.getInt("HuntingBonusMaxPoints", 7200);
 			HUNTING_BONUS_MAX_TIME = HuntingBonusSettings.getInt("HuntingBonusMaxTime", 14400);
 			HUNTING_BONUS_REFRESH_RATE = HuntingBonusSettings.getInt("HuntingBonusRefreshRate", 25);
 			HUNTING_BONUS_POINTS_ON_REFRESH = HuntingBonusSettings.getInt("HuntingBonusRefreshPoints", 25);
 			HUNTING_BONUS_EFFECT_TIME = HuntingBonusSettings.getInt("HuntingBonusEffectTime", 180);
 			HUNTING_BONUS_EXTRA_POINTS = HuntingBonusSettings.getBoolean("HuntingBonusExtraPoints", false);
+			HUNTING_BONUS_EXTRA_POINTS_ALL_TIME = HuntingBonusSettings.getBoolean("HuntingBonusExtraPointsAllTime", false);
 			
 			final File chat_filter = new File(CHAT_FILTER_FILE);
 			try (FileReader fr = new FileReader(chat_filter);
