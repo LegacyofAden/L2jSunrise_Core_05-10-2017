@@ -25,12 +25,14 @@ import l2r.gameserver.network.serverpackets.ExNevitAdventTimeChange;
  */
 public class NevitSystem implements IUniqueId
 {
-	// Timers
+	// Settings
+	private static final boolean HUNTING_BONUS_ENGINE = Config.HUNTING_BONUS_ENGINE;
 	private static final int MAX_POINTS = Config.HUNTING_BONUS_MAX_POINTS;
 	private static final int BONUS_EFFECT_TIME = Config.HUNTING_BONUS_EFFECT_TIME;
 	protected static final int REFRESH_RATE = Config.HUNTING_BONUS_REFRESH_RATE;
 	protected static final int REFRESH_POINTS = Config.HUNTING_BONUS_POINTS_ON_REFRESH;
 	private static final boolean EXTRA_POINTS = Config.HUNTING_BONUS_EXTRA_POINTS;
+	private static final boolean EXTRA_POINTS_ALL_TIME = Config.HUNTING_BONUS_EXTRA_POINTS_ALL_TIME;
 	
 	// Nevit Hour
 	public static final int ADVENT_TIME = Config.HUNTING_BONUS_MAX_TIME;
@@ -49,86 +51,98 @@ public class NevitSystem implements IUniqueId
 	@RegisterEvent(EventType.ON_PLAYER_LOGIN)
 	private void onPlayerLogin(OnPlayerLogin event)
 	{
-		final Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 6);
-		cal.set(Calendar.MINUTE, 30);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		
-		// Reset Nevit's Blessing
-		if ((_player.getLastAccess() < (cal.getTimeInMillis() / 1000L)) && (System.currentTimeMillis() > cal.getTimeInMillis()))
+		if (HUNTING_BONUS_ENGINE)
 		{
-			_player.getNevitSystem().setAdventTime(0); // Refuel-reset hunting bonus time
-		}
-		
-		// Send Packets
-		_player.sendPacket(new ExNevitAdventPointInfoPacket(getAdventPoints()));
-		_player.sendPacket(new ExNevitAdventTimeChange(getAdventTime(), true));
-		
-		startNevitEffect(_player.getVariables().getInt("nevit_b", 0));
-		
-		// Set percent
-		int percent = calcPercent(getAdventPoints());
-		
-		if ((percent >= 45) && (percent < 50))
-		{
-			_player.sendPacket(SystemMessageId.YOU_ARE_STARTING_TO_FEEL_THE_EFFECTS_OF_NEVITS_ADVENT_BLESSING);
-		}
-		else if ((percent >= 50) && (percent < 75))
-		{
-			_player.sendPacket(SystemMessageId.YOU_ARE_FURTHER_INFUSED_WITH_THE_BLESSINGS_OF_NEVIT);
-		}
-		else if (percent >= 75)
-		{
-			_player.sendPacket(SystemMessageId.NEVITS_ADVENT_BLESSING_SHINES_STRONGLY_FROM_ABOVE);
+			final Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, 6);
+			cal.set(Calendar.MINUTE, 30);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			// Reset Nevit's Blessing
+			if ((_player.getLastAccess() < (cal.getTimeInMillis() / 1000L)) && (System.currentTimeMillis() > cal.getTimeInMillis()))
+			{
+				_player.getNevitSystem().setAdventTime(0); // Refuel-reset hunting bonus time
+			}
+			
+			// Send Packets
+			_player.sendPacket(new ExNevitAdventPointInfoPacket(getAdventPoints()));
+			_player.sendPacket(new ExNevitAdventTimeChange(getAdventTime(), true));
+			
+			startNevitEffect(_player.getVariables().getInt("nevit_b", 0));
+			
+			// Set percent
+			int percent = calcPercent(getAdventPoints());
+			
+			if ((percent >= 45) && (percent < 50))
+			{
+				_player.sendPacket(SystemMessageId.YOU_ARE_STARTING_TO_FEEL_THE_EFFECTS_OF_NEVITS_ADVENT_BLESSING);
+			}
+			else if ((percent >= 50) && (percent < 75))
+			{
+				_player.sendPacket(SystemMessageId.YOU_ARE_FURTHER_INFUSED_WITH_THE_BLESSINGS_OF_NEVIT);
+			}
+			else if (percent >= 75)
+			{
+				_player.sendPacket(SystemMessageId.NEVITS_ADVENT_BLESSING_SHINES_STRONGLY_FROM_ABOVE);
+			}
 		}
 	}
 	
 	@RegisterEvent(EventType.ON_PLAYER_LOGOUT)
 	private void OnPlayerLogout(OnPlayerLogout event)
 	{
-		stopNevitEffectTask(true);
-		stopAdventTask(false);
+		if (HUNTING_BONUS_ENGINE)
+		{
+			stopNevitEffectTask(true);
+			stopAdventTask(false);
+		}
 	}
 	
 	public void addPoints(int val)
 	{
-		setAdventPoints(getEffectTime() > 0 ? 0 : getAdventPoints() + val);
-		
-		if (getAdventPoints() > MAX_POINTS)
+		if (HUNTING_BONUS_ENGINE)
 		{
-			setAdventPoints(0);
-			startNevitEffect(BONUS_EFFECT_TIME);
+			setAdventPoints(getEffectTime() > 0 ? 0 : getAdventPoints() + val);
+			
+			if (getAdventPoints() > MAX_POINTS)
+			{
+				setAdventPoints(0);
+				startNevitEffect(BONUS_EFFECT_TIME);
+			}
+			
+			switch (calcPercent(getAdventPoints()))
+			{
+				case 45:
+				{
+					getPlayer().sendPacket(SystemMessageId.YOU_ARE_STARTING_TO_FEEL_THE_EFFECTS_OF_NEVITS_ADVENT_BLESSING);
+					break;
+				}
+				case 50:
+				{
+					getPlayer().sendPacket(SystemMessageId.YOU_ARE_FURTHER_INFUSED_WITH_THE_BLESSINGS_OF_NEVIT);
+					break;
+				}
+				case 75:
+				{
+					getPlayer().sendPacket(SystemMessageId.NEVITS_ADVENT_BLESSING_SHINES_STRONGLY_FROM_ABOVE);
+					break;
+				}
+			}
+			
+			getPlayer().sendPacket(new ExNevitAdventPointInfoPacket(getAdventPoints()));
 		}
-		
-		switch (calcPercent(getAdventPoints()))
-		{
-			case 45:
-			{
-				getPlayer().sendPacket(SystemMessageId.YOU_ARE_STARTING_TO_FEEL_THE_EFFECTS_OF_NEVITS_ADVENT_BLESSING);
-				break;
-			}
-			case 50:
-			{
-				getPlayer().sendPacket(SystemMessageId.YOU_ARE_FURTHER_INFUSED_WITH_THE_BLESSINGS_OF_NEVIT);
-				break;
-			}
-			case 75:
-			{
-				getPlayer().sendPacket(SystemMessageId.NEVITS_ADVENT_BLESSING_SHINES_STRONGLY_FROM_ABOVE);
-				break;
-			}
-		}
-		
-		getPlayer().sendPacket(new ExNevitAdventPointInfoPacket(getAdventPoints()));
 	}
 	
 	public void startAdventTask()
 	{
-		if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
+		if (HUNTING_BONUS_ENGINE)
 		{
-			_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000); // task cycle confirmed in retail
-			getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
+			if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
+			{
+				_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000); // task cycle confirmed in retail
+				getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
+			}
 		}
 	}
 	
@@ -155,33 +169,39 @@ public class NevitSystem implements IUniqueId
 	
 	public void stopAdventTask(boolean sendPacket)
 	{
-		if (_adventTask != null)
+		if (HUNTING_BONUS_ENGINE)
 		{
-			_adventTask.cancel(true);
-			_adventTask = null;
-		}
-		
-		if (sendPacket)
-		{
-			getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), true));
+			if (_adventTask != null)
+			{
+				_adventTask.cancel(true);
+				_adventTask = null;
+			}
+			
+			if (sendPacket)
+			{
+				getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), true));
+			}
 		}
 	}
 	
 	private void startNevitEffect(int time)
 	{
-		if (getEffectTime() > 0)
+		if (HUNTING_BONUS_ENGINE)
 		{
-			stopNevitEffectTask(false);
-			time += getEffectTime();
-		}
-		
-		if ((getAdventTime() < ADVENT_TIME) && (time > 0))
-		{
-			getPlayer().getVariables().set("nevit_b", time);
-			getPlayer().sendPacket(new ExNevitAdventEffect(time));
-			getPlayer().sendPacket(SystemMessageId.THE_ANGEL_NEVIT_HAS_BLESSED_YOU_FROM_ABOVE);
-			getPlayer().startSpecialEffect(AbnormalEffect.NAVIT_ADVENT.getMask());
-			_nevitEffectTask = ThreadPoolManager.getInstance().scheduleGeneral(new NevitEffectEnd(), time * 1000L);
+			if (getEffectTime() > 0)
+			{
+				stopNevitEffectTask(false);
+				time += getEffectTime();
+			}
+			
+			if ((getAdventTime() < ADVENT_TIME) && (time > 0))
+			{
+				getPlayer().getVariables().set("nevit_b", time);
+				getPlayer().sendPacket(new ExNevitAdventEffect(time));
+				getPlayer().sendPacket(SystemMessageId.THE_ANGEL_NEVIT_HAS_BLESSED_YOU_FROM_ABOVE);
+				getPlayer().startSpecialEffect(AbnormalEffect.NAVIT_ADVENT.getMask());
+				_nevitEffectTask = ThreadPoolManager.getInstance().scheduleGeneral(new NevitEffectEnd(), time * 1000L);
+			}
 		}
 	}
 	
@@ -201,31 +221,40 @@ public class NevitSystem implements IUniqueId
 	
 	protected void stopNevitEffectTask(boolean saveTime)
 	{
-		if (_nevitEffectTask != null)
+		if (HUNTING_BONUS_ENGINE)
 		{
-			if (saveTime)
+			if (_nevitEffectTask != null)
 			{
-				int time = getEffectTime();
-				if (time > 0)
+				if (saveTime)
 				{
-					getPlayer().getVariables().set("nevit_b", time);
+					int time = getEffectTime();
+					if (time > 0)
+					{
+						getPlayer().getVariables().set("nevit_b", time);
+					}
+					else
+					{
+						getPlayer().getVariables().remove("nevit_b");
+					}
 				}
-				else
-				{
-					getPlayer().getVariables().remove("nevit_b");
-				}
+				_nevitEffectTask.cancel(true);
+				_nevitEffectTask = null;
 			}
-			_nevitEffectTask.cancel(true);
-			_nevitEffectTask = null;
 		}
 	}
 	
 	public void checkIfMustGivePoints(long baseExp, L2Attackable l2Attackable)
 	{
-		if (EXTRA_POINTS && (_adventTask == null))
+		if (HUNTING_BONUS_ENGINE)
 		{
-			int nevitPoints = Math.round(((baseExp / (l2Attackable.getLevel() * l2Attackable.getLevel())) * 100) / 20);
-			addPoints(nevitPoints);
+			if (EXTRA_POINTS)
+			{
+				if (((_adventTask != null) && EXTRA_POINTS_ALL_TIME) || (_adventTask == null))
+				{
+					int nevitPoints = Math.round(((baseExp / (l2Attackable.getLevel() * l2Attackable.getLevel())) * 100) / 20);
+					addPoints(nevitPoints);
+				}
+			}
 		}
 	}
 	
