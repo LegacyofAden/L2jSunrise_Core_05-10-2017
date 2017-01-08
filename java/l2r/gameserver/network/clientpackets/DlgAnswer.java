@@ -23,6 +23,7 @@ import l2r.gameserver.data.xml.impl.AdminData;
 import l2r.gameserver.handler.AdminCommandHandler;
 import l2r.gameserver.handler.IAdminCommandHandler;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
+import l2r.gameserver.model.actor.instance.PcInstance.PcFunc;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerDlgAnswer;
 import l2r.gameserver.model.events.returns.TerminateReturn;
@@ -76,9 +77,9 @@ public final class DlgAnswer extends L2GameClientPacket
 		else if (_messageId == SystemMessageId.C1_WISHES_TO_SUMMON_YOU_FROM_S2_DO_YOU_ACCEPT.getId())
 		{
 			final SummonRequestHolder holder = activeChar.removeScript(SummonRequestHolder.class);
-			if ((_answer == 1) && (holder != null) && (holder.getTarget().getObjectId() == _requesterId))
+			if ((_answer == 1) && (holder != null) && (holder.getRequester().getObjectId() == _requesterId))
 			{
-				activeChar.teleToLocation(holder.getTarget().getLocation(), true);
+				PcFunc.teleToTarget(activeChar, holder);
 			}
 		}
 		else if (_messageId == SystemMessageId.S1.getId())
