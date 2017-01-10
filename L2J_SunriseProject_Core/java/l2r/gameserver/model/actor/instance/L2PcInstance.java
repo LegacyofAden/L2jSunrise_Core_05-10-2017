@@ -522,10 +522,10 @@ public final class L2PcInstance extends L2Playable
 	private Location _inVehiclePosition;
 	
 	public ScheduledFuture<?> _taskforfish;
+	/** Mount Variables */
 	private MountType _mountType = MountType.NONE;
 	private int _mountNpcId;
 	private int _mountLevel;
-	/** Store object used to summon the strider you are mounting **/
 	private int _mountObjectID = 0;
 	
 	public int _telemode = 0;
@@ -4109,7 +4109,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public L2ItemInstance checkItemManipulation(int objectId, long count, String action)
 	{
-		// TODO: if we remove objects that are not visisble from the L2World, we'll have to remove this check
+		// vGodFather: just in case
 		if (L2World.getInstance().findObject(objectId) == null)
 		{
 			_log.info(getObjectId() + ": player tried to " + action + " item not available in L2World");
@@ -5465,7 +5465,6 @@ public final class L2PcInstance extends L2Playable
 			}
 			else if (isCombatFlagEquipped())
 			{
-				// TODO: Fort siege during TW??
 				if (TerritoryWarManager.getInstance().isTWInProgress())
 				{
 					TerritoryWarManager.getInstance().dropCombatFlag(this, true, false);
@@ -6092,7 +6091,6 @@ public final class L2PcInstance extends L2Playable
 		return _traps == null ? 0 : _traps.size();
 	}
 	
-	// TODO: we must delete first trap but we will delete one random for now
 	public void destroyFirstTrap()
 	{
 		final int removedTrapId = (int) getTraps().keySet().toArray()[Rnd.get(getTrapsCount())];
@@ -6707,8 +6705,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		stopAllToggles();
-		setMount(pet.getId(), pet.getLevel());
-		setMountObjectID(pet.getControlObjectId());
+		setMount(pet.getControlObjectId(), pet.getId(), pet.getLevel());
 		startFeed(pet.getId());
 		broadcastPacket(new Ride(this));
 		
@@ -6728,8 +6725,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		stopAllToggles();
-		setMount(npcId, getLevel());
-		setMountObjectID(controlItemObjId);
+		setMount(controlItemObjId, npcId, getLevel());
 		broadcastPacket(new Ride(this));
 		
 		// Notify self and others about speed change
@@ -6797,7 +6793,6 @@ public final class L2PcInstance extends L2Playable
 			else if (getInventory().getItemByItemId(9819) != null)
 			{
 				sendPacket(ActionFailed.STATIC_PACKET);
-				// FIXME: Wrong Message
 				sendMessage("You cannot mount a steed while holding a flag.");
 				return false;
 			}
@@ -6850,17 +6845,18 @@ public final class L2PcInstance extends L2Playable
 		
 		sendPacket(new SetupGauge(SetupGauge.GREEN, 0, 0));
 		int petId = _mountNpcId;
-		setMount(0, 0);
+		setMount(0, 0, 0);
 		stopFeed();
 		if (wasFlying)
 		{
 			removeSkill(CommonSkill.WYVERN_BREATH.getSkill());
 		}
-		broadcastPacket(new Ride(this));
-		setMountObjectID(0);
 		storePetFood(petId);
 		setPet(null);
 		// Notify self and others about speed change
+		// vGodFather: double broadcast in order to fix visual bugs in inventory
+		broadcastUserInfo();
+		broadcastPacket(new Ride(this));
 		broadcastUserInfo();
 		return true;
 	}
@@ -7392,7 +7388,6 @@ public final class L2PcInstance extends L2Playable
 					}
 					catch (Exception e)
 					{
-						// TODO: Should this be logged?
 						player.setBaseClass(activeClassId);
 					}
 					
@@ -9554,7 +9549,7 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	// returns false if the change of mount type fails.
-	public void setMount(int npcId, int npcLevel)
+	public void setMount(int objId, int npcId, int npcLevel)
 	{
 		final MountType type = MountType.findByNpcId(npcId);
 		switch (type)
@@ -9581,6 +9576,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		_mountType = type;
+		_mountObjectID = objId;
 		_mountNpcId = npcId;
 		_mountLevel = npcLevel;
 	}
@@ -12654,11 +12650,6 @@ public final class L2PcInstance extends L2Playable
 		return _mountLevel;
 	}
 	
-	public void setMountObjectID(int newID)
-	{
-		_mountObjectID = newID;
-	}
-	
 	public int getMountObjectID()
 	{
 		return _mountObjectID;
@@ -13674,7 +13665,7 @@ public final class L2PcInstance extends L2Playable
 		}
 		catch (Exception e)
 		{
-			_log.error("Failed restoing character teleport bookmark.", e);
+			_log.error("Failed restoring character teleport bookmark.", e);
 		}
 	}
 	
