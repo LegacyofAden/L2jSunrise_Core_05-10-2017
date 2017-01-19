@@ -332,6 +332,12 @@ public class CharStatus
 			getActiveChar().broadcastStatusUpdate();
 		}
 		
+		// vGodFather: we must update
+		if (hpWasChanged && getActiveChar().isPlayer())
+		{
+			getActiveChar().getActingPlayer().broadcastUserInfo();
+		}
+		
 		return hpWasChanged;
 	}
 	
