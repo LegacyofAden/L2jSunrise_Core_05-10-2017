@@ -5047,6 +5047,12 @@ public final class L2PcInstance extends L2Playable
 		return (isTransformed() ? getTransformation().getDisplayId() : 0);
 	}
 	
+	// vGodFather: new method for fast target change
+	public void setTargetWithoutUpdates(L2Object newTarget)
+	{
+		super.setTarget(newTarget);
+	}
+	
 	/**
 	 * Set a target. <B><U> Actions</U> :</B>
 	 * <li>Remove the L2PcInstance from the _statusListener of the old target if it was a L2Character</li>
