@@ -1051,9 +1051,9 @@ public class ServicesBBSManager extends BaseBBSManager
 		{
 			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_Symbol_of_dawn_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in L2NetWork</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "L2NetWork") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote L2NetWork\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
 		}
-		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_JBRASIL)
+		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_GAMEBYTES)
 		{
-			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_nutrients_of_cupid_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in L2jBrasil</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "L2jBrasil") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote L2jBrasil\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
+			voteBanners += "<tr><td width=540 height=58 align=center valign=top>" + "<table border=0 width=540 height=38 cellspacing=4 cellpadding=3 bgcolor=232836>" + "<tr><td width=40 align=right valign=top>" + "<img src=\"icon.etc_nutrients_of_cupid_i00\" width=32 height=32>" + "</td><td width=520 align=left valign=top>" + "<font color=\"a22020\">Vote in Gamebytes</font><br1> <font color=c1b33a>Info:</font> You can vote " + VoteHandler.getWhenCanVote(activeChar, "GameBytes") + "" + "</td><td width=80 height=39 align=right>" + "<table border=0 cellspacing=0 cellpadding=0 width=80>" + "<tr>" + "<td width=40 align=right valign=center>" + "Vote</td>" + "<td width=40 align=right valign=center>" + "<button value=\"\" action=\"bypass " + CommunityServicesConfigs.BYPASS_COMMAND + "_vote GameBytes\" width=32 height=32 back=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red_Down\" fore=\"L2UI_ct1.MiniMap_DF_PlusBtn_Red\">" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>" + "</table>" + "</td>" + "</tr>";
 		}
 		if (IndividualVoteSystemConfigs.VOTE_MANAGER_ALLOW_TOPGS00)
 		{
@@ -1077,7 +1077,7 @@ public class ServicesBBSManager extends BaseBBSManager
 	@Override
 	public void parsewrite(String url, String ar1, String ar2, String ar3, String ar4, String ar5, L2PcInstance activeChar)
 	{
-	
+		
 	}
 	
 	public static ServicesBBSManager getInstance()
