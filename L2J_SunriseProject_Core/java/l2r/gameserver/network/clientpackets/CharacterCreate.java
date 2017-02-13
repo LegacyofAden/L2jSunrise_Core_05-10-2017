@@ -203,6 +203,8 @@ public final class CharacterCreate extends L2GameClientPacket
 			newChar = L2PcInstance.create(template, getClient().getAccountName(), _name, app);
 		}
 		
+		getClient().setCharCreation(true);
+		
 		// HP and MP are at maximum and CP is zero by default.
 		newChar.setCurrentHp(newChar.getMaxHp());
 		newChar.setCurrentMp(newChar.getMaxMp());
@@ -327,6 +329,7 @@ public final class CharacterCreate extends L2GameClientPacket
 		final CharSelectionInfo cl = new CharSelectionInfo(client.getAccountName(), client.getSessionId().playOkID1);
 		client.sendPacket(cl);
 		client.setCharSelection(cl.getCharInfo());
+		client.setCharCreation(false);
 		
 		if (Config.DEBUG)
 		{
