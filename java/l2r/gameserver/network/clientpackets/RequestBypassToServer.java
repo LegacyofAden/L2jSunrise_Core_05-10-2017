@@ -66,6 +66,7 @@ public final class RequestBypassToServer extends L2GameClientPacket
 		"_bbs",
 		"bbs",
 		"nxs",
+		"voice",
 		"_mail",
 		"_friend",
 		"_match",

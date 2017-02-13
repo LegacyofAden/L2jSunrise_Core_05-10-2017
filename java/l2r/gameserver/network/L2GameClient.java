@@ -1058,6 +1058,20 @@ public class L2GameClient extends MMOClient<MMOConnection<L2GameClient>>
 		return false;
 	}
 	
+	// vGodFather: this will prevent some rare cases of client crash
+	// when create char
+	private boolean _isCharCreation = false;
+	
+	public void setCharCreation(boolean isCharCreation)
+	{
+		_isCharCreation = isCharCreation;
+	}
+	
+	public boolean isCharCreation()
+	{
+		return _isCharCreation;
+	}
+	
 	// Protection
 	private String _playerName = "";
 	private String _loginName = "";
