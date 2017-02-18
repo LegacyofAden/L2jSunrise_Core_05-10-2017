@@ -3918,7 +3918,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		List<Stats> modifiedStats = null;
 		int i = 0;
 		// Go through the Calculator set
-		synchronized (this)
+		synchronized (_calculators)
 		{
 			for (Calculator calc : _calculators)
 			{
