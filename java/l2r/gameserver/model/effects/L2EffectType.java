@@ -69,6 +69,7 @@ public enum L2EffectType
 	SIGNET_GROUND,
 	SLEEP, // confirmed
 	SPOIL,
+	SWEEP,
 	STUN, // confirmed
 	SINGLE_TARGET, // confirmed
 	SUMMON_PET, // confirmed

@@ -9044,20 +9044,23 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
-		// Check if the skill type is TOGGLE
-		if (skill.isToggle())
+		// vGodFather: fake death addon
+		if (Config.RETAIL_FAKE_DEATH && isFakeDeath())
 		{
-			// Get effects of the skill
-			L2Effect effect = getFirstEffect(skill.getId());
+			// Send a System Message to the caster
+			sendPacket(SystemMessageId.CANT_MOVE_SITTING);
 			
-			if (effect != null)
-			{
-				effect.exit();
-				
-				// Send a Server->Client packet ActionFailed to the L2PcInstance
-				sendPacket(ActionFailed.STATIC_PACKET);
-				return false;
-			}
+			// Send a Server->Client packet ActionFailed to the L2PcInstance
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
+		}
+		
+		// Check if the skill type is toggle.
+		if (skill.isToggle() && isAffectedBySkill(skill.getId()))
+		{
+			stopSkillEffects(skill.getId());
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
 		}
 		
 		// Check if the player uses "Fake Death" skill
@@ -10049,6 +10052,10 @@ public final class L2PcInstance extends L2Playable
 		setTarget(null);
 		setIsInvul(true);
 		setInvisible(true);
+		
+		// vGodFather: enable fly mode when enter oly observe
+		setIsFlying(true);
+		
 		teleToLocation(loc, false);
 		sendPacket(new ExOlympiadMode(3));
 		
@@ -10092,6 +10099,10 @@ public final class L2PcInstance extends L2Playable
 		sendPacket(new ExOlympiadMode(0));
 		setInstanceId(0);
 		teleToLocation(_lastLoc, true);
+		
+		// vGodFather: disable fly mode when leave oly observe
+		setIsFlying(false);
+		
 		if (!isGM())
 		{
 			setInvisible(false);
@@ -15220,12 +15231,6 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
-		// You can debuff anyone except party members while in an arena...
-		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP))
-		{
-			return false;
-		}
-		
 		if (isInsideZone(ZoneIdType.FLAG) && target.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
 		{
 			return false;
@@ -15263,8 +15268,18 @@ public final class L2PcInstance extends L2Playable
 				{
 					return true;
 				}
+				if ((siege.checkIsAttacker(getClan()) && siege.checkIsAttacker(target.getClan())))
+				{
+					return true;
+				}
 				return false;
 			}
+		}
+		
+		// You can debuff anyone except party members while in an arena...
+		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP))
+		{
+			return false;
 		}
 		
 		if ((target.getPvpFlag() > 0) || (target.getKarma() > 0))
