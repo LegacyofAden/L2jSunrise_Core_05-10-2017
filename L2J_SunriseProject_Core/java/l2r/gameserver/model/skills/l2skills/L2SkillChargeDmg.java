@@ -153,7 +153,9 @@ public class L2SkillChargeDmg extends L2Skill
 			{
 				attacker.sendDamageMessage(target, (int) damage, false, critical, false);
 				target.reduceCurrentHp(damage, attacker, skill);
-				target.notifyDamageReceived(damage, attacker, skill, critical, false);
+				
+				// vGodFather: trigger function should work only with normal hits close or range
+				// target.notifyDamageReceived(damage, attacker, skill, critical, false);
 				
 				// vGodFather: Do we need to trigger this?
 				// Maybe launch chance skills on us
