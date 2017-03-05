@@ -31,6 +31,7 @@ public enum L2EffectType
 	BUFF, // confirmed
 	CANCEL,
 	CHAT_BLOCK, // confirmed
+	CONSUME_BODY,
 	CPHEAL, // confirmed
 	CPHEAL_OVER_TIME,
 	DEBUFF, // confirmed
