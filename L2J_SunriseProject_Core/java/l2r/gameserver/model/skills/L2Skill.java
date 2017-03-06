@@ -2099,6 +2099,11 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return _npcId;
 	}
 	
+	public boolean isHerb()
+	{
+		return getName().toLowerCase().startsWith("herb");
+	}
+	
 	/**
 	 * @param types
 	 * @return {@code true} if at least one of specified {@link L2EffectType} types present on the current skill's effects, {@code false} otherwise.
