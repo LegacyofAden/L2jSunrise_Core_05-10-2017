@@ -566,6 +566,9 @@ public abstract class AbstractAI implements Ctrl
 				return;
 			}
 			
+			// vGodFather: this will prevent mobs jump on chars without movement animation
+			clientStopMoving(null);
+			
 			// Calculate movement data for a move to location action and add the actor to movingObjects of GameTimeController
 			_actor.moveToLocation(pawn.getX(), pawn.getY(), pawn.getZ(), offset);
 			
