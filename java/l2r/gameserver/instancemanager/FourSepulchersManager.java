@@ -1373,11 +1373,13 @@ public final class FourSepulchersManager
 			
 			min = minuteSelect(min);
 			
-			NpcStringId msg = NpcStringId.MINUTES_HAVE_PASSED;
+			// vGodFather: proper messages
+			String msg = min + " minute(s) have passed."; // now this is a
+			// proper message^^
 			
 			if (min == 90)
 			{
-				msg = NpcStringId.GAME_OVER_THE_TELEPORT_WILL_APPEAR_MOMENTARILY;
+				msg = "Game over. The teleport will appear momentarily.";
 			}
 			
 			for (L2Spawn temp : _managers)
