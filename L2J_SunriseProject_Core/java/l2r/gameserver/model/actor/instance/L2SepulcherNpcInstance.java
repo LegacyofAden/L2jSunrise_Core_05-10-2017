@@ -447,6 +447,24 @@ public class L2SepulcherNpcInstance extends L2Npc
 		}
 	}
 	
+	// vGodFather: extra method
+	public void sayInShout(String msg)
+	{
+		if (msg == null)
+		{
+			return;// wrong usage
+		}
+		
+		final CreatureSay creatureSay = new CreatureSay(0, Say2.NPC_SHOUT, getName(), msg);
+		for (L2PcInstance player : L2World.getInstance().getPlayers())
+		{
+			if (Util.checkIfInRange(15000, player, this, true))
+			{
+				player.sendPacket(creatureSay);
+			}
+		}
+	}
+	
 	public void showHtmlFile(L2PcInstance player, String file)
 	{
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
