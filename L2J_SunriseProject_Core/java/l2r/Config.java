@@ -1283,9 +1283,9 @@ public final class Config
 				DATAPACK_ROOT = new File(".");
 			}
 			
-			CNAME_TEMPLATE = serverSettings.getString("CnameTemplate", ".*");
-			PET_NAME_TEMPLATE = serverSettings.getString("PetNameTemplate", ".*");
-			CLAN_NAME_TEMPLATE = serverSettings.getString("ClanNameTemplate", ".*");
+			CNAME_TEMPLATE = serverSettings.getString("CnameTemplate", "[A-Za-z0-9]{2,16}");
+			PET_NAME_TEMPLATE = serverSettings.getString("PetNameTemplate", "[A-Za-z0-9]{2,16}");
+			CLAN_NAME_TEMPLATE = serverSettings.getString("ClanNameTemplate", "[A-Za-z0-9]{2,16}");
 			
 			MAX_CHARACTERS_NUMBER_PER_ACCOUNT = serverSettings.getInt("CharMaxNumber", 7);
 			MAXIMUM_ONLINE_USERS = serverSettings.getInt("MaximumOnlineUsers", 100);
