@@ -62,6 +62,7 @@ import l2r.gameserver.model.conditions.ConditionPlayerCanSummonSiegeGolem;
 import l2r.gameserver.model.conditions.ConditionPlayerCanSweep;
 import l2r.gameserver.model.conditions.ConditionPlayerCanTakeCastle;
 import l2r.gameserver.model.conditions.ConditionPlayerCanTakeFort;
+import l2r.gameserver.model.conditions.ConditionPlayerCanTakePcBangPoints;
 import l2r.gameserver.model.conditions.ConditionPlayerCanTransform;
 import l2r.gameserver.model.conditions.ConditionPlayerCanUntransform;
 import l2r.gameserver.model.conditions.ConditionPlayerCharges;
@@ -1012,6 +1013,11 @@ public abstract class DocumentBase
 						array.add(CategoryType.valueOf(getValue(value, null)));
 					}
 					cond = joinAnd(cond, new ConditionCategoryType(array));
+					break;
+				}
+				case "checkpcbangpoint":
+				{
+					cond = joinAnd(cond, new ConditionPlayerCanTakePcBangPoints(Boolean.parseBoolean(a.getNodeValue())));
 					break;
 				}
 			}
