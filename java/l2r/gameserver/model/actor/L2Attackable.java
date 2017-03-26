@@ -399,7 +399,7 @@ public class L2Attackable extends L2Npc
 				return;
 			}
 			
-			if (Config.DROP_LASTATTACKERISMAXDAMAGER && (_aggroList.size() > 1))
+			if (Config.DROP_LASTATTACKERISMAXDAMAGER)
 			{
 				int maxDamage = 0;
 				L2PcInstance attacker = null;
@@ -465,7 +465,7 @@ public class L2Attackable extends L2Npc
 			}
 			
 			// Manage Base, Quests and Sweep drops of the L2Attackable
-			doItemDrop((maxDealer != null) && maxDealer.isOnline() ? maxDealer : lastAttacker);
+			doItemDrop(Config.DROP_LASTATTACKERISMAXDAMAGER ? lastAttacker : (maxDealer != null) && maxDealer.isOnline() ? maxDealer : lastAttacker);
 			
 			// Manage drop of Special Events created by GM for a defined period
 			doEventDrop(lastAttacker);
@@ -736,6 +736,12 @@ public class L2Attackable extends L2Npc
 		L2PcInstance targetPlayer = attacker.isTrap() ? ((L2TrapInstance) attacker).getOwner() : attacker.getActingPlayer();
 		// Get the AggroInfo of the attacker L2Character from the _aggroList of the L2Attackable
 		AggroInfo ai = attacker.isTrap() ? _aggroList.computeIfAbsent(targetPlayer != null ? targetPlayer : attacker, AggroInfo::new) : _aggroList.computeIfAbsent(attacker, AggroInfo::new);
+		
+		// vGodFather: this will fix over hate damage it usually happens with gm speed in most cases
+		if (damage > getCurrentHp())
+		{
+			damage = (int) getCurrentHp();
+		}
 		
 		ai.addDamage(damage);
 		ai.addHate(aggro);

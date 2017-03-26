@@ -40,13 +40,12 @@ public final class RequestSetPledgeCrest extends L2GameClientPacket
 	protected void readImpl()
 	{
 		_length = readD();
-		if (_length > 256)
-		{
-			return;
-		}
 		
-		_data = new byte[_length];
-		readB(_data);
+		if ((_length == 256) && (_length == _buf.remaining()))
+		{
+			_data = new byte[_length];
+			readB(_data);
+		}
 	}
 	
 	@Override
