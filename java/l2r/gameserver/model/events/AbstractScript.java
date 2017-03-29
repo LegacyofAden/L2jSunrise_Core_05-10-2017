@@ -48,6 +48,7 @@ import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.data.xml.impl.ItemData;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.enums.QuestSound;
+import l2r.gameserver.enums.audio.IAudio;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.FortManager;
 import l2r.gameserver.instancemanager.InstanceManager;
@@ -2979,19 +2980,9 @@ public abstract class AbstractScript implements INamable
 	/**
 	 * Send a packet in order to play a sound to the player.
 	 * @param player the player whom to send the packet
-	 * @param sound the name of the sound to play
+	 * @param sound the {@link IAudio} object of the sound to play
 	 */
-	public static void playSound(L2PcInstance player, String sound)
-	{
-		player.sendPacket(QuestSound.getSound(sound));
-	}
-	
-	/**
-	 * Send a packet in order to play a sound to the player.
-	 * @param player the player whom to send the packet
-	 * @param sound the {@link QuestSound} object of the sound to play
-	 */
-	public static void playSound(L2PcInstance player, QuestSound sound)
+	public static void playSound(L2PcInstance player, IAudio sound)
 	{
 		player.sendPacket(sound.getPacket());
 	}

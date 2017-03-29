@@ -29,6 +29,7 @@ import l2r.L2DatabaseFactory;
 import l2r.gameserver.cache.HtmCache;
 import l2r.gameserver.enums.QuestSound;
 import l2r.gameserver.enums.QuestType;
+import l2r.gameserver.enums.audio.IAudio;
 import l2r.gameserver.instancemanager.QuestManager;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Npc;
@@ -36,7 +37,6 @@ import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.events.AbstractScript;
 import l2r.gameserver.model.holders.ItemHolder;
 import l2r.gameserver.network.serverpackets.ExShowQuestMark;
-import l2r.gameserver.network.serverpackets.PlaySound;
 import l2r.gameserver.network.serverpackets.QuestList;
 import l2r.gameserver.network.serverpackets.TutorialCloseHtml;
 import l2r.gameserver.network.serverpackets.TutorialEnableClientEvent;
@@ -811,20 +811,11 @@ public final class QuestState
 	
 	/**
 	 * Send a packet in order to play a sound to the player.
-	 * @param sound the name of the sound to play
+	 * @param audio the {@link IAudio} object of the sound to play
 	 */
-	public void playSound(String sound)
+	public void playSound(IAudio audio)
 	{
-		AbstractScript.playSound(_player, sound);
-	}
-	
-	/**
-	 * Send a packet in order to play a sound to the player.
-	 * @param sound the {@link QuestSound} object of the sound to play
-	 */
-	public void playSound(QuestSound sound)
-	{
-		AbstractScript.playSound(_player, sound);
+		AbstractScript.playSound(_player, audio);
 	}
 	
 	/**
@@ -1228,12 +1219,6 @@ public final class QuestState
 	public void showQuestionMark(int number)
 	{
 		_player.sendPacket(new TutorialShowQuestionMark(number));
-	}
-	
-	// TODO make tutorial voices the same as quest sounds
-	public void playTutorialVoice(String voice)
-	{
-		_player.sendPacket(new PlaySound(2, voice, 0, 0, _player.getX(), _player.getY(), _player.getZ()));
 	}
 	
 	/**
