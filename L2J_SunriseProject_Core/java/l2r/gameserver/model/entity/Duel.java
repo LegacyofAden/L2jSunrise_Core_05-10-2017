@@ -31,6 +31,7 @@ import l2r.gameserver.enums.DuelResult;
 import l2r.gameserver.enums.DuelState;
 import l2r.gameserver.enums.Team;
 import l2r.gameserver.enums.ZoneIdType;
+import l2r.gameserver.enums.audio.Music;
 import l2r.gameserver.instancemanager.DuelManager;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.model.Location;
@@ -55,7 +56,7 @@ public class Duel
 {
 	protected static final Logger LOG = LoggerFactory.getLogger(Duel.class);
 	
-	private static final PlaySound B04_S01 = new PlaySound(1, "B04_S01", 0, 0, 0, 0, 0);
+	private static final PlaySound B04_S01 = Music.B04_S01.getPacket();
 	
 	private static final int PARTY_DUEL_DURATION = 300;
 	private static final int PARTY_DUEL_PREPARE_TIME = 30;

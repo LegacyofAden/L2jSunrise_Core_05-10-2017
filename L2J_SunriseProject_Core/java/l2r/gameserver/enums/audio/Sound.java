@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.enums;
+package l2r.gameserver.enums.audio;
 
-import l2r.gameserver.enums.audio.IAudio;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.network.serverpackets.PlaySound;
 
-public enum QuestSound implements IAudio
+public enum Sound implements IAudio
 {
 	ITEMSOUND_QUEST_ACCEPT("ItemSound.quest_accept"),
 	ITEMSOUND_QUEST_MIDDLE("ItemSound.quest_middle"),
@@ -109,7 +108,7 @@ public enum QuestSound implements IAudio
 	
 	private final PlaySound _playSound;
 	
-	private QuestSound(String soundName)
+	private Sound(String soundName)
 	{
 		_playSound = PlaySound.createSound(soundName);
 	}

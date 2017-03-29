@@ -43,6 +43,7 @@ import l2r.gameserver.data.xml.impl.DoorData;
 import l2r.gameserver.data.xml.impl.StaticObjectsData;
 import l2r.gameserver.enums.FortUpdaterType;
 import l2r.gameserver.enums.MountType;
+import l2r.gameserver.enums.audio.Music;
 import l2r.gameserver.instancemanager.CastleManager;
 import l2r.gameserver.instancemanager.FortManager;
 import l2r.gameserver.instancemanager.ZoneManager;
@@ -57,7 +58,6 @@ import l2r.gameserver.model.itemcontainer.Inventory;
 import l2r.gameserver.model.zone.type.L2FortZone;
 import l2r.gameserver.model.zone.type.L2SiegeZone;
 import l2r.gameserver.network.SystemMessageId;
-import l2r.gameserver.network.serverpackets.PlaySound;
 import l2r.gameserver.network.serverpackets.PledgeShowInfoUpdate;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 
@@ -834,7 +834,7 @@ public final class Fort extends AbstractResidence
 				sm.addCastleId(getResidenceId());
 				L2World.getInstance().getPlayers().forEach(p -> p.sendPacket(sm));
 				clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan));
-				clan.broadcastToOnlineMembers(new PlaySound(1, "Siege_Victory", 0, 0, 0, 0, 0));
+				clan.broadcastToOnlineMembers(Music.SIEGE_VICTORY.getPacket());
 				if (_FortUpdater[0] != null)
 				{
 					_FortUpdater[0].cancel(false);

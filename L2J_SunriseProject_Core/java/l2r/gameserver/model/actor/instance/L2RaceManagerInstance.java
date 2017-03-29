@@ -24,6 +24,8 @@ import java.util.List;
 import l2r.gameserver.MonsterRace;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.InstanceType;
+import l2r.gameserver.enums.audio.Music;
+import l2r.gameserver.enums.audio.Sound;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.knownlist.RaceManagerKnownList;
@@ -238,9 +240,10 @@ public class L2RaceManagerInstance extends L2Npc
 		if (_state == STARTING_RACE)
 		{
 			// state++;
-			PlaySound SRace = new PlaySound(1, "S_Race", 0, 0, 0, 0, 0);
+			PlaySound SRace = Music.S_RACE.getPacket();
 			broadcast(SRace);
-			PlaySound SRace2 = new PlaySound(0, "ItemSound2.race_start", 1, 121209259, 12125, 182487, -3559);
+			// TODO find correct sender 121209259, 12125, 182487, -3559
+			PlaySound SRace2 = Sound.ITEMSOUND2_RACE_START.getPacket();
 			broadcast(SRace2);
 			_packet = new MonRaceInfo(_codes[1][0], _codes[1][1], race.getMonsters(), race.getSpeeds());
 			sendMonsterInfo();
