@@ -569,6 +569,13 @@ public class NpcTable implements IXmlReader
 		{
 			case "item":
 			{
+				// vGodFather: knight epaulets are already handled with scripts
+				int itemId = parseInteger(attrs, "id");
+				if (itemId == 9912)
+				{
+					break;
+				}
+				
 				final IDropItem dropItem = dropListScope.newDropItem(parseInteger(attrs, "id"), parseLong(attrs, "min"), parseLong(attrs, "max"), parseDouble(attrs, "chance"));
 				if (dropItem != null)
 				{
