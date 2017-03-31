@@ -772,7 +772,9 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	protected void thinkAttack()
 	{
 		final L2Attackable npc = getActiveChar();
-		if (npc.isCastingNow())
+		
+		// vGodFather: this will fix broken attack animations from mobs
+		if (npc.isCastingNow() || npc.isAttackingNow())
 		{
 			return;
 		}

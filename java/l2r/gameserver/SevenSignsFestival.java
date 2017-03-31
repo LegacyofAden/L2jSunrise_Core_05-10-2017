@@ -1553,44 +1553,47 @@ public class SevenSignsFestival implements SpawnListener
 		StatsSet currFestData = getHighestScoreData(oracle, festivalId);
 		
 		// Check if this is the highest score for this level range so far for the player's cabal.
-		if (offeringScore > thisCabalHighScore)
+		if (offeringScore < thisCabalHighScore)
 		{
-			// If the current score is greater than that for the other cabal,
-			// then they already have the points from this festival.
-			if (thisCabalHighScore > otherCabalHighScore)
-			{
-				return false;
-			}
-			
-			List<Integer> prevParticipants = getPreviousParticipants(oracle, festivalId);
-			partyMembers = new ArrayList<>(prevParticipants.size());
-			
-			// Record a string list of the party members involved.
-			for (Integer partyMember : prevParticipants)
-			{
-				partyMembers.add(CharNameTable.getInstance().getNameById(partyMember));
-			}
-			
-			// Update the highest scores and party list.
-			currFestData.set("date", String.valueOf(System.currentTimeMillis()));
-			currFestData.set("score", offeringScore);
-			currFestData.set("members", Util.implodeString(partyMembers, ","));
-			
-			// Only add the score to the cabal's overall if it's higher than the other cabal's score.
-			if (offeringScore > otherCabalHighScore)
-			{
-				int contribPoints = FESTIVAL_LEVEL_SCORES[festivalId];
-				
-				// Give this cabal the festival points, while deducting them from the other.
-				SevenSigns.getInstance().addFestivalScore(oracle, contribPoints);
-			}
-			
-			saveFestivalData(true);
-			
-			return true;
+			return false;
 		}
 		
-		return false;
+		List<Integer> prevParticipants = getPreviousParticipants(oracle, festivalId);
+		partyMembers = new ArrayList<>(prevParticipants.size());
+		
+		// Record a string list of the party members involved.
+		for (Integer partyMember : prevParticipants)
+		{
+			partyMembers.add(CharNameTable.getInstance().getNameById(partyMember));
+		}
+		
+		// Update the highest scores and party list.
+		currFestData.set("date", String.valueOf(System.currentTimeMillis()));
+		currFestData.set("score", offeringScore);
+		currFestData.set("members", Util.implodeString(partyMembers, ","));
+		
+		_log.debug("SevenSignsFestival: {}'s party has the highest score ({}) so far for {} in {}", new Object[]
+		{
+			player.getName(),
+			offeringScore,
+			SevenSigns.getCabalName(oracle),
+			getFestivalName(festivalId)
+		});
+		
+		// Only add the score to the cabal's overall if it's higher than the other cabal's score.
+		if (offeringScore > otherCabalHighScore)
+		{
+			int contribPoints = FESTIVAL_LEVEL_SCORES[festivalId];
+			
+			// Give this cabal the festival points, while deducting them from the other.
+			SevenSigns.getInstance().addFestivalScore(oracle, contribPoints);
+			
+			_log.debug("SevenSignsFestival: This is the highest score overall so far for the {} festival!", getFestivalName(festivalId));
+		}
+		
+		saveFestivalData(true);
+		
+		return true;
 	}
 	
 	public final int getAccumulatedBonus(int festivalId)

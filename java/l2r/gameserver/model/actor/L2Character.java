@@ -1705,7 +1705,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			simultaneously = true;
 		}
 		
-		stopEffectsOnAction();
+		// vGodFather: herb effects should not remove skills on action example: removedOnAnyActionExceptMove
+		if (!skill.isHerb())
+		{
+			stopEffectsOnAction();
+		}
 		
 		// Set the target of the skill in function of Skill Type and Target Type
 		L2Character target = null;
@@ -5231,7 +5235,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			if (reflectedDamage > 0)
 			{
 				reduceCurrentHp(reflectedDamage, target, true, false, null);
-				notifyDamageReceived(reflectedDamage, target, null, crit, false);
+				
+				// vGodFather: trigger function should work only with normal hits close or range
+				// notifyDamageReceived(reflectedDamage, target, null, crit, false);
 			}
 			
 			if (!isBow && !target.isInvul()) // Do not absorb if weapon is of type bow or target is invul
@@ -6203,7 +6209,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				getAI().setIntention(CtrlIntention.AI_INTENTION_ATTACK, target);
 			}
 		}
-		if (skill.isOffensive() && !(skill.getSkillType() == L2SkillType.UNLOCK))
+		if (skill.isOffensive() && !(skill.getSkillType() == L2SkillType.UNLOCK) && (skill.getTargetType() != L2TargetType.AURA))
+		{
+			getAI().clientStartAutoAttack();
+		}
+		
+		if ((skill.getTargetType() == L2TargetType.AURA) && (target != null))
 		{
 			getAI().clientStartAutoAttack();
 		}
@@ -7782,7 +7793,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	
 	public void moveToPawn(L2Character _actor, L2Character _followTarget, int _clientMovingToPawnOffset)
 	{
-		if (Config.moveToPawn_packetsDelay == 0)
+		if ((Config.moveToPawn_packetsDelay == 0) || _actor.isPlayer())
 		{
 			broadcastPacket(new MoveToPawn(_actor, _followTarget, _clientMovingToPawnOffset));
 			return;
