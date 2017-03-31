@@ -2669,7 +2669,7 @@ public abstract class AbstractScript implements INamable
 	 * @param amount the amount to take
 	 * @return {@code true} if any items were taken, {@code false} otherwise
 	 */
-	public static boolean takeItems(L2PcInstance player, int itemId, long amount)
+	public static boolean takeNonStuckedItems(L2PcInstance player, int itemId, long amount)
 	{
 		final List<L2ItemInstance> items = player.getInventory().getItemsByItemId(itemId);
 		if (amount < 0)
@@ -2690,6 +2690,42 @@ public abstract class AbstractScript implements INamable
 				currentCount += toDelete;
 			}
 		}
+		return true;
+	}
+	
+	/**
+	 * Take an amount of a specified item from player's inventory.
+	 * @param player the player whose item to take
+	 * @param itemId the ID of the item to take
+	 * @param amount the amount to take
+	 * @return {@code true} if any items were taken, {@code false} otherwise
+	 */
+	public static boolean takeItems(L2PcInstance player, int itemId, long amount)
+	{
+		// Get object item from player's inventory list
+		final L2ItemInstance item = player.getInventory().getItemByItemId(itemId);
+		if (item == null)
+		{
+			return false;
+		}
+		
+		if ((!item.isStackable() && (amount < 0)) || item.isStackable())
+		{
+			return takeNonStuckedItems(player, itemId, amount);
+		}
+		
+		final List<L2ItemInstance> items = player.getInventory().getItemsByItemId(itemId);
+		long amountToDelete = 0;
+		for (L2ItemInstance it : items)
+		{
+			takeItem(player, it, 1);
+			amountToDelete++;
+			if (amountToDelete >= amount)
+			{
+				break;
+			}
+		}
+		
 		return true;
 	}
 	
