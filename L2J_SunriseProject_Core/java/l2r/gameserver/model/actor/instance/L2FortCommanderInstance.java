@@ -70,7 +70,7 @@ public class L2FortCommanderInstance extends L2DefenderInstance
 	}
 	
 	@Override
-	public void addDamageHate(L2Character attacker, int damage, int aggro)
+	public void addDamageHate(L2Character attacker, int damage, long aggro)
 	{
 		if (attacker == null)
 		{

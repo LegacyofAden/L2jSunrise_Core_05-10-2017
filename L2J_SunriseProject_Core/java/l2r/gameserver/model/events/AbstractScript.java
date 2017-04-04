@@ -3080,7 +3080,7 @@ public abstract class AbstractScript implements INamable
 	 * @param skill the skill to cast
 	 * @param desire the desire to cast the skill
 	 */
-	protected void addSkillCastDesire(L2Npc npc, L2Character target, SkillHolder skill, int desire)
+	protected void addSkillCastDesire(L2Npc npc, L2Character target, SkillHolder skill, long desire)
 	{
 		addSkillCastDesire(npc, target, skill.getSkill(), desire);
 	}
@@ -3092,7 +3092,7 @@ public abstract class AbstractScript implements INamable
 	 * @param skill the skill to cast
 	 * @param desire the desire to cast the skill
 	 */
-	protected void addSkillCastDesire(L2Npc npc, L2Character target, L2Skill skill, int desire)
+	protected void addSkillCastDesire(L2Npc npc, L2Character target, L2Skill skill, long desire)
 	{
 		if (npc instanceof L2Attackable)
 		{
