@@ -725,7 +725,7 @@ public class L2Attackable extends L2Npc
 	 * @param damage The number of damages given by the attacker L2Character
 	 * @param aggro The hate (=damage) given by the attacker L2Character
 	 */
-	public void addDamageHate(L2Character attacker, int damage, int aggro)
+	public void addDamageHate(L2Character attacker, int damage, long aggro)
 	{
 		if ((attacker == null))
 		{
@@ -772,7 +772,7 @@ public class L2Attackable extends L2Npc
 		}
 	}
 	
-	public void reduceHate(L2Character target, int amount)
+	public void reduceHate(L2Character target, long amount)
 	{
 		if ((getAI() instanceof L2SiegeGuardAI) || (getAI() instanceof L2FortSiegeGuardAI))
 		{
@@ -857,7 +857,7 @@ public class L2Attackable extends L2Npc
 		}
 		
 		L2Character mostHated = null;
-		int maxHate = 0;
+		long maxHate = 0;
 		
 		// While Interacting over This Map Removing Object is Not Allowed
 		// Go through the aggroList of the L2Attackable
@@ -890,7 +890,7 @@ public class L2Attackable extends L2Npc
 		
 		L2Character mostHated = null;
 		L2Character secondMostHated = null;
-		int maxHate = 0;
+		long maxHate = 0;
 		List<L2Character> result = new ArrayList<>();
 		
 		// While iterating over this map removing objects is not allowed
@@ -948,7 +948,7 @@ public class L2Attackable extends L2Npc
 	 * @param target The L2Character whose hate level must be returned
 	 * @return the hate level of the L2Attackable against this L2Character contained in _aggroList.
 	 */
-	public int getHating(final L2Character target)
+	public long getHating(final L2Character target)
 	{
 		if (_aggroList.isEmpty() || (target == null))
 		{
