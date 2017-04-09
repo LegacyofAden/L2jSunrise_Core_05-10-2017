@@ -10276,9 +10276,10 @@ public final class L2PcInstance extends L2Playable
 		return _hero;
 	}
 	
+	// vGodFather: fix issues with olympiad registered players
 	public boolean isInOlympiad()
 	{
-		return _isInOlympiad;
+		return _isInOlympiad && !OlympiadManager.getInstance().getRegisteredClassBased().isEmpty() && !OlympiadManager.getInstance().getRegisteredNonClassBased().isEmpty() && !OlympiadManager.getInstance().getRegisteredTeamsBased().isEmpty();
 	}
 	
 	public boolean isInOlympiadMode()
