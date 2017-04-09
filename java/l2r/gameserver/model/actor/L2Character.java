@@ -5196,7 +5196,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		// If L2Character target is a L2PcInstance, send a system message
-		if (target.isPlayer())
+		// vGodFather: auto attack must start only if hit didn't miss
+		if (target.isPlayer() && !miss)
 		{
 			L2PcInstance enemy = target.getActingPlayer();
 			enemy.getAI().clientStartAutoAttack();
