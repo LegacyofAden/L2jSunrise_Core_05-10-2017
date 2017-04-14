@@ -5237,8 +5237,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			{
 				reduceCurrentHp(reflectedDamage, target, true, false, null);
 				
-				// vGodFather: trigger function should work only with normal hits close or range
-				// notifyDamageReceived(reflectedDamage, target, null, crit, false);
+				notifyDamageReceived(reflectedDamage, target, null, crit, false);
 			}
 			
 			if (!isBow && !target.isInvul()) // Do not absorb if weapon is of type bow or target is invul
