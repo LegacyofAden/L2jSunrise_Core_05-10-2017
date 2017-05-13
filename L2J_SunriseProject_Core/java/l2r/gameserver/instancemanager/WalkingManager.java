@@ -26,16 +26,16 @@ import java.util.Map;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.enums.CtrlIntention;
 import l2r.gameserver.instancemanager.tasks.StartMovingTask;
-import l2r.gameserver.model.L2NpcWalkerNode;
-import l2r.gameserver.model.L2WalkRoute;
 import l2r.gameserver.model.Location;
-import l2r.gameserver.model.WalkInfo;
 import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2MonsterInstance;
 import l2r.gameserver.model.actor.tasks.npc.walker.ArrivedTask;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.character.npc.OnNpcMoveNodeArrived;
 import l2r.gameserver.model.holders.NpcRoutesHolder;
+import l2r.gameserver.model.walk.WalkNode;
+import l2r.gameserver.model.walk.WalkInfo;
+import l2r.gameserver.model.walk.WalkRoute;
 import l2r.gameserver.network.NpcStringId;
 import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.NpcSay;
@@ -64,7 +64,7 @@ public final class WalkingManager implements IXmlReader
 	public static final byte REPEAT_TELE_FIRST = 2;
 	public static final byte REPEAT_RANDOM = 3;
 	
-	private final Map<String, L2WalkRoute> _routes = new HashMap<>(); // all available routes
+	private final Map<String, WalkRoute> _routes = new HashMap<>(); // all available routes
 	private final Map<Integer, WalkInfo> _activeRoutes = new HashMap<>(); // each record represents NPC, moving by predefined route from _routes, and moving progress
 	private final Map<Integer, NpcRoutesHolder> _routesToAttach = new HashMap<>(); // each record represents NPC and all available routes for it
 	
@@ -122,7 +122,7 @@ public final class WalkingManager implements IXmlReader
 					}
 				}
 				
-				final List<L2NpcWalkerNode> list = new ArrayList<>();
+				final List<WalkNode> list = new ArrayList<>();
 				for (Node r = d.getFirstChild(); r != null; r = r.getNextSibling())
 				{
 					if (r.getNodeName().equals("point"))
@@ -167,7 +167,7 @@ public final class WalkingManager implements IXmlReader
 								}
 							}
 						}
-						list.add(new L2NpcWalkerNode(x, y, z, delay, run, npcString, chatString));
+						list.add(new WalkNode(x, y, z, delay, run, npcString, chatString));
 					}
 					
 					else if (r.getNodeName().equals("target"))
@@ -190,7 +190,7 @@ public final class WalkingManager implements IXmlReader
 						}
 					}
 				}
-				_routes.put(routeName, new L2WalkRoute(routeName, list, repeat, false, repeatType));
+				_routes.put(routeName, new WalkRoute(routeName, list, repeat, false, repeatType));
 			}
 		}
 	}
@@ -228,7 +228,7 @@ public final class WalkingManager implements IXmlReader
 		return true;
 	}
 	
-	public L2WalkRoute getRoute(String route)
+	public WalkRoute getRoute(String route)
 	{
 		return _routes.get(route);
 	}
@@ -272,7 +272,7 @@ public final class WalkingManager implements IXmlReader
 						walk.setLastAction(System.currentTimeMillis());
 					}
 					
-					L2NpcWalkerNode node = walk.getCurrentNode();
+					WalkNode node = walk.getCurrentNode();
 					
 					// adjust next waypoint, if NPC spawns at first waypoint
 					if ((npc.getX() == node.getX()) && (npc.getY() == node.getY()))
@@ -325,7 +325,7 @@ public final class WalkingManager implements IXmlReader
 					try
 					{
 						walk.setBlocked(true);
-						final L2NpcWalkerNode node = walk.getCurrentNode();
+						final WalkNode node = walk.getCurrentNode();
 						npc.sendDebugMessage("Route '" + routeName + "', continuing to node " + walk.getCurrentNodeId());
 						npc.setIsRunning(node.runToLocation());
 						npc.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, node);
@@ -434,7 +434,7 @@ public final class WalkingManager implements IXmlReader
 			// Opposite should not happen... but happens sometime
 			if ((walk.getCurrentNodeId() >= 0) && (walk.getCurrentNodeId() < walk.getRoute().getNodesCount()))
 			{
-				final L2NpcWalkerNode node = walk.getRoute().getNodeList().get(walk.getCurrentNodeId());
+				final WalkNode node = walk.getRoute().getNodeList().get(walk.getCurrentNodeId());
 				if (npc.isInsideRadius(node, 10, false, false))
 				{
 					npc.sendDebugMessage("Route '" + walk.getRoute().getName() + "', arrived to node " + walk.getCurrentNodeId());

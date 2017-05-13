@@ -16,22 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.model;
+package l2r.gameserver.model.walk;
 
+import l2r.gameserver.model.Location;
 import l2r.gameserver.network.NpcStringId;
 
 /**
  * @author Rayan RPG, JIV
  * @since 927
  */
-public class L2NpcWalkerNode extends Location
+public class WalkNode extends Location
 {
 	private final String _chatString;
 	private final NpcStringId _npcString;
 	private final int _delay;
 	private final boolean _runToLocation;
 	
-	public L2NpcWalkerNode(int moveX, int moveY, int moveZ, int delay, boolean runToLocation, NpcStringId npcString, String chatText)
+	public WalkNode(int moveX, int moveY, int moveZ, int delay, boolean runToLocation, NpcStringId npcString, String chatText)
 	{
 		super(moveX, moveY, moveZ);
 		_delay = delay;
