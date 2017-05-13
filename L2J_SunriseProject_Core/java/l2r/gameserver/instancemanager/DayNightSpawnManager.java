@@ -110,7 +110,7 @@ public final class DayNightSpawnManager
 						i++;
 					}
 				}
-				_log.info("DayNightSpawnManager: Removed " + i + " " + UnspawnLogInfo + " creatures");
+				_log.info(getClass().getSimpleName() + ": Removed " + i + " " + UnspawnLogInfo + " creatures");
 			}
 			
 			int i = 0;
@@ -125,7 +125,7 @@ public final class DayNightSpawnManager
 				i++;
 			}
 			
-			_log.info("DayNightSpawnManager: Spawned " + i + " " + SpawnLogInfo + " creatures");
+			_log.info(getClass().getSimpleName() + ": Spawned " + i + " " + SpawnLogInfo + " creatures");
 		}
 		catch (Exception e)
 		{
@@ -151,7 +151,7 @@ public final class DayNightSpawnManager
 				specialNightBoss(1);
 				break;
 			default:
-				_log.warn("DayNightSpawnManager: Wrong mode sent");
+				_log.warn(getClass().getSimpleName() + ": Wrong mode sent");
 				break;
 		}
 	}
@@ -193,14 +193,15 @@ public final class DayNightSpawnManager
 	{
 		try
 		{
-			L2RaidBossInstance boss;
 			for (L2Spawn spawn : _bosses.keySet())
 			{
-				boss = _bosses.get(spawn);
+				L2RaidBossInstance boss = _bosses.get(spawn);
+				
 				if ((boss == null) && (mode == 1))
 				{
 					boss = (L2RaidBossInstance) spawn.doSpawn();
 					RaidBossSpawnManager.getInstance().notifySpawnNightBoss(boss);
+					_bosses.remove(spawn);
 					_bosses.put(spawn, boss);
 					continue;
 				}
@@ -210,7 +211,7 @@ public final class DayNightSpawnManager
 					continue;
 				}
 				
-				if ((boss != null) && (boss.getId() == 25328) && boss.getRaidStatus().equals(RaidBossStatus.ALIVE))
+				if ((boss != null) && (boss.getId() == 25328) && (boss.getRaidStatus() == RaidBossStatus.ALIVE))
 				{
 					handleHellmans(boss, mode);
 				}
@@ -219,7 +220,7 @@ public final class DayNightSpawnManager
 		}
 		catch (Exception e)
 		{
-			_log.warn("Error while specialNoghtBoss(): " + e.getMessage(), e);
+			_log.error(getClass().getSimpleName() + ": specialNightBoss exception", e);
 		}
 	}
 	
@@ -232,10 +233,7 @@ public final class DayNightSpawnManager
 				_log.info(getClass().getSimpleName() + ": Deleting Hellman raidboss");
 				break;
 			case 1:
-				if (!boss.isVisible())
-				{
-					boss.spawnMe();
-				}
+				boss.spawnMe();
 				_log.info(getClass().getSimpleName() + ": Spawning Hellman raidboss");
 				break;
 		}
