@@ -98,6 +98,7 @@ import l2r.gameserver.model.events.impl.character.npc.attackable.OnAttackableHat
 import l2r.gameserver.model.events.impl.character.npc.attackable.OnAttackableKill;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerLogin;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerLogout;
+import l2r.gameserver.model.events.impl.character.player.OnPlayerProfessionCancel;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerProfessionChange;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerSkillLearn;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerSummonSpawn;
@@ -1173,6 +1174,16 @@ public abstract class AbstractScript implements INamable
 	protected final List<AbstractEventListener> setPlayerProfessionChangeId(Consumer<OnPlayerProfessionChange> callback)
 	{
 		return registerConsumer(callback, EventType.ON_PLAYER_PROFESSION_CHANGE, ListenerRegisterType.GLOBAL);
+	}
+	
+	/**
+	 * Provides instant callback operation when player's cancel profession
+	 * @param callback
+	 * @return
+	 */
+	protected final List<AbstractEventListener> setPlayerProfessionCancelId(Consumer<OnPlayerProfessionCancel> callback)
+	{
+		return registerConsumer(callback, EventType.ON_PLAYER_PROFESSION_CANCEL, ListenerRegisterType.GLOBAL);
 	}
 	
 	// --------------------------------------------------------------------------------------------------
