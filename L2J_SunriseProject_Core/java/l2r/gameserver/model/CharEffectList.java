@@ -817,7 +817,7 @@ public class CharEffectList
 				
 				//@formatter:off
 				if (
-						(e != null)
+						((e != null) && !newEffect.getSkill().isHerb())
 						&& !e.getAbnormalType().equals("none")
 						&& (e.getSkill().getId() != newEffect.getSkill().getId())
 						&& (e.getSkill().getSkillType() == L2SkillType.BUFF)
