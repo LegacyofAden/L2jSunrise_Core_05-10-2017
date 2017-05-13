@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package l2r.gameserver.model;
+package l2r.gameserver.model.walk;
 
 import java.util.concurrent.ScheduledFuture;
 
@@ -49,7 +49,7 @@ public class WalkInfo
 	/**
 	 * @return name of route of this WalkInfo.
 	 */
-	public L2WalkRoute getRoute()
+	public WalkRoute getRoute()
 	{
 		return WalkingManager.getInstance().getRoute(_routeName);
 	}
@@ -57,7 +57,7 @@ public class WalkInfo
 	/**
 	 * @return current node of this WalkInfo.
 	 */
-	public L2NpcWalkerNode getCurrentNode()
+	public WalkNode getCurrentNode()
 	{
 		return getRoute().getNodeList().get(_currentNode);
 	}
