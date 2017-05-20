@@ -106,6 +106,11 @@ public class L2FortCommanderInstance extends L2DefenderInstance
 	@Override
 	public void returnHome()
 	{
+		if (getSpawn() == null)
+		{
+			return;
+		}
+		
 		if (!isInsideRadius(getSpawn(), 200, false, false))
 		{
 			if (Config.DEBUG)

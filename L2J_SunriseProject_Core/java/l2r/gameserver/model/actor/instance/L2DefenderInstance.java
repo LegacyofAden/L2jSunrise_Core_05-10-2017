@@ -52,6 +52,8 @@ public class L2DefenderInstance extends L2Attackable
 	{
 		super(template);
 		setInstanceType(InstanceType.L2DefenderInstance);
+		
+		getAI().setIntention(CtrlIntention.AI_INTENTION_ACTIVE);
 	}
 	
 	@Override

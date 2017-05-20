@@ -103,7 +103,9 @@ public class NevitSystem implements IUniqueId
 	{
 		if (HUNTING_BONUS_ENGINE)
 		{
-			setAdventPoints(getEffectTime() > 0 ? 0 : getAdventPoints() + val);
+			// vGodFather: we must calculate points even if advent blessing effect is active
+			// setAdventPoints(getEffectTime() > 0 ? 0 : getAdventPoints() + val);
+			setAdventPoints(getAdventPoints() + val);
 			
 			if (getAdventPoints() > MAX_POINTS)
 			{
@@ -140,7 +142,7 @@ public class NevitSystem implements IUniqueId
 		{
 			if ((_adventTask == null) && (getAdventTime() < ADVENT_TIME))
 			{
-				_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000); // task cycle confirmed in retail
+				_adventTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new AdventTask(), REFRESH_RATE * 1000, REFRESH_RATE * 1000);
 				getPlayer().sendPacket(new ExNevitAdventTimeChange(getAdventTime(), false));
 			}
 		}
