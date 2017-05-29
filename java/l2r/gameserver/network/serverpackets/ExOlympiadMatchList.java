@@ -86,7 +86,7 @@ public class ExOlympiadMatchList extends L2GameServerPacket
 					writeD(0);
 				}
 				
-				writeD(curGame.isRunning() ? 0x02 : 0x01); // (1 = Standby, 2 = Playing)
+				writeD(curGame.getState()); // (1 = Standby, 2 = Playing)
 				writeS(game.getPlayerNames()[0]); // Player 1 Name
 				writeS(game.getPlayerNames()[1]); // Player 2 Name
 			}

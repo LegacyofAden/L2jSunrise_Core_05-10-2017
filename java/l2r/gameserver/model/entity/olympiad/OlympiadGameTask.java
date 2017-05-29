@@ -100,6 +100,12 @@ public final class OlympiadGameTask implements Runnable
 		return _state != BattleStatus.IDLE;
 	}
 	
+	// vGodFather: this is used only for arena status (standBy or Playing) in ExOlympiadMatchList
+	public final int getState()
+	{
+		return isBattleStarted() ? 2 : 1;
+	}
+	
 	public final boolean isGameStarted()
 	{
 		return (_state.ordinal() >= BattleStatus.GAME_STARTED.ordinal()) && (_state.ordinal() <= BattleStatus.CLEANUP.ordinal());
