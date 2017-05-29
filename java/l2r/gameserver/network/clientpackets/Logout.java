@@ -124,7 +124,7 @@ public final class Logout extends L2GameClientPacket
 			return;
 		}
 		
-		if (player.isInOlympiadMode() || player.isInOlympiad())
+		if (player.isInOlympiadMode() || player.isInOlympiad() || player.inObserverMode())
 		{
 			player.sendMessage("You cannot log out while in Olympiad.");
 			player.sendPacket(ActionFailed.STATIC_PACKET);
