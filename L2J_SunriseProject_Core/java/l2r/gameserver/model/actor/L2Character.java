@@ -1077,6 +1077,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			return;
 		}
 		
+		// vGodFather: this will fix broken attack animations from mobs
+		if (isAttackable())
+		{
+			stopMove(getLocation());
+		}
+		
 		// Add the L2PcInstance to _knownObjects and _knownPlayer of the target
 		target.getKnownList().addKnownObject(this);
 		
@@ -1784,14 +1790,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						break;
 				}
 				
-				if (doit)
-				{
-					target = (L2Character) targets[0];
-				}
-				else
-				{
-					target = (L2Character) getTarget();
-				}
+				target = (doit) ? (L2Character) targets[0] : (L2Character) getTarget();
 		}
 		beginCast(skill, simultaneously, target, targets);
 	}
@@ -1814,6 +1813,30 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				getAI().setIntention(AI_INTENTION_ACTIVE);
 			}
 			return;
+		}
+		
+		// vGodFather: shadow mana consumption must be checked before skill cast start
+		if (isPlayable())
+		{
+			// reduce talisman mana on skill use
+			if ((skill.getReferenceItemId() > 0) && (ItemData.getInstance().getTemplate(skill.getReferenceItemId()).getBodyPart() == L2Item.SLOT_DECO))
+			{
+				for (L2ItemInstance item : getInventory().getItemsByItemId(skill.getReferenceItemId()))
+				{
+					if (item.isEquipped())
+					{
+						if (item.getMana() < item.useSkillDisTime())
+						{
+							sendPacket(SystemMessageId.THERE_ARE_NOT_ENOUGH_NECESSARY_ITEMS_TO_USE_THE_SKILL);
+							abortCast();
+							return;
+						}
+						
+						item.decreaseMana(false, item.useSkillDisTime());
+						break;
+					}
+				}
+			}
 		}
 		
 		final TerminateReturn term = EventDispatcher.getInstance().notifyEvent(new OnCreatureSkillUse(this, skill, simultaneously, target, targets), this, TerminateReturn.class);
@@ -2081,24 +2104,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					getActingPlayer().sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
 					abortCast();
 					return;
-				}
-			}
-			
-			// reduce talisman mana on skill use
-			if ((skill.getReferenceItemId() > 0) && (ItemData.getInstance().getTemplate(skill.getReferenceItemId()).getBodyPart() == L2Item.SLOT_DECO))
-			{
-				for (L2ItemInstance item : getInventory().getItemsByItemId(skill.getReferenceItemId()))
-				{
-					if (item.isEquipped())
-					{
-						if (item.getMana() < item.useSkillDisTime())
-						{
-							abortCast();
-							return;
-						}
-						item.decreaseMana(false, item.useSkillDisTime());
-						break;
-					}
 				}
 			}
 		}
@@ -6535,7 +6540,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 								}
 							}
 							// notify target AI about the attack
-							if (((L2Character) target).hasAI() && !skill.hasEffectType(L2EffectType.HATE) && !skill.hasEffectType(L2EffectType.PASSIVE))
+							if (((L2Character) target).hasAI() && !skill.hasEffectType(L2EffectType.HATE) && !skill.hasEffectType(L2EffectType.PASSIVE) && !skill.hasEffectType(L2EffectType.REMOVE_TARGET))
 							{
 								((L2Character) target).getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
 							}
@@ -6637,7 +6642,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 							target.getActingPlayer().setTarget(this);
 						}
 						
-						if (creature.hasAI())
+						if (creature.hasAI() && !skill.hasEffectType(L2EffectType.REMOVE_TARGET))
 						{
 							// Notify target AI about the attack
 							creature.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
