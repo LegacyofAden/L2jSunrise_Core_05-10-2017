@@ -192,7 +192,7 @@ public final class UserInfo extends L2GameServerPacket
 		writeD(_relation);
 		writeC(_activeChar.getMountType().ordinal()); // mount type
 		writeC(_activeChar.getPrivateStoreType().getId());
-		writeC(_activeChar.hasDwarvenCraft() ? 1 : 0);
+		writeC(_activeChar.hasCrystallization() ? 1 : 0);
 		writeD(_activeChar.getPkKills());
 		writeD(_activeChar.getPvpKills());
 		

@@ -1885,6 +1885,12 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
+	// vGodFather: check if player can crystallize items
+	public boolean hasCrystallization()
+	{
+		return getSkillLevel(CommonSkill.CRYSTALLIZE.getId()) >= 1;
+	}
+	
 	/**
 	 * @return True if the L2PcInstance can Craft Dwarven Recipes.
 	 */
@@ -2118,7 +2124,7 @@ public final class L2PcInstance extends L2Playable
 		int maxLoad = getMaxLoad();
 		if (maxLoad > 0)
 		{
-			long weightproc = (((getCurrentLoad() - getBonusWeightPenalty()) * 1000) / getMaxLoad());
+			long weightproc = (((getCurrentLoad() - getBonusWeightPenalty()) * 1000L) / getMaxLoad());
 			int newWeightPenalty;
 			if ((weightproc < 500) || _dietMode)
 			{
@@ -4651,7 +4657,7 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void doPickupItem(L2Object object)
 	{
-		if (isAlikeDead() || isFakeDeath())
+		if (isAlikeDead() || isFakeDeath() || (isInvisible() && !isGM()))
 		{
 			return;
 		}
@@ -15232,6 +15238,13 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
+		// You can debuff anyone except party members while in an arena and not in siege zones...
+		// we must check this before ally and clan
+		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP) && !isInsideZone(ZoneIdType.SIEGE) && !target.isInsideZone(ZoneIdType.SIEGE))
+		{
+			return false;
+		}
+		
 		if (isInsideZone(ZoneIdType.FLAG) && target.isInsideZone(ZoneIdType.FLAG) && FlagZoneConfigs.ENABLE_ANTIFEED_PROTECTION)
 		{
 			return false;
@@ -15275,12 +15288,6 @@ public final class L2PcInstance extends L2Playable
 				}
 				return false;
 			}
-		}
-		
-		// You can debuff anyone except party members while in an arena...
-		if (isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP))
-		{
-			return false;
 		}
 		
 		if ((target.getPvpFlag() > 0) || (target.getKarma() > 0))
