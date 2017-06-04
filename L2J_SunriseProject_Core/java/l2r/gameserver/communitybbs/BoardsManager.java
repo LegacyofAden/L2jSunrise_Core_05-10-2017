@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import l2r.Config;
 import l2r.gameserver.communitybbs.Managers.ClanBBSManager;
+import l2r.gameserver.communitybbs.Managers.DonateBBSManager;
 import l2r.gameserver.communitybbs.Managers.FavoriteBBSManager;
 import l2r.gameserver.communitybbs.Managers.MailBBSManager;
 import l2r.gameserver.communitybbs.Managers.PostBBSManager;
@@ -34,6 +35,7 @@ import l2r.gameserver.network.L2GameClient;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.ShowBoard;
 
+import gr.sr.configsEngine.configs.impl.CommunityDonateConfigs;
 import gr.sr.interf.SunriseEvents;
 
 /**
@@ -52,6 +54,12 @@ public class BoardsManager
 		
 		if (SunriseEvents.cbBypass(activeChar, command))
 		{
+			return;
+		}
+		
+		if (CommunityDonateConfigs.COMMUNITY_DONATE_ALLOW && command.startsWith(CommunityDonateConfigs.BYPASS_COMMAND))
+		{
+			DonateBBSManager.getInstance().cbByPass(command, activeChar);
 			return;
 		}
 		
