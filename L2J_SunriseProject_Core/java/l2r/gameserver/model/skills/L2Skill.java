@@ -571,11 +571,10 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 			case BEHIND_AURA:
 			case FRONT_AREA:
 			case FRONT_AURA:
-			{
 				return true;
-			}
+			default:
+				return false;
 		}
-		return false;
 	}
 	
 	public boolean isAura()
