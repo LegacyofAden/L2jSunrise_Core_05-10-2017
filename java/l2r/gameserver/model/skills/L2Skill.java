@@ -1654,6 +1654,17 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	 * @param effected
 	 * @return
 	 */
+	public final L2Effect[] applyEffects(L2Character effector, L2Character effected)
+	{
+		return getEffects(effector, effected, null);
+	}
+	
+	/**
+	 * Warning: this method doesn't consider modifier (shield, ss, sps, bss) for secondary effects
+	 * @param effector
+	 * @param effected
+	 * @return
+	 */
 	public final L2Effect[] getEffects(L2Character effector, L2Character effected)
 	{
 		return getEffects(effector, effected, null);
