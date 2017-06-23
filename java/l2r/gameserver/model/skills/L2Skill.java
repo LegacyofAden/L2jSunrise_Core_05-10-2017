@@ -578,6 +578,38 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return false;
 	}
 	
+	public boolean isAura()
+	{
+		switch (_targetType)
+		{
+			case AURA:
+			case FRONT_AURA:
+			case BEHIND_AURA:
+			case AURA_CORPSE_MOB:
+			case AURA_FRIENDLY:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	public boolean isArea()
+	{
+		switch (_targetType)
+		{
+			case AREA:
+			case AREA_FRIENDLY:
+			case AREA_CORPSE_MOB:
+			case AREA_SUMMON:
+			case AREA_UNDEAD:
+			case BEHIND_AREA:
+			case FRONT_AREA:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
 	public boolean isDamage()
 	{
 		switch (getSkillType())
