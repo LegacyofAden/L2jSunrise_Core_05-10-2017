@@ -1625,9 +1625,27 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		beginCast(skill, false);
 	}
 	
+	/**
+	 * SkillHolder version of {@link #doCast(L2Skill)} method.
+	 * @param skill The L2Skill to use
+	 */
+	public void doCast(SkillHolder skill)
+	{
+		beginCast(skill.getSkill(), false);
+	}
+	
 	public void doSimultaneousCast(L2Skill skill)
 	{
 		beginCast(skill, true);
+	}
+	
+	/**
+	 * SkillHolder version of {@link #doSimultaneousCast(L2Skill)} method.
+	 * @param skill The L2Skill to use
+	 */
+	public void doSimultaneousCast(SkillHolder skill)
+	{
+		beginCast(skill.getSkill(), true);
 	}
 	
 	public void doCast(L2Skill skill, L2Character target, L2Object[] targets)
