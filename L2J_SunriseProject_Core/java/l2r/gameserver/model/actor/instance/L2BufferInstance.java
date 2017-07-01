@@ -85,8 +85,8 @@ public class L2BufferInstance extends L2Npc
 			
 			if (player.hasSummon())
 			{
-				player.getSummon().setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
-				player.getSummon().setCurrentCp(player.getMaxCp());
+				player.getSummon().setCurrentHpMp(player.getSummon().getMaxHp(), player.getSummon().getMaxMp());
+				player.getSummon().setCurrentCp(player.getSummon().getMaxCp());
 			}
 			
 			BufferPacketSender.sendPacket(player, "functions.htm", BufferPacketCategories.FILE, getObjectId());
