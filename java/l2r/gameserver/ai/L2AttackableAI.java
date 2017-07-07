@@ -2354,6 +2354,11 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	{
 		L2Attackable me = getActiveChar();
 		
+		if (me.isDead())
+		{
+			return;
+		}
+		
 		// Calculate the attack timeout
 		_attackTimeout = MAX_ATTACK_TIMEOUT + GameTimeController.getInstance().getGameTicks();
 		
@@ -2533,6 +2538,11 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	// vGodFather
 	private void tryToGoHome(L2Attackable npc)
 	{
+		if ((npc == null) || npc.isDead() || npc.isDecayed())
+		{
+			return;
+		}
+		
 		try
 		{
 			if (npc.getSpawn() != null)
