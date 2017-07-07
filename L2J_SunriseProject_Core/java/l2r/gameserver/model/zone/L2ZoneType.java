@@ -544,8 +544,9 @@ public abstract class L2ZoneType extends ListenersContainer
 	/**
 	 * Broadcasts packet to all players inside the zone
 	 * @param packet
+	 * @param skipObserveres
 	 */
-	public void broadcastPacket(L2GameServerPacket packet)
+	public void broadcastPacket(L2GameServerPacket packet, boolean skipObserveres)
 	{
 		if (_characterList.isEmpty())
 		{
@@ -556,9 +557,22 @@ public abstract class L2ZoneType extends ListenersContainer
 		{
 			if ((character != null) && character.isPlayer())
 			{
+				if (skipObserveres && character.getActingPlayer().inObserverMode())
+				{
+					continue;
+				}
 				character.sendPacket(packet);
 			}
 		}
+	}
+	
+	/**
+	 * Broadcasts packet to all players inside the zone
+	 * @param packet
+	 */
+	public void broadcastPacket(L2GameServerPacket packet)
+	{
+		broadcastPacket(packet, false);
 	}
 	
 	public InstanceType getTargetType()

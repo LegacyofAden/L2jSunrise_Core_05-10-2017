@@ -222,45 +222,28 @@ public class SSQStatus extends L2GameServerPacket
 				writeC(35); // Minimum limit for winning cabal to claim a seal
 				writeC(3); // Total number of seals
 				
-				for (int i = 1; i < 4; i++)
+				int totalDawnProportion = 1;
+				int totalDuskProportion = 1;
+				
+				for (int i = 1; i <= 3; i++)
 				{
-					int dawnProportion = SevenSigns.getInstance().getSealProportion(i, SevenSigns.CABAL_DAWN);
-					int duskProportion = SevenSigns.getInstance().getSealProportion(i, SevenSigns.CABAL_DUSK);
-					
-					if (Config.DEBUG)
-					{
-						_log.info(SevenSigns.getSealName(i, true) + " = Dawn Prop: " + dawnProportion + "(" + ((dawnProportion / totalDawnMembers) * 100) + "%)" + ", Dusk Prop: " + duskProportion + "(" + ((duskProportion / totalDuskMembers) * 100) + "%)");
-					}
+					totalDawnProportion += SevenSigns.getInstance().getSealProportion(i, SevenSigns.CABAL_DAWN);
+					totalDuskProportion += SevenSigns.getInstance().getSealProportion(i, SevenSigns.CABAL_DUSK);
+				}
+				
+				// Prevents divide by zero errors.
+				totalDawnProportion = Math.max(1, totalDawnProportion);
+				totalDuskProportion = Math.max(1, totalDuskProportion);
+				
+				for (int i = 1; i <= 3; i++)
+				{
+					final int dawnProportion = SevenSigns.getInstance().getSealProportion(i, SevenSigns.CABAL_DAWN);
+					final int duskProportion = SevenSigns.getInstance().getSealProportion(i, SevenSigns.CABAL_DUSK);
 					
 					writeC(i);
 					writeC(SevenSigns.getInstance().getSealOwner(i));
-					
-					if (totalDuskMembers == 0)
-					{
-						if (totalDawnMembers == 0)
-						{
-							writeC(0);
-							writeC(0);
-						}
-						else
-						{
-							writeC(0);
-							writeC(Math.round(((float) dawnProportion / (float) totalDawnMembers) * 100));
-						}
-					}
-					else
-					{
-						if (totalDawnMembers == 0)
-						{
-							writeC(Math.round(((float) duskProportion / (float) totalDuskMembers) * 100));
-							writeC(0);
-						}
-						else
-						{
-							writeC(Math.round(((float) duskProportion / (float) totalDuskMembers) * 100));
-							writeC(Math.round(((float) dawnProportion / (float) totalDawnMembers) * 100));
-						}
-					}
+					writeC((duskProportion * 100) / totalDuskProportion);
+					writeC((dawnProportion * 100) / totalDawnProportion);
 				}
 				break;
 			case 4:
