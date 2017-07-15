@@ -104,7 +104,9 @@ public enum Sound implements IAudio
 	// Ships
 	ITEMSOUND_SHIP_ARRIVAL_DEPARTURE("itemsound.ship_arrival_departure"),
 	ITEMSOUND_SHIP_5MIN("itemsound.ship_5min"),
-	ITEMSOUND_SHIP_1MIN("itemsound.ship_1min");
+	ITEMSOUND_SHIP_1MIN("itemsound.ship_1min"),
+	
+	SKILLSOUND_CRITICAL_HIT_2("skillsound.critical_hit_02");
 	
 	private final PlaySound _playSound;
 	
