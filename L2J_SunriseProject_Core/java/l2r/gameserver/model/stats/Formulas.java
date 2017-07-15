@@ -2423,7 +2423,7 @@ public final class Formulas
 		return reflect;
 	}
 	
-	public static void calcDamageReflected(L2Character activeChar, L2Character target, L2Skill skill, double damage)
+	public static void calcDamageReflected(L2Character activeChar, L2Character target, L2Skill skill, double damage, boolean crit)
 	{
 		boolean reflect = true;
 		if ((skill.getCastRange() == -1) || (skill.getCastRange() > MELEE_ATTACK_RANGE))
@@ -2452,6 +2452,7 @@ public final class Formulas
 				// TODO: Is this retail like?
 				double vegdamage = (damage / 100) * vengeanceChance;
 				activeChar.reduceCurrentHp(vegdamage, target, skill);
+				target.notifyDamageReceived(vegdamage, activeChar, skill, crit, false, true);
 			}
 		}
 	}

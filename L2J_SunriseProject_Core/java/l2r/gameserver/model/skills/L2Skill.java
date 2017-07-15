@@ -218,8 +218,8 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	private final boolean _isSevenSigns;
 	
 	private final int _baseCritRate; // percent of success for skill critical hit (especially for PDAM & BLOW - they're not affected by rCrit values or buffs). Default loads -1 for all other skills but 0 to PDAM & BLOW
-	private final int _halfKillRate;
-	private final int _lethalStrikeRate;
+	private final double _halfKillRate;
+	private final double _lethalStrikeRate;
 	private final boolean _directHpDmg; // If true then dmg is being make directly
 	private final boolean _isTriggeredSkill; // If true the skill will take activation buff slot instead of a normal buff slot
 	private final int _aggroPoints;
@@ -493,8 +493,8 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		_isClanSkill = SkillTreesData.getInstance().isClanSkill(_id, _level);
 		
 		_baseCritRate = set.getInt("baseCritRate", ((_skillType == L2SkillType.PDAM) || (_skillType == L2SkillType.BLOW)) ? 0 : -1);
-		_halfKillRate = set.getInt("halfKillRate", 0);
-		_lethalStrikeRate = set.getInt("lethalStrikeRate", 0);
+		_halfKillRate = set.getDouble("halfKillRate", 0);
+		_lethalStrikeRate = set.getDouble("lethalStrikeRate", 0);
 		
 		_directHpDmg = set.getBoolean("dmgDirectlyToHp", false);
 		_isTriggeredSkill = set.getBoolean("isTriggeredSkill", false);
@@ -1216,12 +1216,12 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 		return _baseCritRate;
 	}
 	
-	public final int getHalfKillRate()
+	public final double getHalfKillRate()
 	{
 		return _halfKillRate;
 	}
 	
-	public final int getLethalStrikeRate()
+	public final double getLethalStrikeRate()
 	{
 		return _lethalStrikeRate;
 	}
@@ -1615,6 +1615,23 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	 */
 	public final L2Effect[] getEffects(L2Character effector, L2Character effected, Env env)
 	{
+		// vGodFather: this will prevent debuffs apply on dead characters
+		if (effected == null)
+		{
+			return _emptyEffectSet;
+		}
+		
+		// vGodFather: this will prevent some effect apply on dead characters
+		if (effected.isDead() && !applyOnDeadChar())
+		{
+			return _emptyEffectSet;
+		}
+		
+		if (!hasEffects() || isPassive())
+		{
+			return _emptyEffectSet;
+		}
+		
 		if (!hasEffects() || isPassive())
 		{
 			return _emptyEffectSet;
@@ -1733,6 +1750,23 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	 */
 	public final L2Effect[] getEffects(L2CubicInstance effector, L2Character effected, Env env)
 	{
+		// vGodFather: this will prevent debuffs apply on dead characters
+		if (effected == null)
+		{
+			return _emptyEffectSet;
+		}
+		
+		// vGodFather: this will prevent some effect apply on dead characters
+		if (effected.isDead() && !applyOnDeadChar())
+		{
+			return _emptyEffectSet;
+		}
+		
+		if (!hasEffects() || isPassive())
+		{
+			return _emptyEffectSet;
+		}
+		
 		if (!hasEffects() || isPassive())
 		{
 			return _emptyEffectSet;
@@ -2144,6 +2178,23 @@ public abstract class L2Skill implements IChanceSkillTrigger, IIdentifiable
 	public boolean isHerb()
 	{
 		return getName().toLowerCase().startsWith("herb");
+	}
+	
+	// vGodFather: pro method :D
+	public boolean applyOnDeadChar()
+	{
+		//@formatter:off
+				if ((getTargetType() == L2TargetType.CORPSE)
+					|| (getTargetType() == L2TargetType.CORPSE_CLAN)
+					|| (getTargetType() == L2TargetType.CORPSE_MOB)
+					|| (getTargetType() == L2TargetType.CORPSE_PET)
+					|| (getTargetType() == L2TargetType.CORPSE_PLAYER))
+				{
+				return true;
+				}
+				//@formatter:on
+		
+		return hasEffectType(L2EffectType.RESURRECTION, L2EffectType.RESURRECTION_SPECIAL, L2EffectType.SWEEP, L2EffectType.CONSUME_BODY);
 	}
 	
 	/**

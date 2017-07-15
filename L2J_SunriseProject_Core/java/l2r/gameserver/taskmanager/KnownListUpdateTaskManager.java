@@ -29,6 +29,7 @@ import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.L2WorldRegion;
 import l2r.gameserver.model.actor.L2Attackable;
 import l2r.gameserver.model.actor.L2Character;
+import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2GuardInstance;
 
@@ -114,6 +115,11 @@ public class KnownListUpdateTaskManager
 			if ((object == null) || !object.isVisible() || (object.getKnownList() == null))
 			{
 				continue; // skip dying objects
+			}
+			
+			if ((vObj instanceof L2Npc) && ((L2Npc) vObj).isDecayed())
+			{
+				continue;
 			}
 			
 			// Some mobs need faster knownlist update

@@ -234,6 +234,7 @@ public final class DayNightSpawnManager
 				break;
 			case 1:
 				boss.spawnMe();
+				boss.setDecayed(false);
 				_log.info(getClass().getSimpleName() + ": Spawning Hellman raidboss");
 				break;
 		}

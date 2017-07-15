@@ -123,7 +123,6 @@ import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
 import l2r.gameserver.model.skills.l2skills.L2SkillSummon;
 import l2r.gameserver.model.skills.targets.L2TargetType;
-import l2r.gameserver.model.stats.BaseStats;
 import l2r.gameserver.model.stats.Calculator;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
@@ -651,6 +650,9 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					break;
 				case StatusUpdate.MAX_MP:
 					su.addAttribute(field, getMaxMp());
+					break;
+				case StatusUpdate.CUR_LOAD:
+					su.addAttribute(field, getCurrentLoad());
 					break;
 				case StatusUpdate.KARMA:
 					su.addAttribute(field, getKarma());
@@ -5257,13 +5259,13 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			
 			// reduce targets HP
 			target.reduceCurrentHp(damage, this, null);
-			target.notifyDamageReceived(damage, this, null, crit, false);
+			target.notifyDamageReceived(damage, this, null, crit, false, false);
 			
 			if (reflectedDamage > 0)
 			{
 				reduceCurrentHp(reflectedDamage, target, true, false, null);
 				
-				notifyDamageReceived(reflectedDamage, target, null, crit, false);
+				notifyDamageReceived(reflectedDamage, target, null, crit, false, true);
 			}
 			
 			if (!isBow && !target.isInvul()) // Do not absorb if weapon is of type bow or target is invul
@@ -5887,12 +5889,21 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	public void onMagicLaunchedTimer(MagicUseTask mut)
 	{
 		final L2Skill skill = mut.getSkill();
-		L2Object[] targets = mut.getTargets();
-		
-		if ((skill == null) || (targets == null))
+		if ((skill == null) || (mut.getTargets() == null))
 		{
 			abortCast();
 			return;
+		}
+		
+		L2Object[] targets;
+		// vGodFather: this will fix target checks when skill finish cast
+		if (isPlayer())
+		{
+			targets = skill.isAura() ? skill.getTargetList(this) : skill.isArea() ? skill.getTargetList(this, false, getAI().getCastTarget()) : mut.getTargets();
+		}
+		else
+		{
+			targets = mut.getTargets();
 		}
 		
 		if (targets.length == 0)
@@ -7135,22 +7146,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public int getMaxLoad()
 	{
-		if (isPlayer() || isPet())
-		{
-			// Weight Limit = (CON Modifier*69000) * Skills
-			// Source http://l2p.bravehost.com/weightlimit.html (May 2007)
-			double baseLoad = Math.floor(BaseStats.CON.calcBonus(this) * 69000 * Config.ALT_WEIGHT_LIMIT);
-			return (int) calcStat(Stats.WEIGHT_LIMIT, baseLoad, this, null);
-		}
 		return 0;
 	}
 	
 	public int getBonusWeightPenalty()
 	{
-		if (isPlayer() || isPet())
-		{
-			return (int) calcStat(Stats.WEIGHT_PENALTY, 1, this, null);
-		}
 		return 0;
 	}
 	
@@ -7159,10 +7159,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 */
 	public int getCurrentLoad()
 	{
-		if (isPlayer() || isPet())
-		{
-			return getInventory().getTotalWeight();
-		}
 		return 0;
 	}
 	
@@ -7454,11 +7450,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	 * @param skill
 	 * @param critical
 	 * @param damageOverTime
+	 * @param isReflect
 	 */
-	public void notifyDamageReceived(double damage, L2Character attacker, L2Skill skill, boolean critical, boolean damageOverTime)
+	public void notifyDamageReceived(double damage, L2Character attacker, L2Skill skill, boolean critical, boolean damageOverTime, boolean isReflect)
 	{
-		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageReceived(attacker, this, damage, skill, critical, damageOverTime), this);
-		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageDealt(attacker, this, damage, skill, critical, damageOverTime), attacker);
+		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageReceived(attacker, this, damage, skill, critical, damageOverTime, isReflect), this);
+		EventDispatcher.getInstance().notifyEventAsync(new OnCreatureDamageDealt(attacker, this, damage, skill, critical, damageOverTime, isReflect), attacker);
 	}
 	
 	/**

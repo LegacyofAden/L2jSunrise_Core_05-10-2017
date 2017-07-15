@@ -212,6 +212,7 @@ import l2r.gameserver.model.events.impl.character.player.OnPlayerKarmaChanged;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerLogin;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerLogout;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerPKChanged;
+import l2r.gameserver.model.events.impl.character.player.OnPlayerProfessionCancel;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerProfessionChange;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerPvPChanged;
 import l2r.gameserver.model.events.impl.character.player.OnPlayerPvPKill;
@@ -247,6 +248,7 @@ import l2r.gameserver.model.skills.CommonSkill;
 import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.model.skills.L2SkillType;
 import l2r.gameserver.model.skills.targets.L2TargetType;
+import l2r.gameserver.model.stats.BaseStats;
 import l2r.gameserver.model.stats.Env;
 import l2r.gameserver.model.stats.Formulas;
 import l2r.gameserver.model.stats.Stats;
@@ -10639,6 +10641,11 @@ public final class L2PcInstance extends L2Playable
 				getSubClasses().remove(classIndex);
 				return false;
 			}
+			
+			// Notify to scripts
+			int classId = getSubClasses().get(classIndex).getClassId();
+			EventDispatcher.getInstance().notifyEventAsync(new OnPlayerProfessionCancel(this, classId), this);
+			
 			getSubClasses().remove(classIndex);
 		}
 		finally
@@ -11108,10 +11115,8 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void doRevive(double revivePower)
 	{
-		// Restore the player's lost experience,
-		// depending on the % return of the skill used (based on its power).
-		restoreExp(revivePower);
 		doRevive();
+		restoreExp(revivePower);
 	}
 	
 	public void reviveRequest(L2PcInstance reviver, L2Skill skill, boolean Pet, int power)
@@ -13067,6 +13072,24 @@ public final class L2PcInstance extends L2Playable
 	public L2PcInstance getActingPlayer()
 	{
 		return this;
+	}
+	
+	@Override
+	public int getMaxLoad()
+	{
+		return (int) calcStat(Stats.WEIGHT_LIMIT, Math.floor(BaseStats.CON.calcBonus(this) * 69000 * Config.ALT_WEIGHT_LIMIT), this, null);
+	}
+	
+	@Override
+	public int getBonusWeightPenalty()
+	{
+		return (int) calcStat(Stats.WEIGHT_PENALTY, 1, this, null);
+	}
+	
+	@Override
+	public int getCurrentLoad()
+	{
+		return getInventory().getTotalWeight();
 	}
 	
 	@Override
