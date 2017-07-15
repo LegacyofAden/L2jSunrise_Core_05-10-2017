@@ -4871,7 +4871,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		
 		MoveData md = _move;
-		if (md == null)
+		if ((md == null) || (md.geoPath == null))
 		{
 			return false;
 		}
