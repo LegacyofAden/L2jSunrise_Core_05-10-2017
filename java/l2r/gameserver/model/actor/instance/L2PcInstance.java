@@ -6449,6 +6449,8 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
+		broadcastUserInfo(true);
+		
 		_clanId = clan.getId();
 	}
 	
