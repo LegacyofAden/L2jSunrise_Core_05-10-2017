@@ -781,7 +781,7 @@ public final class Formulas
 	{
 		final boolean isPvP = attacker.isPlayable() && target.isPlayable();
 		final boolean isPvE = attacker.isPlayable() && target.isAttackable();
-		double proximityBonus = attacker.isBehindTarget() ? 1.2 : attacker.isInFrontOfTarget() ? 1 : 1.1; // Behind: +20% - Side: +10%
+		double proximityBonus = skill == null ? attacker.isBehindTarget() ? 1.2 : attacker.isInFrontOfTarget() ? 1 : 1.1 : 1; // Behind: +20% - Side: +10%
 		double damage = attacker.getPAtk(target);
 		double defence = target.getPDef(attacker);
 		damage *= calcValakasTrait(attacker, target, skill);
@@ -1828,8 +1828,8 @@ public final class Formulas
 			final StatsSet set = new StatsSet();
 			set.set("baseMod", baseMod);
 			set.set("resMod", resMod);
-			set.set("mAtkMod", mAtkMod);
 			set.set("lvlBonusMod", lvlBonusMod);
+			set.set("elementMod", elementMod);
 			set.set("mAtkMod", mAtkMod);
 			set.set("rate", rate);
 			set.set("finalRate", finalRate);

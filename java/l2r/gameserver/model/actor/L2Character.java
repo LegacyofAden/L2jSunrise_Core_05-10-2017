@@ -5978,7 +5978,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					targetList.add((L2Character) target);
 				}
 			}
-			if (targetList.isEmpty())
+			if (targetList.isEmpty() && !skill.isAura())
 			{
 				if (isPlayer())
 				{
