@@ -845,6 +845,11 @@ public final class L2ServicesManagerInstance extends L2NpcInstance
 		}
 		else if (command.equalsIgnoreCase("dissolveally"))
 		{
+			if (!checkLeaderConditions(player))
+			{
+				return;
+			}
+			
 			player.getClan().dissolveAlly(player);
 		}
 		else if (actualCommand.equalsIgnoreCase("dissolveclan"))
