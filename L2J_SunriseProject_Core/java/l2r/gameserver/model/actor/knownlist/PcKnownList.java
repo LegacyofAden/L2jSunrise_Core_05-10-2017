@@ -22,12 +22,14 @@ import l2r.Config;
 import l2r.gameserver.model.L2Object;
 import l2r.gameserver.model.actor.L2Character;
 import l2r.gameserver.model.actor.L2Npc;
+import l2r.gameserver.model.actor.L2Summon;
 import l2r.gameserver.model.actor.instance.L2AirShipInstance;
 import l2r.gameserver.model.actor.instance.L2GrandBossInstance;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2RaidBossInstance;
 import l2r.gameserver.network.serverpackets.DeleteObject;
 import l2r.gameserver.network.serverpackets.SpawnItem;
+import l2r.gameserver.network.serverpackets.StatusUpdate;
 
 public class PcKnownList extends PlayableKnownList
 {
@@ -94,6 +96,13 @@ public class PcKnownList extends PlayableKnownList
 			if (object.isVisibleFor(getActiveChar()))
 			{
 				object.sendInfo(getActiveChar());
+				
+				// vGodFather: send summon status update for hp and mp
+				if (object instanceof L2Summon)
+				{
+					StatusUpdate su = ((L2Summon) object).makeStatusUpdate(StatusUpdate.MAX_HP, StatusUpdate.MAX_MP, StatusUpdate.CUR_HP, StatusUpdate.CUR_MP);
+					((L2Summon) object).broadcastPacket(su);
+				}
 				
 				if (object instanceof L2Character)
 				{

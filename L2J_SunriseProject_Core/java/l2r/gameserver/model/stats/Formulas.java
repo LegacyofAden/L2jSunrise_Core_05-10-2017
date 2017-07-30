@@ -2567,7 +2567,7 @@ public final class Formulas
 			_effectList.addAll(_musicList);
 			_effectList.addAll(_buffList);
 			
-			if (!randomizeList)
+			if (randomizeList)
 			{
 				Collections.shuffle(_effectList);
 			}
