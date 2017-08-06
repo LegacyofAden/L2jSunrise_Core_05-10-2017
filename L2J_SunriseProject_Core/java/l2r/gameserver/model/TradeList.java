@@ -899,6 +899,9 @@ public class TradeList
 			}
 		}
 		
+		StatusUpdate su = player.makeStatusUpdate(StatusUpdate.CUR_LOAD);
+		player.sendPacket(su);
+		
 		// Send inventory update packet
 		_owner.sendPacket(ownerIU);
 		player.sendPacket(playerIU);

@@ -854,7 +854,7 @@ public final class RequestActionUse extends L2GameClientPacket
 			return false;
 		}
 		
-		if (!activeChar.isSitting() && (target instanceof L2StaticObjectInstance) && (((L2StaticObjectInstance) target).getType() == 1) && activeChar.isInsideRadius(target, L2StaticObjectInstance.INTERACTION_DISTANCE, false, false))
+		if (!activeChar.isSitting() && !activeChar.isFakeDeath() && (target instanceof L2StaticObjectInstance) && (((L2StaticObjectInstance) target).getType() == 1) && activeChar.isInsideRadius(target, L2StaticObjectInstance.INTERACTION_DISTANCE, false, false))
 		{
 			final ChairSit cs = new ChairSit(activeChar, ((L2StaticObjectInstance) target).getId());
 			sendPacket(cs);
