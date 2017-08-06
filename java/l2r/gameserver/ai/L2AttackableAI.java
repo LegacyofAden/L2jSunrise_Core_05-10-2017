@@ -596,8 +596,11 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		// Check if the actor is a L2GuardInstance
 		if ((npc instanceof L2GuardInstance) && !npc.isWalker() && !npc.isRunner())
 		{
-			// Order to the L2GuardInstance to return to its home location because there's no target to attack
-			tryToGoHome(npc);
+			if ((npc.getSpawn() != null) && (Util.calculateDistance(npc.getX(), npc.getY(), npc.getZ(), npc.getSpawn().getX(), npc.getSpawn().getY(), npc.getSpawn().getZ(), true) > 50))
+			{
+				// Order to the L2GuardInstance to return to its home location because there's no target to attack
+				tryToGoHome(npc);
+			}
 		}
 		
 		// If this is a festival monster, then it remains in the same location.
