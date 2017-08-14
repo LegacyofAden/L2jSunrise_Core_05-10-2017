@@ -1057,7 +1057,7 @@ public abstract class L2Summon extends L2Playable
 			return false;
 		}
 		
-		if ((getOwner().getTarget() != null) && !getOwner().getTarget().isAutoAttackable(getOwner()) && !getOwner().getAccessLevel().allowPeaceAttack())
+		if ((getOwner().getTarget() != null) && !ctrlPressed && !getOwner().getTarget().isAutoAttackable(getOwner()) && !getOwner().getAccessLevel().allowPeaceAttack())
 		{
 			getAI().setIntention(CtrlIntention.AI_INTENTION_FOLLOW, target);
 			getOwner().sendPacket(ActionFailed.STATIC_PACKET);
