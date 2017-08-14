@@ -8939,17 +8939,10 @@ public final class L2PcInstance extends L2Playable
 		
 		// ************************************* Check Casting in Progress *******************************************
 		
-		// If a skill is currently being used, queue this one if this is not the same
+		// If a skill is currently being used, queue this one.
 		if (isCastingNow())
 		{
-			SkillUseHolder currentSkill = getCurrentSkill();
-			// Check if new skill different from current skill in progress
-			if ((currentSkill != null) && (skill.getId() == currentSkill.getSkillId()))
-			{
-				sendPacket(ActionFailed.STATIC_PACKET);
-				return false;
-			}
-			else if (isSkillDisabled(skill))
+			if (isSkillDisabled(skill))
 			{
 				sendPacket(ActionFailed.STATIC_PACKET);
 				return false;
