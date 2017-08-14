@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import l2r.gameserver.GameTimeController;
 import l2r.gameserver.ThreadPoolManager;
 import l2r.gameserver.data.xml.impl.SkillData;
 import l2r.gameserver.enums.InstanceType;
@@ -263,6 +264,29 @@ public class L2EffectZone extends L2ZoneType
 		{
 			if (isEnabled())
 			{
+				// vGodFather: implement game time for some effects
+				switch (getGameTime())
+				{
+					case DAY:
+					{
+						if (GameTimeController.getInstance().isNight())
+						{
+							return;
+						}
+						break;
+					}
+					case NIGHT:
+					{
+						if (!GameTimeController.getInstance().isNight())
+						{
+							return;
+						}
+						break;
+					}
+					default:
+						break;
+				}
+				
 				for (L2Character temp : getCharactersInside())
 				{
 					if ((temp != null) && !temp.isDead())

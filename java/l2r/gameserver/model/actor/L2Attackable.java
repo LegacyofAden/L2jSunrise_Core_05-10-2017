@@ -117,6 +117,7 @@ public class L2Attackable extends L2Npc
 	public int RANDOM_WALK_RATE = -1;
 	
 	protected int _onKillDelay = 1000;
+	protected long _findTargetDelay = 0;
 	
 	/**
 	 * Creates an attackable NPC.
@@ -1622,6 +1623,16 @@ public class L2Attackable extends L2Npc
 	public final int getOnKillDelay()
 	{
 		return _onKillDelay;
+	}
+	
+	public final void setFindTargetDelay(int delay)
+	{
+		_findTargetDelay = (System.currentTimeMillis() + delay);
+	}
+	
+	public final long getFindTargetDelay()
+	{
+		return _findTargetDelay;
 	}
 	
 	/**
