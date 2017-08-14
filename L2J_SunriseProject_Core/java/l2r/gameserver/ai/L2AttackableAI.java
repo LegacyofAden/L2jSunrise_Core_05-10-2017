@@ -489,6 +489,12 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	{
 		L2Attackable npc = getActiveChar();
 		
+		// vGodFather: Delay used in order to find target again after removeTarget effect applied
+		if (npc.getFindTargetDelay() > System.currentTimeMillis())
+		{
+			return;
+		}
+		
 		// Update every 1s the _globalAggro counter to come close to 0
 		if (_globalAggro != 0)
 		{

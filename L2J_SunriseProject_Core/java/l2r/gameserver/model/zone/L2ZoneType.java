@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import l2r.gameserver.enums.GameTime;
 import l2r.gameserver.enums.InstanceType;
 import l2r.gameserver.instancemanager.InstanceManager;
 import l2r.gameserver.model.L2Object;
@@ -65,6 +66,8 @@ public abstract class L2ZoneType extends ListenersContainer
 	private boolean _allowStore;
 	protected boolean _enabled;
 	private AbstractZoneSettings _settings;
+	
+	private GameTime _gameTime = GameTime.NONE;
 	
 	protected L2ZoneType(int id)
 	{
@@ -194,6 +197,10 @@ public abstract class L2ZoneType extends ListenersContainer
 		else if (name.equals("default_enabled"))
 		{
 			_enabled = Boolean.parseBoolean(value);
+		}
+		else if (name.equals("time"))
+		{
+			_gameTime = Enum.valueOf(GameTime.class, value);
 		}
 		else
 		{
@@ -610,5 +617,10 @@ public abstract class L2ZoneType extends ListenersContainer
 	public boolean isEnabled()
 	{
 		return _enabled;
+	}
+	
+	public GameTime getGameTime()
+	{
+		return _gameTime;
 	}
 }
