@@ -28,17 +28,24 @@ import java.util.logging.LogRecord;
 
 import l2r.Config;
 import l2r.L2DatabaseFactory;
+import l2r.gameserver.data.SpawnTable;
+import l2r.gameserver.enums.audio.Sound;
+import l2r.gameserver.model.L2Spawn;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.Location;
 import l2r.gameserver.model.actor.L2Character;
+import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.events.EventDispatcher;
 import l2r.gameserver.model.events.impl.olympiad.OnOlympiadMatchResult;
 import l2r.gameserver.model.zone.type.L2OlympiadStadiumZone;
+import l2r.gameserver.network.NpcStringId;
 import l2r.gameserver.network.SystemMessageId;
+import l2r.gameserver.network.clientpackets.Say2;
 import l2r.gameserver.network.serverpackets.ExOlympiadMatchResult;
 import l2r.gameserver.network.serverpackets.ExOlympiadUserInfo;
 import l2r.gameserver.network.serverpackets.L2GameServerPacket;
+import l2r.gameserver.network.serverpackets.NpcSay;
 import l2r.gameserver.network.serverpackets.SystemMessage;
 import l2r.util.Rnd;
 
@@ -438,7 +445,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 				{
 					result = new ExOlympiadMatchResult(tie, winside, list2, list1);
 				}
-				stadium.broadcastPacket(result);
+				stadium.broadcastPacket(result, true);
 				return;
 			}
 			catch (Exception e)
@@ -470,6 +477,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 					winside = 1;
 					
 					rewardParticipant(_playerOne.getPlayer(), getReward());
+					_playerOne.getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 					
 					if (Config.ALT_OLY_LOG_FIGHTS)
 					{
@@ -508,6 +516,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 					winside = 2;
 					
 					rewardParticipant(_playerTwo.getPlayer(), getReward());
+					_playerTwo.getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 					
 					if (Config.ALT_OLY_LOG_FIGHTS)
 					{
@@ -576,7 +585,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 				{
 					result = new ExOlympiadMatchResult(tie, winside, list2, list1);
 				}
-				stadium.broadcastPacket(result);
+				stadium.broadcastPacket(result, true);
 				
 				// Notify to scripts
 				EventDispatcher.getInstance().notifyEventAsync(new OnOlympiadMatchResult(null, _playerOne, getType()), Olympiad.getInstance());
@@ -652,6 +661,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 					saveResults(_playerOne, _playerTwo, 1, _startTime, _fightTime, getType());
 				}
 				rewardParticipant(_playerOne.getPlayer(), getReward());
+				_playerOne.getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 				
 				// Notify to scripts
 				EventDispatcher.getInstance().notifyEventAsync(new OnOlympiadMatchResult(_playerOne, _playerTwo, getType()), Olympiad.getInstance());
@@ -680,6 +690,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 					saveResults(_playerOne, _playerTwo, 2, _startTime, _fightTime, getType());
 				}
 				rewardParticipant(_playerTwo.getPlayer(), getReward());
+				_playerTwo.getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 				
 				// Notify to scripts
 				EventDispatcher.getInstance().notifyEventAsync(new OnOlympiadMatchResult(_playerTwo, _playerOne, getType()), Olympiad.getInstance());
@@ -722,7 +733,7 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 			{
 				result = new ExOlympiadMatchResult(tie, winside, list2, list1);
 			}
-			stadium.broadcastPacket(result);
+			stadium.broadcastPacket(result, true);
 			
 			if (Config.ALT_OLY_LOG_FIGHTS)
 			{
@@ -802,6 +813,41 @@ public abstract class OlympiadGameNormal extends AbstractOlympiadGame
 		}
 		
 		return _playerOne.isDefaulted() || _playerTwo.isDefaulted();
+	}
+	
+	// vGodFather: better handling olympiad announcements
+	@Override
+	public void announceGame()
+	{
+		NpcStringId npcString = null;
+		final String arenaId = String.valueOf(getStadiumId() + 1);
+		switch (getType())
+		{
+			case NON_CLASSED:
+				npcString = NpcStringId.OLYMPIAD_CLASS_FREE_INDIVIDUAL_MATCH_IS_GOING_TO_BEGIN_IN_ARENA_S1_IN_A_MOMENT;
+				break;
+			case CLASSED:
+				npcString = NpcStringId.OLYMPIAD_CLASS_INDIVIDUAL_MATCH_IS_GOING_TO_BEGIN_IN_ARENA_S1_IN_A_MOMENT;
+				break;
+			case TEAMS:
+				npcString = NpcStringId.OLYMPIAD_CLASS_FREE_TEAM_MATCH_IS_GOING_TO_BEGIN_IN_ARENA_S1_IN_A_MOMENT;
+				break;
+			default:
+				break;
+		}
+		
+		L2Npc manager;
+		NpcSay packet;
+		for (L2Spawn spawn : SpawnTable.getInstance().getSpawns(OLY_MANAGER))
+		{
+			manager = spawn.getLastSpawn();
+			if (manager != null)
+			{
+				packet = new NpcSay(manager.getObjectId(), Say2.NPC_SHOUT, manager.getId(), npcString);
+				packet.addStringParameter(arenaId);
+				manager.broadcastPacket(packet);
+			}
+		}
 	}
 	
 	@Override

@@ -68,6 +68,8 @@ public abstract class AbstractOlympiadGame
 	protected boolean _aborted = false;
 	protected final int _stadiumID;
 	
+	protected final int OLY_MANAGER = 31688;
+	
 	protected AbstractOlympiadGame(int id)
 	{
 		_stadiumID = id;
@@ -468,6 +470,12 @@ public abstract class AbstractOlympiadGame
 		{
 			_log.warn(e.getMessage(), e);
 		}
+	}
+	
+	// vGodFather: better handling olympiad announcements
+	protected void announceGame()
+	{
+	
 	}
 	
 	public abstract CompetitionType getType();
