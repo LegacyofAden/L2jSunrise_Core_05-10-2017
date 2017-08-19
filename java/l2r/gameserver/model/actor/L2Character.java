@@ -1901,7 +1901,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			}
 		}
 		
-		if ((skill.getHitTime() > 50) && !skill.isSimultaneousCast())
+		if ((skill.getHitTime() > 100) && !skill.isSimultaneousCast())
 		{
 			getAI().clientStopMoving(null);
 		}
@@ -1950,6 +1950,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		}
 		// if basic hitTime is higher than 500 than the min hitTime is 500
 		else if ((skill.getHitTime() >= 500) && (hitTime < 500))
+		{
+			hitTime = 500;
+		}
+		
+		if ((!skill.isStatic() && !effectWhileCasting && !skill.isSimultaneousCast() && !skill.isHealingPotionSkill()) && (skill.getHitTime() < 500) && (skill.getHitTime() > 0) && (hitTime < 500))
 		{
 			hitTime = 500;
 		}
@@ -2124,12 +2129,6 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					return;
 				}
 			}
-		}
-		
-		// Before start AI Cast Broadcast Fly Effect is Need
-		if (skill.getFlyType() != null)
-		{
-			ThreadPoolManager.getInstance().scheduleEffect(new FlyToLocationTask(this, target, skill), 50);
 		}
 		
 		MagicUseTask mut = new MagicUseTask(this, targets, skill, hitTime, coolTime, simultaneously);
@@ -5895,14 +5894,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		L2Object[] targets;
 		// vGodFather: this will fix target checks when skill finish cast
-		if (isPlayer())
-		{
-			targets = skill.isAura() ? skill.getTargetList(this) : skill.isArea() ? skill.getTargetList(this, false, getAI().getCastTarget()) : mut.getTargets();
-		}
-		else
-		{
-			targets = mut.getTargets();
-		}
+		targets = isPlayer() ? skill.isAura() ? skill.getTargetList(this) : skill.isArea() ? skill.getTargetList(this, false, getAI().getCastTarget()) : mut.getTargets() : mut.getTargets();
+		mut.setTargets(targets);
 		
 		if (targets.length == 0)
 		{
@@ -5978,7 +5971,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 					targetList.add((L2Character) target);
 				}
 			}
-			if (targetList.isEmpty() && !skill.isAura())
+			if (targetList.isEmpty())
 			{
 				if (isPlayer())
 				{
@@ -6015,6 +6008,15 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		if (!skill.isStatic())
 		{
 			broadcastPacket(new MagicSkillLaunched(this, skill.getDisplayId(), skill.getDisplayLevel(), targets));
+		}
+		
+		if (skill.getFlyType() != null)
+		{
+			final L2Object target = mut.getTargets()[0];
+			if (target != null)
+			{
+				ThreadPoolManager.getInstance().scheduleEffect(new FlyToLocationTask(this, target, skill), 5);
+			}
 		}
 		
 		mut.setPhase(2);

@@ -384,6 +384,13 @@ public final class OlympiadGameTask implements Runnable
 			
 			_game.removals();
 			_needAnnounce = true;
+			
+			// vGodFather: better handling olympiad announcements
+			if (Config.ALT_OLY_ANNOUNCE_GAMES)
+			{
+				_game.announceGame();
+			}
+			
 			OlympiadGameManager.getInstance().startBattle(); // inform manager
 			return true;
 		}

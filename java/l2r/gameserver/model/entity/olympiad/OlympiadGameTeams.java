@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import l2r.Config;
+import l2r.gameserver.enums.audio.Sound;
 import l2r.gameserver.idfactory.IdFactory;
 import l2r.gameserver.model.L2World;
 import l2r.gameserver.model.Location;
@@ -615,7 +616,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 				{
 					result = new ExOlympiadMatchResult(tie, winside, list2, list1);
 				}
-				stadium.broadcastPacket(result);
+				stadium.broadcastPacket(result, true);
 			}
 			catch (Exception e)
 			{
@@ -743,6 +744,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 					for (int i = 0; i < _teamOneSize; i++)
 					{
 						rewardParticipant(_teamOne[i].getPlayer(), getReward());
+						_teamOne[i].getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 					}
 					
 					winside = 1;
@@ -776,6 +778,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 					for (int i = 0; i < _teamTwoSize; i++)
 					{
 						rewardParticipant(_teamTwo[i].getPlayer(), getReward());
+						_teamTwo[i].getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 					}
 				}
 				else if (tOneCrash && tTwoCrash)
@@ -830,7 +833,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 			{
 				result = new ExOlympiadMatchResult(tie, winside, list2, list1);
 			}
-			stadium.broadcastPacket(result);
+			stadium.broadcastPacket(result, true);
 			return;
 		}
 		
@@ -897,6 +900,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 				for (int i = 0; i < _teamOneSize; i++)
 				{
 					rewardParticipant(_teamOne[i].getPlayer(), getReward());
+					_teamOne[i].getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 				}
 			}
 			else if (((teamOneHp == 0) && (teamTwoHp != 0)) || ((_damageT2 > _damageT1) && (teamOneHp != 0) && (teamTwoHp != 0)))
@@ -928,6 +932,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 				for (int i = 0; i < _teamTwoSize; i++)
 				{
 					rewardParticipant(_teamTwo[i].getPlayer(), getReward());
+					_teamTwo[i].getPlayer().sendPacket(Sound.ITEMSOUND_QUEST_ITEMGET.getPacket());
 				}
 			}
 			else
@@ -977,7 +982,7 @@ public class OlympiadGameTeams extends AbstractOlympiadGame
 			{
 				result = new ExOlympiadMatchResult(tie, winside, list2, list1);
 			}
-			stadium.broadcastPacket(result);
+			stadium.broadcastPacket(result, true);
 		}
 		catch (Exception e)
 		{
