@@ -15318,6 +15318,12 @@ public final class L2PcInstance extends L2Playable
 			}
 		}
 		
+		// Now check again if the L2PcInstance is in pvp zone, but this time at siege PvP zone, applying clan/ally checks
+		if ((isInsideZone(ZoneIdType.PVP) && target.isInsideZone(ZoneIdType.PVP)) && (isInsideZone(ZoneIdType.SIEGE) && target.isInsideZone(ZoneIdType.SIEGE)))
+		{
+			return false;
+		}
+		
 		if ((target.getPvpFlag() > 0) || (target.getKarma() > 0))
 		{
 			if (!isInSameParty(target) && !isInSameChannel(target) && !isInSameClan(target) && !isInSameAlly(target))
