@@ -227,7 +227,7 @@ public class L2SummonAI extends L2PlayableAI implements Runnable
 		{
 			_startAvoid = false;
 			
-			if (!_clientMoving && !_actor.isDead() && !_actor.isMovementDisabled())
+			if (!_clientMoving && !_actor.isDead() && !_actor.isMovementDisabled() && !_actor.isCastingNow())
 			{
 				final int ownerX = ((L2Summon) _actor).getOwner().getX();
 				final int ownerY = ((L2Summon) _actor).getOwner().getY();

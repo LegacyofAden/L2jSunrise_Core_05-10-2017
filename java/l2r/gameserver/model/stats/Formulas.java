@@ -1734,7 +1734,7 @@ public final class Formulas
 		
 		final double activateRate = (skill.getActivateRate() > 0) && (effect.effectPower < 0) ? skill.getPower() : effect.effectPower;
 		// Force success some cancel effects cause they use other calculations
-		if ((activateRate == -1) || skill.hasEffectType(L2EffectType.CANCEL) || skill.hasEffectType(L2EffectType.STEAL_ABNORMAL))
+		if ((activateRate == -1) || skill.hasEffectType(L2EffectType.CANCEL, L2EffectType.DISPEL, L2EffectType.DISPEL_BY_SLOT, L2EffectType.STEAL_ABNORMAL))
 		{
 			return true;
 		}
