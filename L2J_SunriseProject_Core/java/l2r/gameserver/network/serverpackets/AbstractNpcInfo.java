@@ -134,12 +134,12 @@ public abstract class AbstractNpcInfo extends L2GameServerPacket
 			}
 			
 			// npc crest of owning clan/ally of castle
-			if (cha.isNpc() && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
+			if (cha.isNpc() && !cha.isAttackable() && cha.isInsideZone(ZoneIdType.TOWN) && (Config.SHOW_CREST_WITHOUT_QUEST || cha.getCastle().getShowNpcCrest()) && (cha.getCastle().getOwnerId() != 0))
 			{
 				// vGodFather
 				L2TownZone town = TownManager.getTown(_x, _y, _z);
 				int townId = town != null ? town.getTownId() : 33;
-				if ((townId != 33) && (townId != 22))
+				if ((townId != 33) && (townId != 22) && (townId != 19))
 				{
 					L2Clan clan = ClanTable.getInstance().getClan(cha.getCastle().getOwnerId());
 					if (clan != null)

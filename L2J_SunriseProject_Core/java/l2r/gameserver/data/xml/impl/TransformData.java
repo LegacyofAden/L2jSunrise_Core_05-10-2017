@@ -54,6 +54,10 @@ public final class TransformData implements IXmlReader
 		_transformData.clear();
 		parseDatapackDirectory("data/xml/stats/transformations", false);
 		LOGGER.info(getClass().getSimpleName() + ": Loaded: " + _transformData.size() + " transform templates.");
+		
+		parseDatapackDirectory("data/xml/stats/transformations/custom", true);
+		final int transformCount = _transformData.size();
+		LOGGER.info(getClass().getSimpleName() + ": Loaded " + (_transformData.size() - transformCount) + " custom transform templates.");
 	}
 	
 	@Override
